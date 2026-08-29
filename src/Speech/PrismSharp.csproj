@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>PrismSharp</RootNamespace>
+    <AssemblyName>PrismSharp</AssemblyName>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <ImplicitUsings>disable</ImplicitUsings>
+
+    <!-- Required for LibraryImport with DisableRuntimeMarshalling, unmanaged function pointers,
+         and UnmanagedCallersOnly thunks. -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+
+    <!-- Turns on the trim and AOT analyzers so an AOT-hostile construct fails the build. -->
+    <IsAotCompatible>true</IsAotCompatible>
+    <EnableSingleFileAnalyzer>true</EnableSingleFileAnalyzer>
+    <EnableTrimAnalyzer>true</EnableTrimAnalyzer>
+
+    <!-- Every public member must carry documentation: CS1591 is an error, not a warning. -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- Prismatoid is a separate, self-contained solution that happens to live under this
+         directory; it must not be swept into this assembly by the default source glob. -->
+    <Compile Remove="Prismatoid/**/*.cs" />
+    <None Remove="Prismatoid/**" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <Description>Managed bindings for the Prism speech library (prism.dll / libprism), plus screen-reader selection and thread confinement.</Description>
+    <PrismSdkVersion>0.18.2</PrismSdkVersion>
+  </PropertyGroup>
+
+</Project>

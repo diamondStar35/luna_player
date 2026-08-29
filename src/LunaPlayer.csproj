@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <AssemblyName>LunaPlayer</AssemblyName>
+    <RootNamespace>LunaPlayer</RootNamespace>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <PublishAot>true</PublishAot>
+    <StripSymbols>true</StripSymbols>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <BaseOutputPath>$(BaseIntermediateOutputPath)managed\</BaseOutputPath>
+    <NativeAotOutputDirectory>$(MSBuildProjectDirectory)\bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</NativeAotOutputDirectory>
+    <PublishDir>$(NativeAotOutputDirectory)</PublishDir>
+    <RunCommand>$(NativeAotOutputDirectory)LunaPlayer.exe</RunCommand>
+    <RunWorkingDirectory>$(NativeAotOutputDirectory)</RunWorkingDirectory>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="Program.cs" />
+    <Compile Include="NativeLibraryBootstrap.cs" />
+    <Compile Include="UI\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\third-party\WxSharp\src\WxSharp\WxSharp.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="$(RepositoryRoot)third-party\*.dll"
+             Link="lib\%(Filename)%(Extension)"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="$(RepositoryRoot)third-party\WxSharp\third-party\Windows\lib\vc_x64_dll\wxbase333u_vc_x64.dll"
+             Link="lib\wxbase333u_vc_x64.dll"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="$(RepositoryRoot)third-party\WxSharp\third-party\Windows\lib\vc_x64_dll\wxmsw333u_core_vc_x64.dll"
+             Link="lib\wxmsw333u_core_vc_x64.dll"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <Target Name="PublishNativeAotAfterBuild"
+          AfterTargets="Build"
+          Condition="'$(DesignTimeBuild)' != 'true' and '$(_IsPublishing)' != 'true' and '$(NativeAotBuildInvocation)' != 'true'">
+    <MSBuild Projects="$(MSBuildProjectFullPath)"
+             Targets="Publish"
+             Properties="Configuration=$(Configuration);NativeAotBuildInvocation=true" />
+  </Target>
+</Project>
