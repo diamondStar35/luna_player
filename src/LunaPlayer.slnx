@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="LunaPlayer.csproj" />
+  <Project Path="Speech/PrismSharp.csproj" />
+</Solution>
