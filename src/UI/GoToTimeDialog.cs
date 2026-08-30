@@ -28,12 +28,12 @@ internal sealed class GoToTimeDialog : IDisposable
         total %= 3600;
         _minutes.Value = total / 60;
         _seconds.Value = total % 60;
-        // wxSpinCtrl raises wxEVT_SPINCTRL for the arrows and wxEVT_TEXT for typing; both have to be
-        // watched or a typed value never goes through UpdateLimits.
+        // The Python player binds EVT_SPINCTRL and EVT_TEXT on each spinner; wxEVT_SPINCTRL covers the
+        // arrows and wxEVT_TEXT covers typing, so both are needed for a typed value to be re-clamped.
         foreach (var spin in new[] { _hours, _minutes, _seconds })
         {
             spin.ValueChanged += OnValueChanged;
-            spin.Bind(WxEvents.TextChanged, OnTextChanged);
+            spin.TextChanged += OnTextChanged;
         }
 
         var buttons = new BoxSizer(Orientation.Horizontal);

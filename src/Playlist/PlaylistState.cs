@@ -5,6 +5,7 @@ internal sealed class PlaylistState
     private readonly List<string> _files = [];
     private readonly List<int> _shuffleOrder = [];
     private readonly MarkedFileSet _marks = new();
+    private readonly Dictionary<string, string> _titles = new(StringComparer.OrdinalIgnoreCase);
     private int _currentIndex = -1;
     private int _shufflePosition = -1;
     private double? _pendingStart;
@@ -37,12 +38,26 @@ internal sealed class PlaylistState
         _files.Clear();
         _files.AddRange(files);
         _marks.Clear();
+        _titles.Clear();
         _currentIndex = selectedIndex;
         _pendingStart = selectedIndex == 0 && preferredPath is null ? null : startPosition;
         if (IsShuffleEnabled)
             RebuildShuffleOrder();
         return true;
     }
+
+    /// <summary>Remembers the media title for a file, as the player reads it from the media itself. An
+    /// empty or whitespace title is treated as no title, so callers fall back to the file name.</summary>
+    internal void SetTitle(string path, string? title)
+    {
+        if (string.IsNullOrWhiteSpace(path)) return;
+        if (string.IsNullOrWhiteSpace(title)) _titles.Remove(path);
+        else _titles[path] = title.Trim();
+    }
+
+    /// <summary>The remembered media title for a file, or null when none is known.</summary>
+    internal string? GetTitle(string? path)
+        => path is not null && _titles.TryGetValue(path, out var title) ? title : null;
 
     internal bool MoveNext(bool wrap)
         => IsShuffleEnabled ? MoveNextShuffled(wrap) : MoveNextSequential(wrap);
@@ -71,6 +86,8 @@ internal sealed class PlaylistState
         var oldPath = _files[_currentIndex];
         _files[_currentIndex] = path;
         _marks.Replace(oldPath, path);
+        if (_titles.Remove(oldPath, out var title))
+            _titles[path] = title;
         return true;
     }
 

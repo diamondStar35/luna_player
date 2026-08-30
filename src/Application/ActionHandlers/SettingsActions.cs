@@ -26,6 +26,7 @@ internal sealed class SettingsActions
         {
             settings.Apply(source);
             player.TrackPositions(settings.Audio.SaveFilePositions);
+            player.SetEndBehavior(settings.Audio.EndBehavior);
             player.ConfigureSilence(settings.Silence);
             if (!player.SetNormalization(settings.Audio.NormalizeAudio))
                 view.ShowError("Could not apply the audio normalization filter.", "Preferences");

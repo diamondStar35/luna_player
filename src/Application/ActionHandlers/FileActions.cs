@@ -147,7 +147,7 @@ internal sealed class FileActions
         var selected = _player.CurrentIndex;
         while (true)
         {
-            var names = _player.Files.Select(path => Path.GetFileName(path) is { Length: > 0 } name ? name : path).ToArray();
+            var names = _player.Files.Select(_player.DisplayName).ToArray();
             var request = _view.ChooseOpenedFile(names, selected);
             if (request is null) return;
             selected = request.Value.SelectedIndex;
@@ -237,8 +237,8 @@ internal sealed class FileActions
         switch (_fileInfoPressCount)
         {
             case 1:
-                var name = Path.GetFileName(path);
-                _speech.Speak(string.IsNullOrEmpty(name) ? path : name, string.IsNullOrEmpty(name) ? path : name);
+                var name = _player.DisplayName(path);
+                _speech.Speak(name, name);
                 break;
             case 2:
                 _speech.Speak(path, path);

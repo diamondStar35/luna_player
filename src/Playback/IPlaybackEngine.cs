@@ -1,3 +1,5 @@
+using LunaPlayer.Configuration;
+
 namespace LunaPlayer.Playback;
 
 internal enum PlaybackEndReason
@@ -36,4 +38,9 @@ internal interface IPlaybackEngine : IDisposable
     bool SetNormalization(bool enabled);
     bool SetMono(bool enabled);
     bool SetSilenceRemoval(bool enabled, string graph);
+    void SetEndBehavior(EndBehavior behavior);
+
+    /// <summary>The title the media declares for itself, from tags or a stream's metadata. Null when the
+    /// media carries none, in which case callers fall back to the file name.</summary>
+    string? MediaTitle { get; }
 }
