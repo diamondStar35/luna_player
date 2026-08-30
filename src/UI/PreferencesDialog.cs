@@ -69,8 +69,13 @@ internal sealed class PreferencesDialog : IDisposable
         _dialog.Fit();
         _dialog.MinSize = new Size(420, 260);
         _dialog.Center(onParent: true);
-        if (Window.FindWindowById(StandardId.Ok, _dialog) is Button ok)
-            ok.Click += OnAccept;
+        _dialog.Bind(WxEvents.ButtonClicked, OnAccept, StandardId.Ok);
+
+        // CreateButtonSizer makes OK the default button, which sends DM_SETDEFID to the dialog. wx dialogs
+        // are real #32770 windows on MSW, so DefDlgProc then hands the initial focus to that default button
+        // and a screen reader announces OK instead of the category tree. Claim the focus back, the same way
+        // NVDA's own settings dialog does in postInit().
+        _tree.Focus();
     }
 
     internal bool Show() => _dialog.ShowModal() == StandardId.Ok;

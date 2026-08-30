@@ -33,7 +33,7 @@ internal sealed class PlaylistInfoService
                 ? currentDuration
                 : ProbeDuration(probe, path, cancellationToken);
             durations.Add(duration);
-            report(new(index + 1, files.Count, Path.GetFileName(path)));
+            report(new(index + 1, files.Count, MediaLibrary.DisplayName(path)));
         }
 
         var totalDuration = durations.Where(value => value.HasValue).Sum(value => value!.Value);

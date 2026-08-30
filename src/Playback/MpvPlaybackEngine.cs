@@ -1,4 +1,5 @@
 using System.Globalization;
+using LunaPlayer.Configuration;
 using MpvNet;
 
 namespace LunaPlayer.Playback;
@@ -223,6 +224,19 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
         };
         if (reason.HasValue)
             Ended?.Invoke(reason.Value);
+    }
+
+    // mpv owns both halves of this: keep-open leaves a finished file loaded so it can still be seeked,
+    // and loop-file repeats it without the gap a reload would leave. The managed end-of-file handler still
+    // runs for the advance case, and as a fallback if either property is unavailable.
+    /// <summary>What mpv reports as media-title. mpv substitutes the file name when the media declares no
+    /// title, so deciding whether this is a real title is left to the caller, which knows the path.</summary>
+    public string? MediaTitle => ReadString("media-title")?.Trim() is { Length: > 0 } title ? title : null;
+
+    public void SetEndBehavior(EndBehavior behavior)
+    {
+        SetPropertySafely("keep-open", behavior == EndBehavior.None ? "yes" : "no");
+        SetPropertySafely("loop-file", behavior == EndBehavior.Loop ? "inf" : "no");
     }
 
     private void SetPropertySafely(string name, object value) => TrySetProperty(name, value);
