@@ -8,6 +8,8 @@ namespace LunaPlayer.Application;
 
 internal sealed class ApplicationController : IDisposable
 {
+    private const string ApplicationName = "Luna Player";
+
     private readonly IMainView _view;
     private readonly MediaPlayer _player;
     private readonly PlayerSettings _settings;
@@ -16,6 +18,7 @@ internal sealed class ApplicationController : IDisposable
     private readonly ActionRouter _router;
     private readonly FileActions _fileActions;
     private readonly PlaybackSelection _selection;
+    private readonly SystemMediaControls _mediaControls = new();
     private bool _shutDown;
 
     internal ApplicationController(
@@ -41,9 +44,13 @@ internal sealed class ApplicationController : IDisposable
         _player.CurrentChanged += OnCurrentChanged;
         _player.StateChanged += SyncViewState;
         _player.Ended += OnPlaybackEnded;
+        // Button presses arrive on a Windows Runtime thread, so they are posted like any other outside
+        // request rather than run where they land.
+        _mediaControls.ButtonPressed += action => _dispatcher.Post(() => HandleAction(action));
         _player.SetVolume(settings.Audio.Volume);
         _player.SetSpeed(settings.Audio.Speed);
         _player.TrackPositions(settings.Audio.SaveFilePositions);
+        _player.SetEndBehavior(settings.Audio.EndBehavior);
         _player.ConfigureSilence(settings.Silence);
         _player.SetNormalization(settings.Audio.NormalizeAudio);
         _player.SetMono(settings.Audio.MonoAudio);
@@ -60,6 +67,7 @@ internal sealed class ApplicationController : IDisposable
         _view.SetMarkState(false, false);
         _view.SetMarkedActionsEnabled(false);
         _view.SetSilenceRemovalChecked(_player.IsSilenceRemovalEnabled);
+        SyncMediaControls();
     }
 
     internal void OpenPaths(IEnumerable<string> paths)
@@ -93,6 +101,7 @@ internal sealed class ApplicationController : IDisposable
         _player.StateChanged -= SyncViewState;
         _player.Ended -= OnPlaybackEnded;
         Shutdown();
+        _mediaControls.Dispose();
     }
 
     private void HandleAction(ActionId action)
@@ -122,6 +131,26 @@ internal sealed class ApplicationController : IDisposable
         _view.SetMarkState(_player.IsCurrentMarked, _player.AreAllMarked);
         _view.SetMarkedActionsEnabled(loaded && _player.MarkedCount > 0);
         _view.SetSilenceRemovalChecked(_player.IsSilenceRemovalEnabled);
+        SyncMediaControls();
+    }
+
+    /// <summary>Publishes the current state to the Windows media overlay. Called whenever playback state
+    /// changes, and on a timer so the overlay's scrubber keeps up while a file plays.</summary>
+    internal void SyncMediaControls()
+    {
+        if (!_mediaControls.IsAvailable) return;
+        var path = _player.CurrentPath;
+        var hasMedia = !string.IsNullOrEmpty(path);
+        var index = _player.CurrentIndex;
+        _mediaControls.Update(new MediaControlsState(
+            HasMedia: hasMedia,
+            IsPlaying: hasMedia && !_player.IsPaused,
+            Title: _player.CurrentDisplayName ?? string.Empty,
+            Artist: ApplicationName,
+            Duration: hasMedia ? _player.Duration : null,
+            Position: hasMedia ? _player.Elapsed : null,
+            CanGoNext: hasMedia && index >= 0 && index < _player.Count - 1,
+            CanGoPrevious: hasMedia && index > 0));
     }
 
     private void OnPlaybackEnded(PlaybackEndReason reason)
@@ -131,9 +160,11 @@ internal sealed class ApplicationController : IDisposable
     {
         if (_shutDown || reason is not (PlaybackEndReason.EndOfFile or PlaybackEndReason.Error))
             return;
+        if (_player.CurrentPath is null)
+            return;
         if (_player.IsRepeatFileEnabled)
         {
-            _player.Reload();
+            _player.RestartCurrent();
             return;
         }
         switch (_settings.Audio.EndBehavior)
@@ -143,8 +174,9 @@ internal sealed class ApplicationController : IDisposable
                     _player.Stop();
                 break;
             case EndBehavior.Loop:
-                _player.Reload();
+                _player.RestartCurrent();
                 break;
+            // EndBehavior.None keeps the finished file loaded; mpv's keep-open holds it at the end.
         }
     }
 }

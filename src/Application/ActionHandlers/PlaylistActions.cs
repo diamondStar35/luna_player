@@ -92,10 +92,7 @@ internal sealed class PlaylistActions
         if (!moved)
             return;
         _view.SetPlaying(true);
-        if (announce && _settings.General.SpeakFileOnNavigation && _player.CurrentPath is string path)
-        {
-            var name = Path.GetFileName(path);
+        if (announce && _settings.General.SpeakFileOnNavigation && _player.CurrentDisplayName is string name)
             _speech.Speak(name, name);
-        }
     }
 }

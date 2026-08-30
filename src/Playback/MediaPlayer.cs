@@ -97,6 +97,12 @@ internal sealed class MediaPlayer : IDisposable
     }
 
     internal bool Reload() => LoadCurrent();
+
+    /// <summary>Reloads the current file from the very beginning, ignoring any remembered position. This is
+    /// what repeating and looping need: the file has just finished, so its saved position is the end.</summary>
+    internal bool RestartCurrent() => LoadCurrent(0, paused: false);
+
+    internal void SetEndBehavior(EndBehavior behavior) => _engine.SetEndBehavior(behavior);
     internal bool TogglePause() => _engine.TogglePause();
     internal void Play() => _engine.Play();
     internal void Seek(double seconds) => _engine.SeekRelative(seconds);
@@ -310,6 +316,31 @@ internal sealed class MediaPlayer : IDisposable
         CurrentChanged?.Invoke();
         StateChanged?.Invoke();
         return true;
+    }
+
+    /// <summary>The name to show for a file: its media title when it declares one, otherwise the file name.
+    /// Mirrors the Python player, which shows a title where it knows one and the file name otherwise.</summary>
+    internal string DisplayName(string path)
+    {
+        // mpv loads asynchronously, so the title is not there yet when the file is opened. Re-read it for
+        // whatever is playing whenever a name is asked for, and keep it: once a file has been played its
+        // title stays available for the playlist, which names entries that are not playing.
+        if (string.Equals(path, CurrentPath, StringComparison.Ordinal))
+            RememberTitle(path);
+        return _playlist.GetTitle(path) ?? MediaLibrary.DisplayName(path);
+    }
+
+    /// <summary>The display name of whatever is playing, or null when nothing is.</summary>
+    internal string? CurrentDisplayName => CurrentPath is string path ? DisplayName(path) : null;
+
+    // mpv only knows a title once the file is loaded, so it is read here and kept per path: the playlist
+    // dialog names every entry, not just the one playing.
+    private void RememberTitle(string path)
+    {
+        var title = _engine.MediaTitle;
+        if (title is not null && string.Equals(title, MediaLibrary.DisplayName(path), StringComparison.OrdinalIgnoreCase))
+            title = null;
+        _playlist.SetTitle(path, title);
     }
 
     private void OnEnded(PlaybackEndReason reason)
