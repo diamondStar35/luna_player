@@ -10,21 +10,43 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <NoWarn>$(NoWarn);IL3050</NoWarn>
     <BaseOutputPath>$(BaseIntermediateOutputPath)managed\</BaseOutputPath>
     <NativeAotOutputDirectory>$(MSBuildProjectDirectory)\bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</NativeAotOutputDirectory>
     <PublishDir>$(NativeAotOutputDirectory)</PublishDir>
     <RunCommand>$(NativeAotOutputDirectory)LunaPlayer.exe</RunCommand>
     <RunWorkingDirectory>$(NativeAotOutputDirectory)</RunWorkingDirectory>
+    <ShouldUnsetParentConfigurationAndPlatform>false</ShouldUnsetParentConfigurationAndPlatform>
   </PropertyGroup>
+
+  <ItemDefinitionGroup>
+    <ProjectReference>
+      <SetConfiguration>Configuration=Release</SetConfiguration>
+    </ProjectReference>
+  </ItemDefinitionGroup>
 
   <ItemGroup>
     <Compile Include="Program.cs" />
     <Compile Include="NativeLibraryBootstrap.cs" />
+    <Compile Include="Mpv.cs" />
+    <Compile Include="Accessibility\**\*.cs" />
+    <Compile Include="Actions\**\*.cs" />
+    <Compile Include="Application\**\*.cs" />
+    <Compile Include="Bookmarks\**\*.cs" />
+    <Compile Include="Configuration\**\*.cs" />
+    <Compile Include="Media\**\*.cs" />
+    <Compile Include="Playback\**\*.cs" />
+    <Compile Include="Playlist\**\*.cs" />
     <Compile Include="UI\**\*.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\third-party\WxSharp\src\WxSharp\WxSharp.csproj" />
+    <ProjectReference Include="..\third-party\WxSharp\src\WxSharp\WxSharp.csproj">
+      <AdditionalProperties>Configuration=$(Configuration)</AdditionalProperties>
+    </ProjectReference>
+    <ProjectReference Include="Speech\PrismSharp.csproj">
+      <AdditionalProperties>Configuration=$(Configuration)</AdditionalProperties>
+    </ProjectReference>
   </ItemGroup>
 
   <ItemGroup>

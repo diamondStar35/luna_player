@@ -1,4 +1,4 @@
-using LunaPlayer.UI;
+using LunaPlayer.Application;
 using WxSharp;
 
 namespace LunaPlayer;
@@ -6,14 +6,28 @@ namespace LunaPlayer;
 internal static class Program
 {
     [STAThread]
-    private static int Main()
+    private static int Main(string[] args)
     {
+        var singleInstance = new SingleInstanceService();
+        if (!singleInstance.IsPrimary)
+        {
+            using (singleInstance)
+                singleInstance.ForwardPaths(args);
+            return 0;
+        }
+
         NativeLibraryBootstrap.Initialize();
 
-        using var app = new App();
-        using var frame = MainFrame.Create();
-
-        frame.Show();
-        return app.MainLoop();
+        try
+        {
+            using var app = new App();
+            using var host = new ApplicationHost(singleInstance, args);
+            host.Show();
+            return app.MainLoop();
+        }
+        finally
+        {
+            singleInstance.Dispose();
+        }
     }
 }
