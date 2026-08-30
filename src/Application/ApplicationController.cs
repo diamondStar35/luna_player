@@ -1,0 +1,150 @@
+using LunaPlayer.Actions;
+using LunaPlayer.Application.ActionHandlers;
+using LunaPlayer.Configuration;
+using LunaPlayer.Playback;
+using LunaPlayer.UI;
+
+namespace LunaPlayer.Application;
+
+internal sealed class ApplicationController : IDisposable
+{
+    private readonly IMainView _view;
+    private readonly MediaPlayer _player;
+    private readonly PlayerSettings _settings;
+    private readonly SettingsStore _settingsStore;
+    private readonly IApplicationDispatcher _dispatcher;
+    private readonly ActionRouter _router;
+    private readonly FileActions _fileActions;
+    private readonly PlaybackSelection _selection;
+    private bool _shutDown;
+
+    internal ApplicationController(
+        IMainView view,
+        MediaPlayer player,
+        PlayerSettings settings,
+        SettingsStore settingsStore,
+        IApplicationDispatcher dispatcher,
+        ActionRouter router,
+        FileActions fileActions,
+        PlaybackSelection selection)
+    {
+        _view = view;
+        _player = player;
+        _settings = settings;
+        _settingsStore = settingsStore;
+        _dispatcher = dispatcher;
+        _router = router;
+        _fileActions = fileActions;
+        _selection = selection;
+        _view.ActionRequested += HandleAction;
+        _view.CloseRequested += Shutdown;
+        _player.CurrentChanged += OnCurrentChanged;
+        _player.StateChanged += SyncViewState;
+        _player.Ended += OnPlaybackEnded;
+        _player.SetVolume(settings.Audio.Volume);
+        _player.SetSpeed(settings.Audio.Speed);
+        _player.TrackPositions(settings.Audio.SaveFilePositions);
+        _player.ConfigureSilence(settings.Silence);
+        _player.SetNormalization(settings.Audio.NormalizeAudio);
+        _player.SetMono(settings.Audio.MonoAudio);
+        _player.SetSilenceRemoval(settings.Silence.Enabled);
+        settings.Audio.NormalizeAudio = _player.IsNormalizationEnabled;
+        settings.Audio.MonoAudio = _player.IsMonoEnabled;
+        settings.Silence.Enabled = _player.IsSilenceRemovalEnabled;
+        if (!string.IsNullOrWhiteSpace(settings.Audio.Device))
+            _player.SetAudioDevice(settings.Audio.Device);
+        _view.SetMediaLoaded(false);
+        _view.SetPlaying(false);
+        _view.SetEditState(false, false);
+        _view.SetBookmarkState(false);
+        _view.SetMarkState(false, false);
+        _view.SetMarkedActionsEnabled(false);
+        _view.SetSilenceRemovalChecked(_player.IsSilenceRemovalEnabled);
+    }
+
+    internal void OpenPaths(IEnumerable<string> paths)
+    {
+        if (!_shutDown)
+            _fileActions.OpenPaths(paths);
+    }
+
+    internal void Shutdown()
+    {
+        if (_shutDown)
+            return;
+        _shutDown = true;
+        _settings.Audio.Volume = _player.Volume;
+        _settings.Audio.Speed = _player.Speed;
+        _player.SavePosition();
+        if (_settings.General.RememberLastPosition && _player.CurrentPath is string path && File.Exists(path))
+        {
+            _settings.Playback.LastFile = path;
+            _settings.Playback.LastPosition = Math.Max(0, _player.Elapsed ?? 0);
+        }
+        _settingsStore.SaveSession(_settings);
+        _player.Stop();
+    }
+
+    public void Dispose()
+    {
+        _view.ActionRequested -= HandleAction;
+        _view.CloseRequested -= Shutdown;
+        _player.CurrentChanged -= OnCurrentChanged;
+        _player.StateChanged -= SyncViewState;
+        _player.Ended -= OnPlaybackEnded;
+        Shutdown();
+    }
+
+    private void HandleAction(ActionId action)
+    {
+        if (_shutDown)
+            return;
+        if (!_router.Execute(action))
+            throw new InvalidOperationException($"No handler is registered for {action}.");
+    }
+
+    private void OnCurrentChanged()
+    {
+        if (_shutDown)
+            return;
+        _selection.Reset();
+    }
+
+    private void SyncViewState()
+    {
+        if (_shutDown) return;
+        var loaded = _player.CurrentPath is not null;
+        var local = _player.CurrentPath is string path && File.Exists(path);
+        _view.SetMediaLoaded(loaded);
+        _view.SetPlaying(loaded && !_player.IsPaused);
+        _view.SetEditState(local, loaded);
+        _view.SetBookmarkState(local);
+        _view.SetMarkState(_player.IsCurrentMarked, _player.AreAllMarked);
+        _view.SetMarkedActionsEnabled(loaded && _player.MarkedCount > 0);
+        _view.SetSilenceRemovalChecked(_player.IsSilenceRemovalEnabled);
+    }
+
+    private void OnPlaybackEnded(PlaybackEndReason reason)
+        => _dispatcher.Post(() => HandlePlaybackEnded(reason));
+
+    private void HandlePlaybackEnded(PlaybackEndReason reason)
+    {
+        if (_shutDown || reason is not (PlaybackEndReason.EndOfFile or PlaybackEndReason.Error))
+            return;
+        if (_player.IsRepeatFileEnabled)
+        {
+            _player.Reload();
+            return;
+        }
+        switch (_settings.Audio.EndBehavior)
+        {
+            case EndBehavior.Advance:
+                if (!_player.Next(_settings.Audio.WrapPlaylist))
+                    _player.Stop();
+                break;
+            case EndBehavior.Loop:
+                _player.Reload();
+                break;
+        }
+    }
+}
