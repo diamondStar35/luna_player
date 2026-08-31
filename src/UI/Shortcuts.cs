@@ -1,37 +1,62 @@
+using System.Runtime.InteropServices;
 using LunaPlayer.Actions;
 using LunaPlayer.Configuration;
 using WxSharp;
 
 namespace LunaPlayer.UI;
 
+/// <summary>Which set of bindings a <see cref="ShortcutPreferences"/> page edits.</summary>
+internal enum ShortcutScope
+{
+    /// <summary>Shortcuts that work while the player has the focus. Two slots per action.</summary>
+    Local,
+    /// <summary>Shortcuts registered with the system, which work from any application. One slot per action.
+    /// </summary>
+    Global,
+}
+
 internal sealed class ShortcutPreferences : Preferences
 {
     private readonly ShortcutSettings _settings;
-    private readonly ActionDefinition[] _actions = [.. ActionRegistry.All];
+    private readonly ShortcutScope _scope;
+    private readonly GlobalShortcuts? _globals;
+    private readonly ActionDefinition[] _actions;
+    private readonly HashSet<ActionId> _editable;
     private readonly Dictionary<ActionId, Shortcut> _primary = [];
     private readonly Dictionary<ActionId, Shortcut> _secondary = [];
     private readonly ListCtrl _list;
     private readonly Button _editPrimary;
-    private readonly Button _editSecondary;
+    private readonly Button? _editSecondary;
     private readonly Button _reset;
 
-    internal ShortcutPreferences(Window parent, ShortcutSettings settings)
-        : base(new Panel(parent), "Keyboard shortcuts. Select an action, then edit its primary or secondary local shortcut.")
+    /// <param name="globals">The live hot key registrations, released while the user is pressing a
+    /// combination. Without that, a combination already in use fires its action instead of being recorded.
+    /// </param>
+    internal ShortcutPreferences(Window parent, ShortcutSettings settings, ShortcutScope scope, GlobalShortcuts? globals)
+        : base(new Panel(parent), scope == ShortcutScope.Local
+            ? "Keyboard shortcuts. Select an action, then edit its primary or secondary local shortcut."
+            : "System-wide shortcuts. Select an action, then edit the combination that triggers it from any application.")
     {
         _settings = settings;
+        _scope = scope;
+        _globals = globals;
+        _actions = [.. scope == ShortcutScope.Local ? ActionRegistry.All : GlobalActionDefinitions.All];
+        _editable = [.. _actions.Select(action => action.Id)];
         var panel = (Panel)Window;
-        var heading = new StaticText(panel, label: "Local Shortcuts");
+        var heading = new StaticText(panel, label: scope == ShortcutScope.Local ? "Local Shortcuts" : "Global Shortcuts");
         _list = new ListCtrl(panel, style: ListCtrlStyle.Report | ListCtrlStyle.SingleSelection);
         _list.InsertColumn(0, "Action", 210);
-        _list.InsertColumn(1, "Primary Shortcut", 125);
-        _list.InsertColumn(2, "Secondary Shortcut", 135);
-        _editPrimary = new Button(panel, label: "Edit Primary Shortcut");
-        _editSecondary = new Button(panel, label: "Edit Secondary Shortcut");
+        _list.InsertColumn(1, HasSecondary ? "Primary Shortcut" : "Shortcut", 125);
+        if (HasSecondary)
+            _list.InsertColumn(2, "Secondary Shortcut", 135);
+        _editPrimary = new Button(panel, label: HasSecondary ? "Edit Primary Shortcut" : "Edit Shortcut");
+        _editSecondary = HasSecondary ? new Button(panel, label: "Edit Secondary Shortcut") : null;
         _reset = new Button(panel, label: "Reset to Defaults");
 
         var buttons = new BoxSizer(Orientation.Horizontal);
         buttons.Add(_editPrimary, flags: SizerFlags.BorderRight, border: 6);
-        buttons.Add(_editSecondary, flags: SizerFlags.BorderRight, border: 6);
+        if (_editSecondary is not null)
+            buttons.Add(_editSecondary, flags: SizerFlags.BorderRight, border: 6);
         buttons.Add(_reset);
         var sizer = new BoxSizer(Orientation.Vertical);
         sizer.Add(heading, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderTop, border: 8);
@@ -43,17 +68,27 @@ internal sealed class ShortcutPreferences : Preferences
         _list.ItemDeselected += (_, _) => UpdateButtons();
         _list.ItemActivated += (_, _) => Edit(ShortcutSlot.Primary);
         _editPrimary.Click += (_, _) => Edit(ShortcutSlot.Primary);
-        _editSecondary.Click += (_, _) => Edit(ShortcutSlot.Secondary);
+        if (_editSecondary is not null)
+            _editSecondary.Click += (_, _) => Edit(ShortcutSlot.Secondary);
         _reset.Click += (_, _) => Reset();
         Refresh();
     }
+
+    private bool HasSecondary => _scope == ShortcutScope.Local;
 
     public override string GetContextHelp(Window? focused) => string.Empty;
 
     public override void Apply()
     {
-        _settings.Primary = Overrides(_primary, primary: true);
-        _settings.Secondary = Overrides(_secondary, primary: false);
+        if (_scope == ShortcutScope.Local)
+        {
+            _settings.Primary = Overrides(_primary, primary: true);
+            _settings.Secondary = Overrides(_secondary, primary: false);
+        }
+        else
+        {
+            _settings.Global = Overrides(_primary, primary: true);
+        }
     }
 
     public override void Refresh()
@@ -65,10 +100,13 @@ internal sealed class ShortcutPreferences : Preferences
             if (action.PrimaryShortcut is Shortcut primary) _primary[action.Id] = primary;
             if (action.SecondaryShortcut is Shortcut secondary) _secondary[action.Id] = secondary;
         }
-        foreach (var pair in _settings.Primary)
-            if (_primary.ContainsKey(pair.Key)) _primary[pair.Key] = pair.Value;
-        foreach (var pair in _settings.Secondary)
-            if (_secondary.ContainsKey(pair.Key)) _secondary[pair.Key] = pair.Value;
+        // Keyed on the page's own action set rather than on the loaded defaults: an action that ships without
+        // a shortcut can still have been given one, and that binding has to come back.
+        foreach (var pair in _scope == ShortcutScope.Local ? _settings.Primary : _settings.Global)
+            if (_editable.Contains(pair.Key)) _primary[pair.Key] = pair.Value;
+        if (HasSecondary)
+            foreach (var pair in _settings.Secondary)
+                if (_secondary.ContainsKey(pair.Key)) _secondary[pair.Key] = pair.Value;
         Rebuild();
     }
 
@@ -77,9 +115,8 @@ internal sealed class ShortcutPreferences : Preferences
         var index = _list.SelectedIndex;
         if (index < 0 || index >= _actions.Length) return;
         var action = _actions[(int)index];
-        if (slot == ShortcutSlot.Secondary && action.SecondaryShortcut is null) return;
-        using var dialog = new ShortcutCapture(Window);
-        var shortcut = dialog.Show();
+        if (slot == ShortcutSlot.Secondary && (!HasSecondary || action.SecondaryShortcut is null)) return;
+        var shortcut = Capture();
         if (shortcut is null) return;
         if (HasConflict(action.Id, slot, shortcut.Value))
         {
@@ -91,13 +128,49 @@ internal sealed class ShortcutPreferences : Preferences
         Rebuild(index);
     }
 
+    private Shortcut? Capture()
+    {
+        using var dialog = new ShortcutCapture(Window, allowWin: _scope == ShortcutScope.Global);
+        // Hot keys are exclusive, so any that are live would swallow the key press instead of it being recorded.
+        _globals?.Suspend();
+        try
+        {
+            return dialog.Show();
+        }
+        finally
+        {
+            _globals?.Resume();
+        }
+    }
+
     private bool HasConflict(ActionId action, ShortcutSlot slot, Shortcut shortcut)
     {
         foreach (var pair in _primary)
             if (!(pair.Key == action && slot == ShortcutSlot.Primary) && pair.Value == shortcut) return true;
         foreach (var pair in _secondary)
             if (!(pair.Key == action && slot == ShortcutSlot.Secondary) && pair.Value == shortcut) return true;
-        return false;
+        // A collision with the other scope matters just as much: a global bound to a local combination would
+        // run the action twice whenever the player has the focus.
+        return OtherScope().Contains(shortcut);
+    }
+
+    /// <summary>The shortcuts currently in force on the page this one is not editing.</summary>
+    private HashSet<Shortcut> OtherScope()
+    {
+        var actions = _scope == ShortcutScope.Local ? GlobalActionDefinitions.All : ActionRegistry.All;
+        var effective = new Dictionary<ActionId, Shortcut>();
+        var secondary = new Dictionary<ActionId, Shortcut>();
+        foreach (var action in actions)
+        {
+            if (action.PrimaryShortcut is Shortcut primary) effective[action.Id] = primary;
+            if (action.SecondaryShortcut is Shortcut value) secondary[action.Id] = value;
+        }
+        foreach (var pair in _scope == ShortcutScope.Local ? _settings.Global : _settings.Primary)
+            if (effective.ContainsKey(pair.Key)) effective[pair.Key] = pair.Value;
+        if (_scope == ShortcutScope.Global)
+            foreach (var pair in _settings.Secondary)
+                if (secondary.ContainsKey(pair.Key)) secondary[pair.Key] = pair.Value;
+        return [.. effective.Values, .. secondary.Values];
     }
 
     private void Reset()
@@ -123,7 +196,8 @@ internal sealed class ShortcutPreferences : Preferences
         {
             var row = _list.AddItem(action.Label);
             _list.SetItem(row, 1, _primary.TryGetValue(action.Id, out var primary) ? primary.ToDisplayString() : string.Empty);
-            _list.SetItem(row, 2, _secondary.TryGetValue(action.Id, out var secondary) ? secondary.ToDisplayString() : string.Empty);
+            if (HasSecondary)
+                _list.SetItem(row, 2, _secondary.TryGetValue(action.Id, out var secondary) ? secondary.ToDisplayString() : string.Empty);
         }
         if (selected >= 0 && selected < _actions.Length)
         {
@@ -139,15 +213,20 @@ internal sealed class ShortcutPreferences : Preferences
     {
         var index = _list.SelectedIndex;
         _editPrimary.Enabled = index >= 0;
-        _editSecondary.Enabled = index >= 0 && index < _actions.Length && _actions[(int)index].SecondaryShortcut is not null;
+        if (_editSecondary is not null)
+            _editSecondary.Enabled = index >= 0 && index < _actions.Length && _actions[(int)index].SecondaryShortcut is not null;
         _reset.Enabled = HasChangesFromDefaults();
     }
 
+    /// <summary>Whether anything on the page differs from what the player ships with - a rebinding, a shortcut
+    /// added to an action that has none by default, or one taken away. This is what "Reset to Defaults" has to
+    /// offer to undo, so it decides whether that button is available.</summary>
     private bool HasChangesFromDefaults()
-        => _actions.Any(action => action.PrimaryShortcut is Shortcut primary
-                && (!_primary.TryGetValue(action.Id, out var current) || current != primary))
-            || _actions.Any(action => action.SecondaryShortcut is Shortcut secondary
-                && (!_secondary.TryGetValue(action.Id, out var current) || current != secondary));
+        => _actions.Any(action => Current(_primary, action.Id) != action.PrimaryShortcut)
+            || (HasSecondary && _actions.Any(action => Current(_secondary, action.Id) != action.SecondaryShortcut));
+
+    private static Shortcut? Current(IReadOnlyDictionary<ActionId, Shortcut> values, ActionId action)
+        => values.TryGetValue(action, out var value) ? value : null;
 
     private Dictionary<ActionId, Shortcut> Overrides(IReadOnlyDictionary<ActionId, Shortcut> values, bool primary)
     {
@@ -155,21 +234,30 @@ internal sealed class ShortcutPreferences : Preferences
         foreach (var action in _actions)
         {
             var defaultValue = primary ? action.PrimaryShortcut : action.SecondaryShortcut;
-            if (defaultValue is null || !values.TryGetValue(action.Id, out var current) || current == defaultValue.Value) continue;
+            // A secondary slot only exists where the action defines one; a primary binding is storable for
+            // every action, so one given to an action that ships without a shortcut is a delta like any other.
+            if (!primary && defaultValue is null) continue;
+            if (!values.TryGetValue(action.Id, out var current) || current == defaultValue) continue;
             result[action.Id] = current;
         }
         return result;
     }
 }
 
-internal sealed class ShortcutCapture : IDisposable
+internal sealed partial class ShortcutCapture : IDisposable
 {
     private const int AcceptId = 17031;
+    private const int VirtualKeyLeftWindows = 0x5B;
+    private const int VirtualKeyRightWindows = 0x5C;
     private readonly Dialog _dialog;
+    private readonly bool _allowWin;
     private Shortcut? _shortcut;
 
-    internal ShortcutCapture(Window parent)
+    /// <param name="allowWin">Whether the Windows key counts as a modifier. Off for a local shortcut, which
+    /// cannot use it: an accelerator table has no way to express that modifier.</param>
+    internal ShortcutCapture(Window parent, bool allowWin = false)
     {
+        _allowWin = allowWin;
         _dialog = new Dialog(parent, title: "Set Shortcut");
         var label = new StaticText(_dialog, label: "Press the desired shortcut. Escape cancels.");
         var sizer = new BoxSizer(Orientation.Vertical);
@@ -190,28 +278,23 @@ internal sealed class ShortcutCapture : IDisposable
             _dialog.EndModal(StandardId.Cancel);
             return;
         }
-        var key = KeyName(args);
+        var key = ShortcutKeys.NameOf(args.Code, args.KeyCode);
         if (key is null) return;
         var modifiers = ShortcutModifiers.None;
         if (args.Control) modifiers |= ShortcutModifiers.Control;
         if (args.Shift) modifiers |= ShortcutModifiers.Shift;
         if (args.Alt) modifiers |= ShortcutModifiers.Alt;
+        if (_allowWin && IsWindowsKeyDown()) modifiers |= ShortcutModifiers.Win;
         _shortcut = new Shortcut(key, modifiers);
         _dialog.EndModal(AcceptId);
     }
 
-    private static string? KeyName(KeyEventArgs args)
-    {
-        if (args.Code is >= Key.F1 and <= Key.F24) return $"f{(int)args.Code - (int)Key.F1 + 1}";
-        var named = args.Code switch
-        {
-            Key.Space => "space", Key.Tab => "tab", Key.Enter or Key.NumpadEnter => "enter",
-            Key.Left => "left", Key.Right => "right", Key.Up => "up", Key.Down => "down",
-            Key.PageUp => "page_up", Key.PageDown => "page_down", Key.Home => "home", Key.End => "end",
-            Key.Back => "backspace", Key.Delete => "delete", _ => null,
-        };
-        if (named is not null) return named;
-        var code = args.KeyCode;
-        return code is >= 32 and <= 126 && code is not 127 ? char.ToLowerInvariant((char)code).ToString() : null;
-    }
+    /// <summary>wxMSW fills only shift, control and alt on a key event, so the Windows key is invisible to it
+    /// and has to be read from the platform. Asked once, as a key arrives - this is not polling.</summary>
+    private static bool IsWindowsKeyDown()
+        => (GetAsyncKeyState(VirtualKeyLeftWindows) & 0x8000) != 0
+            || (GetAsyncKeyState(VirtualKeyRightWindows) & 0x8000) != 0;
+
+    [LibraryImport("user32.dll")]
+    private static partial short GetAsyncKeyState(int virtualKey);
 }

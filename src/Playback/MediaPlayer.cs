@@ -51,6 +51,14 @@ internal sealed class MediaPlayer : IDisposable
         return _playlist.OpenFiles(files, preferredPath, startPosition) && LoadCurrent();
     }
 
+    /// <summary>Opens a network stream. Unlike a file it is appended to the playlist rather than replacing
+    /// it, matching the Python player's open_stream.</summary>
+    internal bool OpenStream(string url)
+    {
+        SavePosition();
+        return _playlist.Append(url, jump: true) && LoadCurrent();
+    }
+
     internal bool OpenFolder(string folderPath)
     {
         var files = MediaLibrary.CollectFiles(folderPath);

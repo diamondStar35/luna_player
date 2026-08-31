@@ -35,6 +35,7 @@ internal sealed class FileActions
         _speech = speech;
         _clipboard = clipboard;
         router.Register(ActionId.OpenFile, OpenFileFromDialog);
+        router.Register(ActionId.OpenLink, OpenLink);
         router.Register(ActionId.OpenFolder, OpenFolderFromDialog);
         router.Register(ActionId.OpenContainingFolder, OpenContainingFolder);
         router.Register(ActionId.OpenFileProperties, OpenFileProperties);
@@ -103,6 +104,22 @@ internal sealed class FileActions
             ? Path.GetDirectoryName(file.Path) ?? string.Empty
             : file.Directory;
         OpenFileWithConfiguredMode(file.Path);
+    }
+
+    private void OpenLink()
+    {
+        var link = _view.PromptText("Enter link to play.", "Open Link");
+        if (link is null)
+            return;
+        // An empty entry is rejected the same way as a bad one, as the Python player does.
+        var url = link.Trim();
+        if (!MediaLibrary.IsHttpUrl(url))
+        {
+            _view.ShowError("The link must start with http or https.", "Invalid link");
+            return;
+        }
+        if (!_player.OpenStream(url))
+            _view.ShowError("Could not open the link.", "Error");
     }
 
     private void OpenFolderFromDialog()

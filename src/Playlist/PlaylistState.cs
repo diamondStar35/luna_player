@@ -46,6 +46,27 @@ internal sealed class PlaylistState
         return true;
     }
 
+    /// <summary>Adds one entry to the end of the list, keeping the current entry and the marks. Used for a
+    /// network stream, which is opened on top of whatever is already loaded rather than replacing it.
+    /// </summary>
+    /// <param name="jump">Whether the new entry becomes the current one.</param>
+    internal bool Append(string path, bool jump)
+    {
+        if (string.IsNullOrWhiteSpace(path))
+            return false;
+        _files.Add(path);
+        if (jump)
+        {
+            _currentIndex = _files.Count - 1;
+            _pendingStart = null;
+        }
+        if (IsShuffleEnabled)
+            RebuildShuffleOrder();
+        else
+            SyncShufflePosition();
+        return true;
+    }
+
     /// <summary>Remembers the media title for a file, as the player reads it from the media itself. An
     /// empty or whitespace title is treated as no title, so callers fall back to the file name.</summary>
     internal void SetTitle(string path, string? title)
@@ -300,6 +321,10 @@ internal sealed class PlaylistState
 
     private static string NormalizeKey(string path)
     {
+        // A URL is its own key: GetFullPath would resolve it against the working directory and produce a
+        // path that matches nothing.
+        if (Media.MediaLibrary.IsHttpUrl(path))
+            return path;
         try
         {
             return Path.GetFullPath(path);

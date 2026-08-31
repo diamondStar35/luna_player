@@ -19,6 +19,7 @@ internal sealed class SettingsActions
         FileAssociations associations,
         MediaPlayer player,
         ShortcutManager shortcuts,
+        ShortcutManager globalShortcuts,
         ApplicationPaths paths,
         ISpeechOutput speech)
     {
@@ -39,6 +40,7 @@ internal sealed class SettingsActions
             settings.Silence.Enabled = player.IsSilenceRemovalEnabled;
             shortcuts.Apply(settings.Shortcuts.Primary, settings.Shortcuts.Secondary);
             view.ApplyShortcuts(shortcuts);
+            GlobalShortcutBinder.Apply(view, globalShortcuts, settings, speech: null);
             view.SetSilenceRemovalChecked(player.IsSilenceRemovalEnabled);
         }
 

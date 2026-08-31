@@ -19,6 +19,7 @@ internal static class MediaActionDefinitions
         var actions = new List<ActionDefinition>
         {
             new(ActionId.OpenFile, "Open File", new("o", ShortcutModifiers.Control)),
+            new(ActionId.OpenLink, "Open Link", new("l", ShortcutModifiers.Control)),
             new(ActionId.OpenFolder, "Open Folder", new("o", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
             new(ActionId.OpenContainingFolder, "Open Containing Folder", new("f", ShortcutModifiers.Control)),
             new(ActionId.OpenFileProperties, "File Properties", new("enter", ShortcutModifiers.Alt)),
