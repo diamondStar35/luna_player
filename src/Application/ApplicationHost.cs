@@ -15,6 +15,7 @@ internal sealed class ApplicationHost : IDisposable
     private readonly SettingsStore _settingsStore;
     private readonly PlayerSettings _settings;
     private readonly ShortcutManager _shortcuts;
+    private readonly ShortcutManager _globalShortcuts;
     private readonly IApplicationDispatcher _dispatcher;
     private readonly IMainView _view;
     private readonly ISpeechOutput _speech;
@@ -32,6 +33,7 @@ internal sealed class ApplicationHost : IDisposable
         _settings = _settingsStore.Load();
         _shortcuts = new ShortcutManager(ActionRegistry.All);
         _shortcuts.Apply(_settings.Shortcuts.Primary, _settings.Shortcuts.Secondary);
+        _globalShortcuts = new ShortcutManager(GlobalActionDefinitions.All);
         _dispatcher = new WxDispatcher();
         _view = new MainFrame(_shortcuts, ActionRegistry.All);
         _speech = new SpeechOutput(_settings);
@@ -48,7 +50,8 @@ internal sealed class ApplicationHost : IDisposable
         _ = new BookmarkActions(router, _view, _player, _speech, bookmarks);
         _ = new DeviceActions(router, _view, _player, _settings, _settingsStore, _speech);
         _ = new SettingsActions(router, _view, _settings, _settingsStore,
-            new BackupService(_settingsStore, bookmarks), new FileAssociations(), _player, _shortcuts, paths, _speech);
+            new BackupService(_settingsStore, bookmarks), new FileAssociations(), _player, _shortcuts,
+            _globalShortcuts, paths, _speech);
         router.EnsureComplete(ActionRegistry.All);
         _controller = new ApplicationController(
             _view,
@@ -63,6 +66,8 @@ internal sealed class ApplicationHost : IDisposable
         // The overlay's scrubber has to follow playback, which raises no event of its own.
         _mediaControlsTick = _dispatcher.Repeat(TimeSpan.FromSeconds(1), _controller.SyncMediaControls);
         _singleInstance.StartListening(_pathQueue.Enqueue);
+        // Posted rather than run here so a refusal is reported over a window the user can already see.
+        _dispatcher.Post(() => GlobalShortcutBinder.Apply(_view, _globalShortcuts, _settings, _speech));
 
         if (initialPaths.Count > 0)
             _dispatcher.Post(() => _controller.OpenPaths(initialPaths));

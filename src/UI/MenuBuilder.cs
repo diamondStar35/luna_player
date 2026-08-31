@@ -28,6 +28,7 @@ internal static class MainMenuBuilder
     {
         var fileMenu = new Menu();
         fileMenu.Append(commandIds[ActionId.OpenFile], Label("Open File...", ActionId.OpenFile, shortcuts));
+        fileMenu.Append(commandIds[ActionId.OpenLink], Label("Open Link...", ActionId.OpenLink, shortcuts));
         fileMenu.Append(commandIds[ActionId.OpenFolder], Label("Open Folder...", ActionId.OpenFolder, shortcuts));
         var localFileItems = new List<MenuItem>();
         var mediaFileItems = new List<MenuItem>();

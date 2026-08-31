@@ -10,6 +10,10 @@ internal enum ShortcutModifiers
     Control = 1,
     Shift = 2,
     Alt = 4,
+    /// <summary>The Windows key. Only a global shortcut can use it: an accelerator table has no way to
+    /// express this modifier, so a local binding carrying it is skipped. The value matches
+    /// <see cref="WxSharp.AcceleratorModifiers.Win"/>.</summary>
+    Win = 8,
 }
 
 internal enum ShortcutSlot
@@ -29,6 +33,8 @@ internal readonly record struct Shortcut(string Key, ShortcutModifiers Modifiers
             parts.Add("Shift");
         if ((Modifiers & ShortcutModifiers.Alt) != 0)
             parts.Add("Alt");
+        if ((Modifiers & ShortcutModifiers.Win) != 0)
+            parts.Add("Win");
         parts.Add(FormatKey(Key));
         return string.Join('+', parts);
     }
@@ -58,6 +64,7 @@ internal readonly record struct ShortcutBinding(ActionId Action, ShortcutSlot Sl
 
 internal sealed class ShortcutManager
 {
+    private readonly HashSet<ActionId> _actions = [];
     private readonly Dictionary<ActionId, Shortcut> _defaultPrimary = [];
     private readonly Dictionary<ActionId, Shortcut> _defaultSecondary = [];
     private readonly Dictionary<ActionId, Shortcut> _primary = [];
@@ -67,6 +74,7 @@ internal sealed class ShortcutManager
     {
         foreach (var action in actions)
         {
+            _actions.Add(action.Id);
             if (action.PrimaryShortcut is Shortcut primary)
                 _defaultPrimary[action.Id] = _primary[action.Id] = primary;
             if (action.SecondaryShortcut is Shortcut secondary)
@@ -106,8 +114,11 @@ internal sealed class ShortcutManager
         foreach (var pair in _defaultPrimary) _primary[pair.Key] = pair.Value;
         foreach (var pair in _defaultSecondary) _secondary[pair.Key] = pair.Value;
         var occupied = new HashSet<Shortcut>(_primary.Values.Concat(_secondary.Values));
-        ApplyOverrides(primary, _primary, _defaultPrimary, occupied);
-        ApplyOverrides(secondary, _secondary, _defaultSecondary, occupied);
+        // The primary slot exists for every action, including the ones that ship without a shortcut; the
+        // secondary slot only for the actions that define one, which is what the preferences page lets the
+        // user edit.
+        ApplyOverrides(primary, _primary, _actions, occupied);
+        ApplyOverrides(secondary, _secondary, _defaultSecondary.Keys, occupied);
     }
 
     internal Dictionary<ActionId, Shortcut> PrimaryOverrides()
@@ -126,19 +137,24 @@ internal sealed class ShortcutManager
         return result;
     }
 
+    /// <param name="allowed">The actions this slot can hold a binding for. An override naming anything else -
+    /// an action from the other set, or one that has been removed since the file was written - is dropped.
+    /// </param>
     private static void ApplyOverrides(
         IReadOnlyDictionary<ActionId, Shortcut> overrides,
         IDictionary<ActionId, Shortcut> effective,
-        IReadOnlyDictionary<ActionId, Shortcut> defaults,
+        IReadOnlyCollection<ActionId> allowed,
         ISet<Shortcut> occupied)
     {
         foreach (var pair in overrides.OrderBy(pair => pair.Key))
         {
-            if (!defaults.ContainsKey(pair.Key) || !effective.TryGetValue(pair.Key, out var previous)) continue;
-            occupied.Remove(previous);
+            if (!allowed.Contains(pair.Key)) continue;
+            // Freeing the previous binding first, so moving a shortcut between two actions is not read as a
+            // collision with itself. An action that ships without one has nothing to free.
+            if (effective.TryGetValue(pair.Key, out var previous)) occupied.Remove(previous);
             var value = new Shortcut(pair.Value.Key.Trim().ToLowerInvariant(), pair.Value.Modifiers);
             if (IsValid(value) && !occupied.Contains(value)) effective[pair.Key] = value;
-            occupied.Add(effective[pair.Key]);
+            if (effective.TryGetValue(pair.Key, out var current)) occupied.Add(current);
         }
     }
 

@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using LunaPlayer.Actions;
 
@@ -65,6 +66,10 @@ internal sealed class PlayerSettings
         shortcutManager.Apply(Shortcuts.Primary, Shortcuts.Secondary);
         Shortcuts.Primary = shortcutManager.PrimaryOverrides();
         Shortcuts.Secondary = shortcutManager.SecondaryOverrides();
+        Shortcuts.Global ??= [];
+        var globalManager = new ShortcutManager(GlobalActionDefinitions.All);
+        globalManager.Apply(Shortcuts.Global, ReadOnlyDictionary<ActionId, Shortcut>.Empty);
+        Shortcuts.Global = globalManager.PrimaryOverrides();
     }
 }
 
@@ -172,15 +177,20 @@ internal sealed class ShortcutSettings
 {
     public Dictionary<ActionId, Shortcut> Primary { get; set; } = [];
     public Dictionary<ActionId, Shortcut> Secondary { get; set; } = [];
+    /// <summary>System-wide hot keys, keyed by the action they trigger. Separate from <see cref="Primary"/>
+    /// because the same action can hold a local and a global binding at once.</summary>
+    public Dictionary<ActionId, Shortcut> Global { get; set; } = [];
     internal ShortcutSettings Copy() => new()
     {
         Primary = new(Primary),
         Secondary = new(Secondary),
+        Global = new(Global),
     };
     internal void Apply(ShortcutSettings source)
     {
         Primary = new(source.Primary);
         Secondary = new(source.Secondary);
+        Global = new(source.Global);
     }
 }
 
