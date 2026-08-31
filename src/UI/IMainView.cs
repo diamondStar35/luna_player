@@ -63,4 +63,8 @@ internal interface IMainView : IDisposable
     void ShowTextInfo(string title, string text);
     PlayerSettings? EditPreferences(PlayerSettings settings, PrefsOps operations, Action<string> speakHelp);
     void ApplyShortcuts(ShortcutManager shortcuts);
+    /// <summary>Starts watching for the system-wide shortcuts in <paramref name="shortcuts"/>, replacing any
+    /// set already being watched. Returns false when the system would not let the player watch the keyboard at
+    /// all, which is worth telling the user about: no global shortcut will work.</summary>
+    bool ApplyGlobalShortcuts(ShortcutManager shortcuts);
 }

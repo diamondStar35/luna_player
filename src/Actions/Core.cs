@@ -5,7 +5,7 @@ namespace LunaPlayer.Actions;
 [JsonConverter(typeof(JsonStringEnumConverter<ActionId>))]
 internal enum ActionId
 {
-    OpenFile, OpenFolder, OpenContainingFolder, OpenFileProperties, OpenedFiles, CloseFile, CloseAllFiles,
+    OpenFile, OpenLink, OpenFolder, OpenContainingFolder, OpenFileProperties, OpenedFiles, CloseFile, CloseAllFiles,
     OpenPreferences, Exit, AnnounceFileInfo, RenameFile, DeleteFile, CopyFile, PasteFile, ToggleMarkCurrent,
     ToggleMarkAll, ClearMarks, AnnounceMarkedCount, MarkedCopyToFolder, MarkedMoveToFolder,
     MarkedCopyToClipboard, MarkedDelete, AddBookmark, ManageBookmarks, JumpBookmark1, JumpBookmark2,

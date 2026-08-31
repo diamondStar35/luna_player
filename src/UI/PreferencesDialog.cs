@@ -15,7 +15,8 @@ internal sealed class PreferencesDialog : IDisposable
     private readonly PrefsOps _operations;
     private IPreferences _current;
 
-    internal PreferencesDialog(Window parent, PlayerSettings settings, PrefsOps operations, Action<string> speakHelp)
+    internal PreferencesDialog(Window parent, PlayerSettings settings, PrefsOps operations, Action<string> speakHelp,
+        GlobalShortcuts? globalShortcuts = null)
     {
         _settings = settings;
         _operations = operations;
@@ -27,23 +28,26 @@ internal sealed class PreferencesDialog : IDisposable
         var backup = new BackupPreferences(_book, operations, ReplaceSettings);
         var audio = new AudioPreferences(_book, settings.Audio);
         var silence = new SilencePreferences(_book, settings.Silence);
-        var shortcuts = new ShortcutPreferences(_book, settings.Shortcuts);
-        _allPages = [general, backup, audio, silence, shortcuts];
+        var shortcuts = new ShortcutPreferences(_book, settings.Shortcuts, ShortcutScope.Local, globalShortcuts);
+        var globals = new ShortcutPreferences(_book, settings.Shortcuts, ShortcutScope.Global, globalShortcuts);
+        _allPages = [general, backup, audio, silence, shortcuts, globals];
         _current = general;
 
-        string[] categories = ["General", "Backup and restore", "Audio", "Silence removal", "Keyboard Shortcuts"];
+        string[] categories = ["General", "Backup and restore", "Audio", "Silence removal", "Keyboard Shortcuts", "Global Shortcuts"];
         var root = _tree.AddRoot("root");
         var generalItem = _tree.Add(root, categories[0]);
         var backupItem = _tree.Add(root, categories[1]);
         var audioItem = _tree.Add(root, categories[2]);
         var silenceItem = _tree.Add(root, categories[3]);
         var shortcutsItem = _tree.Add(root, categories[4]);
+        var globalsItem = _tree.Add(root, categories[5]);
         SizeTreeToLabels(categories);
         _pages[generalItem] = general;
         _pages[backupItem] = backup;
         _pages[audioItem] = audio;
         _pages[silenceItem] = silence;
         _pages[shortcutsItem] = shortcuts;
+        _pages[globalsItem] = globals;
         _tree.Selection = generalItem;
 
         var bookSizer = new BoxSizer(Orientation.Vertical);

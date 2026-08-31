@@ -29,5 +29,5 @@ internal sealed partial class MainFrame
     public IProgressView BeginProgress(string title, string message, int maximum) => new ProgressView(_frame, title, message, maximum);
     public void ShowTextInfo(string title, string text) { using var dialog = new TextInfoDialog(_frame, title, text); dialog.Show(); }
     public PlayerSettings? EditPreferences(PlayerSettings settings, PrefsOps operations, Action<string> speakHelp)
-    { var editable = settings.Copy(); using var dialog = new PreferencesDialog(_frame, editable, operations, speakHelp); return dialog.Show() ? editable : null; }
+    { var editable = settings.Copy(); using var dialog = new PreferencesDialog(_frame, editable, operations, speakHelp, _globalShortcuts); return dialog.Show() ? editable : null; }
 }

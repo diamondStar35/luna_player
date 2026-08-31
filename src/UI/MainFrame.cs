@@ -26,6 +26,7 @@ internal sealed partial class MainFrame : IMainView
     private readonly MenuItem _shuffleItem;
     private readonly MenuItem _repeatFileItem;
     private readonly MenuItem _silenceRemovalItem;
+    private readonly GlobalShortcuts _globalShortcuts;
     private bool _disposed;
 
     internal MainFrame(ShortcutManager shortcuts, IReadOnlyList<ActionDefinition> actions)
@@ -72,6 +73,8 @@ internal sealed partial class MainFrame : IMainView
         _playButton.Click += (_, _) => Request(ActionId.PlayPause);
         forwardButton.Click += (_, _) => Request(ActionId.SeekForward);
         nextButton.Click += (_, _) => Request(ActionId.NextTrack);
+        _globalShortcuts = new GlobalShortcuts();
+        _globalShortcuts.Pressed += Request;
         _frame.MenuCommand += OnMenuCommand;
         _frame.Closing += OnClosing;
         SetMediaLoaded(false);
@@ -99,6 +102,9 @@ internal sealed partial class MainFrame : IMainView
     public void SetRepeatFileChecked(bool isChecked) => _repeatFileItem.Checked = isChecked;
 
     public void SetSilenceRemovalChecked(bool isChecked) => _silenceRemovalItem.Checked = isChecked;
+
+    public bool ApplyGlobalShortcuts(ShortcutManager shortcuts)
+        => _globalShortcuts.Apply(shortcuts.GetBindings());
 
     public void ApplyShortcuts(ShortcutManager shortcuts)
     {
@@ -156,6 +162,9 @@ internal sealed partial class MainFrame : IMainView
         if (_disposed)
             return;
         _disposed = true;
+        // Before the frame goes: a keyboard hook left installed keeps being called into a process that is
+        // shutting down.
+        _globalShortcuts.Dispose();
         _frame.Dispose();
         foreach (var id in _ownedCommandIds)
             IdManager.Release(id);
@@ -188,6 +197,9 @@ internal sealed partial class MainFrame : IMainView
         var accelerators = new List<AcceleratorEntry>();
         foreach (var binding in shortcuts.GetBindings())
         {
+            // An accelerator table cannot express the Windows key, so a binding using it is left to the
+            // global hot key registration instead of failing the whole table.
+            if ((binding.Shortcut.Modifiers & ShortcutModifiers.Win) != 0) continue;
             var commandId = _commandIds[binding.Action];
             var display = binding.Shortcut.ToDisplayString();
             if (!AcceleratorEntry.TryParse(display, commandId, out var accelerator))
