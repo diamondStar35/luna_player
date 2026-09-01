@@ -19,6 +19,9 @@ internal sealed class ApplicationController : IDisposable
     private readonly FileActions _fileActions;
     private readonly PlaybackSelection _selection;
     private readonly SystemMediaControls _mediaControls = new();
+    /// <summary>The clock keeping the overlay's scrubber moving, or null while nothing needs one. See
+    /// <see cref="UpdateMediaControlsClock"/>.</summary>
+    private IDisposable? _mediaControlsClock;
     private bool _shutDown;
 
     internal ApplicationController(
@@ -68,6 +71,7 @@ internal sealed class ApplicationController : IDisposable
         _view.SetMarkedActionsEnabled(false);
         _view.SetSilenceRemovalChecked(_player.IsSilenceRemovalEnabled);
         SyncMediaControls();
+        UpdateMediaControlsClock();
     }
 
     internal void OpenPaths(IEnumerable<string> paths)
@@ -81,6 +85,9 @@ internal sealed class ApplicationController : IDisposable
         if (_shutDown)
             return;
         _shutDown = true;
+        // Nothing after this wants the overlay published again, and the clock would keep firing until the
+        // controller is disposed.
+        StopMediaControlsClock();
         _settings.Audio.Volume = _player.Volume;
         _settings.Audio.Speed = _player.Speed;
         _player.SavePosition();
@@ -101,6 +108,7 @@ internal sealed class ApplicationController : IDisposable
         _player.StateChanged -= SyncViewState;
         _player.Ended -= OnPlaybackEnded;
         Shutdown();
+        StopMediaControlsClock();
         _mediaControls.Dispose();
     }
 
@@ -125,17 +133,18 @@ internal sealed class ApplicationController : IDisposable
         var loaded = _player.CurrentPath is not null;
         var local = _player.CurrentPath is string path && File.Exists(path);
         _view.SetMediaLoaded(loaded);
-        _view.SetPlaying(loaded && !_player.IsPaused);
+        _view.SetPlaying(_player.IsPlaying);
         _view.SetEditState(local, loaded);
         _view.SetBookmarkState(local);
         _view.SetMarkState(_player.IsCurrentMarked, _player.AreAllMarked);
         _view.SetMarkedActionsEnabled(loaded && _player.MarkedCount > 0);
         _view.SetSilenceRemovalChecked(_player.IsSilenceRemovalEnabled);
         SyncMediaControls();
+        UpdateMediaControlsClock();
     }
 
     /// <summary>Publishes the current state to the Windows media overlay. Called whenever playback state
-    /// changes, and on a timer so the overlay's scrubber keeps up while a file plays.</summary>
+    /// changes, and on a clock while a file plays so the overlay's scrubber keeps up.</summary>
     internal void SyncMediaControls()
     {
         if (!_mediaControls.IsAvailable) return;
@@ -144,13 +153,46 @@ internal sealed class ApplicationController : IDisposable
         var index = _player.CurrentIndex;
         _mediaControls.Update(new MediaControlsState(
             HasMedia: hasMedia,
-            IsPlaying: hasMedia && !_player.IsPaused,
+            IsPlaying: _player.IsPlaying,
             Title: _player.CurrentDisplayName ?? string.Empty,
             Artist: ApplicationName,
             Duration: hasMedia ? _player.Duration : null,
             Position: hasMedia ? _player.Elapsed : null,
             CanGoNext: hasMedia && index >= 0 && index < _player.Count - 1,
             CanGoPrevious: hasMedia && index > 0));
+    }
+
+    /// <summary>Starts or stops the clock that keeps the overlay's scrubber moving, so it runs only while
+    /// there is something for it to follow.</summary>
+    ///
+    /// <remarks>
+    /// The position playing has reached is the one thing the overlay needs that nothing raises an event for:
+    /// mpv does not announce the passage of time, and it does not announce a seek either, so between one
+    /// discrete change and the next there is nothing to publish from and a clock has to cover the gap.
+    ///
+    /// The test is whether a file is open, not whether it is playing. A paused file is not going anywhere on
+    /// its own, but it can still be seeked, and a seek is exactly the kind of move that reaches the overlay
+    /// only because something is watching. With nothing open there is no position to report at all - before
+    /// the first file, and after the playlist runs out, which unloads mpv while leaving the entry in the list.
+    ///
+    /// Every state change comes through <see cref="SyncViewState"/>, which publishes first and then calls
+    /// this, so the overlay always has the final position before the clock stops.
+    /// </remarks>
+    private void UpdateMediaControlsClock()
+    {
+        var wanted = !_shutDown && _mediaControls.IsAvailable && _player.IsLoaded;
+        if (wanted == (_mediaControlsClock is not null))
+            return;
+        if (wanted)
+            _mediaControlsClock = _dispatcher.Repeat(TimeSpan.FromSeconds(1), SyncMediaControls);
+        else
+            StopMediaControlsClock();
+    }
+
+    private void StopMediaControlsClock()
+    {
+        _mediaControlsClock?.Dispose();
+        _mediaControlsClock = null;
     }
 
     private void OnPlaybackEnded(PlaybackEndReason reason)
@@ -176,7 +218,12 @@ internal sealed class ApplicationController : IDisposable
             case EndBehavior.Loop:
                 _player.RestartCurrent();
                 break;
-            // EndBehavior.None keeps the finished file loaded; mpv's keep-open holds it at the end.
+            case EndBehavior.None:
+                // mpv's keep-open holds the finished file at its end, pausing itself to do it. That is a
+                // change of state nothing told us about, so the play button and the overlay's clock are
+                // brought up to date here rather than waiting for the user's next command.
+                SyncViewState();
+                break;
         }
     }
 }

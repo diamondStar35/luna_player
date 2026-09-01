@@ -13,6 +13,7 @@ internal sealed class MediaPlayer : IDisposable
     private bool _normalizationEnabled;
     private bool _monoEnabled;
     private bool _silenceEnabled;
+    private bool _running;
     private SilenceSettings _silence = new();
     private bool _trackPositions;
 
@@ -32,6 +33,16 @@ internal sealed class MediaPlayer : IDisposable
     internal int CurrentIndex => _playlist.CurrentIndex;
     internal IReadOnlyList<string> Files => _playlist.Files;
     internal bool IsPaused => _engine.IsPaused;
+
+    /// <summary>Whether mpv has the current entry open, and so can report and change a position in it -
+    /// whether or not it is playing. False before anything has been loaded and after <see cref="Stop"/>,
+    /// which unloads what mpv was playing while leaving it in the playlist, so <see cref="CurrentPath"/> is
+    /// not on its own proof of this.</summary>
+    internal bool IsLoaded => _running;
+
+    /// <summary>Whether a file is open and running: <see cref="IsLoaded"/> and not held where it is.
+    /// </summary>
+    internal bool IsPlaying => _running && !_engine.IsPaused;
     internal double? Duration => _engine.Duration;
     internal double? Elapsed => _engine.Elapsed;
     internal double? Remaining => _engine.Remaining
@@ -111,8 +122,13 @@ internal sealed class MediaPlayer : IDisposable
     internal bool RestartCurrent() => LoadCurrent(0, paused: false);
 
     internal void SetEndBehavior(EndBehavior behavior) => _engine.SetEndBehavior(behavior);
-    internal bool TogglePause() => _engine.TogglePause();
-    internal void Play() => _engine.Play();
+
+    // Pausing, resuming and stopping are state changes like any other, and they are announced like any other.
+    // Nothing about them is visible in a property that raises an event of its own, so a listener that has to
+    // follow whether the player is running - the play button and the Windows overlay both do - would
+    // otherwise have no way of hearing about it.
+    internal bool TogglePause() => Changed(_engine.TogglePause());
+    internal void Play() { _engine.Play(); StateChanged?.Invoke(); }
     internal void Seek(double seconds) => _engine.SeekRelative(seconds);
     internal void SeekAbsolute(double seconds) => _engine.SeekAbsolute(seconds);
     internal bool SeekToEnd()
@@ -123,7 +139,7 @@ internal sealed class MediaPlayer : IDisposable
         return true;
     }
 
-    internal void Stop() => _engine.Stop();
+    internal void Stop() { StopEngine(); StateChanged?.Invoke(); }
     internal double SetVolume(double volume) => _engine.SetVolume(volume);
     internal double ChangeVolume(double delta) => SetVolume(Volume + delta);
     internal double SetSpeed(double speed) => _engine.SetSpeed(speed);
@@ -216,7 +232,7 @@ internal sealed class MediaPlayer : IDisposable
         if (oldPath is null || !File.Exists(oldPath))
             return false;
         var elapsed = Elapsed;
-        _engine.Stop();
+        StopEngine();
         try
         {
             File.Move(oldPath, newPath);
@@ -236,7 +252,7 @@ internal sealed class MediaPlayer : IDisposable
         if (path is null || !File.Exists(path))
             return false;
         var elapsed = Elapsed;
-        _engine.Stop();
+        StopEngine();
         try
         {
             File.Delete(path);
@@ -261,7 +277,7 @@ internal sealed class MediaPlayer : IDisposable
         var path = CurrentPath;
         if (path is null) return false;
         SavePosition();
-        _engine.Stop();
+        StopEngine();
         _playlist.RemoveCurrent();
         if (CurrentPath is null)
         {
@@ -276,7 +292,7 @@ internal sealed class MediaPlayer : IDisposable
     {
         SavePosition();
         if (!_playlist.ClearAll()) return false;
-        _engine.Stop();
+        StopEngine();
         CurrentChanged?.Invoke();
         StateChanged?.Invoke();
         return true;
@@ -286,7 +302,7 @@ internal sealed class MediaPlayer : IDisposable
     {
         var remove = paths.ToArray();
         var currentRemoved = CurrentPath is string current && remove.Any(path => Paths.AreSame(path, current));
-        if (currentRemoved) _engine.Stop();
+        if (currentRemoved) StopEngine();
         var result = _playlist.RemovePaths(remove);
         if (!result.Changed) return false;
         if (result.CurrentChanged && CurrentPath is not null) return LoadCurrent();
@@ -320,6 +336,7 @@ internal sealed class MediaPlayer : IDisposable
         _engine.SetNormalization(_normalizationEnabled);
         _engine.SetMono(_monoEnabled);
         _engine.SetSilenceRemoval(_silenceEnabled, AudioFilters.SilenceGraph(_silence));
+        _running = true;
         CurrentChanged?.Invoke();
         StateChanged?.Invoke();
         return true;
@@ -354,6 +371,12 @@ internal sealed class MediaPlayer : IDisposable
     {
         if (!_disposed)
             Ended?.Invoke(reason);
+    }
+
+    private void StopEngine()
+    {
+        _engine.Stop();
+        _running = false;
     }
 
     private bool Changed(bool value)
