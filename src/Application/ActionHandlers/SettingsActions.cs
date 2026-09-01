@@ -20,7 +20,6 @@ internal sealed class SettingsActions
         MediaPlayer player,
         ShortcutManager shortcuts,
         ShortcutManager globalShortcuts,
-        ApplicationPaths paths,
         ISpeechOutput speech)
     {
         void ApplyRuntime(PlayerSettings source)
@@ -54,8 +53,8 @@ internal sealed class SettingsActions
         {
             try
             {
-                Directory.CreateDirectory(paths.RootDirectory);
-                Process.Start(new ProcessStartInfo(paths.RootDirectory) { UseShellExecute = true });
+                Directory.CreateDirectory(Paths.RootDirectory);
+                Process.Start(new ProcessStartInfo(Paths.RootDirectory) { UseShellExecute = true });
                 return true;
             }
             catch (Exception exception) when (exception is IOException or UnauthorizedAccessException
@@ -75,7 +74,7 @@ internal sealed class SettingsActions
         var operations = new PrefsOps(
             backup.SettingsPath,
             backup.BookmarksPath,
-            paths.RootDirectory,
+            Paths.RootDirectory,
             destination => backup.ExportSettings(destination, settings),
             backup.ImportSettings,
             backup.ResetSettings,

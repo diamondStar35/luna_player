@@ -12,6 +12,7 @@ internal sealed class PlaylistActions
     private readonly MediaPlayer _player;
     private readonly PlayerSettings _settings;
     private readonly ISpeechOutput _speech;
+    private readonly MediaGuard _guard;
 
     internal PlaylistActions(
         ActionRouter router,
@@ -24,6 +25,7 @@ internal sealed class PlaylistActions
         _player = player;
         _settings = settings;
         _speech = speech;
+        _guard = new MediaGuard(player, speech);
         router.Register(ActionId.PreviousTrack, MovePrevious);
         router.Register(ActionId.NextTrack, MoveNext);
         router.Register(ActionId.FirstTrack, MoveFirst);
@@ -79,7 +81,7 @@ internal sealed class PlaylistActions
 
     private void ToggleShuffle()
     {
-        if (!EnsureFile())
+        if (!_guard.RequireFile(out _))
             return;
         var enabled = _player.ToggleShuffle();
         _view.SetShuffleChecked(enabled);
@@ -93,7 +95,7 @@ internal sealed class PlaylistActions
 
     private void ToggleRepeatFile()
     {
-        if (!EnsureFile())
+        if (!_guard.RequireFile(out _))
             return;
         var enabled = _player.ToggleRepeatFile();
         _view.SetRepeatFileChecked(enabled);
@@ -103,14 +105,6 @@ internal sealed class PlaylistActions
                 // Translators: Spoken once the player has stopped playing the same file over and over.
                 : Tr("Repeat off"),
             enabled ? Tr("Repeat on") : Tr("Repeat off"));
-    }
-
-    private bool EnsureFile()
-    {
-        if (!string.IsNullOrEmpty(_player.CurrentPath))
-            return true;
-        _speech.Speak(Tr("No file loaded."), Tr("No file."));
-        return false;
     }
 
     private void SetSwitched(bool moved, bool announce)

@@ -7,7 +7,8 @@ internal sealed partial class PlaybackActions
 {
     private void StartSelection()
     {
-        if (!TryGetCurrentTime(out var path, out var elapsed)) return;
+        if (!_guard.RequireFile(out var path) || !_guard.RequireElapsed(out var elapsed))
+            return;
         _selection.SetStart(path, elapsed);
         _player.SetLoopStart(elapsed);
         var formatted = PlaybackTimeFormatter.Format(elapsed)!;
@@ -22,8 +23,7 @@ internal sealed partial class PlaybackActions
 
     private void EndSelection()
     {
-        var path = _player.CurrentPath;
-        if (string.IsNullOrEmpty(path)) { _speech.Speak(Tr("No file loaded."), Tr("No file.")); return; }
+        if (!_guard.RequireFile(out var path)) return;
         if (!_selection.IsActive(path, requireEnd: false) || _selection.Start is not double start)
         {
             _speech.Speak(
@@ -34,7 +34,7 @@ internal sealed partial class PlaybackActions
                 Tr("No start."));
             return;
         }
-        if (_player.Elapsed is not double elapsed) { _speech.Speak(Tr("Time not available"), Tr("Unavailable")); return; }
+        if (!_guard.RequireElapsed(out var elapsed)) return;
         if (elapsed <= start)
         {
             _speech.Speak(
@@ -44,7 +44,7 @@ internal sealed partial class PlaybackActions
                 Tr("Invalid end."));
             return;
         }
-        if (!_player.SetLoopEnd(elapsed)) { _speech.Speak(Tr("Time not available"), Tr("Unavailable")); return; }
+        if (!_player.SetLoopEnd(elapsed)) { _guard.ReportTimeUnavailable(); return; }
         _selection.SetEnd(elapsed);
         var formatted = PlaybackTimeFormatter.Format(elapsed)!;
         _speech.Speak(
@@ -75,15 +75,5 @@ internal sealed partial class PlaybackActions
         _selection.Reset();
         // Translators: Spoken once the repeating stretch of the file has been dropped, so playing carries on normally.
         if (_settings.General.Verbosity == SpeechVerbosity.Beginner) _speech.SpeakText(Tr("Selection cleared"));
-    }
-
-    private bool TryGetCurrentTime(out string path, out double elapsed)
-    {
-        path = _player.CurrentPath ?? string.Empty;
-        elapsed = 0;
-        if (path.Length == 0) { _speech.Speak(Tr("No file loaded."), Tr("No file.")); return false; }
-        if (_player.Elapsed is not double current) { _speech.Speak(Tr("Time not available"), Tr("Unavailable")); return false; }
-        elapsed = current;
-        return true;
     }
 }

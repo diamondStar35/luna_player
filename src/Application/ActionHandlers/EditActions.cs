@@ -12,6 +12,7 @@ internal sealed class EditActions
     private readonly ISpeechOutput _speech;
     private readonly IClipboardService _clipboard;
     private readonly FileActions _fileActions;
+    private readonly MediaGuard _guard;
 
     internal EditActions(ActionRouter router, IMainView view, MediaPlayer player, ISpeechOutput speech,
         IClipboardService clipboard, FileActions fileActions)
@@ -21,6 +22,7 @@ internal sealed class EditActions
         _speech = speech;
         _clipboard = clipboard;
         _fileActions = fileActions;
+        _guard = new MediaGuard(player, speech);
         router.Register(ActionId.RenameFile, Rename);
         router.Register(ActionId.DeleteFile, Delete);
         router.Register(ActionId.CopyFile, Copy);
@@ -34,7 +36,7 @@ internal sealed class EditActions
     private void Rename()
     {
         // Translators: Spoken when the user asks to rename what is playing but it is a stream rather than a file on this computer.
-        if (!TryGetLocalPath(Tr("Rename is available only for local files."), out var path))
+        if (!_guard.RequireLocalFile(Tr("Rename is available only for local files."), out var path))
             return;
         var oldName = Path.GetFileName(path);
         var value = _view.PromptText(
@@ -78,7 +80,7 @@ internal sealed class EditActions
     private void Delete()
     {
         // Translators: Spoken when the user asks to delete what is playing but it is a stream rather than a file on this computer.
-        if (!TryGetLocalPath(Tr("Delete is available only for local files."), out var path))
+        if (!_guard.RequireLocalFile(Tr("Delete is available only for local files."), out var path))
             return;
         var name = Path.GetFileName(path);
         if (!_view.Confirm(
@@ -103,7 +105,7 @@ internal sealed class EditActions
 
     private void Copy()
     {
-        if (!TryGetCurrentPath(out var path))
+        if (!_guard.RequireFile(out var path))
             return;
         var copied = _clipboard.SetFiles([path]);
         _speech.Speak(
@@ -148,11 +150,7 @@ internal sealed class EditActions
         var marked = _player.ToggleCurrentMarked();
         if (!marked.HasValue)
         {
-            _speech.Speak(
-                // Translators: Spoken when a command needs a file to be playing but none is loaded.
-                Tr("No file loaded."),
-                // Translators: The short wording spoken when a command needs a file to be playing but none is loaded.
-                Tr("No file."));
+            _guard.ReportNoFile();
             return;
         }
         _speech.Speak(
@@ -170,11 +168,8 @@ internal sealed class EditActions
 
     private void ToggleAllMarks()
     {
-        if (_player.Count == 0)
-        {
-            _speech.Speak(Tr("No file loaded."), Tr("No file."));
+        if (!_guard.RequireAnyFile())
             return;
-        }
         var marked = _player.ToggleAllMarked();
         _speech.Speak(
             marked
@@ -210,30 +205,6 @@ internal sealed class EditActions
         var count = _player.MarkedCount;
         // Translators: Spoken when the user asks how many files are marked. {count} is that number.
         _speech.SpeakText(TrPluralFormat("{count} file marked", "{count} files marked", count, count));
-    }
-
-    private bool TryGetCurrentPath(out string path)
-    {
-        path = _player.CurrentPath ?? string.Empty;
-        if (path.Length > 0)
-            return true;
-        _speech.Speak(Tr("No file loaded."), Tr("No file."));
-        return false;
-    }
-
-    /// <param name="unavailable">What to say when the current entry is a stream: the action names itself,
-    /// because a sentence assembled from a translated verb and a translated remainder does not read as one in
-    /// every language.</param>
-    private bool TryGetLocalPath(string unavailable, out string path)
-    {
-        if (!TryGetCurrentPath(out path))
-            return false;
-        if (File.Exists(path))
-            return true;
-        _speech.Speak(unavailable,
-            // Translators: The short wording spoken when a command that needs a file on this computer is used while a stream is playing.
-            Tr("Not available for streams."));
-        return false;
     }
 
 }

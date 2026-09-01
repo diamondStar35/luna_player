@@ -4,7 +4,6 @@ using LunaPlayer.Configuration;
 using LunaPlayer.Playback;
 using LunaPlayer.UI;
 using LunaPlayer.Media;
-using System.Collections.Concurrent;
 using System.Diagnostics;
 
 namespace LunaPlayer.Application.ActionHandlers;
@@ -17,6 +16,7 @@ internal sealed class FileActions
     private readonly PlayerSettings _settings;
     private readonly ISpeechOutput _speech;
     private readonly IClipboardService _clipboard;
+    private readonly MediaGuard _guard;
     private int _fileInfoPressCount;
     private long _fileInfoLastPress;
     private readonly PlaylistInfoService _playlistInfo = new();
@@ -34,6 +34,7 @@ internal sealed class FileActions
         _settings = settings;
         _speech = speech;
         _clipboard = clipboard;
+        _guard = new MediaGuard(player, speech);
         router.Register(ActionId.OpenFile, OpenFileFromDialog);
         router.Register(ActionId.OpenLink, OpenLink);
         router.Register(ActionId.OpenFolder, OpenFolderFromDialog);
@@ -117,7 +118,7 @@ internal sealed class FileActions
             return;
         // An empty entry is rejected the same way as a bad one, as the Python player does.
         var url = link.Trim();
-        if (!MediaLibrary.IsHttpUrl(url))
+        if (!LinkValidator.IsHttpUrl(url))
         {
             _view.ShowError(
                 // Translators: Shown when the address typed into Open Link is not a web address.
@@ -149,14 +150,9 @@ internal sealed class FileActions
 
     private void OpenContainingFolder()
     {
-        var path = _player.CurrentPath;
-        if (path is null || !File.Exists(path))
-        {
-            _speech.Speak(
-                // Translators: Spoken when the user asks to show the folder of what is playing but it is a stream rather than a file on this computer.
-                Tr("Open containing folder is available only for local files."), Tr("Not available for streams."));
+        // Translators: Spoken when the user asks to show the folder of what is playing but it is a stream rather than a file on this computer.
+        if (!_guard.RequireLocalFile(Tr("Open containing folder is available only for local files."), out var path))
             return;
-        }
         TryStart(new ProcessStartInfo("explorer.exe", $"/select,\"{path}\"") { UseShellExecute = true },
             // Translators: Spoken when the folder holding the current file could not be shown.
             Tr("Could not open containing folder."));
@@ -164,14 +160,9 @@ internal sealed class FileActions
 
     private void OpenFileProperties()
     {
-        var path = _player.CurrentPath;
-        if (path is null || !File.Exists(path))
-        {
-            _speech.Speak(
-                // Translators: Spoken when the user asks for the Windows properties of what is playing but it is a stream rather than a file on this computer.
-                Tr("File properties are available only for local files."), Tr("Not available for streams."));
+        // Translators: Spoken when the user asks for the Windows properties of what is playing but it is a stream rather than a file on this computer.
+        if (!_guard.RequireLocalFile(Tr("File properties are available only for local files."), out var path))
             return;
-        }
         TryStart(new ProcessStartInfo(path) { UseShellExecute = true, Verb = "properties" },
             // Translators: Spoken when the Windows properties window for the current file could not be shown.
             Tr("Could not open file properties."));
@@ -179,11 +170,8 @@ internal sealed class FileActions
 
     private void OpenedFiles()
     {
-        if (_player.Count == 0)
-        {
-            _speech.Speak(Tr("No file loaded."), Tr("No file."));
+        if (!_guard.RequireAnyFile())
             return;
-        }
         var selected = _player.CurrentIndex;
         while (true)
         {
@@ -202,43 +190,28 @@ internal sealed class FileActions
 
     private void ShowPlaylistInformation()
     {
-        var progressQueue = new ConcurrentQueue<PlaylistProbeProgress>();
-        using var cancellation = new CancellationTokenSource();
-        var task = Task.Run(() => _playlistInfo.Build(
-            _player.Files, _player.CurrentPath, _player.CurrentIndex, _player.Duration,
-            _player.Elapsed, _player.Remaining, progressQueue.Enqueue, cancellation.Token));
-        using var progress = _view.BeginProgress(
+        var prompt = new ProgressPrompt(
             // Translators: Title of the progress window shown while details of every file in the playlist are being read.
             Tr("Loading playlist info"),
             // Translators: First message in the progress window, shown before the first file has been read.
-            Tr("Preparing..."), _player.Count);
-        while (!task.IsCompleted)
-        {
-            var updated = false;
-            while (progressQueue.TryDequeue(out var item))
-            {
-                updated = true;
-                // Translators: Progress message naming the file being read right now. {name} is the file name.
-                if (!progress.Update(item.Value, TrFormat("Reading: {name}", item.Name))) cancellation.Cancel();
-            }
-            if (!updated && !progress.Pulse(Tr("Preparing..."))) cancellation.Cancel();
-            Thread.Sleep(25);
-        }
-        try
-        {
-            var text = task.GetAwaiter().GetResult();
+            Tr("Preparing..."),
+            Tr("Preparing..."),
+            // Translators: Progress message naming the file being read right now. {name} is the file name.
+            update => TrFormat("Reading: {name}", update.Name));
+        var read = BackgroundProgress.TryRun(_view, prompt, _player.Count,
+            (report, token) => _playlistInfo.Build(
+                _player.Files, _player.CurrentPath, _player.CurrentIndex, _player.Duration,
+                _player.Elapsed, _player.Remaining, report, token),
+            out var text);
+        if (read)
             // Translators: Title of the window listing details of every file in the playlist.
             _view.ShowTextInfo(Tr("Playlist Info"), text);
-        }
-        catch (OperationCanceledException)
-        {
-        }
     }
 
     private void CloseFile()
     {
         if (!_player.CloseCurrent())
-            _speech.Speak(Tr("No file loaded."), Tr("No file."));
+            _guard.ReportNoFile();
         else
             // Translators: Spoken once the current file has been taken out of the playlist.
             _speech.Speak(Tr("File closed."), Tr("File closed."));
@@ -247,7 +220,7 @@ internal sealed class FileActions
     private void CloseAllFiles()
     {
         if (!_player.CloseAll())
-            _speech.Speak(Tr("No file loaded."), Tr("No file."));
+            _guard.ReportNoFile();
         else
             // Translators: Spoken once every file has been taken out of the playlist.
             _speech.Speak(Tr("All files closed."), Tr("All files closed."));
@@ -270,12 +243,8 @@ internal sealed class FileActions
 
     private void AnnounceFileInfo()
     {
-        var path = _player.CurrentPath;
-        if (string.IsNullOrEmpty(path))
-        {
-            _speech.Speak(Tr("No file loaded."), Tr("No file."));
+        if (!_guard.RequireFile(out var path))
             return;
-        }
 
         var now = Environment.TickCount64;
         if (now - _fileInfoLastPress > FileInfoResetMilliseconds)
@@ -311,19 +280,11 @@ internal sealed class FileActions
         var paths = new List<string>();
         foreach (var rawPath in rawPaths)
         {
+            // Command lines and drops arrive quoted, and a path that will not resolve is left out rather
+            // than passed on to be reported as a file that does not exist.
             var value = rawPath.Trim().Trim('"');
-            if (value.Length == 0)
-                continue;
-            try
-            {
-                paths.Add(Path.GetFullPath(value));
-            }
-            catch (ArgumentException)
-            {
-            }
-            catch (NotSupportedException)
-            {
-            }
+            if (value.Length > 0 && Paths.TryAbsolute(value, out var absolute))
+                paths.Add(absolute);
         }
         return paths;
     }
