@@ -30,11 +30,17 @@ internal sealed class SettingsActions
             player.SetEndBehavior(settings.Audio.EndBehavior);
             player.ConfigureSilence(settings.Silence);
             if (!player.SetNormalization(settings.Audio.NormalizeAudio))
-                view.ShowError("Could not apply the audio normalization filter.", "Preferences");
+                view.ShowError(
+                    // Translators: Shown when the setting that evens out the loudness could not be turned on or off.
+                    Tr("Could not apply the audio normalization filter."), Tr("Preferences"));
             if (!player.SetMono(settings.Audio.MonoAudio))
-                view.ShowError("Could not apply the mono audio filter.", "Preferences");
+                view.ShowError(
+                    // Translators: Shown when the setting that mixes both channels into one could not be turned on or off.
+                    Tr("Could not apply the mono audio filter."), Tr("Preferences"));
             if (!player.SetSilenceRemoval(settings.Silence.Enabled))
-                view.ShowError("Could not apply the silence removal filter.", "Preferences");
+                view.ShowError(
+                    // Translators: Shown when the setting that trims the silent parts out could not be turned on or off.
+                    Tr("Could not apply the silence removal filter."), Tr("Preferences"));
             settings.Audio.NormalizeAudio = player.IsNormalizationEnabled;
             settings.Audio.MonoAudio = player.IsMonoEnabled;
             settings.Silence.Enabled = player.IsSilenceRemovalEnabled;
@@ -89,7 +95,10 @@ internal sealed class SettingsActions
             var result = view.EditPreferences(settings, operations, text => speech.SpeakText(text));
             if (result is null) return;
             ApplyRuntime(result);
-            if (!store.SaveExplicit(settings)) view.ShowError("Could not save settings.", "Preferences");
+            if (!store.SaveExplicit(settings))
+                view.ShowError(
+                    // Translators: Shown when the settings the user accepted could not be written to disk.
+                    Tr("Could not save settings."), Tr("Preferences"));
         });
     }
 }

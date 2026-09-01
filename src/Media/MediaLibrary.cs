@@ -17,7 +17,9 @@ internal static class MediaLibrary
         get
         {
             var pattern = string.Join(';', SupportedExtensions.Select(extension => $"*{extension}"));
-            return $"Media Files ({pattern})|{pattern}|All Files (*.*)|*.*";
+            // Translators: The two names in the Open dialog's file-type list. The patterns beside them are
+            // literal and must not be translated.
+            return $"{Tr("Media Files")} ({pattern})|{pattern}|{Tr("All Files")} (*.*)|*.*";
         }
     }
 

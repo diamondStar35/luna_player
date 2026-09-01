@@ -50,11 +50,11 @@ internal sealed partial class MainFrame : IMainView
         _silenceRemovalItem = menu.SilenceRemovalItem;
         BuildAccelerators(shortcuts);
 
-        var previousButton = new CustomButton(_frame, "Previous");
-        var rewindButton = new CustomButton(_frame, "Rewind");
-        _playButton = new CustomButton(_frame, "Play");
-        var forwardButton = new CustomButton(_frame, "Forward");
-        var nextButton = new CustomButton(_frame, "Next");
+        var previousButton = new CustomButton(_frame, Tr("Previous"));
+        var rewindButton = new CustomButton(_frame, Tr("Rewind"));
+        _playButton = new CustomButton(_frame, Tr("Play"));
+        var forwardButton = new CustomButton(_frame, Tr("Forward"));
+        var nextButton = new CustomButton(_frame, Tr("Next"));
 
         var buttonSizer = new BoxSizer(Orientation.Horizontal);
         buttonSizer.Insert(0, previousButton, flags: SizerFlags.All, border: 5);
@@ -95,7 +95,7 @@ internal sealed partial class MainFrame : IMainView
         _frame.Raise();
     }
 
-    public void SetPlaying(bool isPlaying) => _playButton.Label = isPlaying ? "Pause" : "Play";
+    public void SetPlaying(bool isPlaying) => _playButton.Label = isPlaying ? Tr("Pause") : Tr("Play");
 
     public void SetShuffleChecked(bool isChecked) => _shuffleItem.Checked = isChecked;
 

@@ -18,7 +18,8 @@ internal sealed class GoToTimeDialog : IDisposable
         _duration = Math.Max(0, (int)duration);
         _hasHours = _duration >= 3600;
         _hasMinutes = _duration >= 60;
-        _dialog = new Dialog(parent, title: "Go to time", style: DialogStyle.Default | DialogStyle.ResizeBorder);
+        _dialog = new Dialog(parent,
+            title: Tr("Go to time"), style: DialogStyle.Default | DialogStyle.ResizeBorder);
         _hours = new SpinCtrl(_dialog, maximum: Math.Max(0, _duration / 3600));
         _minutes = new SpinCtrl(_dialog, maximum: 59);
         _seconds = new SpinCtrl(_dialog, maximum: 59);
@@ -38,25 +39,31 @@ internal sealed class GoToTimeDialog : IDisposable
 
         var buttons = new BoxSizer(Orientation.Horizontal);
         buttons.AddStretchSpacer();
-        var ok = new Button(_dialog, StandardId.Ok, "OK");
+        // Translators: The button that accepts a window and carries the change out.
+        var ok = new Button(_dialog, StandardId.Ok, Tr("OK"));
         ok.SetDefault();
         ok.Click += OnAccept;
         buttons.Add(ok, flags: SizerFlags.BorderRight, border: 6);
-        buttons.Add(new Button(_dialog, StandardId.Cancel, "Cancel"));
+        // Translators: The button that closes a window and leaves everything as it was.
+        buttons.Add(new Button(_dialog, StandardId.Cancel, Tr("Cancel")));
 
         var root = new BoxSizer(Orientation.Vertical);
-        root.Add(new StaticText(_dialog, label: "Choose time position:"), flags: SizerFlags.All | SizerFlags.Expand, border: 8);
+        // Translators: Label above the boxes where the user types the point in the file to move to.
+        root.Add(new StaticText(_dialog, label: Tr("Choose time position:")), flags: SizerFlags.All | SizerFlags.Expand, border: 8);
         if (_hasHours)
         {
-            root.Add(new StaticText(_dialog, label: "Hours"), flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
+            // Translators: Label of the box holding the hours part of the point in the file to move to.
+            root.Add(new StaticText(_dialog, label: Tr("Hours")), flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
             root.Add(_hours, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom | SizerFlags.Expand, border: 8);
         }
         if (_hasMinutes)
         {
-            root.Add(new StaticText(_dialog, label: "Minutes"), flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
+            // Translators: Label of the box holding the minutes part of the point in the file to move to.
+            root.Add(new StaticText(_dialog, label: Tr("Minutes")), flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
             root.Add(_minutes, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom | SizerFlags.Expand, border: 8);
         }
-        root.Add(new StaticText(_dialog, label: "Seconds"), flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
+        // Translators: Label of the box holding the seconds part of the point in the file to move to.
+        root.Add(new StaticText(_dialog, label: Tr("Seconds")), flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         root.Add(_seconds, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom | SizerFlags.Expand, border: 8);
         root.Add(buttons, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom | SizerFlags.Expand, border: 8);
         _dialog.SetSizer(root);
@@ -82,7 +89,9 @@ internal sealed class GoToTimeDialog : IDisposable
         var target = SelectedSeconds();
         if (target < 0 || target > _duration)
         {
-            Wx.MessageBox("The selected time exceeds the file duration.", "Go to time",
+            Wx.MessageBox(
+                // Translators: Shown when the point in the file the user typed lies past the end of the file.
+                Tr("The selected time exceeds the file duration."), Tr("Go to time"),
                 MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
             return;
         }

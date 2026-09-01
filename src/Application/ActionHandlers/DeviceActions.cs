@@ -30,7 +30,11 @@ internal sealed class DeviceActions
         var devices = _player.GetAudioDevices();
         if (devices.Count == 0)
         {
-            _speech.Speak("No sound cards found.", "No devices.");
+            _speech.Speak(
+                // Translators: Spoken when the user asks to choose a sound card but the system reports none.
+                Tr("No sound cards found."),
+                // Translators: The short wording spoken when the system reports no sound cards.
+                Tr("No devices."));
             return;
         }
         var current = _player.CurrentAudioDevice;
@@ -43,11 +47,19 @@ internal sealed class DeviceActions
         {
             _settings.Audio.Device = device.Name;
             _settingsStore.SaveExplicit(_settings);
-            _speech.Speak("Sound card set.", "Set.");
+            _speech.Speak(
+                // Translators: Spoken once the player has started playing through the chosen sound card.
+                Tr("Sound card set."),
+                // Translators: The short wording spoken once the chosen sound card is in use.
+                Tr("Set."));
         }
         else
         {
-            _speech.Speak("Could not set sound card.", "Set failed.");
+            _speech.Speak(
+                // Translators: Spoken when the player could not start playing through the chosen sound card.
+                Tr("Could not set sound card."),
+                // Translators: The short wording spoken when the chosen sound card could not be used.
+                Tr("Set failed."));
         }
     }
 }
