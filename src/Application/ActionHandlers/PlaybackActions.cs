@@ -45,8 +45,6 @@ internal sealed partial class PlaybackActions
         router.Register(ActionId.SeekForwardX2, () => SeekByMultiplier(2));
         router.Register(ActionId.SeekBackwardX4, () => SeekByMultiplier(-4));
         router.Register(ActionId.SeekForwardX4, () => SeekByMultiplier(4));
-        router.Register(ActionId.SeekBackwardX8, () => SeekByMultiplier(-8));
-        router.Register(ActionId.SeekForwardX8, () => SeekByMultiplier(8));
         router.Register(ActionId.SeekStart, SeekStart);
         router.Register(ActionId.SeekEnd, SeekEnd);
         router.Register(ActionId.GoToTime, GoToTime);
