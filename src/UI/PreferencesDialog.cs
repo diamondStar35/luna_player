@@ -21,7 +21,8 @@ internal sealed class PreferencesDialog : IDisposable
         _settings = settings;
         _operations = operations;
         _speakHelp = speakHelp;
-        _dialog = new Dialog(parent, title: "Preferences", style: DialogStyle.Default | DialogStyle.ResizeBorder);
+        // Translators: Title of the window holding every setting of the player.
+        _dialog = new Dialog(parent, title: Tr("Preferences"), style: DialogStyle.Default | DialogStyle.ResizeBorder);
         _tree = new TreeCtrl(_dialog, style: TreeCtrlStyle.HideRoot | TreeCtrlStyle.Default | TreeCtrlStyle.HasButtons);
         _book = new Panel(_dialog);
         var general = new GeneralPreferences(_book, settings.General, operations);
@@ -33,7 +34,19 @@ internal sealed class PreferencesDialog : IDisposable
         _allPages = [general, backup, audio, silence, shortcuts, globals];
         _current = general;
 
-        string[] categories = ["General", "Backup and restore", "Audio", "Silence removal", "Keyboard Shortcuts", "Global Shortcuts"];
+        string[] categories = [
+            // Translators: Name of the settings category holding the language, speech and file-opening settings.
+            Tr("General"),
+            // Translators: Name of the settings category for saving a copy of the settings and bookmarks and putting them back.
+            Tr("Backup and restore"),
+            // Translators: Name of the settings category holding the loudness, speed and seeking settings.
+            Tr("Audio"),
+            // Translators: Name of the settings category for trimming the silent parts out of what is played.
+            Tr("Silence removal"),
+            // Translators: Name of the settings category for the key combinations that work while the player is the program in front.
+            Tr("Keyboard Shortcuts"),
+            // Translators: Name of the settings category for the key combinations that work while another program is in front.
+            Tr("Global Shortcuts")];
         var root = _tree.AddRoot("root");
         var generalItem = _tree.Add(root, categories[0]);
         var backupItem = _tree.Add(root, categories[1]);
@@ -141,13 +154,16 @@ internal sealed class PreferencesDialog : IDisposable
         var focused = Window.FindFocus();
         if (ReferenceEquals(focused, _tree))
         {
-            _speakHelp("Settings categories tree. Use up and down arrows to choose a category like General or Audio.");
+            // Translators: Help text for the list of settings categories down the left of the Preferences window. General
+            // and Audio are two of those categories and should read the same here as they do there.
+            _speakHelp(Tr("Settings categories tree. Use up and down arrows to choose a category like General or Audio."));
             return;
         }
 
         var message = _current.GetContextHelp(focused);
         _speakHelp(string.IsNullOrWhiteSpace(message)
-            ? "No detailed help is available for this control."
+            // Translators: Spoken when the user asks for help on a control that has none.
+            ? Tr("No detailed help is available for this control.")
             : message);
     }
 
@@ -157,7 +173,7 @@ internal sealed class PreferencesDialog : IDisposable
         {
             var error = page.Validate();
             if (string.IsNullOrEmpty(error)) continue;
-            Wx.MessageBox(error, "Preferences", MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
+            Wx.MessageBox(error, Tr("Preferences"), MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
             return;
         }
         foreach (var page in _allPages) page.Apply();

@@ -29,18 +29,29 @@ internal sealed class BookmarkActions
     {
         if (!TryGetContext(out var path, out var position))
             return;
-        var defaultName = $"Bookmark {PlaybackTimeFormatter.Format(position)}";
-        var name = _view.PromptText("Enter bookmark name", "Add a new bookmark", defaultName);
+        // Translators: The name a new bookmark is given unless the user types another one. {time} is the point in the
+        // file the bookmark was made at, such as 00:01:20.
+        var defaultName = TrFormat("Bookmark {time}", PlaybackTimeFormatter.Format(position) ?? "00:00:00");
+        var name = _view.PromptText(
+            // Translators: Asks the user what the new bookmark should be called.
+            Tr("Enter bookmark name"), Tr("Add a new bookmark"), defaultName);
         if (name is null)
             return;
         name = name.Trim();
         if (name.Length == 0)
         {
-            _view.ShowWarning("Bookmark name cannot be empty.", "Bookmarks");
+            _view.ShowWarning(
+                // Translators: Shown when the user confirms a bookmark name without typing anything.
+                Tr("Bookmark name cannot be empty."), Tr("Bookmarks"));
             return;
         }
         _store.Add(path, name, position);
-        _view.ShowInfo($"Bookmark '{name}' added at {PlaybackTimeFormatter.Format(position)}.", "Success");
+        _view.ShowInfo(
+            // Translators: Shown once a bookmark has been made. {name} is what it is called and {time} the point in the
+            // file it was made at, such as 00:01:20.
+            TrFormat("Bookmark '{name}' added at {time}.", name, PlaybackTimeFormatter.Format(position)),
+            // Translators: Title of the message shown once a bookmark has been made.
+            Tr("Success"));
     }
 
     private void Manage()
@@ -53,7 +64,9 @@ internal sealed class BookmarkActions
             var bookmarks = _store.ListFor(path);
             if (bookmarks.Count == 0)
             {
-                _view.ShowInfo("No bookmarks found for the current file.", "Bookmarks");
+                _view.ShowInfo(
+                    // Translators: Shown when the user opens the bookmark list but the current file has none.
+                    Tr("No bookmarks found for the current file."), Tr("Bookmarks"));
                 return;
             }
             var request = _view.ManageBookmarks(bookmarks.Select(ToListItem).ToArray());
@@ -71,12 +84,18 @@ internal sealed class BookmarkActions
                     Rename(path, bookmark);
                     break;
                 case BookmarkManagementAction.Delete:
-                    if (_view.Confirm($"Delete bookmark '{bookmark.Name}'?", "Confirm delete"))
+                    if (_view.Confirm(
+                        // Translators: Asks the user to confirm removing one bookmark. {name} is what the bookmark is called.
+                        TrFormat("Delete bookmark '{name}'?", bookmark.Name),
+                        // Translators: Title of the window that asks the user to confirm removing a bookmark.
+                        Tr("Confirm delete")))
                     {
                         _store.Delete(path, bookmark.Id);
                         if (_store.ListFor(path).Count == 0)
                         {
-                            _view.ShowInfo("All bookmarks for this file were removed.", "Bookmarks");
+                            _view.ShowInfo(
+                                // Translators: Shown once the last bookmark of the current file has been removed.
+                                Tr("All bookmarks for this file were removed."), Tr("Bookmarks"));
                             return;
                         }
                     }
@@ -87,13 +106,17 @@ internal sealed class BookmarkActions
 
     private void Rename(string path, Bookmark bookmark)
     {
-        var name = _view.PromptText("Edit bookmark name", "Manage bookmarks", bookmark.Name);
+        var name = _view.PromptText(
+            // Translators: Asks the user for the new name of a bookmark they are renaming.
+            Tr("Edit bookmark name"), Tr("Manage bookmarks"), bookmark.Name);
         if (name is null)
             return;
         name = name.Trim();
         if (name.Length == 0)
         {
-            _view.ShowWarning("Bookmark name cannot be empty.", "Error");
+            _view.ShowWarning(Tr("Bookmark name cannot be empty."),
+                // Translators: Title of a message telling the user that something went wrong.
+                Tr("Error"));
             return;
         }
         _store.Rename(path, bookmark.Id, name);
@@ -105,7 +128,12 @@ internal sealed class BookmarkActions
         var bookmark = path is null ? null : _store.Slot(path, slot);
         if (bookmark is null)
         {
-            _speech.Speak($"No bookmark in slot {slot}.", $"No bookmark {slot}.");
+            _speech.Speak(
+                // Translators: Spoken when the user asks for one of the ten numbered bookmark slots but nothing is saved
+                // in it. {slot} is the slot number, 1 to 10.
+                TrFormat("No bookmark in slot {slot}.", slot),
+                // Translators: The short wording spoken when a numbered bookmark slot is empty. {slot} is the slot number, 1 to 10.
+                TrFormat("No bookmark {slot}.", slot));
             return;
         }
         Jump(bookmark);
@@ -114,7 +142,12 @@ internal sealed class BookmarkActions
     private void Jump(Bookmark bookmark)
     {
         _player.SeekAbsolute(bookmark.Position);
-        _speech.Speak($"Jumped to bookmark {bookmark.Name}.", $"Jumped to '{bookmark.Name}' at {PlaybackTimeFormatter.Format(bookmark.Position)}.");
+        _speech.Speak(
+            // Translators: Spoken once playing has moved to a bookmark. {name} is what the bookmark is called.
+            TrFormat("Jumped to bookmark {name}.", bookmark.Name),
+            // Translators: The short wording spoken once playing has moved to a bookmark. {name} is what the bookmark is
+            // called and {time} the point in the file it sits at, such as 00:01:20.
+            TrFormat("Jumped to '{name}' at {time}.", bookmark.Name, PlaybackTimeFormatter.Format(bookmark.Position)));
     }
 
     private bool TryGetContext(out string path, out double position)
@@ -123,7 +156,11 @@ internal sealed class BookmarkActions
         position = Math.Max(0, _player.Elapsed ?? 0);
         if (path.Length > 0 && File.Exists(path))
             return true;
-        _speech.Speak("Time is not available for the current file.", "Time unavailable.");
+        _speech.Speak(
+            // Translators: Spoken when a command needs to know where playing has got to but the player cannot tell.
+            Tr("Time is not available for the current file."),
+            // Translators: The short wording spoken when the player cannot tell where playing has got to.
+            Tr("Time unavailable."));
         return false;
     }
 

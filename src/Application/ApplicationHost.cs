@@ -31,6 +31,9 @@ internal sealed class ApplicationHost : IDisposable
         var paths = new ApplicationPaths();
         _settingsStore = new SettingsStore(paths.SettingsFile, paths.LegacySettingsFile);
         _settings = _settingsStore.Load();
+        // Before anything else: the action tables and every window below build their strings once, and they
+        // have to be built in the user's language.
+        Localization.Initialize(_settings.General.Language);
         _shortcuts = new ShortcutManager(ActionRegistry.All);
         _shortcuts.Apply(_settings.Shortcuts.Primary, _settings.Shortcuts.Secondary);
         _globalShortcuts = new ShortcutManager(GlobalActionDefinitions.All);

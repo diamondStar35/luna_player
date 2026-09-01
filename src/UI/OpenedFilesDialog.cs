@@ -11,14 +11,16 @@ internal sealed class OpenedFilesDialog : IDisposable
 
     internal OpenedFilesDialog(Window parent, IReadOnlyList<string> entries, int selectedIndex)
     {
-        _dialog = new Dialog(parent, title: "Opened Files", style: DialogStyle.Default | DialogStyle.ResizeBorder);
+        _dialog = new Dialog(parent, title: Tr("Opened Files"), style: DialogStyle.Default | DialogStyle.ResizeBorder);
         _list = new ListBox(_dialog);
         _list.Set(entries);
         if (selectedIndex >= 0 && selectedIndex < entries.Count) _list.SelectedIndex = selectedIndex;
 
-        var information = new Button(_dialog, InformationId, "Playlist info");
-        var jump = new Button(_dialog, StandardId.Ok, "Jump to selected");
-        var cancel = new Button(_dialog, StandardId.Cancel, "Cancel");
+        // Translators: Button that shows details of every file in the playlist.
+        var information = new Button(_dialog, InformationId, Tr("Playlist info"));
+        // Translators: Button that starts playing the file chosen in the list.
+        var jump = new Button(_dialog, StandardId.Ok, Tr("Jump to selected"));
+        var cancel = new Button(_dialog, StandardId.Cancel, Tr("Cancel"));
         jump.SetDefault();
         information.Click += (_, _) => End(OpenedFilesAction.Information);
         jump.Click += (_, _) => End(OpenedFilesAction.Jump);
@@ -30,7 +32,8 @@ internal sealed class OpenedFilesDialog : IDisposable
         buttons.Add(jump, flags: SizerFlags.BorderRight, border: 6);
         buttons.Add(cancel);
         var sizer = new BoxSizer(Orientation.Vertical);
-        sizer.Add(new StaticText(_dialog, label: "Select file to jump to."), flags: SizerFlags.All, border: 8);
+        // Translators: Label above the list of loaded files, telling the user to pick the one to play.
+        sizer.Add(new StaticText(_dialog, label: Tr("Select file to jump to.")), flags: SizerFlags.All, border: 8);
         sizer.Add(_list, proportion: 1, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom | SizerFlags.Expand, border: 8);
         sizer.Add(buttons, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom | SizerFlags.Expand, border: 8);
         _dialog.SetSizer(sizer);

@@ -27,110 +27,174 @@ internal static class MainMenuBuilder
         ShortcutManager shortcuts)
     {
         var fileMenu = new Menu();
-        fileMenu.Append(commandIds[ActionId.OpenFile], Label("Open File...", ActionId.OpenFile, shortcuts));
-        fileMenu.Append(commandIds[ActionId.OpenLink], Label("Open Link...", ActionId.OpenLink, shortcuts));
-        fileMenu.Append(commandIds[ActionId.OpenFolder], Label("Open Folder...", ActionId.OpenFolder, shortcuts));
+        // Translators: File menu item that opens one or more media files. The three dots mean it opens a window to choose them.
+        fileMenu.Append(commandIds[ActionId.OpenFile], Label(Tr("Open File..."), ActionId.OpenFile, shortcuts));
+        // Translators: File menu item that asks for a link to a network stream and plays it.
+        fileMenu.Append(commandIds[ActionId.OpenLink], Label(Tr("Open Link..."), ActionId.OpenLink, shortcuts));
+        // Translators: File menu item that opens every media file in a folder.
+        fileMenu.Append(commandIds[ActionId.OpenFolder], Label(Tr("Open Folder..."), ActionId.OpenFolder, shortcuts));
         var localFileItems = new List<MenuItem>();
         var mediaFileItems = new List<MenuItem>();
-        Add(fileMenu, localFileItems, commandIds, shortcuts, ActionId.OpenContainingFolder, "Open Containing Folder");
-        Add(fileMenu, localFileItems, commandIds, shortcuts, ActionId.OpenFileProperties, "File properties...");
-        Add(fileMenu, mediaFileItems, commandIds, shortcuts, ActionId.OpenedFiles, "Opened Files...");
-        Add(fileMenu, mediaFileItems, commandIds, shortcuts, ActionId.CloseFile, "Close File");
-        Add(fileMenu, mediaFileItems, commandIds, shortcuts, ActionId.CloseAllFiles, "Close all files");
-        fileMenu.Append(commandIds[ActionId.OpenPreferences], Label("Preferences...", ActionId.OpenPreferences, shortcuts));
+        // Translators: File menu item that shows the folder holding the current file in Windows Explorer.
+        Add(fileMenu, localFileItems, commandIds, shortcuts, ActionId.OpenContainingFolder, Tr("Open Containing Folder"));
+        // Translators: File menu item that shows the Windows properties window for the current file.
+        Add(fileMenu, localFileItems, commandIds, shortcuts, ActionId.OpenFileProperties, Tr("File properties..."));
+        // Translators: File menu item that lists the files currently loaded in the player.
+        Add(fileMenu, mediaFileItems, commandIds, shortcuts, ActionId.OpenedFiles, Tr("Opened Files..."));
+        // Translators: File menu item that removes the current file from the player.
+        Add(fileMenu, mediaFileItems, commandIds, shortcuts, ActionId.CloseFile, Tr("Close File"));
+        // Translators: File menu item that removes every loaded file from the player.
+        Add(fileMenu, mediaFileItems, commandIds, shortcuts, ActionId.CloseAllFiles, Tr("Close all files"));
+        // Translators: File menu item that opens the player's settings window.
+        fileMenu.Append(commandIds[ActionId.OpenPreferences], Label(Tr("Preferences..."), ActionId.OpenPreferences, shortcuts));
         fileMenu.AppendSeparator();
-        fileMenu.Append(commandIds[ActionId.Exit], "Exit");
+        // Translators: File menu item that quits the player.
+        fileMenu.Append(commandIds[ActionId.Exit], Tr("Exit"));
 
         var localEditItems = new List<MenuItem>();
         var editMenu = new Menu();
-        Add(editMenu, localEditItems, commandIds, shortcuts, ActionId.RenameFile, "Rename...");
-        Add(editMenu, localEditItems, commandIds, shortcuts, ActionId.DeleteFile, "Delete");
-        Add(editMenu, localEditItems, commandIds, shortcuts, ActionId.CopyFile, "Copy");
-        editMenu.Append(commandIds[ActionId.PasteFile], Label("Paste", ActionId.PasteFile, shortcuts));
+        // Translators: Edit menu item that gives the current file a new name.
+        Add(editMenu, localEditItems, commandIds, shortcuts, ActionId.RenameFile, Tr("Rename..."));
+        // Translators: Edit menu item that deletes the current file from the disk.
+        Add(editMenu, localEditItems, commandIds, shortcuts, ActionId.DeleteFile, Tr("Delete"));
+        // Translators: Edit menu item that copies the current file to the clipboard.
+        Add(editMenu, localEditItems, commandIds, shortcuts, ActionId.CopyFile, Tr("Copy"));
+        // Translators: Edit menu item that pastes files copied from Windows Explorer into the player.
+        editMenu.Append(commandIds[ActionId.PasteFile], Label(Tr("Paste"), ActionId.PasteFile, shortcuts));
         editMenu.AppendSeparator();
-        var markCurrentItem = editMenu.AppendCheckItem(commandIds[ActionId.ToggleMarkCurrent], Label("Mark Current File", ActionId.ToggleMarkCurrent, shortcuts));
-        var markAllItem = editMenu.AppendCheckItem(commandIds[ActionId.ToggleMarkAll], Label("Mark All Files", ActionId.ToggleMarkAll, shortcuts));
-        var clearMarksItem = editMenu.Append(commandIds[ActionId.ClearMarks], Label("Clear Marked Files", ActionId.ClearMarks, shortcuts));
+        // Translators: Edit menu item that marks or unmarks the current file. It is ticked while the file is marked.
+        var markCurrentItem = editMenu.AppendCheckItem(commandIds[ActionId.ToggleMarkCurrent], Label(Tr("Mark Current File"), ActionId.ToggleMarkCurrent, shortcuts));
+        // Translators: Edit menu item that marks every loaded file. It is ticked while they all are.
+        var markAllItem = editMenu.AppendCheckItem(commandIds[ActionId.ToggleMarkAll], Label(Tr("Mark All Files"), ActionId.ToggleMarkAll, shortcuts));
+        // Translators: Edit menu item that unmarks all marked files.
+        var clearMarksItem = editMenu.Append(commandIds[ActionId.ClearMarks], Label(Tr("Clear Marked Files"), ActionId.ClearMarks, shortcuts));
         localEditItems.Add(clearMarksItem);
 
         var bookmarkItems = new List<MenuItem>();
         var bookmarksMenu = new Menu();
-        Add(bookmarksMenu, bookmarkItems, commandIds, shortcuts, ActionId.AddBookmark, "Add a new bookmark");
-        Add(bookmarksMenu, bookmarkItems, commandIds, shortcuts, ActionId.ManageBookmarks, "Manage bookmarks");
+        // Translators: Bookmarks menu item that saves the current position in the file as a bookmark.
+        Add(bookmarksMenu, bookmarkItems, commandIds, shortcuts, ActionId.AddBookmark, Tr("Add a new bookmark"));
+        // Translators: Bookmarks menu item that opens the window for renaming and deleting bookmarks.
+        Add(bookmarksMenu, bookmarkItems, commandIds, shortcuts, ActionId.ManageBookmarks, Tr("Manage bookmarks"));
         var bookmarkJumps = new Menu();
         foreach (var slot in BookmarkActionDefinitions.Slots)
-            Add(bookmarkJumps, bookmarkItems, commandIds, shortcuts, slot.Id, $"Bookmark {slot.Slot}");
-        bookmarksMenu.AppendSubMenu(bookmarkJumps, "Jump to bookmark");
+            // Translators: Item in the "Jump to bookmark" submenu, one for each of the ten bookmark slots.
+            // {slot} is the slot number, 1 to 10.
+            Add(bookmarkJumps, bookmarkItems, commandIds, shortcuts, slot.Id, TrFormat("Bookmark {slot}", slot.Slot));
+        // Translators: Bookmarks submenu holding one item per numbered bookmark slot.
+        bookmarksMenu.AppendSubMenu(bookmarkJumps, Tr("Jump to bookmark"));
 
         var markedItems = new List<MenuItem>();
         var markedMenu = new Menu();
-        Add(markedMenu, markedItems, commandIds, shortcuts, ActionId.MarkedCopyToFolder, "&Copy to folder...");
-        Add(markedMenu, markedItems, commandIds, shortcuts, ActionId.MarkedMoveToFolder, "&Move to folder...");
-        Add(markedMenu, markedItems, commandIds, shortcuts, ActionId.MarkedCopyToClipboard, "Copy to &clipboard");
-        Add(markedMenu, markedItems, commandIds, shortcuts, ActionId.MarkedDelete, "&Delete");
+        // Translators: Item in the marked files menu: copy the marked files into a folder the user chooses.
+        // The ampersand marks the letter used to reach the item from the keyboard; put it before a letter that suits your language.
+        Add(markedMenu, markedItems, commandIds, shortcuts, ActionId.MarkedCopyToFolder, Tr("&Copy to folder..."));
+        // Translators: Item in the marked files menu: move the marked files into a folder the user chooses.
+        // The ampersand marks the letter used to reach the item from the keyboard; put it before a letter that suits your language.
+        Add(markedMenu, markedItems, commandIds, shortcuts, ActionId.MarkedMoveToFolder, Tr("&Move to folder..."));
+        // Translators: Item in the marked files menu: copy the marked files to the clipboard.
+        // The ampersand marks the letter used to reach the item from the keyboard; put it before a letter that suits your language.
+        Add(markedMenu, markedItems, commandIds, shortcuts, ActionId.MarkedCopyToClipboard, Tr("Copy to &clipboard"));
+        // Translators: Item in the marked files menu: delete the marked files from the disk.
+        // The ampersand marks the letter used to reach the item from the keyboard; put it before a letter that suits your language.
+        Add(markedMenu, markedItems, commandIds, shortcuts, ActionId.MarkedDelete, Tr("&Delete"));
 
         var playbackItems = new List<MenuItem>();
         var playerMenu = new Menu();
-        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.PlayPause, "Play/Pause");
+        // Translators: Player menu item that starts playing, or pauses playing.
+        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.PlayPause, Tr("Play/Pause"));
 
         var speedMenu = new Menu();
-        Add(speedMenu, playbackItems, commandIds, shortcuts, ActionId.SpeedUp, "Increase Speed");
-        Add(speedMenu, playbackItems, commandIds, shortcuts, ActionId.SpeedDown, "Decrease Speed");
-        Add(speedMenu, playbackItems, commandIds, shortcuts, ActionId.ResetSpeed, "Reset Speed");
-        playerMenu.AppendSubMenu(speedMenu, "Speed");
+        // Translators: Item in the Speed submenu: play the file faster.
+        Add(speedMenu, playbackItems, commandIds, shortcuts, ActionId.SpeedUp, Tr("Increase Speed"));
+        // Translators: Item in the Speed submenu: play the file slower.
+        Add(speedMenu, playbackItems, commandIds, shortcuts, ActionId.SpeedDown, Tr("Decrease Speed"));
+        // Translators: Item in the Speed submenu: return the playing speed to normal.
+        Add(speedMenu, playbackItems, commandIds, shortcuts, ActionId.ResetSpeed, Tr("Reset Speed"));
+        // Translators: Player submenu holding the items that change how fast the file plays.
+        playerMenu.AppendSubMenu(speedMenu, Tr("Speed"));
         playerMenu.AppendSeparator();
 
-        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.PreviousTrack, "Previous");
-        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.NextTrack, "Next");
-        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.FirstTrack, "First File");
-        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.GoToFile, "Go to file...");
-        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.LastTrack, "Last File");
+        // Translators: Player menu item that plays the file before the current one.
+        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.PreviousTrack, Tr("Previous"));
+        // Translators: Player menu item that plays the file after the current one.
+        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.NextTrack, Tr("Next"));
+        // Translators: Player menu item that plays the first file in the list.
+        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.FirstTrack, Tr("First File"));
+        // Translators: Player menu item that asks for a file number and jumps to it.
+        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.GoToFile, Tr("Go to file..."));
+        // Translators: Player menu item that plays the last file in the list.
+        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.LastTrack, Tr("Last File"));
         var shuffleItem = playerMenu.AppendCheckItem(
             commandIds[ActionId.ToggleShuffle],
-            Label("Shuffle", ActionId.ToggleShuffle, shortcuts));
+            // Translators: Player menu item that turns playing files in random order on or off. It is ticked while it is on.
+            Label(Tr("Shuffle"), ActionId.ToggleShuffle, shortcuts));
         playbackItems.Add(shuffleItem);
         var repeatItem = playerMenu.AppendCheckItem(
             commandIds[ActionId.ToggleRepeatFile],
-            Label("Repeat File", ActionId.ToggleRepeatFile, shortcuts));
+            // Translators: Player menu item that turns repeating the current file on or off. It is ticked while it is on.
+            Label(Tr("Repeat File"), ActionId.ToggleRepeatFile, shortcuts));
         playbackItems.Add(repeatItem);
         var silenceItem = playerMenu.AppendCheckItem(
             commandIds[ActionId.ToggleSilenceRemoval],
-            Label("Enable silence removal filter", ActionId.ToggleSilenceRemoval, shortcuts));
+            // Translators: Player menu item that turns skipping silent parts of the file on or off. It is ticked while it is on.
+            Label(Tr("Enable silence removal filter"), ActionId.ToggleSilenceRemoval, shortcuts));
         playbackItems.Add(silenceItem);
 
         var loopMenu = new Menu();
-        Add(loopMenu, playbackItems, commandIds, shortcuts, ActionId.StartSelection, "Set A (loop start)");
-        Add(loopMenu, playbackItems, commandIds, shortcuts, ActionId.EndSelection, "Set B (loop end)");
-        Add(loopMenu, playbackItems, commandIds, shortcuts, ActionId.ClearSelection, "Clear A-B loop");
-        playerMenu.AppendSubMenu(loopMenu, "A-B loop");
+        // Translators: Item in the A-B loop submenu: mark the start of the part to repeat.
+        // A and B name the two ends of the loop and are usually left as they are.
+        Add(loopMenu, playbackItems, commandIds, shortcuts, ActionId.StartSelection, Tr("Set A (loop start)"));
+        // Translators: Item in the A-B loop submenu: mark the end of the part to repeat.
+        // A and B name the two ends of the loop and are usually left as they are.
+        Add(loopMenu, playbackItems, commandIds, shortcuts, ActionId.EndSelection, Tr("Set B (loop end)"));
+        // Translators: Item in the A-B loop submenu: forget the marked part and play the whole file again.
+        // A and B name the two ends of the loop and are usually left as they are.
+        Add(loopMenu, playbackItems, commandIds, shortcuts, ActionId.ClearSelection, Tr("Clear A-B loop"));
+        // Translators: Player submenu holding the items that repeat one part of the file.
+        // A and B name the two ends of the loop and are usually left as they are.
+        playerMenu.AppendSubMenu(loopMenu, Tr("A-B loop"));
         playerMenu.AppendSeparator();
 
-        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.SeekBackward, "Rewind");
-        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.SeekForward, "Forward");
-        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.SeekStart, "Beginning");
-        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.SeekEnd, "End");
-        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.GoToTime, "Go to time...");
+        // Translators: Player menu item that moves back in the file by one seek step.
+        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.SeekBackward, Tr("Rewind"));
+        // Translators: Player menu item that moves forward in the file by one seek step.
+        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.SeekForward, Tr("Forward"));
+        // Translators: Player menu item that jumps to the beginning of the file.
+        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.SeekStart, Tr("Beginning"));
+        // Translators: Player menu item that jumps to the end of the file.
+        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.SeekEnd, Tr("End"));
+        // Translators: Player menu item that asks for a time and jumps to it.
+        Add(playerMenu, playbackItems, commandIds, shortcuts, ActionId.GoToTime, Tr("Go to time..."));
         playerMenu.AppendSeparator();
 
         var jumpMenu = new Menu();
         foreach (var jump in PlaybackActionDefinitions.PercentJumps)
             Add(jumpMenu, playbackItems, commandIds, shortcuts, jump.Id, $"{jump.Percent}%");
-        playerMenu.AppendSubMenu(jumpMenu, "Jump to Percentage");
+        // Translators: Player submenu holding items that jump to a position given as a percentage, from 10% to 100%.
+        playerMenu.AppendSubMenu(jumpMenu, Tr("Jump to Percentage"));
 
         var movementMenu = new Menu();
         foreach (var step in PlaybackActionDefinitions.SeekSteps)
             Add(movementMenu, playbackItems, commandIds, shortcuts, step.Id, step.Label);
-        playerMenu.AppendSubMenu(movementMenu, "Control the clicks movement value");
+        // Translators: Player submenu for choosing how far one press of the seek keys moves.
+        playerMenu.AppendSubMenu(movementMenu, Tr("Control the clicks movement value"));
         playerMenu.AppendSeparator();
-        playerMenu.Append(commandIds[ActionId.SoundCards], Label("Sound Cards...", ActionId.SoundCards, shortcuts));
+        // Translators: Player menu item that opens the list of audio output devices to play through.
+        playerMenu.Append(commandIds[ActionId.SoundCards], Label(Tr("Sound Cards..."), ActionId.SoundCards, shortcuts));
 
         var menuBar = new MenuBar();
-        menuBar.Append(fileMenu, "File");
-        menuBar.Append(editMenu, "Edit");
-        menuBar.Append(bookmarksMenu, "Bookmarks");
+        // Translators: Name of the File menu in the menu bar.
+        menuBar.Append(fileMenu, Tr("File"));
+        // Translators: Name of the Edit menu in the menu bar.
+        menuBar.Append(editMenu, Tr("Edit"));
+        // Translators: Name of the Bookmarks menu in the menu bar.
+        menuBar.Append(bookmarksMenu, Tr("Bookmarks"));
         var markedMenuIndex = 3;
-        menuBar.Append(markedMenu, "Actions for marked files");
-        menuBar.Append(playerMenu, "Player");
+        // Translators: Name of the menu bar menu holding the things that can be done to the marked files at once.
+        menuBar.Append(markedMenu, Tr("Actions for marked files"));
+        // Translators: Name of the Player menu in the menu bar, holding the playing, seeking and volume items.
+        menuBar.Append(playerMenu, Tr("Player"));
         frame.SetMenuBar(menuBar);
         return new MainMenuComponents(menuBar, 2, markedMenuIndex, playbackItems, mediaFileItems, localFileItems, markedItems, localEditItems, bookmarkItems, markCurrentItem, markAllItem, shuffleItem, repeatItem, silenceItem);
     }

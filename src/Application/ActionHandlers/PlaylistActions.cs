@@ -42,20 +42,36 @@ internal sealed class PlaylistActions
     {
         if (_player.Count <= 1)
         {
-            _speech.Speak("No other files are loaded.", "No other files.");
+            _speech.Speak(
+                // Translators: Spoken when the user asks to jump to another file but only one is loaded.
+                Tr("No other files are loaded."),
+                // Translators: The short wording spoken when only one file is loaded.
+                Tr("No other files."));
             return;
         }
-        var value = _view.PromptText($"Enter file number (1-{_player.Count})", "Go To File", (_player.CurrentIndex + 1).ToString());
+        var value = _view.PromptText(
+            // Translators: Asks the user which file in the playlist to move to. {count} is how many files are loaded.
+            TrFormat("Enter file number (1-{count})", _player.Count),
+            // Translators: Title of the window that asks which file in the playlist to move to.
+            Tr("Go To File"), (_player.CurrentIndex + 1).ToString());
         if (value is null)
             return;
         if (!int.TryParse(value, out var number))
         {
-            _speech.Speak("Invalid file number.", "Invalid number.");
+            _speech.Speak(
+                // Translators: Spoken when what the user typed as a file number is not a number.
+                Tr("Invalid file number."),
+                // Translators: The short wording spoken when what was typed as a file number is not a number.
+                Tr("Invalid number."));
             return;
         }
         if (number < 1 || number > _player.Count)
         {
-            _speech.Speak("File number out of range.", "Out of range.");
+            _speech.Speak(
+                // Translators: Spoken when the file number the user typed is higher or lower than the playlist holds.
+                Tr("File number out of range."),
+                // Translators: The short wording spoken when the file number typed is outside the playlist.
+                Tr("Out of range."));
             return;
         }
         SetSwitched(_player.GoToIndex(number - 1), announce: false);
@@ -67,7 +83,12 @@ internal sealed class PlaylistActions
             return;
         var enabled = _player.ToggleShuffle();
         _view.SetShuffleChecked(enabled);
-        _speech.Speak(enabled ? "Shuffle on" : "Shuffle off", enabled ? "Shuffle on" : "Shuffle off");
+        _speech.Speak(enabled
+                // Translators: Spoken once the player has started playing the files in a random order.
+                ? Tr("Shuffle on")
+                // Translators: Spoken once the player has gone back to playing the files in their listed order.
+                : Tr("Shuffle off"),
+            enabled ? Tr("Shuffle on") : Tr("Shuffle off"));
     }
 
     private void ToggleRepeatFile()
@@ -76,14 +97,19 @@ internal sealed class PlaylistActions
             return;
         var enabled = _player.ToggleRepeatFile();
         _view.SetRepeatFileChecked(enabled);
-        _speech.Speak(enabled ? "Repeat on" : "Repeat off", enabled ? "Repeat on" : "Repeat off");
+        _speech.Speak(enabled
+                // Translators: Spoken once the player has started playing the same file over and over.
+                ? Tr("Repeat on")
+                // Translators: Spoken once the player has stopped playing the same file over and over.
+                : Tr("Repeat off"),
+            enabled ? Tr("Repeat on") : Tr("Repeat off"));
     }
 
     private bool EnsureFile()
     {
         if (!string.IsNullOrEmpty(_player.CurrentPath))
             return true;
-        _speech.Speak("No file loaded.", "No file.");
+        _speech.Speak(Tr("No file loaded."), Tr("No file."));
         return false;
     }
 

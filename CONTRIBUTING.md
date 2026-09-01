@@ -86,6 +86,34 @@ Changes to the user interface should meet the following:
 - No information conveyed by colour, position or icon alone
 - New settings include context help text, so <kbd>F1</kbd> describes them
 
+## Translations
+
+Every string the user can read or hear goes through `Tr`, and every call carries a
+`// Translators:` comment on the line above it saying what the string is and where it appears.
+That comment is the only context a translator gets, so write it for someone who cannot see the
+code: name the kind of control, the page it sits on, and explain any word that must be left
+alone. Where a message contains a value, use a named placeholder and say what it holds:
+
+```csharp
+// Translators: Asks the user which file in the playlist to move to. {count} is how many files are loaded.
+TrFormat("Enter file number (1-{count})", _player.Count)
+```
+
+Names bind values to placeholders, not positions, so a translation is free to reorder them. Two
+`Tr` calls on one line share a single comment, so give each string its own line.
+
+After changing any string, rebuild the template and the catalogues:
+
+```powershell
+./scripts/update-pot.ps1
+```
+
+This needs the GNU gettext tools on `PATH`. It rewrites `locale/LunaPlayer.pot`, merges it into
+every `locale/<language>/LC_MESSAGES/LunaPlayer.po`, compiles each one to the `.mo` the player
+loads, and fails if a translation uses different placeholder names from the string it translates.
+Pass `-Language <code>` to start a new catalogue, or `-Compile` to only rebuild the `.mo` files.
+The `.po` and `.pot` files are committed; the `.mo` files are build output and are not.
+
 ## Submodules
 
 The windowing layer is a Git submodule with its own repository and contribution guidelines. Submit

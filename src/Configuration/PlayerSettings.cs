@@ -57,7 +57,8 @@ internal sealed class PlayerSettings
         Silence.StopSilence = Math.Max(0, Silence.StopSilence);
         Silence.Window = Silence.Window > 0 ? Silence.Window : 0.02;
         General.LastDirectory ??= string.Empty;
-        General.Language = string.IsNullOrWhiteSpace(General.Language) ? "system" : General.Language.Trim();
+        General.Language = string.IsNullOrWhiteSpace(General.Language)
+            ? Localization.SystemLanguage : General.Language.Trim();
         Audio.Device ??= string.Empty;
         Playback.LastFile ??= string.Empty;
         Shortcuts.Primary ??= [];
@@ -75,7 +76,7 @@ internal sealed class PlayerSettings
 
 internal sealed class GeneralSettings
 {
-    public string Language { get; set; } = "system";
+    public string Language { get; set; } = Localization.SystemLanguage;
     public bool RememberLastPosition { get; set; }
     public bool SpeakFileOnNavigation { get; set; }
     public bool CheckUpdatesOnStartup { get; set; } = true;

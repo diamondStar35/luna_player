@@ -108,18 +108,27 @@ internal sealed class FileActions
 
     private void OpenLink()
     {
-        var link = _view.PromptText("Enter link to play.", "Open Link");
+        var link = _view.PromptText(
+            // Translators: Asks the user for the web address of the stream they want to play.
+            Tr("Enter link to play."), Tr("Open Link"));
         if (link is null)
             return;
         // An empty entry is rejected the same way as a bad one, as the Python player does.
         var url = link.Trim();
         if (!MediaLibrary.IsHttpUrl(url))
         {
-            _view.ShowError("The link must start with http or https.", "Invalid link");
+            _view.ShowError(
+                // Translators: Shown when the address typed into Open Link is not a web address.
+                // "http" and "https" are the names of the two web protocols and are not translated.
+                Tr("The link must start with http or https."),
+                // Translators: Title of the message shown when the address typed into Open Link is not a web address.
+                Tr("Invalid link"));
             return;
         }
         if (!_player.OpenStream(url))
-            _view.ShowError("Could not open the link.", "Error");
+            _view.ShowError(
+                // Translators: Shown when the stream at the address typed into Open Link could not be played.
+                Tr("Could not open the link."), Tr("Error"));
     }
 
     private void OpenFolderFromDialog()
@@ -129,7 +138,11 @@ internal sealed class FileActions
             return;
         _settings.General.LastDirectory = folder;
         if (!_player.OpenFolder(folder))
-            _speech.Speak("No audio files found in that folder.", "No audio files.");
+            _speech.Speak(
+                // Translators: Spoken when the chosen folder holds nothing this player can play.
+                Tr("No audio files found in that folder."),
+                // Translators: The short wording spoken when the chosen folder holds nothing this player can play.
+                Tr("No audio files."));
     }
 
     private void OpenContainingFolder()
@@ -137,10 +150,14 @@ internal sealed class FileActions
         var path = _player.CurrentPath;
         if (path is null || !File.Exists(path))
         {
-            _speech.Speak("Open containing folder is available only for local files.", "Not available for streams.");
+            _speech.Speak(
+                // Translators: Spoken when the user asks to show the folder of what is playing but it is a stream rather than a file on this computer.
+                Tr("Open containing folder is available only for local files."), Tr("Not available for streams."));
             return;
         }
-        TryStart(new ProcessStartInfo("explorer.exe", $"/select,\"{path}\"") { UseShellExecute = true }, "Could not open containing folder.");
+        TryStart(new ProcessStartInfo("explorer.exe", $"/select,\"{path}\"") { UseShellExecute = true },
+            // Translators: Spoken when the folder holding the current file could not be shown.
+            Tr("Could not open containing folder."));
     }
 
     private void OpenFileProperties()
@@ -148,17 +165,21 @@ internal sealed class FileActions
         var path = _player.CurrentPath;
         if (path is null || !File.Exists(path))
         {
-            _speech.Speak("File properties are available only for local files.", "Not available for streams.");
+            _speech.Speak(
+                // Translators: Spoken when the user asks for the Windows properties of what is playing but it is a stream rather than a file on this computer.
+                Tr("File properties are available only for local files."), Tr("Not available for streams."));
             return;
         }
-        TryStart(new ProcessStartInfo(path) { UseShellExecute = true, Verb = "properties" }, "Could not open file properties.");
+        TryStart(new ProcessStartInfo(path) { UseShellExecute = true, Verb = "properties" },
+            // Translators: Spoken when the Windows properties window for the current file could not be shown.
+            Tr("Could not open file properties."));
     }
 
     private void OpenedFiles()
     {
         if (_player.Count == 0)
         {
-            _speech.Speak("No file loaded.", "No file.");
+            _speech.Speak(Tr("No file loaded."), Tr("No file."));
             return;
         }
         var selected = _player.CurrentIndex;
@@ -184,22 +205,28 @@ internal sealed class FileActions
         var task = Task.Run(() => _playlistInfo.Build(
             _player.Files, _player.CurrentPath, _player.CurrentIndex, _player.Duration,
             _player.Elapsed, _player.Remaining, progressQueue.Enqueue, cancellation.Token));
-        using var progress = _view.BeginProgress("Loading playlist info", "Preparing...", _player.Count);
+        using var progress = _view.BeginProgress(
+            // Translators: Title of the progress window shown while details of every file in the playlist are being read.
+            Tr("Loading playlist info"),
+            // Translators: First message in the progress window, shown before the first file has been read.
+            Tr("Preparing..."), _player.Count);
         while (!task.IsCompleted)
         {
             var updated = false;
             while (progressQueue.TryDequeue(out var item))
             {
                 updated = true;
-                if (!progress.Update(item.Value, $"Reading: {item.Name}")) cancellation.Cancel();
+                // Translators: Progress message naming the file being read right now. {name} is the file name.
+                if (!progress.Update(item.Value, TrFormat("Reading: {name}", item.Name))) cancellation.Cancel();
             }
-            if (!updated && !progress.Pulse("Preparing...")) cancellation.Cancel();
+            if (!updated && !progress.Pulse(Tr("Preparing..."))) cancellation.Cancel();
             Thread.Sleep(25);
         }
         try
         {
             var text = task.GetAwaiter().GetResult();
-            _view.ShowTextInfo("Playlist Info", text);
+            // Translators: Title of the window listing details of every file in the playlist.
+            _view.ShowTextInfo(Tr("Playlist Info"), text);
         }
         catch (OperationCanceledException)
         {
@@ -209,24 +236,27 @@ internal sealed class FileActions
     private void CloseFile()
     {
         if (!_player.CloseCurrent())
-            _speech.Speak("No file loaded.", "No file.");
+            _speech.Speak(Tr("No file loaded."), Tr("No file."));
         else
-            _speech.Speak("File closed.", "File closed.");
+            // Translators: Spoken once the current file has been taken out of the playlist.
+            _speech.Speak(Tr("File closed."), Tr("File closed."));
     }
 
     private void CloseAllFiles()
     {
         if (!_player.CloseAll())
-            _speech.Speak("No file loaded.", "No file.");
+            _speech.Speak(Tr("No file loaded."), Tr("No file."));
         else
-            _speech.Speak("All files closed.", "All files closed.");
+            // Translators: Spoken once every file has been taken out of the playlist.
+            _speech.Speak(Tr("All files closed."), Tr("All files closed."));
     }
 
     private void TryStart(ProcessStartInfo startInfo, string failure)
     {
         try { Process.Start(startInfo); }
         catch (Exception exception) when (exception is InvalidOperationException or System.ComponentModel.Win32Exception)
-        { _speech.Speak(failure, "Open failed."); }
+        // Translators: The short wording spoken when Windows could not be asked to open a folder or a properties window.
+        { _speech.Speak(failure, Tr("Open failed.")); }
     }
 
     private bool OpenFileWithConfiguredMode(string path, double? startPosition = null) => _settings.General.OpenFilesMode switch
@@ -241,7 +271,7 @@ internal sealed class FileActions
         var path = _player.CurrentPath;
         if (string.IsNullOrEmpty(path))
         {
-            _speech.Speak("No file loaded.", "No file.");
+            _speech.Speak(Tr("No file loaded."), Tr("No file."));
             return;
         }
 
@@ -263,8 +293,12 @@ internal sealed class FileActions
             default:
                 var copied = _clipboard.SetText(path);
                 _speech.Speak(
-                    copied ? "File path copied to clipboard." : "Unable to copy to clipboard.",
-                    copied ? "Copied." : "Copy failed.");
+                    copied
+                        // Translators: Spoken once the full location of the current file has been copied to the clipboard.
+                        ? Tr("File path copied to clipboard.")
+                        // Translators: Spoken when the full location of the current file could not be copied to the clipboard.
+                        : Tr("Unable to copy to clipboard."),
+                    copied ? Tr("Copied.") : Tr("Copy failed."));
                 _fileInfoPressCount = 0;
                 break;
         }
