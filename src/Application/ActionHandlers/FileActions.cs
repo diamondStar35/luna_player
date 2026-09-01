@@ -110,7 +110,9 @@ internal sealed class FileActions
     {
         var link = _view.PromptText(
             // Translators: Asks the user for the web address of the stream they want to play.
-            Tr("Enter link to play."), Tr("Open Link"));
+            Tr("Enter link to play."),
+            // Translators: Title of the window that asks for the web address of a stream to play.
+            Tr("Open Link"));
         if (link is null)
             return;
         // An empty entry is rejected the same way as a bad one, as the Python player does.

@@ -11,7 +11,11 @@ internal sealed class OpenedFilesDialog : IDisposable
 
     internal OpenedFilesDialog(Window parent, IReadOnlyList<string> entries, int selectedIndex)
     {
-        _dialog = new Dialog(parent, title: Tr("Opened Files"), style: DialogStyle.Default | DialogStyle.ResizeBorder);
+        _dialog = new Dialog(
+            parent,
+            // Translators: Title of the window listing the files currently loaded in the player.
+            title: Tr("Opened Files"),
+            style: DialogStyle.Default | DialogStyle.ResizeBorder);
         _list = new ListBox(_dialog);
         _list.Set(entries);
         if (selectedIndex >= 0 && selectedIndex < entries.Count) _list.SelectedIndex = selectedIndex;
