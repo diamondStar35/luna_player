@@ -60,81 +60,71 @@ internal static class PlaybackActionDefinitions
     {
         var actions = new List<ActionDefinition>
         {
-            // Translators: Name of the command that starts playing, or pauses playing, in the menus and the shortcuts list.
-            new(ActionId.PlayPause, Tr("Play/Pause"), new("space"), new("enter")),
-            // Translators: Name of the command that moves back in the file by one seek step.
-            new(ActionId.SeekBackward, Tr("Seek Backward"), new("left")),
-            // Translators: Name of the command that moves forward in the file by one seek step.
-            new(ActionId.SeekForward, Tr("Seek Forward"), new("right")),
-            // Translators: Name of the command that moves back by twice the seek step.
-            // "x2" means two times and is usually left as it is.
-            new(ActionId.SeekBackwardX2, Tr("Seek Backward x2"), new("left", ShortcutModifiers.Control)),
-            // Translators: Name of the command that moves forward by twice the seek step.
-            // "x2" means two times and is usually left as it is.
-            new(ActionId.SeekForwardX2, Tr("Seek Forward x2"), new("right", ShortcutModifiers.Control)),
-            // Translators: Name of the command that moves back by four times the seek step.
-            // "x4" means four times and is usually left as it is.
-            new(ActionId.SeekBackwardX4, Tr("Seek Backward x4"), new("left", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
-            // Translators: Name of the command that moves forward by four times the seek step.
-            // "x4" means four times and is usually left as it is.
-            new(ActionId.SeekForwardX4, Tr("Seek Forward x4"), new("right", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
-            // Translators: Name of the command that moves back by eight times the seek step.
-            // "x8" means eight times and is usually left as it is.
-            new(ActionId.SeekBackwardX8, Tr("Seek Backward x8"), new("left", ShortcutModifiers.Shift)),
-            // Translators: Name of the command that moves forward by eight times the seek step.
-            // "x8" means eight times and is usually left as it is.
-            new(ActionId.SeekForwardX8, Tr("Seek Forward x8"), new("right", ShortcutModifiers.Shift)),
-            // Translators: Name of the command that jumps to the beginning of the file.
-            new(ActionId.SeekStart, Tr("Seek Start"), new("home")),
-            // Translators: Name of the command that jumps to the end of the file.
-            new(ActionId.SeekEnd, Tr("Seek End"), new("end")),
-            // Translators: Name of the command that asks for a time and jumps to it.
-            new(ActionId.GoToTime, Tr("Go To Time"), new("g", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
-            // Translators: Name of the command that opens the list of audio output devices to play through.
-            new(ActionId.SoundCards, Tr("Sound Cards"), new("a", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
+            // Translators: Name of the command that starts playing, or pauses playing, in the shortcuts list.
+            new(ActionId.PlayPause, Tr("Play or pause"), new("space"), new("enter")),
+            // Translators: Name of the command that moves back in the file by the chosen seek step.
+            new(ActionId.SeekBackward, Tr("Rewind by one step"), new("left")),
+            // Translators: Name of the command that moves forward in the file by the chosen seek step.
+            new(ActionId.SeekForward, Tr("Fast forward by one step"), new("right")),
+            // Translators: Name of the command that moves back by twice the chosen seek step.
+            new(ActionId.SeekBackwardX2, Tr("Rewind by two steps"), new("left", ShortcutModifiers.Shift)),
+            // Translators: Name of the command that moves forward by twice the chosen seek step.
+            new(ActionId.SeekForwardX2, Tr("Fast forward by two steps"), new("right", ShortcutModifiers.Shift)),
+            // Translators: Name of the command that moves back by four times the chosen seek step.
+            new(ActionId.SeekBackwardX4, Tr("Rewind by four steps"), new("left", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
+            // Translators: Name of the command that moves forward by four times the chosen seek step.
+            new(ActionId.SeekForwardX4, Tr("Fast forward by four steps"), new("right", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
+            // Translators: Name of the command that jumps to the very start of the file.
+            new(ActionId.SeekStart, Tr("Beginning of the file"), new("home")),
+            // Translators: Name of the command that jumps to the very end of the file.
+            new(ActionId.SeekEnd, Tr("End of the file"), new("end")),
+            // Translators: Name of the command that opens the window asking for a time to jump to.
+            new(ActionId.GoToTime, Tr("Go to time dialog"), new("g", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
+            // Translators: Name of the command that opens the window listing the audio output devices to play through.
+            new(ActionId.SoundCards, Tr("Sound cards dialog"), new("a", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
             // Translators: Name of the command that makes the sound louder.
-            new(ActionId.VolumeUp, Tr("Volume Up"), new("up")),
+            new(ActionId.VolumeUp, Tr("Increase volume"), new("up")),
             // Translators: Name of the command that makes the sound quieter.
-            new(ActionId.VolumeDown, Tr("Volume Down"), new("down")),
-            // Translators: Name of the command that sets the volume to the loudest setting.
-            new(ActionId.VolumeMaximize, Tr("Volume Max"), new("up", ShortcutModifiers.Shift)),
-            // Translators: Name of the command that sets the volume to the quietest setting.
-            new(ActionId.VolumeMinimize, Tr("Volume Min"), new("down", ShortcutModifiers.Shift)),
+            new(ActionId.VolumeDown, Tr("Decrease volume"), new("down")),
+            // Translators: Name of the command that sets the volume to the loudest setting in one step.
+            new(ActionId.VolumeMaximize, Tr("Set volume to maximum"), new("up", ShortcutModifiers.Shift)),
+            // Translators: Name of the command that sets the volume to the quietest setting in one step.
+            new(ActionId.VolumeMinimize, Tr("Set volume to minimum"), new("down", ShortcutModifiers.Shift)),
             // Translators: Name of the command that speaks the current volume.
-            new(ActionId.AnnounceVolume, Tr("Announce Volume"), new("v")),
+            new(ActionId.AnnounceVolume, Tr("Speak current volume"), new("v")),
             // Translators: Name of the command that speaks how much of the file has already played.
-            new(ActionId.AnnounceElapsed, Tr("Announce Elapsed"), new("e")),
+            new(ActionId.AnnounceElapsed, Tr("Speak elapsed time"), new("e")),
             // Translators: Name of the command that speaks how much of the file is left to play.
-            new(ActionId.AnnounceRemaining, Tr("Announce Remaining"), new("r")),
+            new(ActionId.AnnounceRemaining, Tr("Speak remaining time"), new("r")),
             // Translators: Name of the command that speaks the total length of the file.
-            new(ActionId.AnnounceDuration, Tr("Announce Duration"), new("t")),
+            new(ActionId.AnnounceDuration, Tr("Speak total duration"), new("t")),
             // Translators: Name of the command that speaks how far through the file playing has reached, as a percentage.
-            new(ActionId.AnnouncePercent, Tr("Announce Percent"), new("p")),
-            // Translators: Name of the command that speaks the current playing speed.
-            new(ActionId.AnnounceSpeed, Tr("Announce Speed"), new("s")),
+            new(ActionId.AnnouncePercent, Tr("Speak position as a percentage"), new("p")),
+            // Translators: Name of the command that speaks how fast the file is playing.
+            new(ActionId.AnnounceSpeed, Tr("Speak playback speed"), new("s")),
             // Translators: Name of the command that switches between short and detailed spoken announcements.
-            new(ActionId.ToggleVerbosity, Tr("Toggle Verbosity"), new("v", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
+            new(ActionId.ToggleVerbosity, Tr("Switch between brief and detailed announcements"), new("v", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
             // Translators: Name of the command that plays the file faster.
-            new(ActionId.SpeedUp, Tr("Speed Up"), new("up", ShortcutModifiers.Control)),
+            new(ActionId.SpeedUp, Tr("Increase playback speed"), new("up", ShortcutModifiers.Control)),
             // Translators: Name of the command that plays the file slower.
-            new(ActionId.SpeedDown, Tr("Speed Down"), new("down", ShortcutModifiers.Control)),
+            new(ActionId.SpeedDown, Tr("Decrease playback speed"), new("down", ShortcutModifiers.Control)),
             // Translators: Name of the command that returns the playing speed to normal.
-            new(ActionId.ResetSpeed, Tr("Reset Speed"), new("y", ShortcutModifiers.Alt)),
-            // Translators: Name of the command that turns skipping silent parts of the file on or off.
-            new(ActionId.ToggleSilenceRemoval, Tr("Silence Removal"), new("m", ShortcutModifiers.Control)),
+            new(ActionId.ResetSpeed, Tr("Reset playback speed to normal"), new("y", ShortcutModifiers.Alt)),
+            // Translators: Name of the command that turns skipping the silent parts of the file on or off.
+            new(ActionId.ToggleSilenceRemoval, Tr("Turn silence removal on or off"), new("m", ShortcutModifiers.Control)),
             // Translators: Name of the command that marks the beginning of a part of the file to play on its own.
-            new(ActionId.StartSelection, Tr("Start Selection"), new("[")),
+            new(ActionId.StartSelection, Tr("Mark start of selection"), new("[")),
             // Translators: Name of the command that marks the end of a part of the file to play on its own.
-            new(ActionId.EndSelection, Tr("End Selection"), new("]")),
+            new(ActionId.EndSelection, Tr("Mark end of selection"), new("]")),
             // Translators: Name of the command that forgets the marked part and plays the whole file again.
-            new(ActionId.ClearSelection, Tr("Clear Selection"), new("backspace")),
+            new(ActionId.ClearSelection, Tr("Clear the selection"), new("backspace")),
         };
 
         actions.AddRange(SeekSteps.Select(step => new ActionDefinition(
             step.Id,
-            // Translators: Name of the command that sets how far one seek moves, in the menus and the shortcuts list.
+            // Translators: Name of the command that chooses how far a single rewind or fast forward moves.
             // {amount} is one of the seek step amounts, such as "10 seconds".
-            TrFormat("Seek Step: {amount}", step.Label),
+            TrFormat("Set seek step to {amount}", step.Label),
             new Shortcut(step.Key, ShortcutModifiers.Shift))));
 
         foreach (var jump in PercentJumps)
@@ -150,7 +140,7 @@ internal static class PlaybackActionDefinitions
                 jump.Id,
                 // Translators: Name of the command that jumps to a position given as a percentage of the file.
                 // {percent} is a whole number from 10 to 100.
-                TrFormat("Jump to {percent}%", jump.Percent),
+                TrFormat("Jump to {percent}% of the file", jump.Percent),
                 new Shortcut(digit, modifiers),
                 secondary));
         }

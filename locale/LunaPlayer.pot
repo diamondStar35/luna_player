@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-09-01 00:54+0300\n"
+"POT-Creation-Date: 2026-09-01 12:27+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,216 +18,202 @@ msgstr ""
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
 
 #. Translators: Name of the command that starts or pauses playing, here in the list of shortcuts that work while another program is in front.
-#. Translators: Name of the command that starts playing, or pauses playing, in the menus and the shortcuts list.
-#. Translators: Player menu item that starts playing, or pauses playing.
+#. Translators: Name of the command that starts playing, or pauses playing, in the shortcuts list.
 #: Actions/GlobalActions.cs:14 Actions/PlaybackActions.cs:64
-#: UI/MenuBuilder.cs:105
-msgid "Play/Pause"
+msgid "Play or pause"
 msgstr ""
 
 #. Translators: Name of the command that moves back in the file, here in the list of shortcuts that work while another program is in front.
-#. Translators: Name of the command that moves back in the file by one seek step.
+#. Translators: Name of the command that moves back in the file by the chosen seek step.
 #: Actions/GlobalActions.cs:16 Actions/PlaybackActions.cs:66
-msgid "Seek Backward"
+msgid "Rewind by one step"
 msgstr ""
 
 #. Translators: Name of the command that moves forward in the file, here in the list of shortcuts that work while another program is in front.
-#. Translators: Name of the command that moves forward in the file by one seek step.
+#. Translators: Name of the command that moves forward in the file by the chosen seek step.
 #: Actions/GlobalActions.cs:18 Actions/PlaybackActions.cs:68
-msgid "Seek Forward"
+msgid "Fast forward by one step"
 msgstr ""
 
 #. Translators: Name of the command that makes the sound louder, here in the list of shortcuts that work while another program is in front.
 #. Translators: Name of the command that makes the sound louder.
-#: Actions/GlobalActions.cs:20 Actions/PlaybackActions.cs:96
-msgid "Volume Up"
+#: Actions/GlobalActions.cs:20 Actions/PlaybackActions.cs:86
+msgid "Increase volume"
 msgstr ""
 
 #. Translators: Name of the command that makes the sound quieter, here in the list of shortcuts that work while another program is in front.
 #. Translators: Name of the command that makes the sound quieter.
-#: Actions/GlobalActions.cs:22 Actions/PlaybackActions.cs:98
-msgid "Volume Down"
+#: Actions/GlobalActions.cs:22 Actions/PlaybackActions.cs:88
+msgid "Decrease volume"
 msgstr ""
 
 #. Translators: Name of the command that plays the next file, here in the list of shortcuts that work while another program is in front.
 #. Translators: Name of the command that plays the file after the current one.
 #: Actions/GlobalActions.cs:24 Actions/MediaActions.cs:74
-msgid "Next Track"
+msgid "Play the next file"
 msgstr ""
 
 #. Translators: Name of the command that plays the previous file, here in the list of shortcuts that work while another program is in front.
 #. Translators: Name of the command that plays the file before the current one.
 #: Actions/GlobalActions.cs:26 Actions/MediaActions.cs:72
-msgid "Previous Track"
+msgid "Play the previous file"
 msgstr ""
 
-#. Translators: Name of the command that opens one or more media files, in the File menu and the shortcuts list.
+#. Translators: Name of the command that opens one or more media files, in the shortcuts list.
 #: Actions/MediaActions.cs:22
-msgid "Open File"
+msgid "Open files"
 msgstr ""
 
-#. Translators: Name of the command that plays a network stream from a link, in the File menu and the shortcuts list.
-#: Actions/MediaActions.cs:24 Application/ActionHandlers/FileActions.cs:113
-msgid "Open Link"
+#. Translators: Name of the command that plays a network stream from a link.
+#: Actions/MediaActions.cs:24
+msgid "Open a link to a network stream"
 msgstr ""
 
-#. Translators: Name of the command that opens every media file in a folder, in the File menu and the shortcuts list.
+#. Translators: Name of the command that opens every media file in a folder.
 #: Actions/MediaActions.cs:26
-msgid "Open Folder"
+msgid "Open all files in a folder"
 msgstr ""
 
 #. Translators: Name of the command that opens the folder holding the current file in Windows Explorer.
-#. Translators: File menu item that shows the folder holding the current file in Windows Explorer.
-#: Actions/MediaActions.cs:28 UI/MenuBuilder.cs:39
-msgid "Open Containing Folder"
+#: Actions/MediaActions.cs:28
+msgid "Show the current file in Windows Explorer"
 msgstr ""
 
 #. Translators: Name of the command that shows the Windows properties window for the current file.
 #: Actions/MediaActions.cs:30
-msgid "File Properties"
+msgid "File properties dialog"
 msgstr ""
 
-#. Translators: Name of the command that lists the files currently loaded in the player.
-#: Actions/MediaActions.cs:32 UI/OpenedFilesDialog.cs:14
-msgid "Opened Files"
+#. Translators: Name of the command that opens the window listing the files currently loaded in the player.
+#: Actions/MediaActions.cs:32
+msgid "Opened files dialog"
 msgstr ""
 
 #. Translators: Name of the command that removes the current file from the player.
-#. Translators: File menu item that removes the current file from the player.
-#: Actions/MediaActions.cs:34 UI/MenuBuilder.cs:45
-msgid "Close File"
+#: Actions/MediaActions.cs:34
+msgid "Close the current file"
 msgstr ""
 
 #. Translators: Name of the command that removes every loaded file from the player.
-#: Actions/MediaActions.cs:36
-msgid "Close All Files"
+#. Translators: File menu item that removes every loaded file from the player.
+#: Actions/MediaActions.cs:36 UI/MenuBuilder.cs:47
+msgid "Close all files"
 msgstr ""
 
 #. Translators: Name of the command that opens the player's settings window.
 #: Actions/MediaActions.cs:38
-msgid "Settings"
+msgid "Settings dialog"
 msgstr ""
 
 #. Translators: Name of the command that quits the player.
-#. Translators: File menu item that quits the player.
-#: Actions/MediaActions.cs:40 UI/MenuBuilder.cs:52
-msgid "Exit"
+#: Actions/MediaActions.cs:40
+msgid "Exit the player"
 msgstr ""
 
-#. Translators: Name of the command that speaks the details of the current file.
+#. Translators: Name of the command that speaks the details of the current file, such as its name and length.
 #: Actions/MediaActions.cs:42
-msgid "Announce File Info"
+msgid "Speak information about the current file"
 msgstr ""
 
-#. Translators: Name of the command that gives the current file a new name.
-#. Translators: Title of the window that asks for the name the current file should be given.
-#: Actions/MediaActions.cs:44 Application/ActionHandlers/EditActions.cs:44
-#: Application/ActionHandlers/EditActions.cs:52
-#: Application/ActionHandlers/EditActions.cs:61
-msgid "Rename File"
+#. Translators: Name of the command that gives the current file a new name on the disk.
+#: Actions/MediaActions.cs:44
+msgid "Rename the current file"
 msgstr ""
 
 #. Translators: Name of the command that deletes the current file from the disk.
 #: Actions/MediaActions.cs:46
-msgid "Delete File"
+msgid "Delete the current file from the disk"
 msgstr ""
 
 #. Translators: Name of the command that copies the current file to the clipboard.
 #: Actions/MediaActions.cs:48
-msgid "Copy Current File"
+msgid "Copy the current file to the clipboard"
 msgstr ""
 
 #. Translators: Name of the command that pastes files copied from Windows Explorer into the player.
-#. Translators: Edit menu item that pastes files copied from Windows Explorer into the player.
-#: Actions/MediaActions.cs:50 UI/MenuBuilder.cs:63
-msgid "Paste"
+#: Actions/MediaActions.cs:50
+msgid "Paste files from the clipboard"
 msgstr ""
 
 #. Translators: Name of the command that marks or unmarks the current file. Marked files can then be copied, moved or deleted together.
-#. Translators: Edit menu item that marks or unmarks the current file. It is ticked while the file is marked.
-#: Actions/MediaActions.cs:52 UI/MenuBuilder.cs:66
-msgid "Mark Current File"
+#: Actions/MediaActions.cs:52
+msgid "Mark or unmark the current file"
 msgstr ""
 
-#. Translators: Name of the command that marks every loaded file.
-#. Translators: Edit menu item that marks every loaded file. It is ticked while they all are.
-#: Actions/MediaActions.cs:54 UI/MenuBuilder.cs:68
-msgid "Mark All Files"
+#. Translators: Name of the command that marks or unmarks every loaded file at once.
+#: Actions/MediaActions.cs:54
+msgid "Mark or unmark all files"
 msgstr ""
 
 #. Translators: Name of the command that unmarks all marked files.
-#. Translators: Edit menu item that unmarks all marked files.
-#: Actions/MediaActions.cs:56 UI/MenuBuilder.cs:70
-msgid "Clear Marked Files"
+#: Actions/MediaActions.cs:56
+msgid "Unmark all marked files"
 msgstr ""
 
 #. Translators: Name of the command that speaks how many files are marked.
 #: Actions/MediaActions.cs:58
-msgid "Announce Marked Files Count"
+msgid "Speak the number of marked files"
 msgstr ""
 
 #. Translators: Name of the command that copies the marked files into a folder the user chooses.
 #: Actions/MediaActions.cs:60
-msgid "Copy to Folder"
+msgid "Copy the marked files to a folder"
 msgstr ""
 
 #. Translators: Name of the command that moves the marked files into a folder the user chooses.
 #: Actions/MediaActions.cs:62
-msgid "Move to Folder"
+msgid "Move the marked files to a folder"
 msgstr ""
 
 #. Translators: Name of the command that copies the marked files to the clipboard.
 #: Actions/MediaActions.cs:64
-msgid "Copy to Clipboard"
+msgid "Copy the marked files to the clipboard"
 msgstr ""
 
 #. Translators: Name of the command that deletes the marked files from the disk.
 #: Actions/MediaActions.cs:66
-msgid "Delete Marked Files"
+msgid "Delete the marked files from the disk"
 msgstr ""
 
-#. Translators: Name of the command that saves the current position in the file as a bookmark.
+#. Translators: Name of the command that saves the position playing has reached as a bookmark.
 #: Actions/MediaActions.cs:68
-msgid "Add Bookmark"
+msgid "Add a bookmark at the current position"
 msgstr ""
 
 #. Translators: Name of the command that opens the window for renaming and deleting bookmarks.
 #: Actions/MediaActions.cs:70
-msgid "Manage Bookmarks"
+msgid "Manage bookmarks dialog"
 msgstr ""
 
 #. Translators: Name of the command that plays the first file in the list.
 #: Actions/MediaActions.cs:76
-msgid "Go to First File"
+msgid "Play the first file in the list"
 msgstr ""
 
-#. Translators: Name of the command that asks for a file number and jumps to it.
-#. Translators: Title of the window that asks which file in the playlist to move to.
-#: Actions/MediaActions.cs:78 Application/ActionHandlers/PlaylistActions.cs:56
-msgid "Go To File"
+#. Translators: Name of the command that opens the window asking for a file number to jump to.
+#: Actions/MediaActions.cs:78
+msgid "Go to file dialog"
 msgstr ""
 
 #. Translators: Name of the command that plays the last file in the list.
 #: Actions/MediaActions.cs:80
-msgid "Go to Last File"
+msgid "Play the last file in the list"
 msgstr ""
 
-#. Translators: Name of the command that turns playing files in random order on or off.
-#. Translators: Player menu item that turns playing files in random order on or off. It is ticked while it is on.
-#: Actions/MediaActions.cs:82 UI/MenuBuilder.cs:131
-msgid "Shuffle"
+#. Translators: Name of the command that turns playing the files in random order on or off.
+#: Actions/MediaActions.cs:82
+msgid "Turn shuffle on or off"
 msgstr ""
 
 #. Translators: Name of the command that turns repeating the current file on or off.
-#. Translators: Player menu item that turns repeating the current file on or off. It is ticked while it is on.
-#: Actions/MediaActions.cs:84 UI/MenuBuilder.cs:136
-msgid "Repeat File"
+#: Actions/MediaActions.cs:84
+msgid "Turn repeat file on or off"
 msgstr ""
 
 #. Translators: Name of the command that jumps to one of the ten numbered bookmark slots of the current file.
 #. {number} is the slot, 1 to 10.
 #: Actions/MediaActions.cs:88
-msgid "Jump to Bookmark {number}"
+msgid "Jump to bookmark {number}"
 msgstr ""
 
 #. Translators: One of the amounts a single seek can move by, offered in the seek step list and spoken when it is chosen.
@@ -285,153 +271,136 @@ msgstr ""
 msgid "Custom value"
 msgstr ""
 
-#. Translators: Name of the command that moves back by twice the seek step.
-#. "x2" means two times and is usually left as it is.
-#: Actions/PlaybackActions.cs:71
-msgid "Seek Backward x2"
+#. Translators: Name of the command that moves back by twice the chosen seek step.
+#: Actions/PlaybackActions.cs:70
+msgid "Rewind by two steps"
 msgstr ""
 
-#. Translators: Name of the command that moves forward by twice the seek step.
-#. "x2" means two times and is usually left as it is.
+#. Translators: Name of the command that moves forward by twice the chosen seek step.
+#: Actions/PlaybackActions.cs:72
+msgid "Fast forward by two steps"
+msgstr ""
+
+#. Translators: Name of the command that moves back by four times the chosen seek step.
 #: Actions/PlaybackActions.cs:74
-msgid "Seek Forward x2"
+msgid "Rewind by four steps"
 msgstr ""
 
-#. Translators: Name of the command that moves back by four times the seek step.
-#. "x4" means four times and is usually left as it is.
-#: Actions/PlaybackActions.cs:77
-msgid "Seek Backward x4"
+#. Translators: Name of the command that moves forward by four times the chosen seek step.
+#: Actions/PlaybackActions.cs:76
+msgid "Fast forward by four steps"
 msgstr ""
 
-#. Translators: Name of the command that moves forward by four times the seek step.
-#. "x4" means four times and is usually left as it is.
+#. Translators: Name of the command that jumps to the very start of the file.
+#: Actions/PlaybackActions.cs:78
+msgid "Beginning of the file"
+msgstr ""
+
+#. Translators: Name of the command that jumps to the very end of the file.
 #: Actions/PlaybackActions.cs:80
-msgid "Seek Forward x4"
+msgid "End of the file"
 msgstr ""
 
-#. Translators: Name of the command that moves back by eight times the seek step.
-#. "x8" means eight times and is usually left as it is.
-#: Actions/PlaybackActions.cs:83
-msgid "Seek Backward x8"
+#. Translators: Name of the command that opens the window asking for a time to jump to.
+#: Actions/PlaybackActions.cs:82
+msgid "Go to time dialog"
 msgstr ""
 
-#. Translators: Name of the command that moves forward by eight times the seek step.
-#. "x8" means eight times and is usually left as it is.
-#: Actions/PlaybackActions.cs:86
-msgid "Seek Forward x8"
+#. Translators: Name of the command that opens the window listing the audio output devices to play through.
+#: Actions/PlaybackActions.cs:84
+msgid "Sound cards dialog"
 msgstr ""
 
-#. Translators: Name of the command that jumps to the beginning of the file.
-#: Actions/PlaybackActions.cs:88
-msgid "Seek Start"
-msgstr ""
-
-#. Translators: Name of the command that jumps to the end of the file.
+#. Translators: Name of the command that sets the volume to the loudest setting in one step.
 #: Actions/PlaybackActions.cs:90
-msgid "Seek End"
+msgid "Set volume to maximum"
 msgstr ""
 
-#. Translators: Name of the command that asks for a time and jumps to it.
+#. Translators: Name of the command that sets the volume to the quietest setting in one step.
 #: Actions/PlaybackActions.cs:92
-msgid "Go To Time"
-msgstr ""
-
-#. Translators: Name of the command that opens the list of audio output devices to play through.
-#: Actions/PlaybackActions.cs:94 UI/AudioDeviceDialog.cs:12
-msgid "Sound Cards"
-msgstr ""
-
-#. Translators: Name of the command that sets the volume to the loudest setting.
-#: Actions/PlaybackActions.cs:100
-msgid "Volume Max"
-msgstr ""
-
-#. Translators: Name of the command that sets the volume to the quietest setting.
-#: Actions/PlaybackActions.cs:102
-msgid "Volume Min"
+msgid "Set volume to minimum"
 msgstr ""
 
 #. Translators: Name of the command that speaks the current volume.
-#: Actions/PlaybackActions.cs:104
-msgid "Announce Volume"
+#: Actions/PlaybackActions.cs:94
+msgid "Speak current volume"
 msgstr ""
 
 #. Translators: Name of the command that speaks how much of the file has already played.
-#: Actions/PlaybackActions.cs:106
-msgid "Announce Elapsed"
+#: Actions/PlaybackActions.cs:96
+msgid "Speak elapsed time"
 msgstr ""
 
 #. Translators: Name of the command that speaks how much of the file is left to play.
-#: Actions/PlaybackActions.cs:108
-msgid "Announce Remaining"
+#: Actions/PlaybackActions.cs:98
+msgid "Speak remaining time"
 msgstr ""
 
 #. Translators: Name of the command that speaks the total length of the file.
-#: Actions/PlaybackActions.cs:110
-msgid "Announce Duration"
+#: Actions/PlaybackActions.cs:100
+msgid "Speak total duration"
 msgstr ""
 
 #. Translators: Name of the command that speaks how far through the file playing has reached, as a percentage.
-#: Actions/PlaybackActions.cs:112
-msgid "Announce Percent"
+#: Actions/PlaybackActions.cs:102
+msgid "Speak position as a percentage"
 msgstr ""
 
-#. Translators: Name of the command that speaks the current playing speed.
-#: Actions/PlaybackActions.cs:114
-msgid "Announce Speed"
+#. Translators: Name of the command that speaks how fast the file is playing.
+#: Actions/PlaybackActions.cs:104
+msgid "Speak playback speed"
 msgstr ""
 
 #. Translators: Name of the command that switches between short and detailed spoken announcements.
-#: Actions/PlaybackActions.cs:116
-msgid "Toggle Verbosity"
+#: Actions/PlaybackActions.cs:106
+msgid "Switch between brief and detailed announcements"
 msgstr ""
 
 #. Translators: Name of the command that plays the file faster.
-#: Actions/PlaybackActions.cs:118
-msgid "Speed Up"
+#: Actions/PlaybackActions.cs:108
+msgid "Increase playback speed"
 msgstr ""
 
 #. Translators: Name of the command that plays the file slower.
-#: Actions/PlaybackActions.cs:120
-msgid "Speed Down"
+#: Actions/PlaybackActions.cs:110
+msgid "Decrease playback speed"
 msgstr ""
 
 #. Translators: Name of the command that returns the playing speed to normal.
-#. Translators: Item in the Speed submenu: return the playing speed to normal.
-#: Actions/PlaybackActions.cs:122 UI/MenuBuilder.cs:113
-msgid "Reset Speed"
+#: Actions/PlaybackActions.cs:112
+msgid "Reset playback speed to normal"
 msgstr ""
 
-#. Translators: Name of the command that turns skipping silent parts of the file on or off.
-#: Actions/PlaybackActions.cs:124
-msgid "Silence Removal"
+#. Translators: Name of the command that turns skipping the silent parts of the file on or off.
+#: Actions/PlaybackActions.cs:114
+msgid "Turn silence removal on or off"
 msgstr ""
 
 #. Translators: Name of the command that marks the beginning of a part of the file to play on its own.
-#: Actions/PlaybackActions.cs:126
-msgid "Start Selection"
+#: Actions/PlaybackActions.cs:116
+msgid "Mark start of selection"
 msgstr ""
 
 #. Translators: Name of the command that marks the end of a part of the file to play on its own.
-#: Actions/PlaybackActions.cs:128
-msgid "End Selection"
+#: Actions/PlaybackActions.cs:118
+msgid "Mark end of selection"
 msgstr ""
 
 #. Translators: Name of the command that forgets the marked part and plays the whole file again.
-#: Actions/PlaybackActions.cs:130
-msgid "Clear Selection"
+#: Actions/PlaybackActions.cs:120
+msgid "Clear the selection"
 msgstr ""
 
-#. Translators: Name of the command that sets how far one seek moves, in the menus and the shortcuts list.
+#. Translators: Name of the command that chooses how far a single rewind or fast forward moves.
 #. {amount} is one of the seek step amounts, such as "10 seconds".
-#: Actions/PlaybackActions.cs:137
-msgid "Seek Step: {amount}"
+#: Actions/PlaybackActions.cs:127
+msgid "Set seek step to {amount}"
 msgstr ""
 
 #. Translators: Name of the command that jumps to a position given as a percentage of the file.
 #. {percent} is a whole number from 10 to 100.
-#: Actions/PlaybackActions.cs:153
-msgid "Jump to {percent}%"
+#: Actions/PlaybackActions.cs:143
+msgid "Jump to {percent}% of the file"
 msgstr ""
 
 #. Translators: The name a new bookmark is given unless the user types another one. {time} is the point in the
@@ -507,7 +476,7 @@ msgstr ""
 
 #. Translators: Title of a message telling the user that something went wrong.
 #: Application/ActionHandlers/BookmarkActions.cs:119
-#: Application/ActionHandlers/FileActions.cs:131
+#: Application/ActionHandlers/FileActions.cs:133
 msgid "Error"
 msgstr ""
 
@@ -535,7 +504,7 @@ msgstr ""
 
 #. Translators: Spoken when a command needs to know where playing has got to but the player cannot tell.
 #: Application/ActionHandlers/BookmarkActions.cs:161
-#: Application/ActionHandlers/PlaybackActions.cs:153
+#: Application/ActionHandlers/PlaybackActions.cs:151
 msgid "Time is not available for the current file."
 msgstr ""
 
@@ -582,6 +551,13 @@ msgstr ""
 #. Translators: Asks the user for the name the current file should be given.
 #: Application/ActionHandlers/EditActions.cs:42
 msgid "Enter new name for the file."
+msgstr ""
+
+#. Translators: Title of the window that asks for the name the current file should be given.
+#: Application/ActionHandlers/EditActions.cs:44
+#: Application/ActionHandlers/EditActions.cs:52
+#: Application/ActionHandlers/EditActions.cs:61
+msgid "Rename File"
 msgstr ""
 
 #. Translators: Spoken and shown when the user confirms a new file name without typing anything.
@@ -664,7 +640,7 @@ msgstr ""
 
 #. Translators: The short wording spoken once the current file has been copied to the clipboard.
 #: Application/ActionHandlers/EditActions.cs:117
-#: Application/ActionHandlers/FileActions.cs:301
+#: Application/ActionHandlers/FileActions.cs:303
 #: Application/ActionHandlers/MarkedFileActions.cs:77
 #: Application/ActionHandlers/MarkedFileActions.cs:156
 msgid "Copied."
@@ -672,7 +648,7 @@ msgstr ""
 
 #. Translators: The short wording spoken when the current file could not be copied to the clipboard.
 #: Application/ActionHandlers/EditActions.cs:119
-#: Application/ActionHandlers/FileActions.cs:301
+#: Application/ActionHandlers/FileActions.cs:303
 #: Application/ActionHandlers/MarkedFileActions.cs:77
 msgid "Copy failed."
 msgstr ""
@@ -701,11 +677,11 @@ msgstr ""
 #: Application/ActionHandlers/EditActions.cs:153
 #: Application/ActionHandlers/EditActions.cs:175
 #: Application/ActionHandlers/EditActions.cs:220
-#: Application/ActionHandlers/FileActions.cs:182
-#: Application/ActionHandlers/FileActions.cs:239
-#: Application/ActionHandlers/FileActions.cs:248
-#: Application/ActionHandlers/FileActions.cs:274
-#: Application/ActionHandlers/PlaybackActions.cs:91
+#: Application/ActionHandlers/FileActions.cs:184
+#: Application/ActionHandlers/FileActions.cs:241
+#: Application/ActionHandlers/FileActions.cs:250
+#: Application/ActionHandlers/FileActions.cs:276
+#: Application/ActionHandlers/PlaybackActions.cs:89
 #: Application/ActionHandlers/PlaylistActions.cs:112
 #: Application/ActionHandlers/SelectionActions.cs:26
 #: Application/ActionHandlers/SelectionActions.cs:84
@@ -716,11 +692,11 @@ msgstr ""
 #: Application/ActionHandlers/EditActions.cs:155
 #: Application/ActionHandlers/EditActions.cs:175
 #: Application/ActionHandlers/EditActions.cs:220
-#: Application/ActionHandlers/FileActions.cs:182
-#: Application/ActionHandlers/FileActions.cs:239
-#: Application/ActionHandlers/FileActions.cs:248
-#: Application/ActionHandlers/FileActions.cs:274
-#: Application/ActionHandlers/PlaybackActions.cs:91
+#: Application/ActionHandlers/FileActions.cs:184
+#: Application/ActionHandlers/FileActions.cs:241
+#: Application/ActionHandlers/FileActions.cs:250
+#: Application/ActionHandlers/FileActions.cs:276
+#: Application/ActionHandlers/PlaybackActions.cs:89
 #: Application/ActionHandlers/PlaylistActions.cs:112
 #: Application/ActionHandlers/SelectionActions.cs:26
 #: Application/ActionHandlers/SelectionActions.cs:84
@@ -798,8 +774,8 @@ msgstr[1] ""
 
 #. Translators: The short wording spoken when a command that needs a file on this computer is used while a stream is playing.
 #: Application/ActionHandlers/EditActions.cs:235
-#: Application/ActionHandlers/FileActions.cs:155
-#: Application/ActionHandlers/FileActions.cs:170
+#: Application/ActionHandlers/FileActions.cs:157
+#: Application/ActionHandlers/FileActions.cs:172
 msgid "Not available for streams."
 msgstr ""
 
@@ -808,95 +784,100 @@ msgstr ""
 msgid "Enter link to play."
 msgstr ""
 
+#. Translators: Title of the window that asks for the web address of a stream to play.
+#: Application/ActionHandlers/FileActions.cs:115
+msgid "Open Link"
+msgstr ""
+
 #. Translators: Shown when the address typed into Open Link is not a web address.
 #. "http" and "https" are the names of the two web protocols and are not translated.
-#: Application/ActionHandlers/FileActions.cs:123
+#: Application/ActionHandlers/FileActions.cs:125
 msgid "The link must start with http or https."
 msgstr ""
 
 #. Translators: Title of the message shown when the address typed into Open Link is not a web address.
-#: Application/ActionHandlers/FileActions.cs:125
+#: Application/ActionHandlers/FileActions.cs:127
 msgid "Invalid link"
 msgstr ""
 
 #. Translators: Shown when the stream at the address typed into Open Link could not be played.
-#: Application/ActionHandlers/FileActions.cs:131
+#: Application/ActionHandlers/FileActions.cs:133
 msgid "Could not open the link."
 msgstr ""
 
 #. Translators: Spoken when the chosen folder holds nothing this player can play.
-#: Application/ActionHandlers/FileActions.cs:143
+#: Application/ActionHandlers/FileActions.cs:145
 msgid "No audio files found in that folder."
 msgstr ""
 
 #. Translators: The short wording spoken when the chosen folder holds nothing this player can play.
-#: Application/ActionHandlers/FileActions.cs:145
+#: Application/ActionHandlers/FileActions.cs:147
 msgid "No audio files."
 msgstr ""
 
 #. Translators: Spoken when the user asks to show the folder of what is playing but it is a stream rather than a file on this computer.
-#: Application/ActionHandlers/FileActions.cs:155
+#: Application/ActionHandlers/FileActions.cs:157
 msgid "Open containing folder is available only for local files."
 msgstr ""
 
 #. Translators: Spoken when the folder holding the current file could not be shown.
-#: Application/ActionHandlers/FileActions.cs:160
+#: Application/ActionHandlers/FileActions.cs:162
 msgid "Could not open containing folder."
 msgstr ""
 
 #. Translators: Spoken when the user asks for the Windows properties of what is playing but it is a stream rather than a file on this computer.
-#: Application/ActionHandlers/FileActions.cs:170
+#: Application/ActionHandlers/FileActions.cs:172
 msgid "File properties are available only for local files."
 msgstr ""
 
 #. Translators: Spoken when the Windows properties window for the current file could not be shown.
-#: Application/ActionHandlers/FileActions.cs:175
+#: Application/ActionHandlers/FileActions.cs:177
 msgid "Could not open file properties."
 msgstr ""
 
 #. Translators: Title of the progress window shown while details of every file in the playlist are being read.
-#: Application/ActionHandlers/FileActions.cs:210
+#: Application/ActionHandlers/FileActions.cs:212
 msgid "Loading playlist info"
 msgstr ""
 
 #. Translators: First message in the progress window, shown before the first file has been read.
-#: Application/ActionHandlers/FileActions.cs:212
-#: Application/ActionHandlers/FileActions.cs:222
+#: Application/ActionHandlers/FileActions.cs:214
+#: Application/ActionHandlers/FileActions.cs:224
 msgid "Preparing..."
 msgstr ""
 
 #. Translators: Progress message naming the file being read right now. {name} is the file name.
-#: Application/ActionHandlers/FileActions.cs:220
+#: Application/ActionHandlers/FileActions.cs:222
 msgid "Reading: {name}"
 msgstr ""
 
 #. Translators: Title of the window listing details of every file in the playlist.
-#: Application/ActionHandlers/FileActions.cs:229
+#: Application/ActionHandlers/FileActions.cs:231
 msgid "Playlist Info"
 msgstr ""
 
 #. Translators: Spoken once the current file has been taken out of the playlist.
-#: Application/ActionHandlers/FileActions.cs:242
+#: Application/ActionHandlers/FileActions.cs:244
 msgid "File closed."
 msgstr ""
 
 #. Translators: Spoken once every file has been taken out of the playlist.
-#: Application/ActionHandlers/FileActions.cs:251
+#: Application/ActionHandlers/FileActions.cs:253
 msgid "All files closed."
 msgstr ""
 
 #. Translators: The short wording spoken when Windows could not be asked to open a folder or a properties window.
-#: Application/ActionHandlers/FileActions.cs:259
+#: Application/ActionHandlers/FileActions.cs:261
 msgid "Open failed."
 msgstr ""
 
 #. Translators: Spoken once the full location of the current file has been copied to the clipboard.
-#: Application/ActionHandlers/FileActions.cs:298
+#: Application/ActionHandlers/FileActions.cs:300
 msgid "File path copied to clipboard."
 msgstr ""
 
 #. Translators: Spoken when the full location of the current file could not be copied to the clipboard.
-#: Application/ActionHandlers/FileActions.cs:300
+#: Application/ActionHandlers/FileActions.cs:302
 msgid "Unable to copy to clipboard."
 msgstr ""
 
@@ -1046,36 +1027,36 @@ msgid "Failed."
 msgstr ""
 
 #. Translators: Spoken before the time played so far, as in "Elapsed time: 1 minute 20 seconds".
-#: Application/ActionHandlers/PlaybackActions.cs:60
+#: Application/ActionHandlers/PlaybackActions.cs:58
 msgid "Elapsed time:"
 msgstr ""
 
 #. Translators: Spoken before the time still left to play, as in "Remaining time: 1 minute 20 seconds".
-#: Application/ActionHandlers/PlaybackActions.cs:63
+#: Application/ActionHandlers/PlaybackActions.cs:61
 msgid "Remaining time:"
 msgstr ""
 
 #. Translators: Spoken before the whole length of the file, as in "Total time: 3 minutes 40 seconds".
-#: Application/ActionHandlers/PlaybackActions.cs:66
+#: Application/ActionHandlers/PlaybackActions.cs:64
 msgid "Total time:"
 msgstr ""
 
 #. Translators: Spoken when playing starts or carries on again.
-#: Application/ActionHandlers/PlaybackActions.cs:99
-#: Application/ActionHandlers/PlaybackActions.cs:107 UI/MainFrame.cs:55
+#: Application/ActionHandlers/PlaybackActions.cs:97
+#: Application/ActionHandlers/PlaybackActions.cs:105 UI/MainFrame.cs:55
 #: UI/MainFrame.cs:98
 msgid "Play"
 msgstr ""
 
 #. Translators: Spoken when playing is held where it is.
-#: Application/ActionHandlers/PlaybackActions.cs:109 UI/MainFrame.cs:98
+#: Application/ActionHandlers/PlaybackActions.cs:107 UI/MainFrame.cs:98
 msgid "Pause"
 msgstr ""
 
 #. Translators: Spoken when the player cannot tell how long the file is, so it has no time to report or move to.
-#: Application/ActionHandlers/PlaybackActions.cs:144
-#: Application/ActionHandlers/PlaybackActions.cs:187
-#: Application/ActionHandlers/PlaybackActions.cs:264
+#: Application/ActionHandlers/PlaybackActions.cs:142
+#: Application/ActionHandlers/PlaybackActions.cs:185
+#: Application/ActionHandlers/PlaybackActions.cs:262
 #: Application/ActionHandlers/SelectionActions.cs:37
 #: Application/ActionHandlers/SelectionActions.cs:47
 #: Application/ActionHandlers/SelectionActions.cs:85
@@ -1083,10 +1064,10 @@ msgid "Time not available"
 msgstr ""
 
 #. Translators: The short wording spoken when a time the user asked for is not known.
-#: Application/ActionHandlers/PlaybackActions.cs:146
-#: Application/ActionHandlers/PlaybackActions.cs:187
-#: Application/ActionHandlers/PlaybackActions.cs:197
-#: Application/ActionHandlers/PlaybackActions.cs:264
+#: Application/ActionHandlers/PlaybackActions.cs:144
+#: Application/ActionHandlers/PlaybackActions.cs:185
+#: Application/ActionHandlers/PlaybackActions.cs:195
+#: Application/ActionHandlers/PlaybackActions.cs:262
 #: Application/ActionHandlers/SelectionActions.cs:37
 #: Application/ActionHandlers/SelectionActions.cs:47
 #: Application/ActionHandlers/SelectionActions.cs:85
@@ -1094,70 +1075,70 @@ msgid "Unavailable"
 msgstr ""
 
 #. Translators: Title of the window that asks the user which point in the file to move to.
-#: Application/ActionHandlers/PlaybackActions.cs:155 UI/GoToTimeDialog.cs:22
+#: Application/ActionHandlers/PlaybackActions.cs:153 UI/GoToTimeDialog.cs:22
 #: UI/GoToTimeDialog.cs:94
 msgid "Go to time"
 msgstr ""
 
 #. Translators: Spoken after the loudness has been changed. {volume} is the new loudness as a number out of a hundred.
-#: Application/ActionHandlers/PlaybackActions.cs:173
+#: Application/ActionHandlers/PlaybackActions.cs:171
 msgid "Volume {volume} percent"
 msgstr ""
 
 #. Translators: Spoken when the user asks how loud the sound is. {percent} is the loudness as a number out of a hundred.
-#: Application/ActionHandlers/PlaybackActions.cs:180
+#: Application/ActionHandlers/PlaybackActions.cs:178
 msgid "Volume is {percent}%"
 msgstr ""
 
 #. Translators: Spoken when the player cannot work out how far through the file it is.
-#: Application/ActionHandlers/PlaybackActions.cs:197
+#: Application/ActionHandlers/PlaybackActions.cs:195
 msgid "Percentage not available"
 msgstr ""
 
 #. Translators: Spoken when the user asks how far through the file playing has got. {percent} is that share out of a hundred.
-#: Application/ActionHandlers/PlaybackActions.cs:202
-#: Application/ActionHandlers/PlaybackActions.cs:271
+#: Application/ActionHandlers/PlaybackActions.cs:200
+#: Application/ActionHandlers/PlaybackActions.cs:269
 msgid "{percent} percent"
 msgstr ""
 
 #. Translators: Spoken when the user asks how fast the file is playing. {speed} is the speed, where 1 is the normal
 #. speed; "x" is short for "times" and is usually left as it is.
-#: Application/ActionHandlers/PlaybackActions.cs:207
-#: Application/ActionHandlers/PlaybackActions.cs:215
+#: Application/ActionHandlers/PlaybackActions.cs:205
+#: Application/ActionHandlers/PlaybackActions.cs:213
 msgid "{speed}x"
 msgstr ""
 
 #. Translators: Spoken when the user switches to whole, clearly worded messages. It should read the same as
 #. the "Beginner" entry in the Verbosity list on the General settings page.
-#: Application/ActionHandlers/PlaybackActions.cs:225
+#: Application/ActionHandlers/PlaybackActions.cs:223
 msgid "Beginner mode"
 msgstr ""
 
 #. Translators: Spoken when the user switches to short messages. It should read the same as the "Advanced"
 #. entry in the Verbosity list on the General settings page.
-#: Application/ActionHandlers/PlaybackActions.cs:232
+#: Application/ActionHandlers/PlaybackActions.cs:230
 msgid "Advanced mode"
 msgstr ""
 
 #. Translators: Spoken when trimming the silent parts out could not be switched on or off.
-#: Application/ActionHandlers/PlaybackActions.cs:244
+#: Application/ActionHandlers/PlaybackActions.cs:242
 msgid "Could not change silence removal filter."
 msgstr ""
 
 #. Translators: The short wording spoken when trimming the silent parts out could not be switched on or off.
-#: Application/ActionHandlers/PlaybackActions.cs:246
+#: Application/ActionHandlers/PlaybackActions.cs:244
 msgid "Filter failed."
 msgstr ""
 
 #. Translators: Spoken once the player has started trimming the silent parts out.
-#: Application/ActionHandlers/PlaybackActions.cs:254
-#: Application/ActionHandlers/PlaybackActions.cs:257
+#: Application/ActionHandlers/PlaybackActions.cs:252
+#: Application/ActionHandlers/PlaybackActions.cs:255
 msgid "Silence removal on"
 msgstr ""
 
 #. Translators: Spoken once the player has stopped trimming the silent parts out.
-#: Application/ActionHandlers/PlaybackActions.cs:256
-#: Application/ActionHandlers/PlaybackActions.cs:257
+#: Application/ActionHandlers/PlaybackActions.cs:254
+#: Application/ActionHandlers/PlaybackActions.cs:255
 msgid "Silence removal off"
 msgstr ""
 
@@ -1174,6 +1155,11 @@ msgstr ""
 #. Translators: Asks the user which file in the playlist to move to. {count} is how many files are loaded.
 #: Application/ActionHandlers/PlaylistActions.cs:54
 msgid "Enter file number (1-{count})"
+msgstr ""
+
+#. Translators: Title of the window that asks which file in the playlist to move to.
+#: Application/ActionHandlers/PlaylistActions.cs:56
+msgid "Go To File"
 msgstr ""
 
 #. Translators: Spoken when what the user typed as a file number is not a number.
@@ -1352,8 +1338,13 @@ msgstr ""
 msgid "Remaining: {value}"
 msgstr ""
 
-#. Translators: Label above the list of sound cards the player can send its sound to.
+#. Translators: Title of the window listing the sound cards the player can send its sound to.
 #: UI/AudioDeviceDialog.cs:15
+msgid "Sound Cards"
+msgstr ""
+
+#. Translators: Label above the list of sound cards the player can send its sound to.
+#: UI/AudioDeviceDialog.cs:19
 msgid "Select sound card"
 msgstr ""
 
@@ -1880,7 +1871,7 @@ msgid "OK"
 msgstr ""
 
 #. Translators: The button that closes a window and leaves everything as it was.
-#: UI/GoToTimeDialog.cs:48 UI/OpenedFilesDialog.cs:23
+#: UI/GoToTimeDialog.cs:48 UI/OpenedFilesDialog.cs:27
 msgid "Cancel"
 msgstr ""
 
@@ -1944,6 +1935,11 @@ msgstr ""
 msgid "Open Folder..."
 msgstr ""
 
+#. Translators: File menu item that shows the folder holding the current file in Windows Explorer.
+#: UI/MenuBuilder.cs:39
+msgid "Open Containing Folder"
+msgstr ""
+
 #. Translators: File menu item that shows the Windows properties window for the current file.
 #: UI/MenuBuilder.cs:41
 msgid "File properties..."
@@ -1954,14 +1950,19 @@ msgstr ""
 msgid "Opened Files..."
 msgstr ""
 
-#. Translators: File menu item that removes every loaded file from the player.
-#: UI/MenuBuilder.cs:47
-msgid "Close all files"
+#. Translators: File menu item that removes the current file from the player.
+#: UI/MenuBuilder.cs:45
+msgid "Close File"
 msgstr ""
 
 #. Translators: File menu item that opens the player's settings window.
 #: UI/MenuBuilder.cs:49
 msgid "Preferences..."
+msgstr ""
+
+#. Translators: File menu item that quits the player.
+#: UI/MenuBuilder.cs:52
+msgid "Exit"
 msgstr ""
 
 #. Translators: Edit menu item that gives the current file a new name.
@@ -1972,6 +1973,26 @@ msgstr ""
 #. Translators: Edit menu item that copies the current file to the clipboard.
 #: UI/MenuBuilder.cs:61
 msgid "Copy"
+msgstr ""
+
+#. Translators: Edit menu item that pastes files copied from Windows Explorer into the player.
+#: UI/MenuBuilder.cs:63
+msgid "Paste"
+msgstr ""
+
+#. Translators: Edit menu item that marks or unmarks the current file. It is ticked while the file is marked.
+#: UI/MenuBuilder.cs:66
+msgid "Mark Current File"
+msgstr ""
+
+#. Translators: Edit menu item that marks every loaded file. It is ticked while they all are.
+#: UI/MenuBuilder.cs:68
+msgid "Mark All Files"
+msgstr ""
+
+#. Translators: Edit menu item that unmarks all marked files.
+#: UI/MenuBuilder.cs:70
+msgid "Clear Marked Files"
 msgstr ""
 
 #. Translators: Item in the "Jump to bookmark" submenu, one for each of the ten bookmark slots.
@@ -2009,6 +2030,11 @@ msgstr ""
 msgid "&Delete"
 msgstr ""
 
+#. Translators: Player menu item that starts playing, or pauses playing.
+#: UI/MenuBuilder.cs:105
+msgid "Play/Pause"
+msgstr ""
+
 #. Translators: Item in the Speed submenu: play the file faster.
 #: UI/MenuBuilder.cs:109
 msgid "Increase Speed"
@@ -2017,6 +2043,11 @@ msgstr ""
 #. Translators: Item in the Speed submenu: play the file slower.
 #: UI/MenuBuilder.cs:111
 msgid "Decrease Speed"
+msgstr ""
+
+#. Translators: Item in the Speed submenu: return the playing speed to normal.
+#: UI/MenuBuilder.cs:113
+msgid "Reset Speed"
 msgstr ""
 
 #. Translators: Player submenu holding the items that change how fast the file plays.
@@ -2037,6 +2068,16 @@ msgstr ""
 #. Translators: Player menu item that plays the last file in the list.
 #: UI/MenuBuilder.cs:127
 msgid "Last File"
+msgstr ""
+
+#. Translators: Player menu item that turns playing files in random order on or off. It is ticked while it is on.
+#: UI/MenuBuilder.cs:131
+msgid "Shuffle"
+msgstr ""
+
+#. Translators: Player menu item that turns repeating the current file on or off. It is ticked while it is on.
+#: UI/MenuBuilder.cs:136
+msgid "Repeat File"
 msgstr ""
 
 #. Translators: Player menu item that turns skipping silent parts of the file on or off. It is ticked while it is on.
@@ -2113,18 +2154,23 @@ msgstr ""
 msgid "Player"
 msgstr ""
 
+#. Translators: Title of the window listing the files currently loaded in the player.
+#: UI/OpenedFilesDialog.cs:17
+msgid "Opened Files"
+msgstr ""
+
 #. Translators: Button that shows details of every file in the playlist.
-#: UI/OpenedFilesDialog.cs:20
+#: UI/OpenedFilesDialog.cs:24
 msgid "Playlist info"
 msgstr ""
 
 #. Translators: Button that starts playing the file chosen in the list.
-#: UI/OpenedFilesDialog.cs:22
+#: UI/OpenedFilesDialog.cs:26
 msgid "Jump to selected"
 msgstr ""
 
 #. Translators: Label above the list of loaded files, telling the user to pick the one to play.
-#: UI/OpenedFilesDialog.cs:36
+#: UI/OpenedFilesDialog.cs:40
 msgid "Select file to jump to."
 msgstr ""
 

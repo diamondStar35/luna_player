@@ -9,7 +9,11 @@ internal sealed class AudioDeviceDialog : IDisposable
 
     internal AudioDeviceDialog(Window parent, IReadOnlyList<string> descriptions, int selectedIndex)
     {
-        _dialog = new Dialog(parent, title: Tr("Sound Cards"), style: DialogStyle.Default | DialogStyle.ResizeBorder);
+        _dialog = new Dialog(
+            parent,
+            // Translators: Title of the window listing the sound cards the player can send its sound to.
+            title: Tr("Sound Cards"),
+            style: DialogStyle.Default | DialogStyle.ResizeBorder);
         var sizer = new BoxSizer(Orientation.Vertical);
         // Translators: Label above the list of sound cards the player can send its sound to.
         sizer.Add(new StaticText(_dialog, label: Tr("Select sound card")), flags: SizerFlags.All, border: 8);
