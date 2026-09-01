@@ -22,7 +22,6 @@ internal sealed class ApplicationHost : IDisposable
     private readonly MediaPlayer _player;
     private readonly ApplicationController _controller;
     private readonly PathRequestQueue _pathQueue;
-    private readonly IDisposable _mediaControlsTick;
     private bool _disposed;
 
     internal ApplicationHost(SingleInstanceService singleInstance, IReadOnlyList<string> initialPaths)
@@ -65,8 +64,6 @@ internal sealed class ApplicationHost : IDisposable
             fileActions,
             selection);
         _pathQueue = new PathRequestQueue(HandleExternalPaths, _dispatcher);
-        // The overlay's scrubber has to follow playback, which raises no event of its own.
-        _mediaControlsTick = _dispatcher.Repeat(TimeSpan.FromSeconds(1), _controller.SyncMediaControls);
         _singleInstance.StartListening(_pathQueue.Enqueue);
         // Posted rather than run here so a refusal is reported over a window the user can already see.
         _dispatcher.Post(() => GlobalShortcutBinder.Apply(_view, _globalShortcuts, _settings, _speech));
@@ -84,7 +81,6 @@ internal sealed class ApplicationHost : IDisposable
         if (_disposed)
             return;
         _disposed = true;
-        _mediaControlsTick.Dispose();
         _singleInstance.Dispose();
         _pathQueue.Dispose();
         _controller.Dispose();
