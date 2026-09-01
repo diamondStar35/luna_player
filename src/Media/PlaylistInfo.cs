@@ -42,11 +42,16 @@ internal sealed class PlaylistInfoService
         var remaining = Math.Max(0, currentRemaining ?? ((currentDuration ?? 0) - (currentElapsed ?? 0)));
         for (var index = currentIndex + 1; index < durations.Count; index++) remaining += durations[index] ?? 0;
         return string.Join(Environment.NewLine,
-            $"Number of files: {files.Count}",
-            $"Total size: {FormatSize(totalSize)}",
-            $"Total duration: {FormatTime(totalDuration)}",
-            $"Elapsed: {FormatTime(elapsed)}",
-            $"Remaining: {FormatTime(remaining)}");
+            // Translators: The playlist summary. {count} is how many files are loaded.
+            TrFormat("Number of files: {count}", files.Count),
+            // Translators: The playlist summary. {value} is a size such as "12.5 MB".
+            TrFormat("Total size: {value}", FormatSize(totalSize)),
+            // Translators: The playlist summary. {value} is a duration as hours:minutes:seconds.
+            TrFormat("Total duration: {value}", FormatTime(totalDuration)),
+            // Translators: The playlist summary: how much of the whole playlist has already played.
+            TrFormat("Elapsed: {value}", FormatTime(elapsed)),
+            // Translators: The playlist summary: how much of the whole playlist is left to play.
+            TrFormat("Remaining: {value}", FormatTime(remaining)));
     }
 
     private double? ProbeDuration(MPV probe, string path, CancellationToken cancellationToken)

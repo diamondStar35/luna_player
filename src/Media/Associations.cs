@@ -16,7 +16,8 @@ internal sealed class FileAssociations
     {
         if (!OperatingSystem.IsWindows())
         {
-            error = "File associations are available only on Windows.";
+            // Translators: Shown when the user asks the player to open its file types but the system is not Windows.
+            error = Tr("File associations are available only on Windows.");
             return false;
         }
         try
@@ -44,7 +45,7 @@ internal sealed class FileAssociations
     {
         if (!OperatingSystem.IsWindows())
         {
-            error = "File associations are available only on Windows.";
+            error = Tr("File associations are available only on Windows.");
             return false;
         }
         try

@@ -34,8 +34,10 @@ internal sealed class ShortcutPreferences : Preferences
     /// </param>
     internal ShortcutPreferences(Window parent, ShortcutSettings settings, ShortcutScope scope, GlobalShortcuts? globals)
         : base(new Panel(parent), scope == ShortcutScope.Local
-            ? "Keyboard shortcuts. Select an action, then edit its primary or secondary local shortcut."
-            : "System-wide shortcuts. Select an action, then edit the combination that triggers it from any application.")
+            // Translators: Spoken description of the Keyboard shortcuts settings page, read when the page is opened.
+            ? Tr("Keyboard shortcuts. Select an action, then edit its primary or secondary local shortcut.")
+            // Translators: Spoken description of the Global shortcuts settings page, read when the page is opened.
+            : Tr("System-wide shortcuts. Select an action, then edit the combination that triggers it from any application."))
     {
         _settings = settings;
         _scope = scope;
@@ -43,15 +45,32 @@ internal sealed class ShortcutPreferences : Preferences
         _actions = [.. scope == ShortcutScope.Local ? ActionRegistry.All : GlobalActionDefinitions.All];
         _editable = [.. _actions.Select(action => action.Id)];
         var panel = (Panel)Window;
-        var heading = new StaticText(panel, label: scope == ShortcutScope.Local ? "Local Shortcuts" : "Global Shortcuts");
+        var heading = new StaticText(panel, label: scope == ShortcutScope.Local
+            // Translators: Heading above the list of shortcuts that work while the player is the program in front.
+            ? Tr("Local Shortcuts")
+            // Translators: Heading above the list of shortcuts that work while another program is in front.
+            : Tr("Global Shortcuts"));
         _list = new ListCtrl(panel, style: ListCtrlStyle.Report | ListCtrlStyle.SingleSelection);
-        _list.InsertColumn(0, "Action", 210);
-        _list.InsertColumn(1, HasSecondary ? "Primary Shortcut" : "Shortcut", 125);
+        // Translators: Heading of the shortcut list column naming each command.
+        _list.InsertColumn(0, Tr("Action"), 210);
+        _list.InsertColumn(1, HasSecondary
+            // Translators: Heading of the shortcut list column holding the first key combination of each command.
+            ? Tr("Primary Shortcut")
+            // Translators: Heading of the shortcut list column holding the key combination of each command, on the page
+            // where a command has only one.
+            : Tr("Shortcut"), 125);
         if (HasSecondary)
-            _list.InsertColumn(2, "Secondary Shortcut", 135);
-        _editPrimary = new Button(panel, label: HasSecondary ? "Edit Primary Shortcut" : "Edit Shortcut");
-        _editSecondary = HasSecondary ? new Button(panel, label: "Edit Secondary Shortcut") : null;
-        _reset = new Button(panel, label: "Reset to Defaults");
+            // Translators: Heading of the shortcut list column holding the second, alternative key combination of each command.
+            _list.InsertColumn(2, Tr("Secondary Shortcut"), 135);
+        _editPrimary = new Button(panel, label: HasSecondary
+            // Translators: Button that changes the first key combination of the chosen command.
+            ? Tr("Edit Primary Shortcut")
+            // Translators: Button that changes the key combination of the chosen command, on the page where a command has only one.
+            : Tr("Edit Shortcut"));
+        // Translators: Button that changes the second, alternative key combination of the chosen command.
+        _editSecondary = HasSecondary ? new Button(panel, label: Tr("Edit Secondary Shortcut")) : null;
+        // Translators: Button that puts every shortcut on this page back to the combination the player came with.
+        _reset = new Button(panel, label: Tr("Reset to Defaults"));
 
         var buttons = new BoxSizer(Orientation.Horizontal);
         buttons.Add(_editPrimary, flags: SizerFlags.BorderRight, border: 6);
@@ -120,7 +139,11 @@ internal sealed class ShortcutPreferences : Preferences
         if (shortcut is null) return;
         if (HasConflict(action.Id, slot, shortcut.Value))
         {
-            Wx.MessageBox("That shortcut is already assigned to another action.", "Shortcut Conflict",
+            Wx.MessageBox(
+                // Translators: Shown when the combination the user pressed is already used by another command.
+                Tr("That shortcut is already assigned to another action."),
+                // Translators: Title of the message shown when the combination pressed is already used by another command.
+                Tr("Shortcut Conflict"),
                 MessageBoxStyle.Ok | MessageBoxStyle.IconError, Window);
             return;
         }
@@ -176,7 +199,11 @@ internal sealed class ShortcutPreferences : Preferences
     private void Reset()
     {
         if (!HasChangesFromDefaults()) return;
-        if (Wx.MessageBox("Reset all shortcuts to defaults?", "Confirm Reset",
+        if (Wx.MessageBox(
+            // Translators: Asks the user to confirm putting every shortcut on this page back to the combination the player came with.
+            Tr("Reset all shortcuts to defaults?"),
+            // Translators: Title of the window that asks the user to confirm putting every shortcut back as it was.
+            Tr("Confirm Reset"),
             MessageBoxStyle.YesNo | MessageBoxStyle.IconQuestion, Window) != MessageBoxStyle.Yes) return;
         // Only the working copy is cleared; the stored overrides are rewritten from it in Apply.
         _primary.Clear();
@@ -258,8 +285,10 @@ internal sealed partial class ShortcutCapture : IDisposable
     internal ShortcutCapture(Window parent, bool allowWin = false)
     {
         _allowWin = allowWin;
-        _dialog = new Dialog(parent, title: "Set Shortcut");
-        var label = new StaticText(_dialog, label: "Press the desired shortcut. Escape cancels.");
+        // Translators: Title of the small window that waits for the user to press the combination they want.
+        _dialog = new Dialog(parent, title: Tr("Set Shortcut"));
+        // Translators: Message in the window that waits for a key combination. Escape is the name of the key that closes it.
+        var label = new StaticText(_dialog, label: Tr("Press the desired shortcut. Escape cancels."));
         var sizer = new BoxSizer(Orientation.Vertical);
         sizer.Add(label, flags: SizerFlags.All, border: 10);
         _dialog.SetSizer(sizer);

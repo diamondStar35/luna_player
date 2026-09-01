@@ -37,16 +37,25 @@ internal sealed class MarkedFileActions
         var queue = new ConcurrentQueue<FileOperationProgress>();
         using var cancellation = new CancellationTokenSource();
         var task = Task.Run(() => _files.Transfer(marked, target, move, queue.Enqueue, cancellation.Token));
-        using var progress = _view.BeginProgress(move ? "Moving marked files" : "Copying marked files", "Starting...", marked.Count);
+        using var progress = _view.BeginProgress(
+            move
+                // Translators: Title of the progress window shown while the marked files are being moved into another folder.
+                ? Tr("Moving marked files")
+                // Translators: Title of the progress window shown while the marked files are being copied into another folder.
+                : Tr("Copying marked files"),
+            // Translators: First message in the progress window, shown before the first file has been dealt with.
+            Tr("Starting..."), marked.Count);
         while (!task.IsCompleted)
         {
             var updated = false;
             while (queue.TryDequeue(out var item))
             {
                 updated = true;
-                if (!progress.Update(item.Value, $"Processing: {item.Name}")) cancellation.Cancel();
+                // Translators: Progress message naming the file being copied or moved right now. {name} is the file name.
+                if (!progress.Update(item.Value, TrFormat("Processing: {name}", item.Name))) cancellation.Cancel();
             }
-            if (!updated && !progress.Pulse("Working...")) cancellation.Cancel();
+            // Translators: Progress message shown while the player is busy but has nothing new to report yet.
+            if (!updated && !progress.Pulse(Tr("Working..."))) cancellation.Cancel();
             Thread.Sleep(25);
         }
         var result = task.GetAwaiter().GetResult();
@@ -59,14 +68,23 @@ internal sealed class MarkedFileActions
         var marked = GetMarked();
         if (marked.Count == 0) return;
         var copied = _clipboard.SetFiles(marked);
-        _speech.Speak(copied ? "Marked files copied to clipboard." : "Unable to copy marked files to clipboard.", copied ? "Copied." : "Copy failed.");
+        _speech.Speak(
+            copied
+                // Translators: Spoken once the marked files have been copied to the clipboard, ready to be pasted elsewhere.
+                ? Tr("Marked files copied to clipboard.")
+                // Translators: Spoken when the marked files could not be copied to the clipboard.
+                : Tr("Unable to copy marked files to clipboard."),
+            copied ? Tr("Copied.") : Tr("Copy failed."));
     }
 
     private void Delete()
     {
         var marked = GetMarked();
         if (marked.Count == 0) return;
-        if (!_view.Confirm($"Delete {marked.Count} marked files?", "Confirm Delete")) return;
+        if (!_view.Confirm(
+            // Translators: Asks the user to confirm deleting the marked files. {count} is how many are marked.
+            TrPluralFormat("Delete {count} marked file?", "Delete {count} marked files?", marked.Count, marked.Count),
+            Tr("Confirm Delete"))) return;
         var current = _player.CurrentPath;
         _player.Stop();
         var result = _files.Delete(marked);
@@ -75,21 +93,36 @@ internal sealed class MarkedFileActions
             _player.Reload();
         if (result.Succeeded.Count > 0 && result.Failed.Count == 0)
         {
-            _view.ShowInfo($"Deleted {result.Succeeded.Count} marked files.", "Delete Complete");
-            _speech.Speak("Marked files deleted.", "Deleted.");
+            _view.ShowInfo(
+                // Translators: Shown once the marked files have been deleted. {count} is how many were deleted.
+                TrPluralFormat("Deleted {count} marked file.", "Deleted {count} marked files.", result.Succeeded.Count, result.Succeeded.Count),
+                // Translators: Title of the message shown once deleting the marked files has finished.
+                Tr("Delete Complete"));
+            _speech.Speak(
+                // Translators: Spoken once the marked files have been deleted.
+                Tr("Marked files deleted."), Tr("Deleted."));
         }
         else if (result.Succeeded.Count > 0)
         {
-            _view.ShowWarning($"Deleted {result.Succeeded.Count} files. Failed to delete {result.Failed.Count} files.", "Delete Complete");
-            _speech.Speak("Some files were deleted.", "Partial delete.");
+            _view.ShowWarning(
+                // Translators: Shown when only some of the marked files could be deleted.
+                // {deleted} is how many were deleted and {failed} how many could not be.
+                TrFormat("Deleted {deleted} files. Failed to delete {failed} files.", result.Succeeded.Count, result.Failed.Count),
+                Tr("Delete Complete"));
+            _speech.Speak(
+                // Translators: Spoken when only some of the marked files could be deleted.
+                Tr("Some files were deleted."),
+                // Translators: The short wording spoken when only some of the marked files could be deleted.
+                Tr("Partial delete."));
         }
-        else _speech.Speak("Could not delete marked files.", "Delete failed.");
+        // Translators: Spoken when none of the marked files could be deleted.
+        else _speech.Speak(Tr("Could not delete marked files."), Tr("Delete failed."));
     }
 
     private IReadOnlyList<string> GetMarked()
     {
         var marked = _player.MarkedFiles;
-        if (marked.Count == 0) _speech.Speak("No marked files.", "No marks.");
+        if (marked.Count == 0) _speech.Speak(Tr("No marked files."), Tr("No marks."));
         return marked;
     }
 
@@ -97,20 +130,49 @@ internal sealed class MarkedFileActions
     {
         if (result.Cancelled)
         {
-            _speech.Speak("Operation canceled.", "Canceled.");
+            _speech.Speak(
+                // Translators: Spoken when the user stops copying or moving the marked files before it has finished.
+                Tr("Operation canceled."),
+                // Translators: The short wording spoken when the user stops copying or moving the marked files.
+                Tr("Canceled."));
             return;
         }
         if (result.Succeeded.Count > 0 && result.Failed.Count == 0)
         {
-            _view.ShowInfo($"{result.Succeeded.Count} files processed successfully.", "Operation Complete");
-            _speech.Speak(move ? "Marked files moved." : "Marked files copied.", move ? "Moved." : "Copied.");
+            _view.ShowInfo(
+                // Translators: Shown once every marked file has been copied or moved. {count} is how many were dealt with.
+                TrPluralFormat("{count} file processed successfully.", "{count} files processed successfully.", result.Succeeded.Count, result.Succeeded.Count),
+                // Translators: Title of the message shown once copying or moving the marked files has finished.
+                Tr("Operation Complete"));
+            _speech.Speak(
+                move
+                    // Translators: Spoken once the marked files have been moved into the chosen folder.
+                    ? Tr("Marked files moved.")
+                    // Translators: Spoken once the marked files have been copied into the chosen folder.
+                    : Tr("Marked files copied."),
+                move
+                    // Translators: The short wording spoken once the marked files have been moved into the chosen folder.
+                    ? Tr("Moved.")
+                    : Tr("Copied."));
         }
         else if (result.Succeeded.Count > 0)
         {
-            _view.ShowWarning($"Processed {result.Succeeded.Count} files. Failed for {result.Failed.Count} files.", "Operation Complete");
-            _speech.Speak("Operation completed with errors.", "Partial success.");
+            _view.ShowWarning(
+                // Translators: Shown when only some of the marked files could be copied or moved.
+                // {processed} is how many were dealt with and {failed} how many could not be.
+                TrFormat("Processed {processed} files. Failed for {failed} files.", result.Succeeded.Count, result.Failed.Count),
+                Tr("Operation Complete"));
+            _speech.Speak(
+                // Translators: Spoken when copying or moving the marked files worked for some of them but not all.
+                Tr("Operation completed with errors."),
+                // Translators: The short wording spoken when copying or moving the marked files worked for some of them but not all.
+                Tr("Partial success."));
         }
-        else _speech.Speak("Operation failed.", "Failed.");
+        else _speech.Speak(
+            // Translators: Spoken when none of the marked files could be copied or moved.
+            Tr("Operation failed."),
+            // Translators: The short wording spoken when none of the marked files could be copied or moved.
+            Tr("Failed."));
     }
 
     private static bool SamePath(string left, string right)

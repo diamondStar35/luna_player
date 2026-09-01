@@ -33,17 +33,23 @@ internal sealed class EditActions
 
     private void Rename()
     {
-        if (!TryGetLocalPath("Rename", out var path))
+        // Translators: Spoken when the user asks to rename what is playing but it is a stream rather than a file on this computer.
+        if (!TryGetLocalPath(Tr("Rename is available only for local files."), out var path))
             return;
         var oldName = Path.GetFileName(path);
-        var value = _view.PromptText("Enter new name for the file.", "Rename File", oldName);
+        var value = _view.PromptText(
+            // Translators: Asks the user for the name the current file should be given.
+            Tr("Enter new name for the file."),
+            // Translators: Title of the window that asks for the name the current file should be given.
+            Tr("Rename File"), oldName);
         if (value is null)
             return;
         value = Path.GetFileName(value.Trim());
         var extension = Path.GetExtension(path);
         if (string.IsNullOrWhiteSpace(Path.GetFileNameWithoutExtension(value)))
         {
-            _view.ShowWarning("File name cannot be empty.", "Rename File");
+            // Translators: Spoken and shown when the user confirms a new file name without typing anything.
+            _view.ShowWarning(Tr("File name cannot be empty."), Tr("Rename File"));
             return;
         }
         if (string.IsNullOrEmpty(Path.GetExtension(value)))
@@ -51,26 +57,48 @@ internal sealed class EditActions
         var newPath = Path.Combine(Path.GetDirectoryName(path)!, value);
         if (File.Exists(newPath))
         {
-            _view.ShowWarning("A file with that name already exists.", "Rename File");
+            // Translators: Spoken and shown when the new name given to a file is already taken by another file in the same folder.
+            _view.ShowWarning(Tr("A file with that name already exists."), Tr("Rename File"));
             return;
         }
         if (_player.RenameCurrent(newPath))
-            _speech.Speak("File renamed.", "Renamed.");
+            _speech.Speak(
+                // Translators: Spoken once the current file has been given its new name.
+                Tr("File renamed."),
+                // Translators: The short wording spoken once the current file has been given its new name.
+                Tr("Renamed."));
         else
-            _speech.Speak("Could not rename the file.", "Rename failed.");
+            _speech.Speak(
+                // Translators: Spoken when the current file could not be given a new name.
+                Tr("Could not rename the file."),
+                // Translators: The short wording spoken when the current file could not be given a new name.
+                Tr("Rename failed."));
     }
 
     private void Delete()
     {
-        if (!TryGetLocalPath("Delete", out var path))
+        // Translators: Spoken when the user asks to delete what is playing but it is a stream rather than a file on this computer.
+        if (!TryGetLocalPath(Tr("Delete is available only for local files."), out var path))
             return;
         var name = Path.GetFileName(path);
-        if (!_view.Confirm($"Delete '{name}'?", "Confirm Delete"))
+        if (!_view.Confirm(
+            // Translators: Asks the user to confirm deleting a file. {name} is the file name.
+            TrFormat("Delete '{name}'?", name),
+            // Translators: Title of the window that asks the user to confirm deleting a file.
+            Tr("Confirm Delete")))
             return;
         if (_player.DeleteCurrent())
-            _speech.Speak("File deleted.", "Deleted.");
+            _speech.Speak(
+                // Translators: Spoken once the current file has been deleted from the disk.
+                Tr("File deleted."),
+                // Translators: The short wording spoken once the current file has been deleted from the disk.
+                Tr("Deleted."));
         else
-            _speech.Speak("Could not delete the file.", "Delete failed.");
+            _speech.Speak(
+                // Translators: Spoken when the current file could not be deleted from the disk.
+                Tr("Could not delete the file."),
+                // Translators: The short wording spoken when the current file could not be deleted from the disk.
+                Tr("Delete failed."));
     }
 
     private void Copy()
@@ -78,7 +106,17 @@ internal sealed class EditActions
         if (!TryGetCurrentPath(out var path))
             return;
         var copied = _clipboard.SetFiles([path]);
-        _speech.Speak(copied ? "Current file copied to clipboard." : "Unable to copy current file to clipboard.", copied ? "Copied." : "Copy failed.");
+        _speech.Speak(
+            copied
+                // Translators: Spoken once the current file has been copied to the clipboard, ready to be pasted elsewhere.
+                ? Tr("Current file copied to clipboard.")
+                // Translators: Spoken when the current file could not be copied to the clipboard.
+                : Tr("Unable to copy current file to clipboard."),
+            copied
+                // Translators: The short wording spoken once the current file has been copied to the clipboard.
+                ? Tr("Copied.")
+                // Translators: The short wording spoken when the current file could not be copied to the clipboard.
+                : Tr("Copy failed."));
     }
 
     private void Paste()
@@ -86,7 +124,11 @@ internal sealed class EditActions
         var paths = _clipboard.GetPaths();
         if (paths.Count == 0)
         {
-            _speech.Speak("Clipboard does not contain files or folders.", "Clipboard empty.");
+            _speech.Speak(
+                // Translators: Spoken when the user pastes but the clipboard holds no files or folders to open.
+                Tr("Clipboard does not contain files or folders."),
+                // Translators: The short wording spoken when the clipboard holds no files or folders to open.
+                Tr("Clipboard empty."));
             return;
         }
         foreach (var path in paths)
@@ -94,7 +136,11 @@ internal sealed class EditActions
             if (_fileActions.OpenLocalPath(path))
                 return;
         }
-        _speech.Speak("Clipboard does not contain openable files or folders.", "Cannot open clipboard data.");
+        _speech.Speak(
+            // Translators: Spoken when the clipboard holds files or folders but none of them are media this player can open.
+            Tr("Clipboard does not contain openable files or folders."),
+            // Translators: The short wording spoken when nothing on the clipboard can be opened.
+            Tr("Cannot open clipboard data."));
     }
 
     private void ToggleCurrentMark()
@@ -102,33 +148,68 @@ internal sealed class EditActions
         var marked = _player.ToggleCurrentMarked();
         if (!marked.HasValue)
         {
-            _speech.Speak("No file loaded.", "No file.");
+            _speech.Speak(
+                // Translators: Spoken when a command needs a file to be playing but none is loaded.
+                Tr("No file loaded."),
+                // Translators: The short wording spoken when a command needs a file to be playing but none is loaded.
+                Tr("No file."));
             return;
         }
-        _speech.Speak(marked.Value ? "File added to marked files." : "File removed from marked files.", marked.Value ? "Marked." : "Unmarked.");
+        _speech.Speak(
+            marked.Value
+                // Translators: Spoken once the current file has been added to the marked files.
+                ? Tr("File added to marked files.")
+                // Translators: Spoken once the current file has been taken out of the marked files.
+                : Tr("File removed from marked files."),
+            marked.Value
+                // Translators: The short wording spoken once the current file has been added to the marked files.
+                ? Tr("Marked.")
+                // Translators: The short wording spoken once the current file has been taken out of the marked files.
+                : Tr("Unmarked."));
     }
 
     private void ToggleAllMarks()
     {
         if (_player.Count == 0)
         {
-            _speech.Speak("No file loaded.", "No file.");
+            _speech.Speak(Tr("No file loaded."), Tr("No file."));
             return;
         }
         var marked = _player.ToggleAllMarked();
-        _speech.Speak(marked ? "All files marked." : "All files unmarked.", marked ? "All marked." : "All unmarked.");
+        _speech.Speak(
+            marked
+                // Translators: Spoken once every loaded file has been marked.
+                ? Tr("All files marked.")
+                // Translators: Spoken once every loaded file has been unmarked.
+                : Tr("All files unmarked."),
+            marked
+                // Translators: The short wording spoken once every loaded file has been marked.
+                ? Tr("All marked.")
+                // Translators: The short wording spoken once every loaded file has been unmarked.
+                : Tr("All unmarked."));
     }
 
     private void ClearMarks()
     {
         var cleared = _player.ClearMarked();
-        _speech.Speak(cleared ? "Marked files list cleared." : "No marked files.", cleared ? "Marks cleared." : "No marks.");
+        _speech.Speak(
+            cleared
+                // Translators: Spoken once the list of marked files has been emptied.
+                ? Tr("Marked files list cleared.")
+                // Translators: Spoken when the user clears the marked files but none were marked.
+                : Tr("No marked files."),
+            cleared
+                // Translators: The short wording spoken once the list of marked files has been emptied.
+                ? Tr("Marks cleared.")
+                // Translators: The short wording spoken when the user clears the marked files but none were marked.
+                : Tr("No marks."));
     }
 
     private void AnnounceMarkedCount()
     {
         var count = _player.MarkedCount;
-        _speech.SpeakText(count == 1 ? "1 file marked" : $"{count} files marked");
+        // Translators: Spoken when the user asks how many files are marked. {count} is that number.
+        _speech.SpeakText(TrPluralFormat("{count} file marked", "{count} files marked", count, count));
     }
 
     private bool TryGetCurrentPath(out string path)
@@ -136,17 +217,22 @@ internal sealed class EditActions
         path = _player.CurrentPath ?? string.Empty;
         if (path.Length > 0)
             return true;
-        _speech.Speak("No file loaded.", "No file.");
+        _speech.Speak(Tr("No file loaded."), Tr("No file."));
         return false;
     }
 
-    private bool TryGetLocalPath(string action, out string path)
+    /// <param name="unavailable">What to say when the current entry is a stream: the action names itself,
+    /// because a sentence assembled from a translated verb and a translated remainder does not read as one in
+    /// every language.</param>
+    private bool TryGetLocalPath(string unavailable, out string path)
     {
         if (!TryGetCurrentPath(out path))
             return false;
         if (File.Exists(path))
             return true;
-        _speech.Speak($"{action} is available only for local files.", "Not available for streams.");
+        _speech.Speak(unavailable,
+            // Translators: The short wording spoken when a command that needs a file on this computer is used while a stream is playing.
+            Tr("Not available for streams."));
         return false;
     }
 

@@ -55,9 +55,15 @@ internal sealed partial class PlaybackActions
         router.Register(ActionId.VolumeMaximize, () => SetVolume(1000));
         router.Register(ActionId.VolumeMinimize, () => SetVolume(5));
         router.Register(ActionId.AnnounceVolume, AnnounceVolume);
-        router.Register(ActionId.AnnounceElapsed, () => AnnounceTime("Elapsed time:", _player.Elapsed));
-        router.Register(ActionId.AnnounceRemaining, () => AnnounceTime("Remaining time:", _player.Remaining));
-        router.Register(ActionId.AnnounceDuration, () => AnnounceTime("Total time:", _player.Duration));
+        router.Register(ActionId.AnnounceElapsed, () => AnnounceTime(
+            // Translators: Spoken before the time played so far, as in "Elapsed time: 1 minute 20 seconds".
+            Tr("Elapsed time:"), _player.Elapsed));
+        router.Register(ActionId.AnnounceRemaining, () => AnnounceTime(
+            // Translators: Spoken before the time still left to play, as in "Remaining time: 1 minute 20 seconds".
+            Tr("Remaining time:"), _player.Remaining));
+        router.Register(ActionId.AnnounceDuration, () => AnnounceTime(
+            // Translators: Spoken before the whole length of the file, as in "Total time: 3 minutes 40 seconds".
+            Tr("Total time:"), _player.Duration));
         router.Register(ActionId.AnnouncePercent, AnnouncePercent);
         router.Register(ActionId.AnnounceSpeed, AnnounceSpeed);
         router.Register(ActionId.ToggleVerbosity, ToggleVerbosity);
@@ -82,21 +88,25 @@ internal sealed partial class PlaybackActions
     {
         if (string.IsNullOrEmpty(_player.CurrentPath))
         {
-            _speech.Speak("No file loaded.", "No file.");
+            _speech.Speak(Tr("No file loaded."), Tr("No file."));
             return;
         }
 
         if (_player.Duration is null)
         {
             if (_player.Reload() && _settings.General.Verbosity == SpeechVerbosity.Beginner)
-                _speech.SpeakText("Play");
+                // Translators: Spoken when playing starts or carries on again.
+                _speech.SpeakText(Tr("Play"));
             return;
         }
 
         var isPlaying = _player.TogglePause();
         _view.SetPlaying(isPlaying);
         if (_settings.General.Verbosity == SpeechVerbosity.Beginner)
-            _speech.SpeakText(isPlaying ? "Play" : "Pause");
+            _speech.SpeakText(isPlaying
+                ? Tr("Play")
+                // Translators: Spoken when playing is held where it is.
+                : Tr("Pause"));
     }
 
     private void SeekByMultiplier(double multiplier)
@@ -129,14 +139,20 @@ internal sealed partial class PlaybackActions
             return;
         }
         if (!_player.SeekToEnd())
-            _speech.Speak("Time not available", "Unavailable");
+            _speech.Speak(
+                // Translators: Spoken when the player cannot tell how long the file is, so it has no time to report or move to.
+                Tr("Time not available"),
+                // Translators: The short wording spoken when a time the user asked for is not known.
+                Tr("Unavailable"));
     }
 
     private void GoToTime()
     {
         if (_player.Duration is not double duration || duration <= 0)
         {
-            _view.ShowWarning("Time is not available for the current file.", "Go to time");
+            _view.ShowWarning(Tr("Time is not available for the current file."),
+                // Translators: Title of the window that asks the user which point in the file to move to.
+                Tr("Go to time"));
             return;
         }
         var position = _view.ChooseTime(duration, Math.Clamp(_player.Elapsed ?? 0, 0, duration));
@@ -153,20 +169,22 @@ internal sealed partial class PlaybackActions
     {
         _settings.Audio.Volume = volume;
         var whole = (int)volume;
-        _speech.Speak($"Volume {whole} percent", $"{whole}%");
+        // Translators: Spoken after the loudness has been changed. {volume} is the new loudness as a number out of a hundred.
+        _speech.Speak(TrFormat("Volume {volume} percent", whole), $"{whole}%");
     }
 
     private void AnnounceVolume()
     {
         var whole = (int)_player.Volume;
-        _speech.Speak($"Volume is {whole}%", $"{whole}%");
+        // Translators: Spoken when the user asks how loud the sound is. {percent} is the loudness as a number out of a hundred.
+        _speech.Speak(TrFormat("Volume is {percent}%", whole), $"{whole}%");
     }
 
     private void AnnounceTime(string label, double? seconds)
     {
         var formatted = PlaybackTimeFormatter.Format(seconds);
         if (formatted is null)
-            _speech.Speak("Time not available", "Unavailable");
+            _speech.Speak(Tr("Time not available"), Tr("Unavailable"));
         else
             _speech.Speak($"{label} {formatted}", formatted);
     }
@@ -175,14 +193,18 @@ internal sealed partial class PlaybackActions
     {
         if (_player.Duration is not double duration || duration <= 0 || _player.Elapsed is not double elapsed)
         {
-            _speech.Speak("Percentage not available", "Unavailable");
+            // Translators: Spoken when the player cannot work out how far through the file it is.
+            _speech.Speak(Tr("Percentage not available"), Tr("Unavailable"));
             return;
         }
         var percent = Math.Clamp((int)(elapsed / duration * 100), 0, 100);
-        _speech.Speak($"{percent} percent", $"{percent}%");
+        // Translators: Spoken when the user asks how far through the file playing has got. {percent} is that share out of a hundred.
+        _speech.Speak(TrFormat("{percent} percent", percent), $"{percent}%");
     }
 
-    private void AnnounceSpeed() => _speech.SpeakText($"{FormatSpeed(_player.Speed)}x");
+    // Translators: Spoken when the user asks how fast the file is playing. {speed} is the speed, where 1 is the normal
+    // speed; "x" is short for "times" and is usually left as it is.
+    private void AnnounceSpeed() => _speech.SpeakText(TrFormat("{speed}x", FormatSpeed(_player.Speed)));
 
     private void ChangeSpeed(double delta) => SetSpeed(_player.Speed + delta);
 
@@ -190,7 +212,7 @@ internal sealed partial class PlaybackActions
     {
         var speed = _player.SetSpeed(value);
         _settings.Audio.Speed = speed;
-        _speech.SpeakText($"{FormatSpeed(speed)}x");
+        _speech.SpeakText(TrFormat("{speed}x", FormatSpeed(speed)));
     }
 
     private void ToggleVerbosity()
@@ -198,12 +220,16 @@ internal sealed partial class PlaybackActions
         if (_settings.General.Verbosity == SpeechVerbosity.Advanced)
         {
             _settings.General.Verbosity = SpeechVerbosity.Beginner;
-            _speech.SpeakText("Beginner mode");
+            // Translators: Spoken when the user switches to whole, clearly worded messages. It should read the same as
+            // the "Beginner" entry in the Verbosity list on the General settings page.
+            _speech.SpeakText(Tr("Beginner mode"));
         }
         else
         {
             _settings.General.Verbosity = SpeechVerbosity.Advanced;
-            _speech.SpeakText("Advanced mode");
+            // Translators: Spoken when the user switches to short messages. It should read the same as the "Advanced"
+            // entry in the Verbosity list on the General settings page.
+            _speech.SpeakText(Tr("Advanced mode"));
         }
         _settingsStore.SaveExplicit(_settings);
     }
@@ -213,28 +239,36 @@ internal sealed partial class PlaybackActions
         var enabled = !_player.IsSilenceRemovalEnabled;
         if (!_player.SetSilenceRemoval(enabled))
         {
-            _speech.Speak("Could not change silence removal filter.", "Filter failed.");
+            _speech.Speak(
+                // Translators: Spoken when trimming the silent parts out could not be switched on or off.
+                Tr("Could not change silence removal filter."),
+                // Translators: The short wording spoken when trimming the silent parts out could not be switched on or off.
+                Tr("Filter failed."));
             return;
         }
         _settings.Silence.Enabled = enabled;
         _settingsStore.SaveExplicit(_settings);
         _view.SetSilenceRemovalChecked(enabled);
-        _speech.Speak(enabled ? "Silence removal on" : "Silence removal off",
-            enabled ? "Silence removal on" : "Silence removal off");
+        _speech.Speak(enabled
+                // Translators: Spoken once the player has started trimming the silent parts out.
+                ? Tr("Silence removal on")
+                // Translators: Spoken once the player has stopped trimming the silent parts out.
+                : Tr("Silence removal off"),
+            enabled ? Tr("Silence removal on") : Tr("Silence removal off"));
     }
 
     private void JumpToPercent(int percent)
     {
         if (_player.Duration is not double duration || duration <= 0)
         {
-            _speech.Speak("Time not available", "Unavailable");
+            _speech.Speak(Tr("Time not available"), Tr("Unavailable"));
             return;
         }
         if (percent >= 100)
             _player.SeekToEnd();
         else
             _player.SeekAbsolute(duration * percent / 100.0);
-        _speech.Speak($"{percent} percent", $"{percent}%");
+        _speech.Speak(TrFormat("{percent} percent", percent), $"{percent}%");
     }
 
     private void SetSeekStep(SeekStepAction step)

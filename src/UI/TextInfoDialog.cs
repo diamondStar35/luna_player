@@ -9,12 +9,13 @@ internal sealed class TextInfoDialog : IDisposable
     internal TextInfoDialog(Window parent, string title, string text)
     {
         _dialog = new Dialog(parent,
-            title: string.IsNullOrWhiteSpace(title) ? "Information" : title,
+            // Translators: Title used for a window of read-only text when the caller supplies none.
+            title: string.IsNullOrWhiteSpace(title) ? Tr("Information") : title,
             style: DialogStyle.Default | DialogStyle.ResizeBorder);
         var textBox = new TextCtrl(_dialog, value: text, style: TextCtrlStyle.MultiLine | TextCtrlStyle.ReadOnly | TextCtrlStyle.DontWrap);
         textBox.InsertionPoint = 0;
         textBox.ShowPosition(0);
-        var close = new Button(_dialog, StandardId.Close, "Close");
+        var close = new Button(_dialog, StandardId.Close, Tr("Close"));
         close.Click += (_, _) => _dialog.EndModal(StandardId.Close);
         var sizer = new BoxSizer(Orientation.Vertical);
         sizer.Add(textBox, proportion: 1, flags: SizerFlags.All | SizerFlags.Expand, border: 8);

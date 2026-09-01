@@ -55,3 +55,6 @@ CodeCoverage/
 *.VisualState.xml
 TestResult.xml
 nunit-*.xml
+
+# Compiled message catalogues; scripts\update-pot.ps1 builds them from the .po files.
+locale/**/*.mo

@@ -11,7 +11,10 @@ namespace LunaPlayer.Application;
 /// </summary>
 internal static class GlobalShortcutBinder
 {
-    private const string Failure = "Global shortcuts could not be set up and will not work.";
+    private static readonly string Failure =
+        // Translators: Spoken or shown when the player could not start watching the keyboard, so the shortcuts that
+        // work while another program is in front will do nothing.
+        Tr("Global shortcuts could not be set up and will not work.");
 
     /// <param name="speech">Where to report a failure at startup. A message box there would block the window
     /// the user is waiting for, so it is spoken instead; pass null from Preferences, where the user has just
@@ -25,6 +28,6 @@ internal static class GlobalShortcutBinder
         if (speech is not null)
             speech.Speak(Failure, Failure);
         else
-            view.ShowWarning(Failure, "Global Shortcuts");
+            view.ShowWarning(Failure, Tr("Global Shortcuts"));
     }
 }

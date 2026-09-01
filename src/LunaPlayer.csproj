@@ -60,6 +60,12 @@
              Link="lib\wxbase333u_vc_x64.dll"
              CopyToOutputDirectory="PreserveNewest"
              CopyToPublishDirectory="PreserveNewest" />
+    <!-- The compiled message catalogues, in the locale/<language>/LC_MESSAGES layout wx looks them up in.
+         scripts\update-pot.ps1 builds them from the .po files; a build with none simply stays English. -->
+    <Content Include="$(RepositoryRoot)locale\**\*.mo"
+             Link="locale\%(RecursiveDir)%(Filename)%(Extension)"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
     <Content Include="$(RepositoryRoot)third-party\WxSharp\third-party\Windows\lib\vc_x64_dll\wxmsw333u_core_vc_x64.dll"
              Link="lib\wxmsw333u_core_vc_x64.dll"
              CopyToOutputDirectory="PreserveNewest"

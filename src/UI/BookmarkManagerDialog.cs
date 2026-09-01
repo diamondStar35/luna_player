@@ -13,10 +13,12 @@ internal sealed class BookmarkManagerDialog : IDisposable
 
     internal BookmarkManagerDialog(Window parent, IReadOnlyList<BookmarkListItem> bookmarks)
     {
-        _dialog = new Dialog(parent, title: "Manage bookmarks", style: DialogStyle.Default | DialogStyle.ResizeBorder);
+        _dialog = new Dialog(parent, title: Tr("Manage bookmarks"), style: DialogStyle.Default | DialogStyle.ResizeBorder);
         _list = new ListCtrl(_dialog, style: ListCtrlStyle.Report | ListCtrlStyle.SingleSelection);
-        _list.InsertColumn(0, "Name", 260);
-        _list.InsertColumn(1, "Position", 120);
+        // Translators: Heading of the bookmark list column holding what each bookmark is called.
+        _list.InsertColumn(0, Tr("Name"), 260);
+        // Translators: Heading of the bookmark list column holding the point in the file each bookmark sits at.
+        _list.InsertColumn(1, Tr("Position"), 120);
         foreach (var bookmark in bookmarks)
         {
             var row = _list.AddItem(bookmark.Name);
@@ -29,11 +31,13 @@ internal sealed class BookmarkManagerDialog : IDisposable
             _list.SetFocused(0);
         }
 
-        _jump = ActionButton("Jump", BookmarkManagementAction.Jump);
-        _edit = ActionButton("Edit", BookmarkManagementAction.Rename);
-        _delete = ActionButton("Delete", BookmarkManagementAction.Delete);
+        // Translators: Button that moves playing to the chosen bookmark.
+        _jump = ActionButton(Tr("Jump"), BookmarkManagementAction.Jump);
+        _edit = ActionButton(Tr("Edit"), BookmarkManagementAction.Rename);
+        _delete = ActionButton(Tr("Delete"), BookmarkManagementAction.Delete);
         _jump.SetDefault();
-        var close = new Button(_dialog, StandardId.Cancel, "Close");
+        // Translators: The button that closes a window.
+        var close = new Button(_dialog, StandardId.Cancel, Tr("Close"));
 
         var buttons = new BoxSizer(Orientation.Horizontal);
         buttons.Add(_jump, flags: SizerFlags.BorderRight, border: 6);
