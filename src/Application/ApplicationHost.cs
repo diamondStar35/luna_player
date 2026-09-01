@@ -28,8 +28,7 @@ internal sealed class ApplicationHost : IDisposable
     internal ApplicationHost(SingleInstanceService singleInstance, IReadOnlyList<string> initialPaths)
     {
         _singleInstance = singleInstance;
-        var paths = new ApplicationPaths();
-        _settingsStore = new SettingsStore(paths.SettingsFile, paths.LegacySettingsFile);
+        _settingsStore = new SettingsStore(Paths.SettingsFile, Paths.LegacySettingsFile);
         _settings = _settingsStore.Load();
         // Before anything else: the action tables and every window below build their strings once, and they
         // have to be built in the user's language.
@@ -40,7 +39,7 @@ internal sealed class ApplicationHost : IDisposable
         _dispatcher = new WxDispatcher();
         _view = new MainFrame(_shortcuts, ActionRegistry.All);
         _speech = new SpeechOutput(_settings);
-        _player = new MediaPlayer(new MpvPlaybackEngine(_view.NativeHandle), new PositionStore(paths.PositionsFile));
+        _player = new MediaPlayer(new MpvPlaybackEngine(_view.NativeHandle), new PositionStore(Paths.PositionsFile));
         var clipboard = new WxClipboardService();
         var selection = new PlaybackSelection();
         var router = new ActionRouter();
@@ -49,12 +48,12 @@ internal sealed class ApplicationHost : IDisposable
         _ = new PlaylistActions(router, _view, _player, _settings, _speech);
         _ = new EditActions(router, _view, _player, _speech, clipboard, fileActions);
         _ = new MarkedFileActions(router, _view, _player, _settings, _speech, clipboard);
-        var bookmarks = new BookmarkStore(paths.BookmarksFile);
+        var bookmarks = new BookmarkStore(Paths.BookmarksFile);
         _ = new BookmarkActions(router, _view, _player, _speech, bookmarks);
         _ = new DeviceActions(router, _view, _player, _settings, _settingsStore, _speech);
         _ = new SettingsActions(router, _view, _settings, _settingsStore,
             new BackupService(_settingsStore, bookmarks), new FileAssociations(), _player, _shortcuts,
-            _globalShortcuts, paths, _speech);
+            _globalShortcuts, _speech);
         router.EnsureComplete(ActionRegistry.All);
         _controller = new ApplicationController(
             _view,

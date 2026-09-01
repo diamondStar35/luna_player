@@ -111,9 +111,8 @@ internal sealed class SettingsStore
     {
         try
         {
-            var directory = System.IO.Path.GetDirectoryName(_jsonPath);
-            if (!string.IsNullOrEmpty(directory)) Directory.CreateDirectory(directory);
-            var temporary = _jsonPath + ".tmp";
+            Paths.EnsureDirectoryFor(_jsonPath);
+            var temporary = Paths.TemporaryFor(_jsonPath);
             using (var stream = File.Create(temporary))
                 JsonSerializer.Serialize(stream, settings, SettingsJsonContext.Default.PlayerSettings);
             File.Move(temporary, _jsonPath, overwrite: true);

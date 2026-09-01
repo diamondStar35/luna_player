@@ -16,6 +16,7 @@ internal sealed partial class PlaybackActions
     private readonly SettingsStore _settingsStore;
     private readonly ISpeechOutput _speech;
     private readonly PlaybackSelection _selection;
+    private readonly MediaGuard _guard;
 
     internal PlaybackActions(
         ActionRouter router,
@@ -32,6 +33,7 @@ internal sealed partial class PlaybackActions
         _settingsStore = settingsStore;
         _speech = speech;
         _selection = selection;
+        _guard = new MediaGuard(player, speech);
         RegisterCoreActions(router);
         RegisterGeneratedActions(router);
     }
@@ -84,11 +86,8 @@ internal sealed partial class PlaybackActions
 
     private void TogglePlayPause()
     {
-        if (string.IsNullOrEmpty(_player.CurrentPath))
-        {
-            _speech.Speak(Tr("No file loaded."), Tr("No file."));
+        if (!_guard.RequireFile(out _))
             return;
-        }
 
         if (_player.Duration is null)
         {
@@ -137,11 +136,7 @@ internal sealed partial class PlaybackActions
             return;
         }
         if (!_player.SeekToEnd())
-            _speech.Speak(
-                // Translators: Spoken when the player cannot tell how long the file is, so it has no time to report or move to.
-                Tr("Time not available"),
-                // Translators: The short wording spoken when a time the user asked for is not known.
-                Tr("Unavailable"));
+            _guard.ReportTimeUnavailable();
     }
 
     private void GoToTime()
@@ -182,7 +177,7 @@ internal sealed partial class PlaybackActions
     {
         var formatted = PlaybackTimeFormatter.Format(seconds);
         if (formatted is null)
-            _speech.Speak(Tr("Time not available"), Tr("Unavailable"));
+            _guard.ReportTimeUnavailable();
         else
             _speech.Speak($"{label} {formatted}", formatted);
     }
@@ -257,11 +252,8 @@ internal sealed partial class PlaybackActions
 
     private void JumpToPercent(int percent)
     {
-        if (_player.Duration is not double duration || duration <= 0)
-        {
-            _speech.Speak(Tr("Time not available"), Tr("Unavailable"));
+        if (!_guard.RequireDuration(out var duration))
             return;
-        }
         if (percent >= 100)
             _player.SeekToEnd();
         else

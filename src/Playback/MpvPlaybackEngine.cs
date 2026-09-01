@@ -37,26 +37,17 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
 
     public bool Load(string path, double? startPosition = null, bool paused = false)
     {
-        try
+        Dictionary<string, object?>? options = startPosition.HasValue
+            ? new Dictionary<string, object?> { ["start"] = startPosition.Value }
+            : null;
+        return TryDo(mpv =>
         {
-            Dictionary<string, object?>? options = startPosition.HasValue
-                ? new Dictionary<string, object?> { ["start"] = startPosition.Value }
-                : null;
-            _mpv.LoadFile(path, "replace", options);
-            _mpv.SetProperty("pause", paused);
-            return true;
-        }
-        catch (MpvException)
-        {
-            return false;
-        }
-        catch (InvalidOperationException)
-        {
-            return false;
-        }
+            mpv.LoadFile(path, "replace", options);
+            mpv.SetProperty("pause", paused);
+        });
     }
 
-    public void Stop() => TryCommand(static mpv => mpv.Command("stop"));
+    public void Stop() => TryDo(static mpv => mpv.Command("stop"));
 
     public bool TogglePause()
     {
@@ -78,10 +69,10 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
     public double? Remaining => ReadDouble("time-remaining");
 
     public void SeekRelative(double seconds)
-        => TryCommand(mpv => mpv.Command("seek", seconds, "relative"));
+        => TryDo(mpv => mpv.Command("seek", seconds, "relative"));
 
     public void SeekAbsolute(double seconds)
-        => TryCommand(mpv => mpv.Command("seek", Math.Max(0, seconds), "absolute"));
+        => TryDo(mpv => mpv.Command("seek", Math.Max(0, seconds), "absolute"));
 
     public bool SetLoopStart(double seconds)
     {
@@ -129,32 +120,21 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
 
     public IReadOnlyList<AudioDevice> GetAudioDevices()
     {
-        try
-        {
-            if (_mpv.GetProperty("audio-device-list") is not IEnumerable<object?> values)
-                return [];
-            var devices = new List<AudioDevice>();
-            foreach (var value in values)
-            {
-                if (value is not IDictionary<string, object?> device || !device.TryGetValue("name", out var rawName))
-                    continue;
-                var name = Convert.ToString(rawName, CultureInfo.InvariantCulture);
-                if (string.IsNullOrWhiteSpace(name))
-                    continue;
-                device.TryGetValue("description", out var rawDescription);
-                var description = Convert.ToString(rawDescription, CultureInfo.InvariantCulture);
-                devices.Add(new AudioDevice(name, string.IsNullOrWhiteSpace(description) ? name : description));
-            }
-            return devices;
-        }
-        catch (MpvException)
-        {
+        if (ReadObject("audio-device-list") is not IEnumerable<object?> values)
             return [];
-        }
-        catch (InvalidOperationException)
+        var devices = new List<AudioDevice>();
+        foreach (var value in values)
         {
-            return [];
+            if (value is not IDictionary<string, object?> device || !device.TryGetValue("name", out var rawName))
+                continue;
+            var name = Convert.ToString(rawName, CultureInfo.InvariantCulture);
+            if (string.IsNullOrWhiteSpace(name))
+                continue;
+            device.TryGetValue("description", out var rawDescription);
+            var description = Convert.ToString(rawDescription, CultureInfo.InvariantCulture);
+            devices.Add(new AudioDevice(name, string.IsNullOrWhiteSpace(description) ? name : description));
         }
+        return devices;
     }
 
     public string CurrentAudioDevice => ReadString("audio-device") ?? "auto";
@@ -226,13 +206,13 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
             Ended?.Invoke(reason.Value);
     }
 
-    // mpv owns both halves of this: keep-open leaves a finished file loaded so it can still be seeked,
-    // and loop-file repeats it without the gap a reload would leave. The managed end-of-file handler still
-    // runs for the advance case, and as a fallback if either property is unavailable.
     /// <summary>What mpv reports as media-title. mpv substitutes the file name when the media declares no
     /// title, so deciding whether this is a real title is left to the caller, which knows the path.</summary>
     public string? MediaTitle => ReadString("media-title")?.Trim() is { Length: > 0 } title ? title : null;
 
+    // mpv owns both halves of this: keep-open leaves a finished file loaded so it can still be seeked,
+    // and loop-file repeats it without the gap a reload would leave. The managed end-of-file handler still
+    // runs for the advance case, and as a fallback if either property is unavailable.
     public void SetEndBehavior(EndBehavior behavior)
     {
         SetPropertySafely("keep-open", behavior == EndBehavior.None ? "yes" : "no");
@@ -241,109 +221,70 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
 
     private void SetPropertySafely(string name, object value) => TrySetProperty(name, value);
 
-    private bool TrySetProperty(string name, object value)
+    /// <summary>The failures a call into libmpv can produce: mpv refusing the call, the player having been
+    /// shut down under it, and a property whose value does not convert to the type the caller asked for.
+    /// None of them is worth bringing the player down over - every caller here has something sensible to do
+    /// with "that did not work", and a media file that makes mpv unhappy is an ordinary event.</summary>
+    private static bool IsFailure(Exception exception)
+        => exception is MpvException or InvalidOperationException
+            or FormatException or InvalidCastException or OverflowException;
+
+    /// <summary>Runs something against mpv, reporting whether it got through.</summary>
+    private bool TryDo(Action<MPV> action)
     {
         try
         {
-            _mpv.SetProperty(name, value);
+            action(_mpv);
             return true;
         }
-        catch (MpvException)
-        {
-            return false;
-        }
-        catch (InvalidOperationException)
+        catch (Exception exception) when (IsFailure(exception))
         {
             return false;
         }
     }
+
+    /// <summary>Reads a property and converts it, or null when mpv has no value for it, will not answer, or
+    /// answers with something the conversion cannot use.</summary>
+    private T? ReadValue<T>(string name, Func<object, T> convert) where T : struct
+    {
+        try
+        {
+            return _mpv.GetProperty(name) is { } value ? convert(value) : null;
+        }
+        catch (Exception exception) when (IsFailure(exception))
+        {
+            return null;
+        }
+    }
+
+    /// <summary>A property read without converting it, for the ones that answer with a list rather than a
+    /// value. Null means mpv had nothing to say, one way or another.</summary>
+    private object? ReadObject(string name)
+    {
+        try
+        {
+            return _mpv.GetProperty(name);
+        }
+        catch (Exception exception) when (IsFailure(exception))
+        {
+            return null;
+        }
+    }
+
+    private bool TrySetProperty(string name, object value) => TryDo(mpv => mpv.SetProperty(name, value));
 
     private double? ReadDouble(string name)
-    {
-        try
-        {
-            var value = _mpv.GetProperty(name);
-            return value is null ? null : Convert.ToDouble(value, CultureInfo.InvariantCulture);
-        }
-        catch (MpvException)
-        {
-            return null;
-        }
-        catch (InvalidOperationException)
-        {
-            return null;
-        }
-        catch (FormatException)
-        {
-            return null;
-        }
-    }
+        => ReadValue(name, static value => Convert.ToDouble(value, CultureInfo.InvariantCulture));
 
     private bool? ReadBoolean(string name)
-    {
-        try
-        {
-            var value = _mpv.GetProperty(name);
-            return value is null ? null : Convert.ToBoolean(value, CultureInfo.InvariantCulture);
-        }
-        catch (MpvException)
-        {
-            return null;
-        }
-        catch (InvalidOperationException)
-        {
-            return null;
-        }
-        catch (FormatException)
-        {
-            return null;
-        }
-    }
+        => ReadValue(name, static value => Convert.ToBoolean(value, CultureInfo.InvariantCulture));
 
     private string? ReadString(string name)
-    {
-        try
-        {
-            return Convert.ToString(_mpv.GetProperty(name), CultureInfo.InvariantCulture);
-        }
-        catch (MpvException)
-        {
-            return null;
-        }
-        catch (InvalidOperationException)
-        {
-            return null;
-        }
-    }
+        => ReadObject(name) is { } value ? Convert.ToString(value, CultureInfo.InvariantCulture) : null;
 
-    private void TryCommand(Action<MPV> command)
-    {
-        try
-        {
-            command(_mpv);
-        }
-        catch (MpvException)
-        {
-        }
-        catch (InvalidOperationException)
-        {
-        }
-    }
+    private bool AddFilter(string filter) => TryDo(mpv => mpv.Command("af", "add", filter));
 
-    private bool AddFilter(string filter)
-    {
-        try
-        {
-            _mpv.Command("af", "add", filter);
-            return true;
-        }
-        catch (Exception exception) when (exception is MpvException or InvalidOperationException)
-        {
-            return false;
-        }
-    }
-
-    private void RemoveFilter(string label) => TryCommand(mpv => mpv.Command("af", "remove", label));
+    private void RemoveFilter(string label) => TryDo(mpv => mpv.Command("af", "remove", label));
 
     private void SetPreamp(double gain)
     {

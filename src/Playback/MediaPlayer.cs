@@ -285,8 +285,7 @@ internal sealed class MediaPlayer : IDisposable
     internal bool RemovePaths(IEnumerable<string> paths)
     {
         var remove = paths.ToArray();
-        var currentRemoved = CurrentPath is string current
-            && remove.Any(path => string.Equals(PathKey(path), PathKey(current), StringComparison.OrdinalIgnoreCase));
+        var currentRemoved = CurrentPath is string current && remove.Any(path => Paths.AreSame(path, current));
         if (currentRemoved) _engine.Stop();
         var result = _playlist.RemovePaths(remove);
         if (!result.Changed) return false;
@@ -361,11 +360,5 @@ internal sealed class MediaPlayer : IDisposable
     {
         StateChanged?.Invoke();
         return value;
-    }
-
-    private static string PathKey(string path)
-    {
-        try { return Path.GetFullPath(path); }
-        catch (Exception exception) when (exception is ArgumentException or NotSupportedException) { return path; }
     }
 }

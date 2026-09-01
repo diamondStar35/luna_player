@@ -5,8 +5,6 @@ using MpvNet;
 
 namespace LunaPlayer.Media;
 
-internal readonly record struct PlaylistProbeProgress(int Value, int Total, string Name);
-
 internal sealed class PlaylistInfoService
 {
     private readonly ConcurrentDictionary<string, (DateTime Modified, double Duration)> _durationCache = new(StringComparer.OrdinalIgnoreCase);
@@ -18,7 +16,7 @@ internal sealed class PlaylistInfoService
         double? currentDuration,
         double? currentElapsed,
         double? currentRemaining,
-        Action<PlaylistProbeProgress> report,
+        Action<ProgressUpdate> report,
         CancellationToken cancellationToken)
     {
         var durations = new List<double?>(files.Count);

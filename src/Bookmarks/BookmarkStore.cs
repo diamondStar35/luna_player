@@ -1,4 +1,5 @@
 using System.Text.Json;
+using LunaPlayer.Configuration;
 
 namespace LunaPlayer.Bookmarks;
 
@@ -24,7 +25,7 @@ internal sealed class BookmarkStore
     internal IReadOnlyList<Bookmark> ListFor(string path)
     {
         var document = Load();
-        return document.Files.TryGetValue(Normalize(path), out var bookmarks)
+        return document.Files.TryGetValue(Paths.Key(path), out var bookmarks)
             ? Sort(bookmarks.Where(value => value.Id.Length > 0 && value.Name.Length > 0 && value.Path.Length > 0))
             : [];
     }
@@ -32,7 +33,7 @@ internal sealed class BookmarkStore
     internal Bookmark Add(string path, string name, double position)
     {
         var document = Load();
-        var key = Normalize(path);
+        var key = Paths.Key(path);
         if (!document.Files.TryGetValue(key, out var bookmarks))
         {
             bookmarks = [];
@@ -42,7 +43,7 @@ internal sealed class BookmarkStore
         {
             Id = Guid.NewGuid().ToString("N"),
             Name = name,
-            Path = Path.GetFullPath(path),
+            Path = Paths.Absolute(path),
             Position = Math.Max(0, position),
             Created = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
         };
@@ -54,7 +55,7 @@ internal sealed class BookmarkStore
     internal bool Rename(string path, string id, string name)
     {
         var document = Load();
-        if (!document.Files.TryGetValue(Normalize(path), out var bookmarks))
+        if (!document.Files.TryGetValue(Paths.Key(path), out var bookmarks))
             return false;
         var bookmark = bookmarks.FirstOrDefault(value => value.Id == id);
         if (bookmark is null)
@@ -67,7 +68,7 @@ internal sealed class BookmarkStore
     internal bool Delete(string path, string id)
     {
         var document = Load();
-        var key = Normalize(path);
+        var key = Paths.Key(path);
         if (!document.Files.TryGetValue(key, out var bookmarks))
             return false;
         var removed = bookmarks.RemoveAll(value => value.Id == id) > 0;
@@ -116,10 +117,8 @@ internal sealed class BookmarkStore
     {
         try
         {
-            var directory = System.IO.Path.GetDirectoryName(path);
-            if (!string.IsNullOrEmpty(directory))
-                Directory.CreateDirectory(directory);
-            var temporaryPath = path + ".tmp";
+            Paths.EnsureDirectoryFor(path);
+            var temporaryPath = Paths.TemporaryFor(path);
             using (var stream = File.Create(temporaryPath))
                 JsonSerializer.Serialize(stream, document, BookmarkJsonContext.Default.BookmarkDocument);
             File.Move(temporaryPath, path, overwrite: true);
@@ -136,7 +135,4 @@ internal sealed class BookmarkStore
             .ThenBy(value => value.Created)
             .ThenBy(value => value.Name, StringComparer.OrdinalIgnoreCase)
             .ToArray();
-
-    private static string Normalize(string path)
-        => Path.GetFullPath(path).ToLowerInvariant();
 }

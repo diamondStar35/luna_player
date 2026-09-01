@@ -38,7 +38,8 @@ internal sealed class BackupService
     {
         try
         {
-            if (!string.Equals(Path.GetFullPath(source), Path.GetFullPath(destination), StringComparison.OrdinalIgnoreCase))
+            // Exporting over the live file would empty it: File.Copy truncates the destination first.
+            if (!Paths.AreSame(source, destination))
                 File.Copy(source, destination, overwrite: true);
             return true;
         }
