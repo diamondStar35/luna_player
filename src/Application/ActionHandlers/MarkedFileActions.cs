@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using LunaPlayer.Accessibility;
 using LunaPlayer.Actions;
 using LunaPlayer.Configuration;
@@ -34,31 +33,23 @@ internal sealed class MarkedFileActions
         var target = _view.ChooseFolder(_settings.General.LastDirectory);
         if (string.IsNullOrEmpty(target)) return;
         _settings.General.LastDirectory = target;
-        var queue = new ConcurrentQueue<FileOperationProgress>();
-        using var cancellation = new CancellationTokenSource();
-        var task = Task.Run(() => _files.Transfer(marked, target, move, queue.Enqueue, cancellation.Token));
-        using var progress = _view.BeginProgress(
+        var prompt = new ProgressPrompt(
             move
                 // Translators: Title of the progress window shown while the marked files are being moved into another folder.
                 ? Tr("Moving marked files")
                 // Translators: Title of the progress window shown while the marked files are being copied into another folder.
                 : Tr("Copying marked files"),
             // Translators: First message in the progress window, shown before the first file has been dealt with.
-            Tr("Starting..."), marked.Count);
-        while (!task.IsCompleted)
-        {
-            var updated = false;
-            while (queue.TryDequeue(out var item))
-            {
-                updated = true;
-                // Translators: Progress message naming the file being copied or moved right now. {name} is the file name.
-                if (!progress.Update(item.Value, TrFormat("Processing: {name}", item.Name))) cancellation.Cancel();
-            }
+            Tr("Starting..."),
             // Translators: Progress message shown while the player is busy but has nothing new to report yet.
-            if (!updated && !progress.Pulse(Tr("Working..."))) cancellation.Cancel();
-            Thread.Sleep(25);
-        }
-        var result = task.GetAwaiter().GetResult();
+            Tr("Working..."),
+            // Translators: Progress message naming the file being copied or moved right now. {name} is the file name.
+            update => TrFormat("Processing: {name}", update.Name));
+        // Cancelling shows up as Cancelled on the result rather than as an exception, so the run still has one
+        // to report; a false here would mean the job threw, and there is nothing to say about that.
+        if (!BackgroundProgress.TryRun(_view, prompt, marked.Count,
+                (report, token) => _files.Transfer(marked, target, move, report, token), out var result))
+            return;
         if (move && result.Succeeded.Count > 0) _player.RemovePaths(result.Succeeded);
         ReportTransfer(result, move);
     }
@@ -89,7 +80,7 @@ internal sealed class MarkedFileActions
         _player.Stop();
         var result = _files.Delete(marked);
         if (result.Succeeded.Count > 0) _player.RemovePaths(result.Succeeded);
-        if (current is not null && !result.Succeeded.Any(path => SamePath(path, current)) && _player.CurrentPath is not null)
+        if (current is not null && !result.Succeeded.Any(path => Paths.AreSame(path, current)) && _player.CurrentPath is not null)
             _player.Reload();
         if (result.Succeeded.Count > 0 && result.Failed.Count == 0)
         {
@@ -173,11 +164,5 @@ internal sealed class MarkedFileActions
             Tr("Operation failed."),
             // Translators: The short wording spoken when none of the marked files could be copied or moved.
             Tr("Failed."));
-    }
-
-    private static bool SamePath(string left, string right)
-    {
-        try { return string.Equals(Path.GetFullPath(left), Path.GetFullPath(right), StringComparison.OrdinalIgnoreCase); }
-        catch (Exception exception) when (exception is ArgumentException or NotSupportedException) { return string.Equals(left, right, StringComparison.OrdinalIgnoreCase); }
     }
 }

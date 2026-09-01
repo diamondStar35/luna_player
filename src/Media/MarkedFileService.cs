@@ -1,12 +1,11 @@
 namespace LunaPlayer.Media;
 
-internal readonly record struct FileOperationProgress(int Value, int Total, string Name);
 internal sealed record FileOperationResult(IReadOnlyList<string> Succeeded, IReadOnlyList<string> Failed, bool Cancelled);
 
 internal sealed class MarkedFileService
 {
     internal FileOperationResult Transfer(IReadOnlyList<string> files, string targetDirectory, bool move,
-        Action<FileOperationProgress> report, CancellationToken cancellationToken)
+        Action<ProgressUpdate> report, CancellationToken cancellationToken)
     {
         var succeeded = new List<string>();
         var failed = new List<string>();

@@ -1,3 +1,5 @@
+using LunaPlayer.Configuration;
+
 namespace LunaPlayer.Playlist;
 
 internal sealed class PlaylistState
@@ -151,16 +153,16 @@ internal sealed class PlaylistState
 
     internal (bool Changed, bool CurrentChanged) RemovePaths(IEnumerable<string> paths)
     {
-        var keys = paths.Select(NormalizeKey).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var keys = paths.Select(Paths.Key).ToHashSet(StringComparer.OrdinalIgnoreCase);
         if (keys.Count == 0) return (false, false);
         var oldCurrent = CurrentPath;
         var oldIndex = _currentIndex;
-        var changed = _files.RemoveAll(path => keys.Contains(NormalizeKey(path))) > 0;
+        var changed = _files.RemoveAll(path => keys.Contains(Paths.Key(path))) > 0;
         if (!changed) return (false, false);
         _marks.Remove(paths);
         if (_files.Count == 0)
             _currentIndex = -1;
-        else if (oldCurrent is not null && !keys.Contains(NormalizeKey(oldCurrent)))
+        else if (oldCurrent is not null && !keys.Contains(Paths.Key(oldCurrent)))
             _currentIndex = _files.FindIndex(path => string.Equals(path, oldCurrent, StringComparison.Ordinal));
         else
             _currentIndex = Math.Min(Math.Max(oldIndex, 0), _files.Count - 1);
@@ -317,21 +319,5 @@ internal sealed class PlaylistState
     {
         _shuffleOrder.Clear();
         _shufflePosition = -1;
-    }
-
-    private static string NormalizeKey(string path)
-    {
-        // A URL is its own key: GetFullPath would resolve it against the working directory and produce a
-        // path that matches nothing.
-        if (Media.MediaLibrary.IsHttpUrl(path))
-            return path;
-        try
-        {
-            return Path.GetFullPath(path);
-        }
-        catch (Exception exception) when (exception is ArgumentException or NotSupportedException)
-        {
-            return path;
-        }
     }
 }
