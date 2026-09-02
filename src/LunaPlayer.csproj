@@ -43,6 +43,7 @@
     <Compile Include="Application\**\*.cs" />
     <Compile Include="Bookmarks\**\*.cs" />
     <Compile Include="Configuration\**\*.cs" />
+    <Compile Include="Favorites\**\*.cs" />
     <Compile Include="Media\**\*.cs" />
     <Compile Include="Playback\**\*.cs" />
     <Compile Include="Playlist\**\*.cs" />
@@ -75,6 +76,20 @@
              CopyToPublishDirectory="PreserveNewest" />
     <Content Include="$(RepositoryRoot)third-party\WxSharp\third-party\Windows\lib\vc_x64_dll\wxmsw333u_core_vc_x64.dll"
              Link="lib\wxmsw333u_core_vc_x64.dll"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+    <!-- The licence the player is published under, and the notices for the libraries it ships with.
+         Two of those licences require their text to travel with the binaries they cover. -->
+    <Content Include="$(RepositoryRoot)LICENSE"
+             Link="LICENSE.txt"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="$(RepositoryRoot)NOTICE"
+             Link="NOTICE.txt"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="$(RepositoryRoot)third-party\licenses\*"
+             Link="licenses\%(Filename)%(Extension)"
              CopyToOutputDirectory="PreserveNewest"
              CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
