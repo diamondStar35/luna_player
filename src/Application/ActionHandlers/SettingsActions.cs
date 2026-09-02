@@ -80,6 +80,7 @@ internal sealed class SettingsActions
             backup.ResetSettings,
             backup.ExportBookmarks,
             backup.ImportBookmarks,
+            () => backup.LastError,
             OpenSettingsFolder,
             () => Register(false),
             () => Register(true),
@@ -91,6 +92,7 @@ internal sealed class SettingsActions
 
         router.Register(ActionId.OpenPreferences, () =>
         {
+            var language = settings.General.Language;
             var result = view.EditPreferences(settings, operations, text => speech.SpeakText(text));
             if (result is null) return;
             ApplyRuntime(result);
@@ -98,6 +100,13 @@ internal sealed class SettingsActions
                 view.ShowError(
                     // Translators: Shown when the settings the user accepted could not be written to disk.
                     Tr("Could not save settings."), Tr("Preferences"));
+            // The language is chosen once, when the player starts: the menus, the action names and every
+            // window built so far already hold their text in the old one. Saying so is the whole of what
+            // can be done about it without rebuilding all of them.
+            if (!string.Equals(language, settings.General.Language, StringComparison.OrdinalIgnoreCase))
+                view.ShowInfo(
+                    // Translators: Shown after the user picks a different language, because the player only reads it when it starts.
+                    Tr("Please restart the app for language changes to take effect."), Tr("Preferences"));
         });
     }
 }

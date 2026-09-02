@@ -19,6 +19,8 @@ internal sealed record PrefsOps(
     Func<PlayerSettings?> ResetSettings,
     Func<string, bool> ExportBookmarks,
     Func<string, bool> ImportBookmarks,
+    /// <summary>Why the last backup or restore failed, for the message that reports it.</summary>
+    Func<string> LastBackupError,
     Func<bool> OpenSettingsFolder,
     Func<UiOperation> RegisterFiles,
     Func<UiOperation> UnregisterFiles,
@@ -26,9 +28,13 @@ internal sealed record PrefsOps(
 
 internal interface IProgressView : IDisposable
 {
-    /// <summary>Shows how far the job has got. Only called when there is something new to show: a gauge
-    /// that is written to on every tick regardless has nothing to gain and something to lose.</summary>
-    void Update(int value, string message);
+    /// <summary>Shows how far the job has got, as a percentage from nought to a hundred.</summary>
+    /// <remarks>
+    /// A percentage rather than a count, because a job can change what it is counting part way through - the
+    /// folder scan counts files it has sized up and then files it has looked at, two different totals - and a
+    /// bar told raw counts has no way to know that. It is also what a screen reader reads out.
+    /// </remarks>
+    void Update(int percent, string message);
 
     /// <summary>Whether the user has pressed Cancel. A plain flag rather than something reported back out
     /// of Update, so a job with nothing new to report can still be cancelled.</summary>
@@ -63,8 +69,13 @@ internal interface IMainView : IDisposable
     double? ChooseTime(double duration, double elapsed);
     int? ChooseAudioDevice(IReadOnlyList<string> descriptions, int selectedIndex);
     BookmarkManagementRequest? ManageBookmarks(IReadOnlyList<BookmarkListItem> bookmarks);
-    OpenedFilesRequest? ChooseOpenedFile(IReadOnlyList<string> names, int selectedIndex);
-    IProgressView BeginProgress(string title, string message, int maximum);
+    /// <summary>Shows the list of loaded files. The names are asked for a row at a time rather than handed
+    /// over up front, so a playlist of any size opens at once.</summary>
+    /// <param name="nameAt">The name to show for one row, called only as that row is drawn.</param>
+    OpenedFilesRequest? ChooseOpenedFile(int count, Func<int, string> nameAt, int selectedIndex);
+    /// <param name="proportional">Whether the job can say how far through it is. A job that cannot gets a
+    /// window with no bar on it, because a bar that never moves is worse than none.</param>
+    IProgressView BeginProgress(string title, string message, bool proportional);
     void ShowTextInfo(string title, string text);
     PlayerSettings? EditPreferences(PlayerSettings settings, PrefsOps operations, Action<string> speakHelp);
     void ApplyShortcuts(ShortcutManager shortcuts);

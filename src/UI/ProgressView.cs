@@ -15,9 +15,15 @@ namespace LunaPlayer.UI;
 /// the whole reason it works: nothing here blocks that loop, so the button is answered the moment it is
 /// pressed rather than whenever some worker next decides to look.
 ///
-/// There is deliberately no Pulse. On MSW, wxGauge::Pulse turns on the marquee window style and SetValue
-/// turns it off again, so a caller that pulses whenever it has nothing new and sets a value when it does
-/// makes the bar restart on every alternation. The bar simply holds its last value instead.
+/// The bar counts from nought to a hundred and is never put into the marquee mode wxGauge::Pulse asks for.
+/// Two reasons: switching between marquee and a value makes the bar appear to restart every time, and a
+/// marquee bar has no value at all for a screen reader to read - it is announced as nought per cent however
+/// busy it looks. Taking a percentage rather than a count is what lets the range stay fixed, so a job that
+/// changes what it is counting cannot drag the bar backwards or pin it to its end.
+///
+/// A job that cannot say how far through it is gets no bar at all, only its message and the way out. That is
+/// the honest arrangement: the alternative is a bar sitting at nought for the whole run, which tells a
+/// sighted user nothing and tells a screen reader something untrue.
 ///
 /// The parent is deliberately left enabled. Disabling it would disable this dialog too - a child window of a
 /// disabled window cannot be clicked - which is exactly how the Cancel button stops answering. The Python
@@ -27,26 +33,25 @@ internal sealed class ProgressView : IProgressView
 {
     private readonly Dialog _dialog;
     private readonly StaticText _message;
-    private readonly Gauge _gauge;
-    private readonly int _maximum;
+    private readonly Gauge? _gauge;
     private bool _cancelled;
     private bool _disposed;
 
-    internal ProgressView(Window parent, string title, string message, int maximum)
+    internal ProgressView(Window parent, string title, string message, bool proportional)
     {
-        _maximum = Math.Max(1, maximum);
         // Caption only: with no close box and no system menu there is no way for the window to be destroyed
         // out from under the job that is driving it. Cancel is the way out.
         _dialog = new Dialog(parent, title: title, style: DialogStyle.Caption);
         _message = new StaticText(_dialog, label: message);
-        _gauge = new Gauge(_dialog, range: _maximum);
+        _gauge = proportional ? new Gauge(_dialog, range: 100) : null;
         // Translators: The button that stops a job that is running behind a progress window.
         var cancel = new Button(_dialog, label: Tr("Cancel"));
         cancel.Click += (_, _) => _cancelled = true;
 
         var sizer = new BoxSizer(Orientation.Vertical);
         sizer.Add(_message, flags: SizerFlags.All | SizerFlags.Expand, border: 10);
-        sizer.Add(_gauge, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.Expand, border: 10);
+        if (_gauge is not null)
+            sizer.Add(_gauge, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.Expand, border: 10);
         sizer.Add(cancel, flags: SizerFlags.All | SizerFlags.AlignCenterHorizontal, border: 10);
         _dialog.SetSizer(sizer);
         _dialog.Fit();
@@ -60,11 +65,12 @@ internal sealed class ProgressView : IProgressView
 
     public bool Cancelled => _cancelled;
 
-    public void Update(int value, string message)
+    public void Update(int percent, string message)
     {
         if (_disposed)
             return;
-        _gauge.Value = Math.Clamp(value, 0, _maximum);
+        if (_gauge is not null)
+            _gauge.Value = Math.Clamp(percent, 0, 100);
         _message.Label = message;
     }
 

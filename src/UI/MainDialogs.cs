@@ -25,8 +25,8 @@ internal sealed partial class MainFrame
     public double? ChooseTime(double duration, double elapsed) { using var dialog = new GoToTimeDialog(_frame, duration, elapsed); return dialog.Show(); }
     public int? ChooseAudioDevice(IReadOnlyList<string> descriptions, int selectedIndex) { using var dialog = new AudioDeviceDialog(_frame, descriptions, selectedIndex); return dialog.Show(); }
     public BookmarkManagementRequest? ManageBookmarks(IReadOnlyList<BookmarkListItem> bookmarks) { using var dialog = new BookmarkManagerDialog(_frame, bookmarks); return dialog.Show(); }
-    public OpenedFilesRequest? ChooseOpenedFile(IReadOnlyList<string> names, int selectedIndex) { using var dialog = new OpenedFilesDialog(_frame, names, selectedIndex); return dialog.Show(); }
-    public IProgressView BeginProgress(string title, string message, int maximum) => new ProgressView(_frame, title, message, maximum);
+    public OpenedFilesRequest? ChooseOpenedFile(int count, Func<int, string> nameAt, int selectedIndex) { using var dialog = new OpenedFilesDialog(_frame, count, nameAt, selectedIndex); return dialog.Show(); }
+    public IProgressView BeginProgress(string title, string message, bool proportional) => new ProgressView(_frame, title, message, proportional);
     public void ShowTextInfo(string title, string text) { using var dialog = new TextInfoDialog(_frame, title, text); dialog.Show(); }
     public PlayerSettings? EditPreferences(PlayerSettings settings, PrefsOps operations, Action<string> speakHelp)
     { var editable = settings.Copy(); using var dialog = new PreferencesDialog(_frame, editable, operations, speakHelp, _globalShortcuts); return dialog.Show() ? editable : null; }

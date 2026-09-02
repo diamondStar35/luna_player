@@ -19,7 +19,7 @@ namespace LunaPlayer.Configuration;
 internal static partial class Localization
 {
     /// <summary>The catalogue name. A <c>.mo</c> file has to be called this to be found.</summary>
-    internal const string Domain = "LunaPlayer";
+    internal const string Domain = AppInfo.Identifier;
 
     /// <summary>The value <see cref="GeneralSettings.Language"/> holds to mean "follow Windows".</summary>
     internal const string SystemLanguage = "system";

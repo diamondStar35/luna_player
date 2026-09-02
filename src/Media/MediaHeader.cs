@@ -16,69 +16,103 @@ namespace LunaPlayer.Media;
 /// Layouts are taken from each format's own specification; see the remarks on each reader for which. Every
 /// one of them is checked against ffprobe over a generated corpus covering all of them.
 /// </remarks>
+/// <summary>What a file's header had to say about how long it is.</summary>
+internal enum MediaHeaderVerdict
+{
+    /// <summary>Nothing here this player recognises as media, whatever the file is called. Asking a demuxer
+    /// would only be a slower way of finding that out.</summary>
+    Unrecognised,
+    /// <summary>A length was read straight out of the header.</summary>
+    Duration,
+    /// <summary>Media this player can open, but of a kind that states no length worth trusting - a transport
+    /// or program stream, raw ADTS - or whose header gave an answer that cannot be right. Only these are
+    /// worth handing to a demuxer.</summary>
+    NeedsDemuxer,
+}
+
 internal static class MediaHeader
 {
     /// <summary>Enough to hold the largest fixed header any reader below inspects.</summary>
     private const int ProbeSize = 64 * 1024;
 
-    /// <summary>The length in seconds, or null when the file does not state one in a form that can be
-    /// trusted, or could not be read at all.</summary>
-    internal static double? ReadDuration(string path)
+    /// <summary>Reads how long a file is, and says how much confidence to put in the answer.</summary>
+    /// <remarks>
+    /// The verdict matters as much as the number. An extension is a guess - <c>.ts</c> is a transport stream
+    /// to this player and a TypeScript source to a compiler - so a file that turns out not to be media at
+    /// all is reported as such, and the caller knows there is nothing a demuxer could add. Without that
+    /// distinction a folder of source code costs a demuxer start and a timeout for every file in it.
+    /// </remarks>
+    /// <param name="duration">The length in seconds, meaningful only for
+    /// <see cref="MediaHeaderVerdict.Duration"/>.</param>
+    internal static MediaHeaderVerdict Read(string path, out double duration)
     {
+        duration = 0;
         try
         {
             using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite,
                 bufferSize: 0, FileOptions.RandomAccess);
             if (stream.Length < 16)
-                return null;
+                return MediaHeaderVerdict.Unrecognised;
             Span<byte> head = stackalloc byte[16];
             if (!ReadAt(stream, 0, head))
-                return null;
-            var duration = Dispatch(stream, head);
-            // A container may state a nonsense length - zero, or something a corrupt field produced. Treat
-            // anything outside a day and a half as unstated rather than passing it on.
-            return duration is > 0.001 and < 129600 ? duration : null;
+                return MediaHeaderVerdict.Unrecognised;
+            var (recognised, read) = Identify(stream, head);
+            if (!recognised)
+                return MediaHeaderVerdict.Unrecognised;
+            // A container may state a nonsense length - zero, or something a corrupt field produced. It is
+            // still media, so a demuxer is worth a try; the number is not.
+            if (read is not (> 0.001 and < 129600))
+                return MediaHeaderVerdict.NeedsDemuxer;
+            duration = read.Value;
+            return MediaHeaderVerdict.Duration;
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException
             or NotSupportedException or ArgumentException)
         {
-            return null;
+            // Nothing could be read, so nothing can be said. A demuxer will not get further.
+            return MediaHeaderVerdict.Unrecognised;
         }
     }
 
-    private static double? Dispatch(FileStream stream, ReadOnlySpan<byte> head)
+    /// <summary>Picks the reader the magic bytes call for, and says whether they named a container this
+    /// player knows at all.</summary>
+    private static (bool Recognised, double? Duration) Identify(FileStream stream, ReadOnlySpan<byte> head)
     {
         if (head[..4].SequenceEqual("fLaC"u8))
-            return Flac.Read(stream);
+            return (true, Flac.Read(stream));
         if (head[..4].SequenceEqual("OggS"u8))
-            return Ogg.Read(stream);
+            return (true, Ogg.Read(stream));
         if (head[..3].SequenceEqual("FLV"u8))
-            return Flv.Read(stream);
+            return (true, Flv.Read(stream));
         if (head[..4].SequenceEqual(Matroska.Magic))
-            return Matroska.Read(stream);
+            return (true, Matroska.Read(stream));
         if (head[..4].SequenceEqual(Asf.HeaderGuidPrefix))
-            return Asf.Read(stream);
+            return (true, Asf.Read(stream));
         if (head[..4].SequenceEqual("RIFF"u8) || head[..4].SequenceEqual("RF64"u8))
         {
-            if (head[8..12].SequenceEqual("WAVE"u8)) return Riff.ReadWave(stream);
-            if (head[8..12].SequenceEqual("AVI "u8)) return Riff.ReadAvi(stream);
-            return null;
+            if (head[8..12].SequenceEqual("WAVE"u8)) return (true, Riff.ReadWave(stream));
+            if (head[8..12].SequenceEqual("AVI "u8)) return (true, Riff.ReadAvi(stream));
+            // Some other RIFF form - a palette, an animated cursor. Not something to play.
+            return (false, null);
         }
         if (head[..4].SequenceEqual("FORM"u8)
             && (head[8..12].SequenceEqual("AIFF"u8) || head[8..12].SequenceEqual("AIFC"u8)))
-            return Aiff.Read(stream);
+            return (true, Aiff.Read(stream));
         // An ISO base media file names its brand in the second box, which is almost always first but is
         // allowed to be preceded by others.
         if (head[4..8].SequenceEqual("ftyp"u8) || head[4..8].SequenceEqual("moov"u8)
             || head[4..8].SequenceEqual("mdat"u8) || head[4..8].SequenceEqual("free"u8)
             || head[4..8].SequenceEqual("skip"u8) || head[4..8].SequenceEqual("wide"u8))
-            return IsoBaseMedia.Read(stream);
+            return (true, IsoBaseMedia.Read(stream));
         // The formats that state no length worth having. They are named rather than left to fall through,
         // because each of them carries bytes that a scan for an MPEG audio frame will happily mistake for
         // one, and a confident wrong answer is worse than none.
         if (IsTransportStream(stream, head) || IsProgramStream(head) || IsAdts(head))
-            return null;
-        return Mpeg.Read(stream, head);
+            return (true, null);
+        // MPEG audio comes last because it has no magic of its own, only a frame sync that ordinary
+        // bytes can imitate. Finding no run of frames means this is not media, whatever it is called.
+        var mpeg = Mpeg.Read(stream, head);
+        return (mpeg.HasValue, mpeg);
     }
 
     /// <summary>An MPEG transport stream: 188 byte packets each starting with a sync byte. The length is only

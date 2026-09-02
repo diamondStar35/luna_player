@@ -1,15 +1,16 @@
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using Microsoft.Win32;
+using LunaPlayer.Configuration;
 
 namespace LunaPlayer.Media;
 
 internal sealed class FileAssociations
 {
-    private const string ProgId = "LunaPlayer.Media";
-    private const string AppName = "Luna Player";
+    private const string ProgId = $"{AppInfo.Identifier}.Media";
+    private const string AppName = AppInfo.Name;
     private const string Classes = @"Software\Classes";
-    private const string Capabilities = @"Software\LunaPlayer\Capabilities";
+    private const string Capabilities = $@"Software\{AppInfo.Identifier}\Capabilities";
     private const string RegisteredApps = @"Software\RegisteredApplications";
 
     internal bool Register(out string error)
@@ -50,7 +51,7 @@ internal sealed class FileAssociations
         }
         try
         {
-            var alias = Path.GetFileName(Environment.ProcessPath ?? "LunaPlayer.exe");
+            var alias = Path.GetFileName(Environment.ProcessPath ?? $"{AppInfo.Identifier}.exe");
             foreach (var extension in MediaLibrary.SupportedExtensions) RemoveExtension(extension);
             Registry.CurrentUser.DeleteSubKeyTree($@"{Classes}\{ProgId}", throwOnMissingSubKey: false);
             Registry.CurrentUser.DeleteSubKeyTree($@"{Classes}\Applications\{alias}", throwOnMissingSubKey: false);

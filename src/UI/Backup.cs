@@ -152,7 +152,13 @@ internal sealed class BackupPreferences : Preferences
         string failureMessage, string failureCaption)
     {
         if (success && successMessage.Length == 0) return;
-        Wx.MessageBox(success ? successMessage : failureMessage, success ? successCaption : failureCaption,
+        // A failure carries the reason the store gave, so the message says what actually went wrong rather
+        // than only that something did.
+        var reason = success ? string.Empty : _operations.LastBackupError();
+        var text = success
+            ? successMessage
+            : reason.Length > 0 ? $"{failureMessage}{Environment.NewLine}{reason}" : failureMessage;
+        Wx.MessageBox(text, success ? successCaption : failureCaption,
             MessageBoxStyle.Ok | (success ? MessageBoxStyle.IconInformation : MessageBoxStyle.IconError), Window);
     }
 

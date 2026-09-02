@@ -18,7 +18,7 @@ internal static class Paths
 {
     /// <summary>The folder holding the settings, bookmarks and saved positions.</summary>
     internal static string RootDirectory { get; } = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Luna Player");
+        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), AppInfo.Name);
 
     /// <summary>The settings file.</summary>
     internal static string SettingsFile { get; } = Path.Combine(RootDirectory, "settings.json");

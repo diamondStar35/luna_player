@@ -12,7 +12,17 @@ namespace LunaPlayer.Application;
 internal sealed record ProgressPrompt(
     string Title,
     string Starting,
-    Func<ProgressUpdate, string> Describe);
+    Func<ProgressUpdate, string> Describe)
+{
+    /// <summary>Whether the job can say how far through it is.</summary>
+    /// <remarks>
+    /// False for a job that cannot know how much work there is until it has done it - searching a tree of
+    /// folders is the case in point, where the only way to learn the total is to walk the whole thing. Such a
+    /// job gets no bar at all rather than one pinned at nought, which would say nothing and be read out as
+    /// "nought per cent" for as long as it ran. Its message carries the running count instead.
+    /// </remarks>
+    internal bool Proportional { get; init; } = true;
+}
 
 /// <summary>Runs a job that works through a set of files off the UI thread, behind a progress window the user
 /// can abort from.</summary>
@@ -47,18 +57,16 @@ internal static class BackgroundProgress
 
     /// <summary>Starts <paramref name="work"/> and returns immediately. <paramref name="completed"/> runs on
     /// the UI thread once the job has finished, and not at all if the user aborted it.</summary>
-    /// <param name="maximum">How many steps the job will report, so the bar can show a proportion.</param>
     /// <param name="work">The job. It is handed something to report progress to and a token that is set when
     /// the user aborts; it may either return early or throw <see cref="OperationCanceledException"/>.</param>
     internal static void Start<TResult>(
         IMainView view,
         IApplicationDispatcher dispatcher,
         ProgressPrompt prompt,
-        int maximum,
         Func<Action<ProgressUpdate>, CancellationToken, TResult> work,
         Action<TResult> completed)
     {
-        var job = new Job<TResult>(view, dispatcher, prompt, maximum, work, completed);
+        var job = new Job<TResult>(view, dispatcher, prompt, work, completed);
         Running.Add(job);
         job.Start();
     }
@@ -74,21 +82,24 @@ internal static class BackgroundProgress
         private readonly Action<TResult> _completed;
         private IDisposable? _ticker;
         private bool _finished;
-        private int _value;
+        private int _percent;
 
         internal Job(
             IMainView view,
             IApplicationDispatcher dispatcher,
             ProgressPrompt prompt,
-            int maximum,
             Func<Action<ProgressUpdate>, CancellationToken, TResult> work,
             Action<TResult> completed)
         {
             _dispatcher = dispatcher;
             _prompt = prompt;
             _completed = completed;
-            _progress = view.BeginProgress(prompt.Title, prompt.Starting, maximum);
-            _task = Task.Run(() => work(_updates.Enqueue, _cancellation.Token));
+            _progress = view.BeginProgress(prompt.Title, prompt.Starting, prompt.Proportional);
+            // The token is given to Task.Run as well as to the job. Without it a job that aborts by throwing
+            // OperationCanceledException leaves the task Faulted rather than Canceled - the exception's token
+            // has to match the task's for .NET to read it as the abort it is - and the fault would then be
+            // rethrown at the user as though something had gone wrong.
+            _task = Task.Run(() => work(_updates.Enqueue, _cancellation.Token), _cancellation.Token);
         }
 
         // Started after construction rather than inside it, so the field is set before the first tick can
@@ -105,10 +116,17 @@ internal static class BackgroundProgress
             ProgressUpdate? latest = null;
             while (_updates.TryDequeue(out var update))
                 latest = update;
-            if (latest is ProgressUpdate shown && shown.Value > _value)
+            if (latest is ProgressUpdate shown)
             {
-                _value = shown.Value;
-                _progress.Update(_value, _prompt.Describe(shown));
+                // A job that has not worked out its total yet reports one of nought, which is nought per
+                // cent - there is nothing else it could honestly be. The bar only ever goes forward, as the
+                // Python player's pull() does with max(), and because this is a proportion rather than a
+                // count that holds even when the job changes what it is counting.
+                var percent = shown.Total > 0
+                    ? (int)Math.Clamp(100.0 * shown.Value / shown.Total, 0, 100)
+                    : 0;
+                _percent = Math.Max(_percent, percent);
+                _progress.Update(_percent, _prompt.Describe(shown));
             }
             if (_progress.Cancelled)
                 _cancellation.Cancel();
@@ -139,8 +157,11 @@ internal static class BackgroundProgress
                     return;
                 }
                 // A cancelled run is the user's own doing and says nothing. Anything else is a fault, and
-                // swallowing it would hide a bug behind a progress window that simply closed.
-                if (_task.IsFaulted && _task.Exception?.InnerException is Exception failure)
+                // swallowing it would hide a bug behind a progress window that simply closed. A job that
+                // throws a cancellation carrying somebody else's token still counts as cancelled, so it is
+                // checked for by type rather than trusted to arrive as IsCanceled.
+                if (_task.IsFaulted && _task.Exception?.InnerException is Exception failure
+                    and not OperationCanceledException)
                     ExceptionDispatchInfo.Capture(failure).Throw();
             });
         }

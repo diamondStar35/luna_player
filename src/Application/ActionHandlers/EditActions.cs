@@ -133,16 +133,24 @@ internal sealed class EditActions
                 Tr("Clipboard empty."));
             return;
         }
-        foreach (var path in paths)
+        // Which of these went wrong matters: a path that is not there at all, one the player cannot make
+        // sense of, and one that holds nothing playable are three different things for the user to fix.
+        var resolved = paths.FirstOrDefault(path => File.Exists(path) || Directory.Exists(path));
+        if (resolved is null)
         {
-            if (_fileActions.OpenLocalPath(path))
-                return;
+            _speech.Speak(
+                // Translators: Spoken when what was pasted names a file or folder that is not there. {path} is what was pasted.
+                TrFormat("Clipboard path could not be resolved: {path}", paths[0]),
+                // Translators: The short wording spoken when what was pasted names nothing that exists.
+                Tr("Invalid path in clipboard."));
+            return;
         }
-        _speech.Speak(
-            // Translators: Spoken when the clipboard holds files or folders but none of them are media this player can open.
-            Tr("Clipboard does not contain openable files or folders."),
-            // Translators: The short wording spoken when nothing on the clipboard can be opened.
-            Tr("Cannot open clipboard data."));
+        if (!_fileActions.OpenLocalPath(resolved))
+            _speech.Speak(
+                // Translators: Spoken when what was pasted exists but holds nothing this player can play.
+                Tr("Could not open the file from clipboard."),
+                // Translators: The short wording spoken when what was pasted could not be opened.
+                Tr("Cannot open clipboard data."));
     }
 
     private void ToggleCurrentMark()

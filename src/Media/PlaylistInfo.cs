@@ -39,9 +39,7 @@ internal sealed class PlaylistInfoService
             // What is playing already knows its own length; asking mpv beats reading the file again.
             durations[index] = string.Equals(path, currentPath, StringComparison.Ordinal) && currentDuration is > 0
                 ? currentDuration
-                // The header answers for every format that states a length. Only what it turns down - an
-                // MPEG transport or program stream, raw ADTS, a file too damaged to read - costs a demuxer.
-                : MediaHeader.ReadDuration(path) ?? probe.Read(path, cancellationToken);
+                : Duration(probe, path, cancellationToken);
             report(new ProgressUpdate(index + 1, files.Count, MediaLibrary.DisplayName(path)));
         }
 
@@ -52,6 +50,22 @@ internal sealed class PlaylistInfoService
         for (var index = currentIndex + 1; index < durations.Length; index++) remaining += durations[index] ?? 0;
         return new PlaylistTotals(files.Count, totalSize, totalDuration, elapsed, remaining);
     }
+
+    /// <summary>How long one file is, from its header where that can say and from a demuxer where it cannot.
+    /// </summary>
+    /// <remarks>
+    /// A file the header does not recognise as media at all is passed over rather than handed to mpv. The
+    /// extension is only a guess about what a file holds - <c>.ts</c> means a transport stream here and a
+    /// TypeScript source everywhere else - and a playlist built from a folder of source code would otherwise
+    /// spend a demuxer start and a two second timeout on every one of them.
+    /// </remarks>
+    private static double? Duration(MpvProbe probe, string path, CancellationToken cancellationToken)
+        => MediaHeader.Read(path, out var duration) switch
+        {
+            MediaHeaderVerdict.Duration => duration,
+            MediaHeaderVerdict.NeedsDemuxer => probe.Read(path, cancellationToken),
+            _ => null,
+        };
 
     /// <summary>The fallback: loads a file into mpv to find out how long it is.</summary>
     ///
