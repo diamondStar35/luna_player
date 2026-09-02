@@ -69,9 +69,11 @@ internal sealed class FileActions
             return;
         var loaded = _settings.General.OpenFilesMode == OpenFilesMode.FileOnly && files.Count > 1
             ? _player.OpenFiles(files, files[0])
-            : OpenFileWithConfiguredMode(files[0]);
+            : true;
         if (loaded)
             _settings.General.LastDirectory = Path.GetDirectoryName(files[0]) ?? string.Empty;
+        if (_settings.General.OpenFilesMode != OpenFilesMode.FileOnly || files.Count <= 1)
+            OpenFileWithConfiguredMode(files[0]);
     }
 
     internal bool OpenLocalPath(string path)
@@ -85,18 +87,17 @@ internal sealed class FileActions
         }
         if (!File.Exists(path))
             return false;
-        var openedFile = OpenFileWithConfiguredMode(path);
-        if (openedFile)
-            _settings.General.LastDirectory = Path.GetDirectoryName(path) ?? string.Empty;
-        return openedFile;
+        _settings.General.LastDirectory = Path.GetDirectoryName(path) ?? string.Empty;
+        OpenFileWithConfiguredMode(path);
+        return true;
     }
 
     internal bool RestoreSession(string path, double position)
     {
         if (!File.Exists(path)) return false;
-        var opened = OpenFileWithConfiguredMode(path, Math.Max(0, position));
-        if (opened) _settings.General.LastDirectory = Path.GetDirectoryName(path) ?? string.Empty;
-        return opened;
+        _settings.General.LastDirectory = Path.GetDirectoryName(path) ?? string.Empty;
+        OpenFileWithConfiguredMode(path, Math.Max(0, position));
+        return true;
     }
 
     private void OpenFileFromDialog()
@@ -185,8 +186,11 @@ internal sealed class FileActions
     {
         if (_player.Count == 0)
             return;
-        var names = _player.Files.Select(_player.DisplayName).ToArray();
-        var request = _view.ChooseOpenedFile(names, selected);
+        // The names are not worked out here: the list asks for the ones it is about to draw.
+        var files = _player.Files;
+        var request = _view.ChooseOpenedFile(files.Count,
+            index => index >= 0 && index < files.Count ? _player.DisplayName(files[index]) : string.Empty,
+            selected);
         if (request is null)
             return;
         if (request.Value.Action == OpenedFilesAction.Jump)
@@ -214,7 +218,7 @@ internal sealed class FileActions
         var duration = _player.Duration;
         var elapsed = _player.Elapsed;
         var remaining = _player.Remaining;
-        BackgroundProgress.Start(_view, _dispatcher, prompt, files.Count,
+        BackgroundProgress.Start(_view, _dispatcher, prompt,
             (report, token) => _playlistInfo.Build(
                 files, currentPath, currentIndex, duration, elapsed, remaining, report, token),
             totals =>
@@ -250,8 +254,14 @@ internal sealed class FileActions
 
     private void CloseFile()
     {
-        if (!_player.CloseCurrent())
+        if (_player.CurrentPath is null)
             _guard.ReportNoFile();
+        else if (!_player.CloseCurrent())
+            _speech.Speak(
+                // Translators: Spoken when the current file could not be taken out of the playlist.
+                Tr("Could not close the file."),
+                // Translators: The short wording spoken when a file could not be closed.
+                Tr("Close failed."));
         else
             // Translators: Spoken once the current file has been taken out of the playlist.
             _speech.Speak(Tr("File closed."), Tr("File closed."));
@@ -259,8 +269,14 @@ internal sealed class FileActions
 
     private void CloseAllFiles()
     {
-        if (!_player.CloseAll())
+        if (_player.Count == 0)
             _guard.ReportNoFile();
+        else if (!_player.CloseAll())
+            _speech.Speak(
+                // Translators: Spoken when the loaded files could not be taken out of the playlist.
+                Tr("Could not close files."),
+                // Translators: The short wording spoken when the files could not be closed.
+                Tr("Close failed."));
         else
             // Translators: Spoken once every file has been taken out of the playlist.
             _speech.Speak(Tr("All files closed."), Tr("All files closed."));
@@ -274,12 +290,62 @@ internal sealed class FileActions
         { _speech.Speak(failure, Tr("Open failed.")); }
     }
 
-    private bool OpenFileWithConfiguredMode(string path, double? startPosition = null) => _settings.General.OpenFilesMode switch
+    /// <summary>Opens a file, bringing its neighbours with it as the settings ask.</summary>
+    /// <remarks>
+    /// Walking a folder and everything under it can take long enough to look like the player has hung, so
+    /// that one mode does its walking on a worker thread behind a progress window the user can abort. It
+    /// therefore returns before the file is open, which is why nothing here reports whether it worked; the
+    /// two cheap modes are done where they stand.
+    /// </remarks>
+    private void OpenFileWithConfiguredMode(string path, double? startPosition = null)
     {
-        OpenFilesMode.MainFolder => _player.OpenFileWithFolder(path, startPosition: startPosition),
-        OpenFilesMode.MainAndSubfolders => _player.OpenFileWithFolder(path, recursive: true, startPosition: startPosition),
-        _ => _player.OpenFile(path, startPosition),
-    };
+        switch (_settings.General.OpenFilesMode)
+        {
+            case OpenFilesMode.MainFolder:
+                _player.OpenFileWithFolder(path, startPosition: startPosition);
+                break;
+            case OpenFilesMode.MainAndSubfolders:
+                OpenWithSubfolders(path, startPosition);
+                break;
+            default:
+                _player.OpenFile(path, startPosition);
+                break;
+        }
+    }
+
+    /// <summary>Loads a file together with everything under its folder, scanning off the UI thread.</summary>
+    private void OpenWithSubfolders(string path, double? startPosition)
+    {
+        var folder = Path.GetDirectoryName(path);
+        if (string.IsNullOrEmpty(folder))
+            return;
+        var prompt = new ProgressPrompt(
+            // Translators: Title of the progress window shown while a folder and the folders inside it are being searched for media.
+            Tr("Opening files"),
+            // Translators: First message in the progress window, before any file has been found.
+            Tr("Loading files from folder and subfolders..."),
+            // Translators: Progress message while a folder is being searched. {found} is how many media files
+            // have been found so far.
+            update => TrFormat("Opening files... {found} media files found", update.Found))
+        {
+            // The tree is walked once, so there is never a proportion to show - only the count, which the
+            // message carries. The window goes without a bar rather than showing one that cannot move.
+            Proportional = false,
+        };
+        BackgroundProgress.Start(_view, _dispatcher, prompt,
+            (report, token) => MediaLibrary.CollectFiles(folder, recursive: true, report, token),
+            files =>
+            {
+                if (files.Count > 0)
+                    _player.OpenFiles(files, path, startPosition);
+                else
+                    _speech.Speak(
+                        // Translators: Spoken when the folder and the folders inside it hold nothing this player can play.
+                        Tr("No audio files found in that folder."),
+                        // Translators: The short wording spoken when a folder holds nothing this player can play.
+                        Tr("No audio files."));
+            });
+    }
 
     private void AnnounceFileInfo()
     {

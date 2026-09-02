@@ -8,8 +8,6 @@ namespace LunaPlayer.Application;
 
 internal sealed class ApplicationController : IDisposable
 {
-    private const string ApplicationName = "Luna Player";
-
     private readonly IMainView _view;
     private readonly MediaPlayer _player;
     private readonly PlayerSettings _settings;
@@ -155,7 +153,7 @@ internal sealed class ApplicationController : IDisposable
             HasMedia: hasMedia,
             IsPlaying: _player.IsPlaying,
             Title: _player.CurrentDisplayName ?? string.Empty,
-            Artist: ApplicationName,
+            Artist: AppInfo.Name,
             Duration: hasMedia ? _player.Duration : null,
             Position: hasMedia ? _player.Elapsed : null,
             CanGoNext: hasMedia && index >= 0 && index < _player.Count - 1,

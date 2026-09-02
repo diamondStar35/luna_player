@@ -31,7 +31,7 @@ internal sealed partial class MainFrame : IMainView
 
     internal MainFrame(ShortcutManager shortcuts, IReadOnlyList<ActionDefinition> actions)
     {
-        _frame = new Frame(title: "Luna Player", size: new Size(420, 160));
+        _frame = new Frame(title: AppInfo.Name, size: new Size(420, 160));
         BuildCommandIds(actions);
         var menu = MainMenuBuilder.Build(_frame, _commandIds, shortcuts);
         _menuBar = menu.MenuBar;

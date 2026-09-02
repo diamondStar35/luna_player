@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-09-02 04:43+0300\n"
+"POT-Creation-Date: 2026-09-02 14:19+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -476,7 +476,7 @@ msgstr ""
 
 #. Translators: Title of a message telling the user that something went wrong.
 #: Application/ActionHandlers/BookmarkActions.cs:119
-#: Application/ActionHandlers/FileActions.cs:137
+#: Application/ActionHandlers/FileActions.cs:138
 msgid "Error"
 msgstr ""
 
@@ -640,7 +640,7 @@ msgstr ""
 
 #. Translators: The short wording spoken once the current file has been copied to the clipboard.
 #: Application/ActionHandlers/EditActions.cs:119
-#: Application/ActionHandlers/FileActions.cs:318
+#: Application/ActionHandlers/FileActions.cs:375
 #: Application/ActionHandlers/MarkedFileActions.cs:70
 #: Application/ActionHandlers/MarkedFileActions.cs:149
 msgid "Copied."
@@ -648,7 +648,7 @@ msgstr ""
 
 #. Translators: The short wording spoken when the current file could not be copied to the clipboard.
 #: Application/ActionHandlers/EditActions.cs:121
-#: Application/ActionHandlers/FileActions.cs:318
+#: Application/ActionHandlers/FileActions.cs:375
 #: Application/ActionHandlers/MarkedFileActions.cs:70
 msgid "Copy failed."
 msgstr ""
@@ -663,208 +663,255 @@ msgstr ""
 msgid "Clipboard empty."
 msgstr ""
 
-#. Translators: Spoken when the clipboard holds files or folders but none of them are media this player can open.
+#. Translators: Spoken when what was pasted names a file or folder that is not there. {path} is what was pasted.
 #: Application/ActionHandlers/EditActions.cs:143
-msgid "Clipboard does not contain openable files or folders."
+msgid "Clipboard path could not be resolved: {path}"
 msgstr ""
 
-#. Translators: The short wording spoken when nothing on the clipboard can be opened.
+#. Translators: The short wording spoken when what was pasted names nothing that exists.
 #: Application/ActionHandlers/EditActions.cs:145
+msgid "Invalid path in clipboard."
+msgstr ""
+
+#. Translators: Spoken when what was pasted exists but holds nothing this player can play.
+#: Application/ActionHandlers/EditActions.cs:151
+msgid "Could not open the file from clipboard."
+msgstr ""
+
+#. Translators: The short wording spoken when what was pasted could not be opened.
+#: Application/ActionHandlers/EditActions.cs:153
 msgid "Cannot open clipboard data."
 msgstr ""
 
 #. Translators: Spoken once the current file has been added to the marked files.
-#: Application/ActionHandlers/EditActions.cs:159
+#: Application/ActionHandlers/EditActions.cs:167
 msgid "File added to marked files."
 msgstr ""
 
 #. Translators: Spoken once the current file has been taken out of the marked files.
-#: Application/ActionHandlers/EditActions.cs:161
+#: Application/ActionHandlers/EditActions.cs:169
 msgid "File removed from marked files."
 msgstr ""
 
 #. Translators: The short wording spoken once the current file has been added to the marked files.
-#: Application/ActionHandlers/EditActions.cs:164
+#: Application/ActionHandlers/EditActions.cs:172
 msgid "Marked."
 msgstr ""
 
 #. Translators: The short wording spoken once the current file has been taken out of the marked files.
-#: Application/ActionHandlers/EditActions.cs:166
+#: Application/ActionHandlers/EditActions.cs:174
 msgid "Unmarked."
 msgstr ""
 
 #. Translators: Spoken once every loaded file has been marked.
-#: Application/ActionHandlers/EditActions.cs:177
+#: Application/ActionHandlers/EditActions.cs:185
 msgid "All files marked."
 msgstr ""
 
 #. Translators: Spoken once every loaded file has been unmarked.
-#: Application/ActionHandlers/EditActions.cs:179
+#: Application/ActionHandlers/EditActions.cs:187
 msgid "All files unmarked."
 msgstr ""
 
 #. Translators: The short wording spoken once every loaded file has been marked.
-#: Application/ActionHandlers/EditActions.cs:182
+#: Application/ActionHandlers/EditActions.cs:190
 msgid "All marked."
 msgstr ""
 
 #. Translators: The short wording spoken once every loaded file has been unmarked.
-#: Application/ActionHandlers/EditActions.cs:184
+#: Application/ActionHandlers/EditActions.cs:192
 msgid "All unmarked."
 msgstr ""
 
 #. Translators: Spoken once the list of marked files has been emptied.
-#: Application/ActionHandlers/EditActions.cs:193
+#: Application/ActionHandlers/EditActions.cs:201
 msgid "Marked files list cleared."
 msgstr ""
 
 #. Translators: Spoken when the user clears the marked files but none were marked.
-#: Application/ActionHandlers/EditActions.cs:195
+#: Application/ActionHandlers/EditActions.cs:203
 #: Application/ActionHandlers/MarkedFileActions.cs:118
 msgid "No marked files."
 msgstr ""
 
 #. Translators: The short wording spoken once the list of marked files has been emptied.
-#: Application/ActionHandlers/EditActions.cs:198
+#: Application/ActionHandlers/EditActions.cs:206
 msgid "Marks cleared."
 msgstr ""
 
 #. Translators: The short wording spoken when the user clears the marked files but none were marked.
-#: Application/ActionHandlers/EditActions.cs:200
+#: Application/ActionHandlers/EditActions.cs:208
 #: Application/ActionHandlers/MarkedFileActions.cs:118
 msgid "No marks."
 msgstr ""
 
 #. Translators: Spoken when the user asks how many files are marked. {count} is that number.
-#: Application/ActionHandlers/EditActions.cs:207
+#: Application/ActionHandlers/EditActions.cs:215
 msgid "{count} file marked"
 msgid_plural "{count} files marked"
 msgstr[0] ""
 msgstr[1] ""
 
 #. Translators: Asks the user for the web address of the stream they want to play.
-#: Application/ActionHandlers/FileActions.cs:117
+#: Application/ActionHandlers/FileActions.cs:118
 msgid "Enter link to play."
 msgstr ""
 
 #. Translators: Title of the window that asks for the web address of a stream to play.
-#: Application/ActionHandlers/FileActions.cs:119
+#: Application/ActionHandlers/FileActions.cs:120
 msgid "Open Link"
 msgstr ""
 
 #. Translators: Shown when the address typed into Open Link is not a web address.
 #. "http" and "https" are the names of the two web protocols and are not translated.
-#: Application/ActionHandlers/FileActions.cs:129
+#: Application/ActionHandlers/FileActions.cs:130
 msgid "The link must start with http or https."
 msgstr ""
 
 #. Translators: Title of the message shown when the address typed into Open Link is not a web address.
-#: Application/ActionHandlers/FileActions.cs:131
+#: Application/ActionHandlers/FileActions.cs:132
 msgid "Invalid link"
 msgstr ""
 
 #. Translators: Shown when the stream at the address typed into Open Link could not be played.
-#: Application/ActionHandlers/FileActions.cs:137
+#: Application/ActionHandlers/FileActions.cs:138
 msgid "Could not open the link."
 msgstr ""
 
 #. Translators: Spoken when the chosen folder holds nothing this player can play.
-#: Application/ActionHandlers/FileActions.cs:149
+#. Translators: Spoken when the folder and the folders inside it hold nothing this player can play.
+#: Application/ActionHandlers/FileActions.cs:150
+#: Application/ActionHandlers/FileActions.cs:341
 msgid "No audio files found in that folder."
 msgstr ""
 
 #. Translators: The short wording spoken when the chosen folder holds nothing this player can play.
-#: Application/ActionHandlers/FileActions.cs:151
+#. Translators: The short wording spoken when a folder holds nothing this player can play.
+#: Application/ActionHandlers/FileActions.cs:152
+#: Application/ActionHandlers/FileActions.cs:343
 msgid "No audio files."
 msgstr ""
 
 #. Translators: Spoken when the user asks to show the folder of what is playing but it is a stream rather than a file on this computer.
-#: Application/ActionHandlers/FileActions.cs:157
+#: Application/ActionHandlers/FileActions.cs:158
 msgid "Open containing folder is available only for local files."
 msgstr ""
 
 #. Translators: Spoken when the folder holding the current file could not be shown.
-#: Application/ActionHandlers/FileActions.cs:161
+#: Application/ActionHandlers/FileActions.cs:162
 msgid "Could not open containing folder."
 msgstr ""
 
 #. Translators: Spoken when the user asks for the Windows properties of what is playing but it is a stream rather than a file on this computer.
-#: Application/ActionHandlers/FileActions.cs:167
+#: Application/ActionHandlers/FileActions.cs:168
 msgid "File properties are available only for local files."
 msgstr ""
 
 #. Translators: Spoken when the Windows properties window for the current file could not be shown.
-#: Application/ActionHandlers/FileActions.cs:171
+#: Application/ActionHandlers/FileActions.cs:172
 msgid "Could not open file properties."
 msgstr ""
 
 #. Translators: Title of the progress window shown while details of every file in the playlist are being read.
-#: Application/ActionHandlers/FileActions.cs:204
+#: Application/ActionHandlers/FileActions.cs:205
 msgid "Loading playlist info"
 msgstr ""
 
 #. Translators: First message in the progress window, shown before the first file has been read.
-#: Application/ActionHandlers/FileActions.cs:206
+#: Application/ActionHandlers/FileActions.cs:207
 msgid "Preparing..."
 msgstr ""
 
 #. Translators: Progress message naming the file being read right now. {name} is the file name.
-#: Application/ActionHandlers/FileActions.cs:208
+#: Application/ActionHandlers/FileActions.cs:209
 msgid "Reading: {name}"
 msgstr ""
 
 #. Translators: Title of the window listing details of every file in the playlist.
-#: Application/ActionHandlers/FileActions.cs:223
+#: Application/ActionHandlers/FileActions.cs:224
 msgid "Playlist Info"
 msgstr ""
 
 #. Translators: The playlist summary. {count} is how many files are loaded.
-#: Application/ActionHandlers/FileActions.cs:232
+#: Application/ActionHandlers/FileActions.cs:233
 msgid "Number of files: {count}"
 msgstr ""
 
 #. Translators: The playlist summary. {value} is a size such as "12.5 MB".
-#: Application/ActionHandlers/FileActions.cs:234
+#: Application/ActionHandlers/FileActions.cs:235
 msgid "Total size: {value}"
 msgstr ""
 
 #. Translators: The playlist summary. {value} is a duration as hours:minutes:seconds.
-#: Application/ActionHandlers/FileActions.cs:236
+#: Application/ActionHandlers/FileActions.cs:237
 msgid "Total duration: {value}"
 msgstr ""
 
 #. Translators: The playlist summary: how much of the whole playlist has already played.
-#: Application/ActionHandlers/FileActions.cs:238
+#: Application/ActionHandlers/FileActions.cs:239
 msgid "Elapsed: {value}"
 msgstr ""
 
 #. Translators: The playlist summary: how much of the whole playlist is left to play.
-#: Application/ActionHandlers/FileActions.cs:240
+#: Application/ActionHandlers/FileActions.cs:241
 msgid "Remaining: {value}"
 msgstr ""
 
+#. Translators: Spoken when the current file could not be taken out of the playlist.
+#: Application/ActionHandlers/FileActions.cs:259
+msgid "Could not close the file."
+msgstr ""
+
+#. Translators: The short wording spoken when a file could not be closed.
+#. Translators: The short wording spoken when the files could not be closed.
+#: Application/ActionHandlers/FileActions.cs:261
+#: Application/ActionHandlers/FileActions.cs:276
+msgid "Close failed."
+msgstr ""
+
 #. Translators: Spoken once the current file has been taken out of the playlist.
-#: Application/ActionHandlers/FileActions.cs:263
+#: Application/ActionHandlers/FileActions.cs:264
 msgid "File closed."
 msgstr ""
 
+#. Translators: Spoken when the loaded files could not be taken out of the playlist.
+#: Application/ActionHandlers/FileActions.cs:274
+msgid "Could not close files."
+msgstr ""
+
 #. Translators: Spoken once every file has been taken out of the playlist.
-#: Application/ActionHandlers/FileActions.cs:272
+#: Application/ActionHandlers/FileActions.cs:279
 msgid "All files closed."
 msgstr ""
 
 #. Translators: The short wording spoken when Windows could not be asked to open a folder or a properties window.
-#: Application/ActionHandlers/FileActions.cs:280
+#: Application/ActionHandlers/FileActions.cs:287
 msgid "Open failed."
 msgstr ""
 
+#. Translators: Title of the progress window shown while a folder and the folders inside it are being searched for media.
+#: Application/ActionHandlers/FileActions.cs:321
+msgid "Opening files"
+msgstr ""
+
+#. Translators: First message in the progress window, before any file has been found.
+#: Application/ActionHandlers/FileActions.cs:323
+msgid "Loading files from folder and subfolders..."
+msgstr ""
+
+#. Translators: Progress message while a folder is being searched. {found} is how many media files
+#. have been found so far.
+#: Application/ActionHandlers/FileActions.cs:326
+msgid "Opening files... {found} media files found"
+msgstr ""
+
 #. Translators: Spoken once the full location of the current file has been copied to the clipboard.
-#: Application/ActionHandlers/FileActions.cs:315
+#: Application/ActionHandlers/FileActions.cs:372
 msgid "File path copied to clipboard."
 msgstr ""
 
 #. Translators: Spoken when the full location of the current file could not be copied to the clipboard.
-#: Application/ActionHandlers/FileActions.cs:317
+#: Application/ActionHandlers/FileActions.cs:374
 msgid "Unable to copy to clipboard."
 msgstr ""
 
@@ -1262,7 +1309,8 @@ msgstr ""
 #: Application/ActionHandlers/SettingsActions.cs:34
 #: Application/ActionHandlers/SettingsActions.cs:38
 #: Application/ActionHandlers/SettingsActions.cs:42
-#: Application/ActionHandlers/SettingsActions.cs:100
+#: Application/ActionHandlers/SettingsActions.cs:102
+#: Application/ActionHandlers/SettingsActions.cs:109
 #: UI/PreferencesDialog.cs:25 UI/PreferencesDialog.cs:176
 msgid "Preferences"
 msgstr ""
@@ -1278,8 +1326,13 @@ msgid "Could not apply the silence removal filter."
 msgstr ""
 
 #. Translators: Shown when the settings the user accepted could not be written to disk.
-#: Application/ActionHandlers/SettingsActions.cs:100
+#: Application/ActionHandlers/SettingsActions.cs:102
 msgid "Could not save settings."
+msgstr ""
+
+#. Translators: Shown after the user picks a different language, because the player only reads it when it starts.
+#: Application/ActionHandlers/SettingsActions.cs:109
+msgid "Please restart the app for language changes to take effect."
 msgstr ""
 
 #. Translators: Spoken or shown when the player could not start watching the keyboard, so the shortcuts that
@@ -1296,7 +1349,7 @@ msgid "Global Shortcuts"
 msgstr ""
 
 #. Translators: Shown when the user asks the player to open its file types but the system is not Windows.
-#: Media/Associations.cs:20 Media/Associations.cs:48
+#: Media/Associations.cs:21 Media/Associations.cs:49
 msgid "File associations are available only on Windows."
 msgstr ""
 
@@ -1834,7 +1887,7 @@ msgstr ""
 
 #. Translators: The button that closes a window and leaves everything as it was.
 #. Translators: The button that stops a job that is running behind a progress window.
-#: UI/GoToTimeDialog.cs:48 UI/OpenedFilesDialog.cs:27 UI/ProgressView.cs:44
+#: UI/GoToTimeDialog.cs:48 UI/OpenedFilesDialog.cs:27 UI/ProgressView.cs:48
 msgid "Cancel"
 msgstr ""
 
@@ -2255,13 +2308,23 @@ msgstr ""
 msgid "Confirm Reset"
 msgstr ""
 
+#. Translators: Title of the window that waits for a combination that will work while another program is in front.
+#: UI/Shortcuts.cs:292
+msgid "Set Global Shortcut"
+msgstr ""
+
 #. Translators: Title of the small window that waits for the user to press the combination they want.
-#: UI/Shortcuts.cs:289
+#: UI/Shortcuts.cs:294
 msgid "Set Shortcut"
 msgstr ""
 
+#. Translators: Message in the window that waits for a system-wide key combination. Escape is the name of the key that closes it.
+#: UI/Shortcuts.cs:297
+msgid "Press the desired global shortcut. Escape cancels."
+msgstr ""
+
 #. Translators: Message in the window that waits for a key combination. Escape is the name of the key that closes it.
-#: UI/Shortcuts.cs:291
+#: UI/Shortcuts.cs:299
 msgid "Press the desired shortcut. Escape cancels."
 msgstr ""
 

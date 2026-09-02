@@ -10,16 +10,25 @@ internal sealed class BookmarkStore
     internal BookmarkStore(string path) => _path = path;
     internal string FilePath => _path;
 
+    /// <summary>Why the last read or write failed, or an empty string when it did not.</summary>
+    internal string LastError { get; private set; } = string.Empty;
+
     internal bool Export(string destination)
     {
         var document = Load();
-        return SaveTo(destination, document);
+        return Report(SaveTo(destination, document, out var error), error);
     }
 
     internal bool Import(string source)
     {
-        if (!TryLoad(source, out var document)) return false;
-        return SaveTo(_path, document);
+        if (!TryLoad(source, out var document, out var read)) return Report(false, read);
+        return Report(SaveTo(_path, document, out var written), written);
+    }
+
+    private bool Report(bool success, string error)
+    {
+        LastError = success ? string.Empty : error;
+        return success;
     }
 
     internal IReadOnlyList<Bookmark> ListFor(string path)
@@ -85,13 +94,15 @@ internal sealed class BookmarkStore
 
     private BookmarkDocument Load()
     {
-        return TryLoad(_path, out var document) ? document : new BookmarkDocument();
+        return TryLoad(_path, out var document, out _) ? document : new BookmarkDocument();
     }
 
-    private static bool TryLoad(string path, out BookmarkDocument document)
+    private static bool TryLoad(string path, out BookmarkDocument document, out string error)
     {
+        error = string.Empty;
         if (!File.Exists(path))
         {
+            error = $"The file was not found: {path}";
             document = new BookmarkDocument();
             return false;
         }
@@ -105,16 +116,18 @@ internal sealed class BookmarkStore
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
         {
+            error = exception.Message;
             document = new BookmarkDocument();
             return false;
         }
     }
 
     private void Save(BookmarkDocument document)
-        => SaveTo(_path, document);
+        => SaveTo(_path, document, out _);
 
-    private static bool SaveTo(string path, BookmarkDocument document)
+    private static bool SaveTo(string path, BookmarkDocument document, out string error)
     {
+        error = string.Empty;
         try
         {
             Paths.EnsureDirectoryFor(path);
@@ -126,6 +139,7 @@ internal sealed class BookmarkStore
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
+            error = exception.Message;
             return false;
         }
     }
