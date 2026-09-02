@@ -1,6 +1,7 @@
 using LunaPlayer.Actions;
 using LunaPlayer.Application.ActionHandlers;
 using LunaPlayer.Configuration;
+using LunaPlayer.Media;
 using LunaPlayer.Playback;
 using LunaPlayer.UI;
 
@@ -20,6 +21,10 @@ internal sealed class ApplicationController : IDisposable
     /// <summary>The clock keeping the overlay's scrubber moving, or null while nothing needs one. See
     /// <see cref="UpdateMediaControlsClock"/>.</summary>
     private IDisposable? _mediaControlsClock;
+    /// <summary>The file the tags in <see cref="_tags"/> were read from, or null when nothing is open. See
+    /// <see cref="TagsFor"/>.</summary>
+    private string? _tagsPath;
+    private MediaTags _tags = MediaTags.None;
     private bool _shutDown;
 
     internal ApplicationController(
@@ -149,15 +154,43 @@ internal sealed class ApplicationController : IDisposable
         var path = _player.CurrentPath;
         var hasMedia = !string.IsNullOrEmpty(path);
         var index = _player.CurrentIndex;
+        var tags = TagsFor(path);
         _mediaControls.Update(new MediaControlsState(
             HasMedia: hasMedia,
             IsPlaying: _player.IsPlaying,
-            Title: _player.CurrentDisplayName ?? string.Empty,
-            Artist: AppInfo.Name,
+            // What the file calls itself, when it says; the name on disk is only a stand-in for that.
+            Title: tags.Title.Length > 0 ? tags.Title : _player.CurrentDisplayName ?? string.Empty,
+            Artist: tags.Artist,
+            Album: tags.Album,
             Duration: hasMedia ? _player.Duration : null,
             Position: hasMedia ? _player.Elapsed : null,
             CanGoNext: hasMedia && index >= 0 && index < _player.Count - 1,
             CanGoPrevious: hasMedia && index > 0));
+    }
+
+    /// <summary>What the file says about itself, read once per file rather than once per tick.</summary>
+    ///
+    /// <remarks>
+    /// <see cref="SyncMediaControls"/> runs on a clock while a file is open, and reading a file from disk
+    /// every second to learn something that cannot have changed would be a waste; the path the tags came
+    /// from is kept so the read happens only when it moves on.
+    ///
+    /// A stream has no header on disk to read, so it is not asked for one - the overlay simply shows the
+    /// name and no artist, which is honest about what is known.
+    /// </remarks>
+    private MediaTags TagsFor(string? path)
+    {
+        if (string.IsNullOrEmpty(path) || LinkValidator.IsHttpUrl(path))
+        {
+            _tagsPath = null;
+            _tags = MediaTags.None;
+        }
+        else if (!string.Equals(path, _tagsPath, StringComparison.Ordinal))
+        {
+            _tagsPath = path;
+            _tags = MediaHeader.ReadTags(path);
+        }
+        return _tags;
     }
 
     /// <summary>Starts or stops the clock that keeps the overlay's scrubber moving, so it runs only while

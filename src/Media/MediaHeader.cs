@@ -30,8 +30,20 @@ internal enum MediaHeaderVerdict
     NeedsDemuxer,
 }
 
-internal static class MediaHeader
+internal static partial class MediaHeader
 {
+    /// <summary>The container a file turned out to hold, so the reader for it can be picked once and used
+    /// for whichever question is being asked - how long it is, or what it says it is.</summary>
+    private enum MediaFormat
+    {
+        /// <summary>Nothing this player recognises.</summary>
+        None,
+        Flac, Ogg, Flv, Matroska, Asf, Wave, Avi, Aiff, IsoBaseMedia, Mpeg,
+        /// <summary>A transport or program stream, or raw ADTS: media, but a bare sequence of frames with
+        /// no container around them to hold either a length or a tag.</summary>
+        Elementary,
+    }
+
     /// <summary>Enough to hold the largest fixed header any reader below inspects.</summary>
     private const int ProbeSize = 64 * 1024;
 
@@ -56,8 +68,8 @@ internal static class MediaHeader
             Span<byte> head = stackalloc byte[16];
             if (!ReadAt(stream, 0, head))
                 return MediaHeaderVerdict.Unrecognised;
-            var (recognised, read) = Identify(stream, head);
-            if (!recognised)
+            var (format, read) = Identify(stream, head);
+            if (format == MediaFormat.None)
                 return MediaHeaderVerdict.Unrecognised;
             // A container may state a nonsense length - zero, or something a corrupt field produced. It is
             // still media, so a demuxer is worth a try; the number is not.
@@ -74,45 +86,50 @@ internal static class MediaHeader
         }
     }
 
-    /// <summary>Picks the reader the magic bytes call for, and says whether they named a container this
-    /// player knows at all.</summary>
-    private static (bool Recognised, double? Duration) Identify(FileStream stream, ReadOnlySpan<byte> head)
+    /// <summary>Picks the reader the magic bytes call for, and names the container they turned out to be.
+    /// </summary>
+    /// <remarks>
+    /// The length is worked out here rather than left to the caller because for MPEG audio the two questions
+    /// are one: it has no magic of its own, so the only way to know a file holds MPEG audio is to find a run
+    /// of frames in it, which is also where the length comes from.
+    /// </remarks>
+    private static (MediaFormat Format, double? Duration) Identify(FileStream stream, ReadOnlySpan<byte> head)
     {
         if (head[..4].SequenceEqual("fLaC"u8))
-            return (true, Flac.Read(stream));
+            return (MediaFormat.Flac, Flac.Read(stream));
         if (head[..4].SequenceEqual("OggS"u8))
-            return (true, Ogg.Read(stream));
+            return (MediaFormat.Ogg, Ogg.Read(stream));
         if (head[..3].SequenceEqual("FLV"u8))
-            return (true, Flv.Read(stream));
+            return (MediaFormat.Flv, Flv.Read(stream));
         if (head[..4].SequenceEqual(Matroska.Magic))
-            return (true, Matroska.Read(stream));
+            return (MediaFormat.Matroska, Matroska.Read(stream));
         if (head[..4].SequenceEqual(Asf.HeaderGuidPrefix))
-            return (true, Asf.Read(stream));
+            return (MediaFormat.Asf, Asf.Read(stream));
         if (head[..4].SequenceEqual("RIFF"u8) || head[..4].SequenceEqual("RF64"u8))
         {
-            if (head[8..12].SequenceEqual("WAVE"u8)) return (true, Riff.ReadWave(stream));
-            if (head[8..12].SequenceEqual("AVI "u8)) return (true, Riff.ReadAvi(stream));
+            if (head[8..12].SequenceEqual("WAVE"u8)) return (MediaFormat.Wave, Riff.ReadWave(stream));
+            if (head[8..12].SequenceEqual("AVI "u8)) return (MediaFormat.Avi, Riff.ReadAvi(stream));
             // Some other RIFF form - a palette, an animated cursor. Not something to play.
-            return (false, null);
+            return (MediaFormat.None, null);
         }
         if (head[..4].SequenceEqual("FORM"u8)
             && (head[8..12].SequenceEqual("AIFF"u8) || head[8..12].SequenceEqual("AIFC"u8)))
-            return (true, Aiff.Read(stream));
+            return (MediaFormat.Aiff, Aiff.Read(stream));
         // An ISO base media file names its brand in the second box, which is almost always first but is
         // allowed to be preceded by others.
         if (head[4..8].SequenceEqual("ftyp"u8) || head[4..8].SequenceEqual("moov"u8)
             || head[4..8].SequenceEqual("mdat"u8) || head[4..8].SequenceEqual("free"u8)
             || head[4..8].SequenceEqual("skip"u8) || head[4..8].SequenceEqual("wide"u8))
-            return (true, IsoBaseMedia.Read(stream));
+            return (MediaFormat.IsoBaseMedia, IsoBaseMedia.Read(stream));
         // The formats that state no length worth having. They are named rather than left to fall through,
         // because each of them carries bytes that a scan for an MPEG audio frame will happily mistake for
         // one, and a confident wrong answer is worse than none.
         if (IsTransportStream(stream, head) || IsProgramStream(head) || IsAdts(head))
-            return (true, null);
+            return (MediaFormat.Elementary, null);
         // MPEG audio comes last because it has no magic of its own, only a frame sync that ordinary
         // bytes can imitate. Finding no run of frames means this is not media, whatever it is called.
-        var mpeg = Mpeg.Read(stream, head);
-        return (mpeg.HasValue, mpeg);
+        var duration = Mpeg.Read(stream, head, out var isMpeg);
+        return (isMpeg ? MediaFormat.Mpeg : MediaFormat.None, duration);
     }
 
     /// <summary>An MPEG transport stream: 188 byte packets each starting with a sync byte. The length is only
@@ -312,7 +329,7 @@ internal static class MediaHeader
 
         /// <summary>Walks the boxes between two offsets, returning where the wanted box's payload starts and
         /// ends.</summary>
-        private static (long Start, long End)? FindBox(FileStream stream, long from, long to, ReadOnlySpan<byte> type)
+        internal static (long Start, long End)? FindBox(FileStream stream, long from, long to, ReadOnlySpan<byte> type)
         {
             Span<byte> header = stackalloc byte[16];
             var position = from;
@@ -360,8 +377,8 @@ internal static class MediaHeader
         /// <summary>The EBML magic every Matroska and WebM file opens with.</summary>
         internal static ReadOnlySpan<byte> Magic => [0x1A, 0x45, 0xDF, 0xA3];
 
-        private const ulong SegmentId = 0x18538067;
-        private const ulong InfoId = 0x1549A966;
+        internal const ulong SegmentId = 0x18538067;
+        internal const ulong InfoId = 0x1549A966;
         private const ulong DurationId = 0x4489;
         private const ulong TimecodeScaleId = 0x2AD7B1;
 
@@ -402,7 +419,7 @@ internal static class MediaHeader
 
         /// <summary>Walks the elements between two offsets, returning where the wanted one's payload starts
         /// and ends.</summary>
-        private static (long Start, long End)? Find(FileStream stream, long from, long to, ulong wanted)
+        internal static (long Start, long End)? Find(FileStream stream, long from, long to, ulong wanted)
         {
             var position = from;
             while (position < to)
@@ -417,7 +434,7 @@ internal static class MediaHeader
         }
 
         /// <summary>Reads one element's ID and size, and says where its payload starts.</summary>
-        private static bool ReadElement(FileStream stream, long position, long limit,
+        internal static bool ReadElement(FileStream stream, long position, long limit,
             out ulong id, out long payload, out ulong size)
         {
             id = 0; payload = 0; size = 0;
@@ -587,7 +604,7 @@ internal static class MediaHeader
         }
 
         /// <summary>The chunks of a RIFF file, as type, payload offset and payload size.</summary>
-        private static IEnumerable<(byte[] Type, long Offset, long Size)> Chunks(
+        internal static IEnumerable<(byte[] Type, long Offset, long Size)> Chunks(
             FileStream stream, long from, long to = -1)
         {
             var limit = to < 0 ? stream.Length : Math.Min(to, stream.Length);
@@ -742,8 +759,11 @@ internal static class MediaHeader
             { 11025, 12000, 8000, 0 },  // MPEG 2.5
         };
 
-        internal static double? Read(FileStream stream, ReadOnlySpan<byte> head)
+        /// <param name="recognised">Whether a run of frames was found at all, which is the only evidence
+        /// there is that a file holds MPEG audio. A file can be recognised and still yield no length.</param>
+        internal static double? Read(FileStream stream, ReadOnlySpan<byte> head, out bool recognised)
         {
+            recognised = false;
             var audioStart = 0L;
             if (head[..3].SequenceEqual("ID3"u8))
             {
@@ -770,6 +790,7 @@ internal static class MediaHeader
                 if (!Run(window, i, frame))
                     continue;
 
+                recognised = true;
                 var exact = Exact(window, i, frame);
                 if (exact is double seconds)
                     return seconds;
