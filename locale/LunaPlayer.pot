@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-09-02 14:19+0300\n"
+"POT-Creation-Date: 2026-09-02 20:17+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -640,7 +640,7 @@ msgstr ""
 
 #. Translators: The short wording spoken once the current file has been copied to the clipboard.
 #: Application/ActionHandlers/EditActions.cs:119
-#: Application/ActionHandlers/FileActions.cs:375
+#: Application/ActionHandlers/FileActions.cs:378
 #: Application/ActionHandlers/MarkedFileActions.cs:70
 #: Application/ActionHandlers/MarkedFileActions.cs:149
 msgid "Copied."
@@ -648,7 +648,7 @@ msgstr ""
 
 #. Translators: The short wording spoken when the current file could not be copied to the clipboard.
 #: Application/ActionHandlers/EditActions.cs:121
-#: Application/ActionHandlers/FileActions.cs:375
+#: Application/ActionHandlers/FileActions.cs:378
 #: Application/ActionHandlers/MarkedFileActions.cs:70
 msgid "Copy failed."
 msgstr ""
@@ -764,7 +764,9 @@ msgstr ""
 
 #. Translators: Shown when the address typed into Open Link is not a web address.
 #. "http" and "https" are the names of the two web protocols and are not translated.
+#. Translators: Shown when a favourite is saved with something that is not a web address.
 #: Application/ActionHandlers/FileActions.cs:130
+#: Favorites/FavoriteStore.cs:139
 msgid "The link must start with http or https."
 msgstr ""
 
@@ -781,14 +783,14 @@ msgstr ""
 #. Translators: Spoken when the chosen folder holds nothing this player can play.
 #. Translators: Spoken when the folder and the folders inside it hold nothing this player can play.
 #: Application/ActionHandlers/FileActions.cs:150
-#: Application/ActionHandlers/FileActions.cs:341
+#: Application/ActionHandlers/FileActions.cs:344
 msgid "No audio files found in that folder."
 msgstr ""
 
 #. Translators: The short wording spoken when the chosen folder holds nothing this player can play.
 #. Translators: The short wording spoken when a folder holds nothing this player can play.
 #: Application/ActionHandlers/FileActions.cs:152
-#: Application/ActionHandlers/FileActions.cs:343
+#: Application/ActionHandlers/FileActions.cs:346
 msgid "No audio files."
 msgstr ""
 
@@ -813,105 +815,105 @@ msgid "Could not open file properties."
 msgstr ""
 
 #. Translators: Title of the progress window shown while details of every file in the playlist are being read.
-#: Application/ActionHandlers/FileActions.cs:205
+#: Application/ActionHandlers/FileActions.cs:208
 msgid "Loading playlist info"
 msgstr ""
 
 #. Translators: First message in the progress window, shown before the first file has been read.
-#: Application/ActionHandlers/FileActions.cs:207
+#: Application/ActionHandlers/FileActions.cs:210
 msgid "Preparing..."
 msgstr ""
 
 #. Translators: Progress message naming the file being read right now. {name} is the file name.
-#: Application/ActionHandlers/FileActions.cs:209
+#: Application/ActionHandlers/FileActions.cs:212
 msgid "Reading: {name}"
 msgstr ""
 
 #. Translators: Title of the window listing details of every file in the playlist.
-#: Application/ActionHandlers/FileActions.cs:224
+#: Application/ActionHandlers/FileActions.cs:227
 msgid "Playlist Info"
 msgstr ""
 
 #. Translators: The playlist summary. {count} is how many files are loaded.
-#: Application/ActionHandlers/FileActions.cs:233
+#: Application/ActionHandlers/FileActions.cs:236
 msgid "Number of files: {count}"
 msgstr ""
 
 #. Translators: The playlist summary. {value} is a size such as "12.5 MB".
-#: Application/ActionHandlers/FileActions.cs:235
+#: Application/ActionHandlers/FileActions.cs:238
 msgid "Total size: {value}"
 msgstr ""
 
 #. Translators: The playlist summary. {value} is a duration as hours:minutes:seconds.
-#: Application/ActionHandlers/FileActions.cs:237
+#: Application/ActionHandlers/FileActions.cs:240
 msgid "Total duration: {value}"
 msgstr ""
 
 #. Translators: The playlist summary: how much of the whole playlist has already played.
-#: Application/ActionHandlers/FileActions.cs:239
+#: Application/ActionHandlers/FileActions.cs:242
 msgid "Elapsed: {value}"
 msgstr ""
 
 #. Translators: The playlist summary: how much of the whole playlist is left to play.
-#: Application/ActionHandlers/FileActions.cs:241
+#: Application/ActionHandlers/FileActions.cs:244
 msgid "Remaining: {value}"
 msgstr ""
 
 #. Translators: Spoken when the current file could not be taken out of the playlist.
-#: Application/ActionHandlers/FileActions.cs:259
+#: Application/ActionHandlers/FileActions.cs:262
 msgid "Could not close the file."
 msgstr ""
 
 #. Translators: The short wording spoken when a file could not be closed.
 #. Translators: The short wording spoken when the files could not be closed.
-#: Application/ActionHandlers/FileActions.cs:261
-#: Application/ActionHandlers/FileActions.cs:276
+#: Application/ActionHandlers/FileActions.cs:264
+#: Application/ActionHandlers/FileActions.cs:279
 msgid "Close failed."
 msgstr ""
 
 #. Translators: Spoken once the current file has been taken out of the playlist.
-#: Application/ActionHandlers/FileActions.cs:264
+#: Application/ActionHandlers/FileActions.cs:267
 msgid "File closed."
 msgstr ""
 
 #. Translators: Spoken when the loaded files could not be taken out of the playlist.
-#: Application/ActionHandlers/FileActions.cs:274
+#: Application/ActionHandlers/FileActions.cs:277
 msgid "Could not close files."
 msgstr ""
 
 #. Translators: Spoken once every file has been taken out of the playlist.
-#: Application/ActionHandlers/FileActions.cs:279
+#: Application/ActionHandlers/FileActions.cs:282
 msgid "All files closed."
 msgstr ""
 
 #. Translators: The short wording spoken when Windows could not be asked to open a folder or a properties window.
-#: Application/ActionHandlers/FileActions.cs:287
+#: Application/ActionHandlers/FileActions.cs:290
 msgid "Open failed."
 msgstr ""
 
 #. Translators: Title of the progress window shown while a folder and the folders inside it are being searched for media.
-#: Application/ActionHandlers/FileActions.cs:321
+#: Application/ActionHandlers/FileActions.cs:324
 msgid "Opening files"
 msgstr ""
 
 #. Translators: First message in the progress window, before any file has been found.
-#: Application/ActionHandlers/FileActions.cs:323
+#: Application/ActionHandlers/FileActions.cs:326
 msgid "Loading files from folder and subfolders..."
 msgstr ""
 
 #. Translators: Progress message while a folder is being searched. {found} is how many media files
 #. have been found so far.
-#: Application/ActionHandlers/FileActions.cs:326
+#: Application/ActionHandlers/FileActions.cs:329
 msgid "Opening files... {found} media files found"
 msgstr ""
 
 #. Translators: Spoken once the full location of the current file has been copied to the clipboard.
-#: Application/ActionHandlers/FileActions.cs:372
+#: Application/ActionHandlers/FileActions.cs:375
 msgid "File path copied to clipboard."
 msgstr ""
 
 #. Translators: Spoken when the full location of the current file could not be copied to the clipboard.
-#: Application/ActionHandlers/FileActions.cs:374
+#: Application/ActionHandlers/FileActions.cs:377
 msgid "Unable to copy to clipboard."
 msgstr ""
 
@@ -1346,6 +1348,69 @@ msgstr ""
 #: Application/GlobalShortcutBinder.cs:31 UI/PreferencesDialog.cs:49
 #: UI/Shortcuts.cs:52
 msgid "Global Shortcuts"
+msgstr ""
+
+#. Translators: Shown when the user saves a favourite without typing a name for it.
+#: Favorites/FavoriteStore.cs:112
+msgid "Name is required."
+msgstr ""
+
+#. Translators: Shown when the user saves a favourite without giving a link.
+#: Favorites/FavoriteStore.cs:119
+msgid "Link is required."
+msgstr ""
+
+#. Translators: Shown when a favourite saved as a network stream is not a web address.
+#: Favorites/FavoriteStore.cs:129
+msgid "Generic stream link must start with http or https."
+msgstr ""
+
+#. Translators: Shown when a favourite saved as a video, playlist or combined link is not a
+#. YouTube address.
+#: Favorites/FavoriteStore.cs:146
+msgid "The link must be a valid YouTube link for this type."
+msgstr ""
+
+#. Translators: Shown when a favourite saved as a video does not name one.
+#: Favorites/FavoriteStore.cs:153
+msgid "Video favorites require a YouTube video link."
+msgstr ""
+
+#. Translators: Shown when a favourite saved as a playlist does not name one.
+#: Favorites/FavoriteStore.cs:157
+msgid "Playlist favorites require a YouTube playlist link."
+msgstr ""
+
+#. Translators: Shown when a favourite saved as a combined link does not carry both a video
+#. and a playlist.
+#: Favorites/FavoriteStore.cs:162
+msgid ""
+"Combined link favorites require a link containing both video and playlist."
+msgstr ""
+
+#. Translators: The kind of a saved favourite: a single YouTube video.
+#: Favorites/FavoriteStore.cs:173
+msgid "Video"
+msgstr ""
+
+#. Translators: The kind of a saved favourite: a YouTube playlist.
+#: Favorites/FavoriteStore.cs:175
+msgid "Playlist"
+msgstr ""
+
+#. Translators: The kind of a saved favourite: a YouTube link naming both a video and a playlist.
+#: Favorites/FavoriteStore.cs:177
+msgid "Combined link"
+msgstr ""
+
+#. Translators: The kind of a saved favourite: a web address played as a stream.
+#: Favorites/FavoriteStore.cs:179
+msgid "Generic stream"
+msgstr ""
+
+#. Translators: Shown when the user edits or removes a favourite that is no longer saved.
+#: Favorites/FavoriteStore.cs:199
+msgid "That favorite is no longer saved."
 msgstr ""
 
 #. Translators: Shown when the user asks the player to open its file types but the system is not Windows.
@@ -1887,7 +1952,7 @@ msgstr ""
 
 #. Translators: The button that closes a window and leaves everything as it was.
 #. Translators: The button that stops a job that is running behind a progress window.
-#: UI/GoToTimeDialog.cs:48 UI/OpenedFilesDialog.cs:27 UI/ProgressView.cs:48
+#: UI/GoToTimeDialog.cs:48 UI/OpenedFilesDialog.cs:36 UI/ProgressView.cs:48
 msgid "Cancel"
 msgstr ""
 
@@ -2171,22 +2236,22 @@ msgid "Player"
 msgstr ""
 
 #. Translators: Title of the window listing the files currently loaded in the player.
-#: UI/OpenedFilesDialog.cs:17
+#: UI/OpenedFilesDialog.cs:19
 msgid "Opened Files"
 msgstr ""
 
 #. Translators: Button that shows details of every file in the playlist.
-#: UI/OpenedFilesDialog.cs:24
+#: UI/OpenedFilesDialog.cs:33
 msgid "Playlist info"
 msgstr ""
 
 #. Translators: Button that starts playing the file chosen in the list.
-#: UI/OpenedFilesDialog.cs:26
+#: UI/OpenedFilesDialog.cs:35
 msgid "Jump to selected"
 msgstr ""
 
 #. Translators: Label above the list of loaded files, telling the user to pick the one to play.
-#: UI/OpenedFilesDialog.cs:40
+#: UI/OpenedFilesDialog.cs:49
 msgid "Select file to jump to."
 msgstr ""
 

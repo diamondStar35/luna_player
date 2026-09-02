@@ -33,6 +33,9 @@ internal static class Paths
     /// <summary>The file holding how far through each file playing had reached.</summary>
     internal static string PositionsFile { get; } = Path.Combine(RootDirectory, "positions.json");
 
+    /// <summary>The saved links file.</summary>
+    internal static string FavoritesFile { get; } = Path.Combine(RootDirectory, "favorites.json");
+
     /// <summary>What a path is compared and stored under, so that two spellings of one file - a relative
     /// path and an absolute one, or two different cases - are recognised as the same file.</summary>
     ///
