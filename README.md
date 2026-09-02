@@ -123,4 +123,8 @@ Pull requests are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before
 
 ## License
 
-Licensed under the [Apache License 2.0](LICENSE).
+Luna Player is licensed under the [Apache License 2.0](LICENSE).
+
+It is distributed with mpv, wxWidgets and Prism, which remain under their own
+licences. [NOTICE](NOTICE) records each of them, and the full licence texts are in
+[third-party/licenses](third-party/licenses). Both are installed alongside the program.
