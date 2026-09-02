@@ -10,14 +10,14 @@ namespace LunaPlayer.Application;
 /// its windows group under the executable rather than under the application, it can hold no jump list, and
 /// the media overlay labels whatever it is playing "Unknown app" because it has no owner to name.
 ///
-/// This has to run before anything that registers with the shell on the process's behalf - in particular
-/// before the media transport session is created, which takes the identity as it finds it and does not look
-/// again.
+/// There are two halves to being named. This says which ID the process answers to; turning that ID into
+/// something readable is the shortcut's job, and the installer puts the ID on the Start menu shortcut it
+/// creates. A copy that was simply unzipped has no shortcut and so stays unnamed in the media overlay -
+/// there is no registry registration that stands in for one, which was tried and does not work.
 ///
-/// Setting the ID is only half of it. Windows turns an ID into a name and an icon by matching it against a
-/// Start menu shortcut carrying the same <c>System.AppUserModel.ID</c> property, so until an installer
-/// creates one there may still be no friendly name to show - but the grouping and the session ownership are
-/// right either way, and nothing here can fail in a way worth telling the user about.
+/// <see cref="Apply"/> has to run before anything registers with the shell on the process's behalf - in
+/// particular before the media transport session is created, which takes the identity as it finds it and
+/// does not look again.
 /// </remarks>
 internal static partial class ProcessIdentity
 {

@@ -13,6 +13,7 @@ internal readonly record struct MediaControlsState(
     bool IsPlaying,
     string Title,
     string Artist,
+    string Album,
     double? Duration,
     double? Position,
     bool CanGoNext,
@@ -36,6 +37,7 @@ internal sealed class SystemMediaControls : IDisposable
     private readonly SystemMediaTransportControls? _controls;
     private string _lastTitle = string.Empty;
     private string _lastArtist = string.Empty;
+    private string _lastAlbum = string.Empty;
     private bool _disposed;
 
     internal SystemMediaControls()
@@ -88,7 +90,7 @@ internal sealed class SystemMediaControls : IDisposable
             }
 
             controls.PlaybackStatus = state.IsPlaying ? MediaPlaybackStatus.Playing : MediaPlaybackStatus.Paused;
-            UpdateDisplay(controls, state.Title, state.Artist);
+            UpdateDisplay(controls, state.Title, state.Artist, state.Album);
             UpdateTimeline(controls, state.Duration, state.Position);
         }
         catch (COMException)
@@ -147,27 +149,31 @@ internal sealed class SystemMediaControls : IDisposable
         if (action is ActionId id) ButtonPressed?.Invoke(id);
     }
 
-    private void UpdateDisplay(SystemMediaTransportControls controls, string title, string artist)
+    private void UpdateDisplay(SystemMediaTransportControls controls, string title, string artist, string album)
     {
-        if (title == _lastTitle && artist == _lastArtist) return;
+        if (title == _lastTitle && artist == _lastArtist && album == _lastAlbum) return;
         _lastTitle = title;
         _lastArtist = artist;
+        _lastAlbum = album;
         var updater = controls.DisplayUpdater;
         updater.Type = MediaPlaybackType.Music;
         updater.MusicProperties.Title = title;
         updater.MusicProperties.Artist = artist;
+        updater.MusicProperties.AlbumTitle = album;
         updater.Update();
     }
 
     private void ClearDisplay(SystemMediaTransportControls controls)
     {
-        if (_lastTitle.Length == 0 && _lastArtist.Length == 0) return;
+        if (_lastTitle.Length == 0 && _lastArtist.Length == 0 && _lastAlbum.Length == 0) return;
         _lastTitle = string.Empty;
         _lastArtist = string.Empty;
+        _lastAlbum = string.Empty;
         var updater = controls.DisplayUpdater;
         updater.Type = MediaPlaybackType.Unknown;
         updater.MusicProperties.Title = string.Empty;
         updater.MusicProperties.Artist = string.Empty;
+        updater.MusicProperties.AlbumTitle = string.Empty;
         updater.Update();
     }
 

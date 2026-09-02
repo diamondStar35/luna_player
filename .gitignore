@@ -58,3 +58,6 @@ nunit-*.xml
 
 # Compiled message catalogues; scripts\update-pot.ps1 builds them from the .po files.
 locale/**/*.mo
+
+# The compiled installer.
+dist/
