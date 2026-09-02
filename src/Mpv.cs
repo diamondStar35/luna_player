@@ -2029,6 +2029,11 @@ namespace MpvNet
         private volatile bool coreShutdown,
             disposed;
         private readonly object handlerLock = new object();
+        private readonly object signatureLock = new object();
+
+        /// <summary>The arguments mpv names for each of its commands, read from the library itself the
+        /// first time it matters, or null until then.</summary>
+        private Dictionary<string, string[]>? commandArguments;
         private readonly List<Action<MpvEvent>> eventCallbacks = new List<Action<MpvEvent>>();
         private readonly Dictionary<string, List<Action<string, object?>>> propertyHandlers =
             new Dictionary<string, List<Action<string, object?>>>(StringComparer.Ordinal);
@@ -2997,7 +3002,14 @@ namespace MpvNet
 
         public void RevertSeek() => Command("revert-seek");
 
-        public void FrameStep() => Command("frame-step");
+        public void FrameStep()
+        {
+            // One frame is what this has always meant, and is the default mpv states for the argument.
+            if (CommandTakes("frame-step", "frames"))
+                Command("frame-step", 1);
+            else
+                Command("frame-step");
+        }
 
         public void FrameBackStep() => Command("frame-back-step");
 
@@ -3019,8 +3031,14 @@ namespace MpvNet
 
         public MpvImage ScreenshotRaw(string includes = "subtitles")
         {
+            // The pixel format became an argument of its own; bgr0 is mpv's default for it and the only
+            // one the decoding below understands, so it is asked for by name rather than left to chance.
             var r =
-                NodeCommand("screenshot-raw", includes) as IDictionary<string, object?>
+                (
+                    CommandTakes("screenshot-raw", "format")
+                        ? NodeCommand("screenshot-raw", includes, "bgr0")
+                        : NodeCommand("screenshot-raw", includes)
+                ) as IDictionary<string, object?>
                 ?? throw new InvalidDataException("Invalid screenshot result");
             string fmt = Convert.ToString(r["format"]) ?? "";
             if (fmt != "bgr0")
@@ -3115,7 +3133,19 @@ namespace MpvNet
             int width,
             int height,
             int stride
-        ) => Command("overlay-add", id, x, y, fileOrFd, offset, format, width, height, stride);
+        )
+        {
+            // Newer mpv takes a display size and a colour description as well. Every one of the added
+            // arguments is passed the default mpv itself states for it, so an overlay added through this
+            // is placed exactly as it was before they existed.
+            if (CommandTakes("overlay-add", "dw"))
+                Command(
+                    "overlay-add", id, x, y, fileOrFd, offset, format, width, height, stride,
+                    0, 0, false, 0.0, "auto", "auto"
+                );
+            else
+                Command("overlay-add", id, x, y, fileOrFd, offset, format, width, height, stride);
+        }
 
         public void OverlayRemove(int id) => Command("overlay-remove", id);
 
@@ -3130,14 +3160,89 @@ namespace MpvNet
                 ? ""
                 : string.Join(",", options.Select(x => $"{x.Key.Replace('_', '-')}={x.Value}"));
 
+        /// <summary>Whether the mpv this is running against declares <paramref name="argument"/> as part
+        /// of <paramref name="command"/>.</summary>
+        ///
+        /// <remarks>
+        /// mpv has added required arguments to commands over the years - loadfile and loadlist take an
+        /// insertion index, frame-step a frame count, keypress a scale, screenshot-raw a pixel format - and
+        /// a call written for the older form is rejected outright rather than being defaulted. The two
+        /// forms are mutually exclusive: one library takes the extra argument and refuses the call without
+        /// it, the other refuses the call with it.
+        ///
+        /// Which to send cannot be settled from the client API version, because that version tracks the C
+        /// API and says nothing about the commands; a build made between two releases carries whichever
+        /// set its source had while still reporting the older version number.
+        ///
+        /// So mpv is asked instead. Its command-list property describes every command it accepts and names
+        /// every argument, which is exact for whatever library is actually loaded - including one a user
+        /// substituted for the one shipped, which the library's licence entitles them to do.
+        /// </remarks>
+        private bool CommandTakes(string command, string argument)
+        {
+            lock (signatureLock)
+            {
+                commandArguments ??= ReadCommandArguments();
+                return commandArguments.TryGetValue(command, out string[]? names)
+                    && Array.IndexOf(names, argument) >= 0;
+            }
+        }
+
+        private Dictionary<string, string[]> ReadCommandArguments()
+        {
+            var found = new Dictionary<string, string[]>(StringComparer.Ordinal);
+            try
+            {
+                if (GetProperty("command-list") is not IEnumerable<object?> commands)
+                    return found;
+                foreach (var entry in commands.OfType<IDictionary<string, object?>>())
+                {
+                    if (!entry.TryGetValue("name", out object? name))
+                        continue;
+                    string command = Convert.ToString(name) ?? "";
+                    if (command.Length == 0)
+                        continue;
+                    found[command] =
+                        entry.TryGetValue("args", out object? args) && args is IEnumerable<object?> list
+                            ? list.OfType<IDictionary<string, object?>>()
+                                .Select(argument =>
+                                    argument.TryGetValue("name", out object? argumentName)
+                                        ? Convert.ToString(argumentName) ?? ""
+                                        : ""
+                                )
+                                .ToArray()
+                            : Array.Empty<string>();
+                }
+            }
+            catch (MpvException)
+            {
+                // An mpv too old to describe itself is old enough to want the older call shapes, which is
+                // what an empty map produces.
+            }
+            return found;
+        }
+
         public void LoadFile(
             string filename,
             string mode = "replace",
             IDictionary<string, object?>? options = null
-        ) => Command("loadfile", filename, mode, EncodeOptions(options));
+        )
+        {
+            // The insertion index goes between the flags and the options. -1 is the default mpv states for
+            // it, and means the end of the playlist.
+            if (CommandTakes("loadfile", "index"))
+                Command("loadfile", filename, mode, -1, EncodeOptions(options));
+            else
+                Command("loadfile", filename, mode, EncodeOptions(options));
+        }
 
-        public void LoadList(string playlist, string mode = "replace") =>
-            Command("loadlist", playlist, mode);
+        public void LoadList(string playlist, string mode = "replace")
+        {
+            if (CommandTakes("loadlist", "index"))
+                Command("loadlist", playlist, mode, -1);
+            else
+                Command("loadlist", playlist, mode);
+        }
 
         public void PlaylistClear() => Command("playlist-clear");
 
@@ -3223,7 +3328,15 @@ namespace MpvNet
         public void Mouse(int x, int y, object? button = null, string mode = "single") =>
             Command("mouse", x, y, button, mode);
 
-        public void KeyPress(string name) => Command("keypress", name);
+        public void KeyPress(string name)
+        {
+            // The scale is how far a press counts for a binding that reads one, such as a scroll. 1 is a
+            // single ordinary press, and the default mpv states.
+            if (CommandTakes("keypress", "scale"))
+                Command("keypress", name, 1.0);
+            else
+                Command("keypress", name);
+        }
 
         public void KeyDown(string name) => Command("keydown", name);
 
