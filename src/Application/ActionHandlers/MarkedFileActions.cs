@@ -14,12 +14,14 @@ internal sealed class MarkedFileActions
     private readonly PlayerSettings _settings;
     private readonly ISpeechOutput _speech;
     private readonly IClipboardService _clipboard;
+    private readonly IApplicationDispatcher _dispatcher;
     private readonly MarkedFileService _files = new();
 
     internal MarkedFileActions(ActionRouter router, IMainView view, MediaPlayer player, PlayerSettings settings,
-        ISpeechOutput speech, IClipboardService clipboard)
+        ISpeechOutput speech, IClipboardService clipboard, IApplicationDispatcher dispatcher)
     {
         _view = view; _player = player; _settings = settings; _speech = speech; _clipboard = clipboard;
+        _dispatcher = dispatcher;
         router.Register(ActionId.MarkedCopyToFolder, () => Transfer(move: false));
         router.Register(ActionId.MarkedMoveToFolder, () => Transfer(move: true));
         router.Register(ActionId.MarkedCopyToClipboard, CopyToClipboard);
@@ -41,17 +43,17 @@ internal sealed class MarkedFileActions
                 : Tr("Copying marked files"),
             // Translators: First message in the progress window, shown before the first file has been dealt with.
             Tr("Starting..."),
-            // Translators: Progress message shown while the player is busy but has nothing new to report yet.
-            Tr("Working..."),
             // Translators: Progress message naming the file being copied or moved right now. {name} is the file name.
             update => TrFormat("Processing: {name}", update.Name));
-        // Cancelling shows up as Cancelled on the result rather than as an exception, so the run still has one
-        // to report; a false here would mean the job threw, and there is nothing to say about that.
-        if (!BackgroundProgress.TryRun(_view, prompt, marked.Count,
-                (report, token) => _files.Transfer(marked, target, move, report, token), out var result))
-            return;
-        if (move && result.Succeeded.Count > 0) _player.RemovePaths(result.Succeeded);
-        ReportTransfer(result, move);
+        // Cancelling shows up as Cancelled on the result rather than as an exception, so the run still
+        // finishes normally and still has something to report.
+        BackgroundProgress.Start(_view, _dispatcher, prompt, marked.Count,
+            (report, token) => _files.Transfer(marked, target, move, report, token),
+            result =>
+            {
+                if (move && result.Succeeded.Count > 0) _player.RemovePaths(result.Succeeded);
+                ReportTransfer(result, move);
+            });
     }
 
     private void CopyToClipboard()

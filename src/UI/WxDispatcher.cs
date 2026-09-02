@@ -11,7 +11,9 @@ internal sealed class WxDispatcher : IApplicationDispatcher
     // application does, independently of the main frame's lifetime.
     public IDisposable Repeat(TimeSpan interval, Action action)
     {
-        var timer = new WxSharp.Timer(App.Current ?? throw new InvalidOperationException("No App is running."));
+        var app = App.Current ?? throw new InvalidOperationException("No App is running.");
+        // Each timer takes an id of its own, so one timer's tick never runs another's handler.
+        var timer = new WxSharp.Timer(app);
         timer.Tick += (_, _) => action();
         timer.Start(Math.Max(1, (int)interval.TotalMilliseconds));
         return timer;
