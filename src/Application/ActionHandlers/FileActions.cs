@@ -16,6 +16,7 @@ internal sealed class FileActions
     private readonly PlayerSettings _settings;
     private readonly ISpeechOutput _speech;
     private readonly IClipboardService _clipboard;
+    private readonly IApplicationDispatcher _dispatcher;
     private readonly MediaGuard _guard;
     private int _fileInfoPressCount;
     private long _fileInfoLastPress;
@@ -27,13 +28,15 @@ internal sealed class FileActions
         MediaPlayer player,
         PlayerSettings settings,
         ISpeechOutput speech,
-        IClipboardService clipboard)
+        IClipboardService clipboard,
+        IApplicationDispatcher dispatcher)
     {
         _view = view;
         _player = player;
         _settings = settings;
         _speech = speech;
         _clipboard = clipboard;
+        _dispatcher = dispatcher;
         _guard = new MediaGuard(player, speech);
         router.Register(ActionId.OpenFile, OpenFileFromDialog);
         router.Register(ActionId.OpenLink, OpenLink);
@@ -172,40 +175,77 @@ internal sealed class FileActions
     {
         if (!_guard.RequireAnyFile())
             return;
-        var selected = _player.CurrentIndex;
-        while (true)
-        {
-            var names = _player.Files.Select(_player.DisplayName).ToArray();
-            var request = _view.ChooseOpenedFile(names, selected);
-            if (request is null) return;
-            selected = request.Value.SelectedIndex;
-            if (request.Value.Action == OpenedFilesAction.Jump)
-            {
-                _player.GoToIndex(selected);
-                return;
-            }
-            ShowPlaylistInformation();
-        }
+        ShowOpenedFiles(_player.CurrentIndex);
     }
 
-    private void ShowPlaylistInformation()
+    /// <summary>Shows the list of loaded files. Written as a step rather than a loop because asking for the
+    /// playlist summary no longer blocks: the scan runs while the window stays live, and this list comes back
+    /// only once it has finished.</summary>
+    private void ShowOpenedFiles(int selected)
+    {
+        if (_player.Count == 0)
+            return;
+        var names = _player.Files.Select(_player.DisplayName).ToArray();
+        var request = _view.ChooseOpenedFile(names, selected);
+        if (request is null)
+            return;
+        if (request.Value.Action == OpenedFilesAction.Jump)
+        {
+            _player.GoToIndex(request.Value.SelectedIndex);
+            return;
+        }
+        ShowPlaylistInformation(() => ShowOpenedFiles(request.Value.SelectedIndex));
+    }
+
+    private void ShowPlaylistInformation(Action completed)
     {
         var prompt = new ProgressPrompt(
             // Translators: Title of the progress window shown while details of every file in the playlist are being read.
             Tr("Loading playlist info"),
             // Translators: First message in the progress window, shown before the first file has been read.
             Tr("Preparing..."),
-            Tr("Preparing..."),
             // Translators: Progress message naming the file being read right now. {name} is the file name.
             update => TrFormat("Reading: {name}", update.Name));
-        var read = BackgroundProgress.TryRun(_view, prompt, _player.Count,
+        // Everything the scan needs is read here, on the UI thread. mpv's properties belong to it, and the
+        // scan itself only gets plain numbers to work from.
+        var files = _player.Files;
+        var currentPath = _player.CurrentPath;
+        var currentIndex = _player.CurrentIndex;
+        var duration = _player.Duration;
+        var elapsed = _player.Elapsed;
+        var remaining = _player.Remaining;
+        BackgroundProgress.Start(_view, _dispatcher, prompt, files.Count,
             (report, token) => _playlistInfo.Build(
-                _player.Files, _player.CurrentPath, _player.CurrentIndex, _player.Duration,
-                _player.Elapsed, _player.Remaining, report, token),
-            out var text);
-        if (read)
-            // Translators: Title of the window listing details of every file in the playlist.
-            _view.ShowTextInfo(Tr("Playlist Info"), text);
+                files, currentPath, currentIndex, duration, elapsed, remaining, report, token),
+            totals =>
+            {
+                // Translators: Title of the window listing details of every file in the playlist.
+                _view.ShowTextInfo(Tr("Playlist Info"), Describe(totals));
+                completed();
+            });
+    }
+
+    /// <summary>Turns the scan's numbers into the text shown to the user. On the UI thread, because the
+    /// translation lookup is a wxWidgets object and the scan runs on a worker thread.</summary>
+    private static string Describe(PlaylistTotals totals) => string.Join(Environment.NewLine,
+        // Translators: The playlist summary. {count} is how many files are loaded.
+        TrFormat("Number of files: {count}", totals.FileCount),
+        // Translators: The playlist summary. {value} is a size such as "12.5 MB".
+        TrFormat("Total size: {value}", FormatSize(totals.TotalBytes)),
+        // Translators: The playlist summary. {value} is a duration as hours:minutes:seconds.
+        TrFormat("Total duration: {value}", PlaybackTimeFormatter.Format(totals.TotalDuration)),
+        // Translators: The playlist summary: how much of the whole playlist has already played.
+        TrFormat("Elapsed: {value}", PlaybackTimeFormatter.Format(totals.Elapsed)),
+        // Translators: The playlist summary: how much of the whole playlist is left to play.
+        TrFormat("Remaining: {value}", PlaybackTimeFormatter.Format(totals.Remaining)));
+
+    private static string FormatSize(long bytes)
+    {
+        string[] units = ["B", "KB", "MB", "GB", "TB"];
+        var value = (double)Math.Max(0, bytes);
+        var unit = 0;
+        while (value >= 1024 && unit < units.Length - 1) { value /= 1024; unit++; }
+        return unit == 0 ? $"{value:0} {units[unit]}" : $"{value:0.##} {units[unit]}";
     }
 
     private void CloseFile()
