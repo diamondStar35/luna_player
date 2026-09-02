@@ -47,7 +47,7 @@ internal sealed class MarkedFileActions
             update => TrFormat("Processing: {name}", update.Name));
         // Cancelling shows up as Cancelled on the result rather than as an exception, so the run still
         // finishes normally and still has something to report.
-        BackgroundProgress.Start(_view, _dispatcher, prompt, marked.Count,
+        BackgroundProgress.Start(_view, _dispatcher, prompt,
             (report, token) => _files.Transfer(marked, target, move, report, token),
             result =>
             {

@@ -8,6 +8,11 @@ internal sealed class SettingsStore
     private readonly string _jsonPath;
     private readonly string _legacyIniPath;
 
+    /// <summary>Why the last read or write failed, or an empty string when it did not. Kept because a
+    /// message telling the user only that something could not be saved leaves them nothing to act on.
+    /// </summary>
+    internal string LastError { get; private set; } = string.Empty;
+
     internal SettingsStore(string jsonPath, string legacyIniPath)
     {
         _jsonPath = jsonPath;
@@ -40,10 +45,12 @@ internal sealed class SettingsStore
             settings = JsonSerializer.Deserialize(stream, SettingsJsonContext.Default.PlayerSettings)
                 ?? throw new JsonException("The settings file is empty.");
             settings.Validate();
+            LastError = string.Empty;
             return true;
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
         {
+            LastError = exception.Message;
             settings = new PlayerSettings();
             return false;
         }
@@ -116,10 +123,12 @@ internal sealed class SettingsStore
             using (var stream = File.Create(temporary))
                 JsonSerializer.Serialize(stream, settings, SettingsJsonContext.Default.PlayerSettings);
             File.Move(temporary, _jsonPath, overwrite: true);
+            LastError = string.Empty;
             return true;
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
+            LastError = exception.Message;
             return false;
         }
     }

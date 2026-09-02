@@ -6,19 +6,28 @@ internal sealed class OpenedFilesDialog : IDisposable
 {
     private const int InformationId = 16001;
     private readonly Dialog _dialog;
-    private readonly ListBox _list;
+    private readonly FileList _list;
     private OpenedFilesAction? _action;
 
-    internal OpenedFilesDialog(Window parent, IReadOnlyList<string> entries, int selectedIndex)
+    /// <param name="count">How many files are loaded.</param>
+    /// <param name="nameAt">The name to show for one row, asked for only as the row is drawn.</param>
+    internal OpenedFilesDialog(Window parent, int count, Func<int, string> nameAt, int selectedIndex)
     {
         _dialog = new Dialog(
             parent,
             // Translators: Title of the window listing the files currently loaded in the player.
             title: Tr("Opened Files"),
             style: DialogStyle.Default | DialogStyle.ResizeBorder);
-        _list = new ListBox(_dialog);
-        _list.Set(entries);
-        if (selectedIndex >= 0 && selectedIndex < entries.Count) _list.SelectedIndex = selectedIndex;
+        _list = new FileList(_dialog, nameAt);
+        // One unnamed column filling the width: the list has nothing to head, and a report list is what
+        // virtual mode requires.
+        _list.InsertColumn(0, string.Empty, 360);
+        _list.SetItemCount(count);
+        if (selectedIndex >= 0 && selectedIndex < count)
+        {
+            _list.SelectedIndex = selectedIndex;
+            _list.EnsureVisible(selectedIndex);
+        }
 
         // Translators: Button that shows details of every file in the playlist.
         var information = new Button(_dialog, InformationId, Tr("Playlist info"));
@@ -44,12 +53,15 @@ internal sealed class OpenedFilesDialog : IDisposable
         _dialog.Fit();
         _dialog.MinSize = new Size(420, 260);
         _dialog.Center(onParent: true);
+        _list.Focus();
     }
 
     internal OpenedFilesRequest? Show()
     {
         _dialog.ShowModal();
-        return _action.HasValue && _list.SelectedIndex >= 0 ? new(_action.Value, _list.SelectedIndex) : null;
+        return _action.HasValue && _list.SelectedIndex >= 0
+            ? new(_action.Value, (int)_list.SelectedIndex)
+            : null;
     }
 
     public void Dispose() => _dialog.Dispose();
@@ -59,5 +71,23 @@ internal sealed class OpenedFilesDialog : IDisposable
         if (_list.SelectedIndex < 0) return;
         _action = action;
         _dialog.EndModal(StandardId.Ok);
+    }
+
+    /// <summary>The list of loaded files, which holds none of them.</summary>
+    ///
+    /// <remarks>
+    /// A virtual list asks for the text of a row as it draws it, so only the rows on screen cost anything.
+    /// The alternative - handing a control every name up front - is what makes opening this window with a
+    /// large playlist stall: a folder opened with its subfolders can hold a hundred thousand files, and
+    /// pushing that many strings across to the control freezes the player for as long as it takes.
+    ///
+    /// Overriding requires deriving, because that is what makes the wrapper create a control that asks.
+    /// </remarks>
+    private sealed class FileList(Window parent, Func<int, string> nameAt) : ListCtrl(parent,
+        style: ListCtrlStyle.Report | ListCtrlStyle.Virtual | ListCtrlStyle.SingleSelection | ListCtrlStyle.NoHeader)
+    {
+        // Called while the control is painting, so it does no more than look the name up.
+        protected override string OnGetItemText(long item, int column)
+            => item >= 0 && item <= int.MaxValue ? nameAt((int)item) : string.Empty;
     }
 }

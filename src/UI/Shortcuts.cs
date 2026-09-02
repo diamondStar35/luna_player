@@ -285,10 +285,18 @@ internal sealed partial class ShortcutCapture : IDisposable
     internal ShortcutCapture(Window parent, bool allowWin = false)
     {
         _allowWin = allowWin;
-        // Translators: Title of the small window that waits for the user to press the combination they want.
-        _dialog = new Dialog(parent, title: Tr("Set Shortcut"));
-        // Translators: Message in the window that waits for a key combination. Escape is the name of the key that closes it.
-        var label = new StaticText(_dialog, label: Tr("Press the desired shortcut. Escape cancels."));
+        // A system-wide shortcut is a different thing from one that only works here, and the window that
+        // asks for it says so - otherwise the two are indistinguishable once open.
+        _dialog = new Dialog(parent, title: allowWin
+            // Translators: Title of the window that waits for a combination that will work while another program is in front.
+            ? Tr("Set Global Shortcut")
+            // Translators: Title of the small window that waits for the user to press the combination they want.
+            : Tr("Set Shortcut"));
+        var label = new StaticText(_dialog, label: allowWin
+            // Translators: Message in the window that waits for a system-wide key combination. Escape is the name of the key that closes it.
+            ? Tr("Press the desired global shortcut. Escape cancels.")
+            // Translators: Message in the window that waits for a key combination. Escape is the name of the key that closes it.
+            : Tr("Press the desired shortcut. Escape cancels."));
         var sizer = new BoxSizer(Orientation.Vertical);
         sizer.Add(label, flags: SizerFlags.All, border: 10);
         _dialog.SetSizer(sizer);

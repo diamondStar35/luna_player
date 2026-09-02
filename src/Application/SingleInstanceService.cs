@@ -1,12 +1,13 @@
 using System.IO.Pipes;
 using System.Text.Json;
+using LunaPlayer.Configuration;
 
 namespace LunaPlayer.Application;
 
 internal sealed class SingleInstanceService : IDisposable
 {
-    private const string MutexName = "Local\\LunaPlayer.MainInstance";
-    private const string PipeName = "LunaPlayer.OpenPaths";
+    private const string MutexName = $"Local\\{AppInfo.Identifier}.MainInstance";
+    private const string PipeName = $"{AppInfo.Identifier}.OpenPaths";
 
     private readonly Mutex? _mutex;
     private readonly bool _ownsMutex;
@@ -42,7 +43,7 @@ internal sealed class SingleInstanceService : IDisposable
         _listenerThread = new Thread(Listen)
         {
             IsBackground = true,
-            Name = "LunaPlayer.OpenPaths",
+            Name = PipeName,
         };
         _listenerThread.Start();
     }
