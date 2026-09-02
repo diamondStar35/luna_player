@@ -85,8 +85,9 @@ Name: "associate"; Description: "Open audio and video files with {#AppName}"; Gr
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
-; The build folder holds the debugging symbols and the documentation XML next to the player; neither is any
-; use to somebody installing it, and the symbols alone are four times the size of the player itself.
+; Everything the player needs is in the build folder, the licence and the notices among it. The debugging
+; symbols and the documentation XML are there too and are no use to somebody installing it; the symbols
+; alone are four times the size of the player.
 Source: "{#BuildDir}\{#AppExeName}"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BuildDir}\*"; DestDir: "{app}"; Excludes: "*.pdb,*.xml"; Flags: ignoreversion recursesubdirs createallsubdirs
 

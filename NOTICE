@@ -1,0 +1,114 @@
+Luna Player
+Copyright 2026 diamondStar35
+
+Luna Player is licensed under the Apache License, Version 2.0. The LICENSE file
+in the root of this distribution contains those terms, and they apply to Luna
+Player's own source code and to the LunaPlayer executable built from it.
+
+Luna Player is distributed together with the third-party components listed
+below. Each remains under its own licence, which Luna Player's licence neither
+replaces nor modifies. Verbatim licence texts are in third-party/licenses, and
+are installed alongside the program.
+
+
+-------------------------------------------------------------------------------
+mpv                                                                    mpv.dll
+-------------------------------------------------------------------------------
+
+Copyright (c) the mpv developers and the contributors to MPlayer and mplayer2,
+from which mpv is derived. mpv incorporates FFmpeg, copyright (c) the FFmpeg
+developers.
+
+  Version:   v0.41.0-1023-g69e63f425
+  Home page: https://mpv.io/
+  Source:    https://github.com/mpv-player/mpv
+  Licence:   GNU Lesser General Public License, version 2.1 or later
+             third-party/licenses/LGPL-2.1.txt
+
+mpv is used through its client API to decode and play media. It is loaded at
+run time as a shared library and is not linked into the LunaPlayer executable.
+
+The Lesser General Public License entitles a recipient of this distribution to
+the corresponding source code for mpv and for the FFmpeg libraries built into
+it, and to modify those components and relink them with Luna Player. Both are
+satisfied by the addresses above and by the shared library remaining separate
+and replaceable: substituting a compatible mpv.dll requires no change to Luna
+Player.
+
+
+-------------------------------------------------------------------------------
+wxWidgets                                     wx.dll, wxbase333u_vc_x64.dll,
+                                              wxmsw333u_core_vc_x64.dll
+-------------------------------------------------------------------------------
+
+Copyright (c) 1998-2005 Julian Smart, Robert Roebling et al.
+
+  Version:   3.3.3
+  Home page: https://www.wxwidgets.org/
+  Source:    https://github.com/wxWidgets/wxWidgets
+  Licence:   wxWindows Library Licence, Version 3.1
+             third-party/licenses/wxWindows-3.1.txt
+             third-party/licenses/LGPL-2.0.txt
+
+wxWidgets provides the program's windows and controls, and the accessibility
+information a screen reader reads from them. It is used through WxSharp and is
+loaded at run time as a shared library.
+
+The wxWindows Library Licence is the GNU Library General Public License,
+version 2, with an exception permitting binaries built against the library to
+be distributed under terms of the distributor's choosing. Luna Player relies on
+that exception. The library itself remains under the licence above, and the
+entitlement to its source code and to relinking against a modified copy is
+unaffected.
+
+
+-------------------------------------------------------------------------------
+Prism                                                                prism.dll
+-------------------------------------------------------------------------------
+
+Copyright (c) Ethin Probst and the Prism contributors.
+
+  Version:   0.18.2
+  Home page: https://github.com/ethindp/prism
+  Source:    https://github.com/ethindp/prism
+  Licence:   Mozilla Public License, Version 2.0
+             third-party/licenses/MPL-2.0.txt
+
+Prism presents the installed screen readers and speech engines through one
+interface, and is what Luna Player speaks through. It is used through PrismSharp
+and is loaded at run time as a shared library.
+
+The Mozilla Public License entitles a recipient of this distribution to the
+source code of Prism, which is available at the address above. Prism carries its
+own NOTICE file recording code it incorporates from other projects.
+
+
+-------------------------------------------------------------------------------
+WxSharp                                                             (compiled in)
+-------------------------------------------------------------------------------
+
+Copyright (c) the WxSharp contributors.
+
+  Source:    third-party/WxSharp (git submodule)
+  Licence:   Apache License, Version 2.0
+             third-party/WxSharp/LICENSE
+
+WxSharp is the managed binding for wxWidgets, together with the native layer
+built as wx.dll. Its sources are compiled into the LunaPlayer executable.
+
+
+-------------------------------------------------------------------------------
+PrismSharp                                                          (compiled in)
+-------------------------------------------------------------------------------
+
+  Source:    src/Speech
+  Licence:   Apache License, Version 2.0 (see LICENSE)
+
+PrismSharp is the managed binding for Prism. Its sources are compiled into the
+LunaPlayer executable.
+
+
+-------------------------------------------------------------------------------
+
+Requests for source code corresponding to the binaries in this distribution may
+be made at https://github.com/diamondStar35/luna_player/issues.
