@@ -42,11 +42,11 @@ internal sealed class ApplicationHost : IDisposable
         var clipboard = new WxClipboardService();
         var selection = new PlaybackSelection();
         var router = new ActionRouter();
-        var fileActions = new FileActions(router, _view, _player, _settings, _speech, clipboard);
+        var fileActions = new FileActions(router, _view, _player, _settings, _speech, clipboard, _dispatcher);
         _ = new PlaybackActions(router, _view, _player, _settings, _settingsStore, _speech, selection);
         _ = new PlaylistActions(router, _view, _player, _settings, _speech);
         _ = new EditActions(router, _view, _player, _speech, clipboard, fileActions);
-        _ = new MarkedFileActions(router, _view, _player, _settings, _speech, clipboard);
+        _ = new MarkedFileActions(router, _view, _player, _settings, _speech, clipboard, _dispatcher);
         var bookmarks = new BookmarkStore(Paths.BookmarksFile);
         _ = new BookmarkActions(router, _view, _player, _speech, bookmarks);
         _ = new DeviceActions(router, _view, _player, _settings, _settingsStore, _speech);

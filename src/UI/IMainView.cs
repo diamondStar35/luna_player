@@ -26,8 +26,13 @@ internal sealed record PrefsOps(
 
 internal interface IProgressView : IDisposable
 {
-    bool Update(int value, string message);
-    bool Pulse(string message);
+    /// <summary>Shows how far the job has got. Only called when there is something new to show: a gauge
+    /// that is written to on every tick regardless has nothing to gain and something to lose.</summary>
+    void Update(int value, string message);
+
+    /// <summary>Whether the user has pressed Cancel. A plain flag rather than something reported back out
+    /// of Update, so a job with nothing new to report can still be cancelled.</summary>
+    bool Cancelled { get; }
 }
 
 internal interface IMainView : IDisposable
