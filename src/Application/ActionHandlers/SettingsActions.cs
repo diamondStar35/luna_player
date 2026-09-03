@@ -4,6 +4,7 @@ using LunaPlayer.Configuration;
 using LunaPlayer.UI;
 using LunaPlayer.Playback;
 using LunaPlayer.Media;
+using LunaPlayer.YouTube;
 using System.Diagnostics;
 
 namespace LunaPlayer.Application.ActionHandlers;
@@ -20,7 +21,9 @@ internal sealed class SettingsActions
         MediaPlayer player,
         ShortcutManager shortcuts,
         ShortcutManager globalShortcuts,
-        ISpeechOutput speech)
+        ISpeechOutput speech,
+        Backend youTube,
+        Components youTubeComponents)
     {
         void ApplyRuntime(PlayerSettings source)
         {
@@ -71,6 +74,17 @@ internal sealed class SettingsActions
             return new(success, error);
         }
 
+        // Called straight from the button and returns at once: the fetch runs behind its own progress
+        // window, which is what keeps the Preferences window answering for the length of a download.
+        void DownloadYouTubeComponents(YtDlpChannel channel) => youTubeComponents.Install(channel);
+
+        // The tick box goes back only when the user actually said no. While the programs are on their way
+        // it stays as they left it, and the setting falls back to the player's own resolver until they
+        // arrive. Ticking the box is itself a request for them, so the offer is made even to somebody who
+        // once said "stop asking" - that answer was about being interrupted, not about this.
+        bool EnsureYouTubeComponents(YtDlpChannel channel)
+            => youTubeComponents.Ensure(channel, ignoreSkip: true) is not Components.ComponentsState.Declined;
+
         var operations = new PrefsOps(
             backup.SettingsPath,
             backup.BookmarksPath,
@@ -84,6 +98,8 @@ internal sealed class SettingsActions
             OpenSettingsFolder,
             () => Register(false),
             () => Register(true),
+            DownloadYouTubeComponents,
+            EnsureYouTubeComponents,
             source =>
             {
                 ApplyRuntime(source);

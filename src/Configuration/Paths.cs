@@ -112,4 +112,43 @@ internal static class Paths
         if (!string.IsNullOrEmpty(directory))
             Directory.CreateDirectory(directory);
     }
+
+    /// <summary>Turns a name that came from somewhere else - the title of a video, say - into one Windows
+    /// will accept as a file name.</summary>
+    ///
+    /// <remarks>
+    /// The characters Windows forbids become underscores rather than disappearing, so two titles differing
+    /// only in punctuation stay different. Length is capped well under the limit because a folder path goes
+    /// in front of this and an extension after it. Trailing dots and spaces are dropped: Windows accepts
+    /// them in a name and then cannot open the file again.
+    /// </remarks>
+    internal static string SafeFileName(string? name, string fallback = "video")
+    {
+        var cleaned = new string((name ?? string.Empty)
+            .Select(character => Path.GetInvalidFileNameChars().Contains(character) ? '_' : character)
+            .ToArray())
+            .Trim();
+        if (cleaned.Length > 120)
+            cleaned = cleaned[..120];
+        cleaned = cleaned.TrimEnd(' ', '.');
+        return cleaned.Length > 0 ? cleaned : fallback;
+    }
+
+    /// <summary>A path near <paramref name="path"/> that nothing is using, so a second download of the same
+    /// video does not overwrite the first.</summary>
+    internal static string Unused(string path)
+    {
+        if (!File.Exists(path))
+            return path;
+        var directory = Path.GetDirectoryName(path) ?? string.Empty;
+        var name = Path.GetFileNameWithoutExtension(path);
+        var extension = Path.GetExtension(path);
+        for (var number = 2; number < 1000; number++)
+        {
+            var candidate = Path.Combine(directory, $"{name} ({number}){extension}");
+            if (!File.Exists(candidate))
+                return candidate;
+        }
+        return path;
+    }
 }

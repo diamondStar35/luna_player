@@ -25,6 +25,7 @@ internal sealed class ApplicationController : IDisposable
     /// <see cref="TagsFor"/>.</summary>
     private string? _tagsPath;
     private MediaTags _tags = MediaTags.None;
+    private readonly YouTube.YouTubeSessions _sessions;
     private bool _shutDown;
 
     internal ApplicationController(
@@ -35,7 +36,8 @@ internal sealed class ApplicationController : IDisposable
         IApplicationDispatcher dispatcher,
         ActionRouter router,
         FileActions fileActions,
-        PlaybackSelection selection)
+        PlaybackSelection selection,
+        YouTube.YouTubeSessions sessions)
     {
         _view = view;
         _player = player;
@@ -45,8 +47,10 @@ internal sealed class ApplicationController : IDisposable
         _router = router;
         _fileActions = fileActions;
         _selection = selection;
+        _sessions = sessions;
         _view.ActionRequested += HandleAction;
         _view.CloseRequested += Shutdown;
+        _view.EscapePressed += _sessions.HandleEscape;
         _player.CurrentChanged += OnCurrentChanged;
         _player.StateChanged += SyncViewState;
         _player.Ended += OnPlaybackEnded;
@@ -72,7 +76,12 @@ internal sealed class ApplicationController : IDisposable
         _view.SetBookmarkState(false);
         _view.SetMarkState(false, false);
         _view.SetMarkedActionsEnabled(false);
+        _view.SetVideoOptionsEnabled(false);
         _view.SetSilenceRemovalChecked(_player.IsSilenceRemovalEnabled);
+        // Both belong to a playlist rather than to the player, so they change when a list of videos is put
+        // in front of the one the user opened and change back when it goes.
+        _view.SetShuffleChecked(_player.IsShuffleEnabled);
+        _view.SetRepeatFileChecked(_player.IsRepeatFileEnabled);
         SyncMediaControls();
         UpdateMediaControlsClock();
     }
@@ -110,6 +119,7 @@ internal sealed class ApplicationController : IDisposable
         _player.CurrentChanged -= OnCurrentChanged;
         _player.StateChanged -= SyncViewState;
         _player.Ended -= OnPlaybackEnded;
+        _view.EscapePressed -= _sessions.HandleEscape;
         Shutdown();
         StopMediaControlsClock();
         _mediaControls.Dispose();
@@ -141,6 +151,11 @@ internal sealed class ApplicationController : IDisposable
         _view.SetBookmarkState(local);
         _view.SetMarkState(_player.IsCurrentMarked, _player.AreAllMarked);
         _view.SetMarkedActionsEnabled(loaded && _player.MarkedCount > 0);
+        // The source rather than the path: a resolved video plays from a signed stream address that is
+        // not on a YouTube host at all, and it is the watch page these commands act on. No test for a file
+        // being loaded either - with nothing open there is neither a source nor a path.
+        _view.SetVideoOptionsEnabled(
+            LinkValidator.IsYouTubeUrl(_player.CurrentSource ?? _player.CurrentPath));
         _view.SetSilenceRemovalChecked(_player.IsSilenceRemovalEnabled);
         SyncMediaControls();
         UpdateMediaControlsClock();
@@ -243,6 +258,17 @@ internal sealed class ApplicationController : IDisposable
         switch (_settings.Audio.EndBehavior)
         {
             case EndBehavior.Advance:
+                // A video from YouTube goes to the next one in the list the user was shown, not the next
+                // playlist entry - and its address may still be being fetched, which is what Pending says.
+                // Stopping on that would end the session a moment before its successor arrived.
+                switch (_sessions.TryNext())
+                {
+                    case YouTube.NextOutcome.Advanced or YouTube.NextOutcome.Pending:
+                        return;
+                    case YouTube.NextOutcome.Exhausted:
+                        _player.Stop();
+                        return;
+                }
                 if (!_player.Next(_settings.Audio.WrapPlaylist))
                     _player.Stop();
                 break;
