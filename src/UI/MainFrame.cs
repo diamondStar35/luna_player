@@ -11,16 +11,17 @@ internal sealed partial class MainFrame : IMainView
     private readonly CustomButton _playButton;
     private readonly Dictionary<ActionId, int> _commandIds = [];
     private readonly Dictionary<int, ActionId> _commands = [];
-    private readonly List<int> _ownedCommandIds = [];
     private readonly List<MenuItem> _playbackItems = [];
     private readonly List<MenuItem> _mediaFileItems = [];
     private readonly List<MenuItem> _localFileItems = [];
     private readonly List<MenuItem> _markedItems = [];
+    private readonly List<MenuItem> _videoItems = [];
     private readonly List<MenuItem> _localEditItems = [];
     private readonly List<MenuItem> _bookmarkItems = [];
     private readonly MenuBar _menuBar;
     private readonly int _bookmarksMenuIndex;
     private readonly int _markedMenuIndex;
+    private readonly int _videoMenuIndex;
     private readonly MenuItem _markCurrentItem;
     private readonly MenuItem _markAllItem;
     private readonly MenuItem _shuffleItem;
@@ -37,10 +38,12 @@ internal sealed partial class MainFrame : IMainView
         _menuBar = menu.MenuBar;
         _bookmarksMenuIndex = menu.BookmarksMenuIndex;
         _markedMenuIndex = menu.MarkedMenuIndex;
+        _videoMenuIndex = menu.VideoMenuIndex;
         _playbackItems.AddRange(menu.PlaybackItems);
         _mediaFileItems.AddRange(menu.MediaFileItems);
         _localFileItems.AddRange(menu.LocalFileItems);
         _markedItems.AddRange(menu.MarkedItems);
+        _videoItems.AddRange(menu.VideoItems);
         _localEditItems.AddRange(menu.LocalEditItems);
         _bookmarkItems.AddRange(menu.BookmarkItems);
         _markCurrentItem = menu.MarkCurrentItem;
@@ -77,11 +80,32 @@ internal sealed partial class MainFrame : IMainView
         _globalShortcuts.Pressed += Request;
         _frame.MenuCommand += OnMenuCommand;
         _frame.Closing += OnClosing;
+        _frame.Bind(WxEvents.CharHook, OnCharHook);
         SetMediaLoaded(false);
     }
 
     public event Action<ActionId>? ActionRequested;
     public event Action? CloseRequested;
+    public event Func<bool>? EscapePressed;
+
+    /// <remarks>
+    /// Only a bare Escape, and only when something answers to it. Anything else is skipped so the window
+    /// keeps behaving as it did: Escape is not a shortcut the user can bind, and swallowing it
+    /// unconditionally would take away the key that closes things.
+    /// </remarks>
+    private void OnCharHook(object? sender, KeyEventArgs args)
+    {
+        if (args.Code == Key.Escape && args.Modifiers == KeyModifiers.None)
+        {
+            // Guarded here rather than at the far end: this runs inside a wxWidgets key event, and an
+            // exception thrown past it would unwind into C++ frames and take the process with it.
+            var handled = false;
+            LunaPlayer.Application.CrashReport.Guard(() => handled = EscapePressed?.Invoke() == true);
+            if (handled)
+                return;
+        }
+        args.Skip();
+    }
 
     public nint NativeHandle => _frame.NativeHandle;
 
@@ -151,6 +175,12 @@ internal sealed partial class MainFrame : IMainView
         _markAllItem.Checked = allMarked;
     }
 
+    public void SetVideoOptionsEnabled(bool enabled)
+    {
+        foreach (var item in _videoItems) item.Enabled = enabled;
+        _menuBar.EnableTop(_videoMenuIndex, enabled);
+    }
+
     public void SetMarkedActionsEnabled(bool enabled)
     {
         foreach (var item in _markedItems) item.Enabled = enabled;
@@ -166,9 +196,6 @@ internal sealed partial class MainFrame : IMainView
         // shutting down.
         _globalShortcuts.Dispose();
         _frame.Dispose();
-        foreach (var id in _ownedCommandIds)
-            IdManager.Release(id);
-        _ownedCommandIds.Clear();
     }
 
     private void BuildCommandIds(IEnumerable<ActionDefinition> actions)
@@ -176,20 +203,23 @@ internal sealed partial class MainFrame : IMainView
         foreach (var action in actions)
         {
             if (action.Id == ActionId.OpenFile)
-                AddCommand(action.Id, StandardId.Open, owned: false);
+                AddCommand(action.Id, StandardId.Open);
             else if (action.Id == ActionId.Exit)
-                AddCommand(action.Id, StandardId.Exit, owned: false);
+                AddCommand(action.Id, StandardId.Exit);
             else
-                AddCommand(action.Id, IdManager.NewId(), owned: true);
+                AddCommand(action.Id, IdManager.NewId());
         }
     }
 
-    private void AddCommand(ActionId action, int id, bool owned)
+    /// <remarks>
+    /// An id from <see cref="IdManager.NewId"/> is never released. Putting it on a menu hands the
+    /// reservation to a <c>wxWindowIDRef</c>, and destroying the menu bar with the frame returns it; a
+    /// release afterwards would free it twice, which wxWidgets asserts on in a debug build.
+    /// </remarks>
+    private void AddCommand(ActionId action, int id)
     {
         _commandIds[action] = id;
         _commands[id] = action;
-        if (owned)
-            _ownedCommandIds.Add(id);
     }
 
     private void BuildAccelerators(ShortcutManager shortcuts)

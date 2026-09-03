@@ -26,6 +26,10 @@
     <RunCommand>$(NativeAotOutputDirectory)LunaPlayer.exe</RunCommand>
     <RunWorkingDirectory>$(NativeAotOutputDirectory)</RunWorkingDirectory>
     <ShouldUnsetParentConfigurationAndPlatform>false</ShouldUnsetParentConfigurationAndPlatform>
+    <StackTraceSupport>false</StackTraceSupport>
+    <EventSourceSupport>false</EventSourceSupport>
+    <MetricsSupport>false</MetricsSupport>
+    <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
   </PropertyGroup>
 
   <ItemDefinitionGroup>
@@ -48,6 +52,11 @@
     <Compile Include="Playback\**\*.cs" />
     <Compile Include="Playlist\**\*.cs" />
     <Compile Include="UI\**\*.cs" />
+    <Compile Include="YouTube\**\*.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="YoutubeExplode" Version="6.6.2" />
   </ItemGroup>
 
   <ItemGroup>
