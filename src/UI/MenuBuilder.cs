@@ -7,12 +7,14 @@ internal sealed record MainMenuComponents(
     MenuBar MenuBar,
     int BookmarksMenuIndex,
     int MarkedMenuIndex,
+    int VideoMenuIndex,
     IReadOnlyList<MenuItem> PlaybackItems,
     IReadOnlyList<MenuItem> MediaFileItems,
     IReadOnlyList<MenuItem> LocalFileItems,
     IReadOnlyList<MenuItem> MarkedItems,
     IReadOnlyList<MenuItem> LocalEditItems,
     IReadOnlyList<MenuItem> BookmarkItems,
+    IReadOnlyList<MenuItem> VideoItems,
     MenuItem MarkCurrentItem,
     MenuItem MarkAllItem,
     MenuItem ShuffleItem,
@@ -33,6 +35,15 @@ internal static class MainMenuBuilder
         fileMenu.Append(commandIds[ActionId.OpenLink], Label(Tr("Open Link..."), ActionId.OpenLink, shortcuts));
         // Translators: File menu item that opens every media file in a folder.
         fileMenu.Append(commandIds[ActionId.OpenFolder], Label(Tr("Open Folder..."), ActionId.OpenFolder, shortcuts));
+        // Translators: File menu item that asks for a YouTube address and plays the video or playlist it names.
+        fileMenu.Append(commandIds[ActionId.OpenYouTubeLink], Label(Tr("Open YouTube Link..."), ActionId.OpenYouTubeLink, shortcuts));
+        // Translators: File menu item that asks what to look for on YouTube and lists what it finds.
+        fileMenu.Append(commandIds[ActionId.SearchYouTube], Label(Tr("Search YouTube..."), ActionId.SearchYouTube, shortcuts));
+        // Translators: File menu item that fetches a newer yt-dlp. Its home in the original player is a
+        // submenu of the Help menu, which this player does not have yet.
+        fileMenu.Append(commandIds[ActionId.UpdateYouTubeComponents], Label(Tr("Update YouTube components"), ActionId.UpdateYouTubeComponents, shortcuts));
+        // Translators: File menu item that lists the YouTube links and streams the user has saved.
+        fileMenu.Append(commandIds[ActionId.OpenFavorites], Label(Tr("Favorite videos..."), ActionId.OpenFavorites, shortcuts));
         var localFileItems = new List<MenuItem>();
         var mediaFileItems = new List<MenuItem>();
         // Translators: File menu item that shows the folder holding the current file in Windows Explorer.
@@ -183,6 +194,15 @@ internal static class MainMenuBuilder
         // Translators: Player menu item that opens the list of audio output devices to play through.
         playerMenu.Append(commandIds[ActionId.SoundCards], Label(Tr("Sound Cards..."), ActionId.SoundCards, shortcuts));
 
+        var videoItems = new List<MenuItem>();
+        var videoMenu = new Menu();
+        // Translators: Item in the Video options menu that saves the video being played to a folder on this computer.
+        Add(videoMenu, videoItems, commandIds, shortcuts, ActionId.VideoDownload, Tr("Download..."));
+        // Translators: Item in the Video options menu that shows the text the uploader wrote under the video.
+        Add(videoMenu, videoItems, commandIds, shortcuts, ActionId.VideoDescription, Tr("Video description..."));
+        // Translators: Item in the Video options menu that copies the address of the video being played.
+        Add(videoMenu, videoItems, commandIds, shortcuts, ActionId.VideoCopyLink, Tr("Copy video link"));
+
         var menuBar = new MenuBar();
         // Translators: Name of the File menu in the menu bar.
         menuBar.Append(fileMenu, Tr("File"));
@@ -195,8 +215,13 @@ internal static class MainMenuBuilder
         menuBar.Append(markedMenu, Tr("Actions for marked files"));
         // Translators: Name of the Player menu in the menu bar, holding the playing, seeking and volume items.
         menuBar.Append(playerMenu, Tr("Player"));
+        // Appended last on purpose: the two indices returned below are written out as numbers, so a menu
+        // inserted before them would leave the bookmark and marked-file updates pointing at the wrong one.
+        var videoMenuIndex = 5;
+        // Translators: Name of the menu bar menu holding what can be done with the YouTube video being played.
+        menuBar.Append(videoMenu, Tr("Video options"));
         frame.SetMenuBar(menuBar);
-        return new MainMenuComponents(menuBar, 2, markedMenuIndex, playbackItems, mediaFileItems, localFileItems, markedItems, localEditItems, bookmarkItems, markCurrentItem, markAllItem, shuffleItem, repeatItem, silenceItem);
+        return new MainMenuComponents(menuBar, 2, markedMenuIndex, videoMenuIndex, playbackItems, mediaFileItems, localFileItems, markedItems, localEditItems, bookmarkItems, videoItems, markCurrentItem, markAllItem, shuffleItem, repeatItem, silenceItem);
     }
 
     private static void Add(

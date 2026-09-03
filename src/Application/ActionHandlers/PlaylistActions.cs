@@ -3,6 +3,7 @@ using LunaPlayer.Actions;
 using LunaPlayer.Configuration;
 using LunaPlayer.Playback;
 using LunaPlayer.UI;
+using LunaPlayer.YouTube;
 
 namespace LunaPlayer.Application.ActionHandlers;
 
@@ -13,19 +14,22 @@ internal sealed class PlaylistActions
     private readonly PlayerSettings _settings;
     private readonly ISpeechOutput _speech;
     private readonly MediaGuard _guard;
+    private readonly YouTubeSessions _sessions;
 
     internal PlaylistActions(
         ActionRouter router,
         IMainView view,
         MediaPlayer player,
         PlayerSettings settings,
-        ISpeechOutput speech)
+        ISpeechOutput speech,
+        YouTubeSessions sessions)
     {
         _view = view;
         _player = player;
         _settings = settings;
         _speech = speech;
         _guard = new MediaGuard(player, speech);
+        _sessions = sessions;
         router.Register(ActionId.PreviousTrack, MovePrevious);
         router.Register(ActionId.NextTrack, MoveNext);
         router.Register(ActionId.FirstTrack, MoveFirst);
@@ -35,8 +39,39 @@ internal sealed class PlaylistActions
         router.Register(ActionId.ToggleRepeatFile, ToggleRepeatFile);
     }
 
-    private void MovePrevious() => SetSwitched(_player.Previous(_settings.Audio.WrapPlaylist), announce: true);
-    private void MoveNext() => SetSwitched(_player.Next(_settings.Audio.WrapPlaylist), announce: true);
+    private void MovePrevious()
+    {
+        if (!_player.Previous(_settings.Audio.WrapPlaylist))
+            return;
+        // Landing on a session video this way skips TryNext, which is what usually keeps the session's
+        // idea of the current row current.
+        _sessions.SyncSelection();
+        SetSwitched(true, announce: true);
+    }
+    /// <remarks>
+    /// A video from YouTube goes to the next one in the list the user was shown, which is not the same as
+    /// the next playlist entry: only the videos already played are in the playlist, so the ordinary move
+    /// would find nothing after the last of them. When the next one still has to be fetched the session
+    /// says so and starts it, announcing itself when it arrives - so nothing is spoken here.
+    /// </remarks>
+    private void MoveNext()
+    {
+        switch (_sessions.TryNext())
+        {
+            case NextOutcome.Advanced:
+                SetSwitched(true, announce: true);
+                return;
+            case NextOutcome.Pending:
+                return;
+            case NextOutcome.Exhausted:
+                SetSwitched(false, announce: true);
+                return;
+        }
+        if (!_player.Next(_settings.Audio.WrapPlaylist))
+            return;
+        _sessions.SyncSelection();
+        SetSwitched(true, announce: true);
+    }
     private void MoveFirst() => SetSwitched(_player.First(), announce: false);
     private void MoveLast() => SetSwitched(_player.Last(), announce: false);
 

@@ -35,13 +35,21 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
 
     public event Action<PlaybackEndReason>? Ended;
 
-    public bool Load(string path, double? startPosition = null, bool paused = false)
+    /// <remarks>
+    /// <paramref name="audioFile"/> is set as a property rather than passed as a loadfile option, and set
+    /// on every load rather than only when there is one. Both matter. The option list is flattened into one
+    /// string with commas and equals signs, which a stream address is made of, so a URL cannot survive it;
+    /// and mpv keeps the property until it is told otherwise, so leaving it alone would play the previous
+    /// video's sound over the next file.
+    /// </remarks>
+    public bool Load(string path, double? startPosition = null, bool paused = false, string? audioFile = null)
     {
         Dictionary<string, object?>? options = startPosition.HasValue
             ? new Dictionary<string, object?> { ["start"] = startPosition.Value }
             : null;
         return TryDo(mpv =>
         {
+            mpv.SetProperty("audio-files", audioFile is null ? Array.Empty<string>() : new[] { audioFile });
             mpv.LoadFile(path, "replace", options);
             mpv.SetProperty("pause", paused);
         });

@@ -29,9 +29,10 @@ internal sealed class PreferencesDialog : IDisposable
         var backup = new BackupPreferences(_book, operations, ReplaceSettings);
         var audio = new AudioPreferences(_book, settings.Audio);
         var silence = new SilencePreferences(_book, settings.Silence);
+        var youTube = new YouTube.Preferences(_book, settings.YouTube, operations);
         var shortcuts = new ShortcutPreferences(_book, settings.Shortcuts, ShortcutScope.Local, globalShortcuts);
         var globals = new ShortcutPreferences(_book, settings.Shortcuts, ShortcutScope.Global, globalShortcuts);
-        _allPages = [general, backup, audio, silence, shortcuts, globals];
+        _allPages = [general, backup, audio, silence, youTube, shortcuts, globals];
         _current = general;
 
         string[] categories = [
@@ -43,6 +44,8 @@ internal sealed class PreferencesDialog : IDisposable
             Tr("Audio"),
             // Translators: Name of the settings category for trimming the silent parts out of what is played.
             Tr("Silence removal"),
+            // Translators: Name of the settings category for playing videos from YouTube.
+            Tr("YouTube"),
             // Translators: Name of the settings category for the key combinations that work while the player is the program in front.
             Tr("Keyboard Shortcuts"),
             // Translators: Name of the settings category for the key combinations that work while another program is in front.
@@ -52,13 +55,15 @@ internal sealed class PreferencesDialog : IDisposable
         var backupItem = _tree.Add(root, categories[1]);
         var audioItem = _tree.Add(root, categories[2]);
         var silenceItem = _tree.Add(root, categories[3]);
-        var shortcutsItem = _tree.Add(root, categories[4]);
-        var globalsItem = _tree.Add(root, categories[5]);
+        var youTubeItem = _tree.Add(root, categories[4]);
+        var shortcutsItem = _tree.Add(root, categories[5]);
+        var globalsItem = _tree.Add(root, categories[6]);
         SizeTreeToLabels(categories);
         _pages[generalItem] = general;
         _pages[backupItem] = backup;
         _pages[audioItem] = audio;
         _pages[silenceItem] = silence;
+        _pages[youTubeItem] = youTube;
         _pages[shortcutsItem] = shortcuts;
         _pages[globalsItem] = globals;
         _tree.Selection = generalItem;

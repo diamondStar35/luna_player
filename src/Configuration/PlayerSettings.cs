@@ -8,6 +8,9 @@ internal enum SpeechVerbosity { Beginner, Advanced }
 internal enum OpenFilesMode { FileOnly, MainFolder, MainAndSubfolders }
 internal enum EndBehavior { Advance, Loop, None }
 internal enum SilenceDetection { Peak, Rms }
+internal enum YouTubeQuality { Low, Medium, Best }
+internal enum MixedLinkBehavior { Ask, Video, Playlist }
+internal enum YtDlpChannel { Stable, Nightly, Master }
 
 internal sealed class PlayerSettings
 {
@@ -17,6 +20,7 @@ internal sealed class PlayerSettings
     public PlaybackSettings Playback { get; set; } = new();
     public SilenceSettings Silence { get; set; } = new();
     public ShortcutSettings Shortcuts { get; set; } = new();
+    public YouTubeSettings YouTube { get; set; } = new();
 
     internal PlayerSettings Copy() => new()
     {
@@ -26,6 +30,7 @@ internal sealed class PlayerSettings
         Playback = Playback.Copy(),
         Silence = Silence.Copy(),
         Shortcuts = Shortcuts.Copy(),
+        YouTube = YouTube.Copy(),
     };
 
     internal void Apply(PlayerSettings source)
@@ -36,6 +41,7 @@ internal sealed class PlayerSettings
         Playback.Apply(source.Playback);
         Silence.Apply(source.Silence);
         Shortcuts.Apply(source.Shortcuts);
+        YouTube.Apply(source.YouTube);
         Validate();
     }
 
@@ -50,6 +56,7 @@ internal sealed class PlayerSettings
         Audio.CustomSeekStep = Audio.CustomSeekStep > 0 ? Audio.CustomSeekStep : 5;
         Audio.SeekStepKey = Audio.SeekStepKey.Length == 1 && "1234567890-".Contains(Audio.SeekStepKey, StringComparison.Ordinal)
             ? Audio.SeekStepKey : "2";
+        YouTube.SearchResultCount = Math.Clamp(YouTube.SearchResultCount, 5, 100);
         Silence.StartPeriods = Math.Max(0, Silence.StartPeriods);
         Silence.StartDuration = Math.Max(0, Silence.StartDuration);
         Silence.StopPeriods = Math.Max(-1, Silence.StopPeriods);
@@ -192,6 +199,55 @@ internal sealed class ShortcutSettings
         Primary = new(source.Primary);
         Secondary = new(source.Secondary);
         Global = new(source.Global);
+    }
+}
+
+internal sealed class YouTubeSettings
+{
+    public bool AudioOnly { get; set; } = true;
+
+    [JsonConverter(typeof(JsonStringEnumConverter<YouTubeQuality>))]
+    public YouTubeQuality Quality { get; set; } = YouTubeQuality.Medium;
+
+    /// <summary>How many search results to ask for.</summary>
+    /// <remarks>
+    /// A target rather than an exact number: YouTube answers a search in batches of its own choosing, so the
+    /// player keeps taking batches until it has this many and stops on the first one that takes it past.
+    /// </remarks>
+    public int SearchResultCount { get; set; } = 50;
+
+    /// <summary>What to do with a link that names a video and a playlist at once.</summary>
+    [JsonConverter(typeof(JsonStringEnumConverter<MixedLinkBehavior>))]
+    public MixedLinkBehavior MixedLink { get; set; } = MixedLinkBehavior.Ask;
+
+    /// <summary>Whether streams are resolved with yt-dlp rather than the player's own resolver.</summary>
+    ///
+    /// <remarks>
+    /// Nothing needs yt-dlp until this is on. It is the switch that makes the program an option rather
+    /// than a requirement, and it decides whether the player ever offers to fetch it.
+    /// </remarks>
+    public bool UseYtDlp { get; set; }
+
+    [JsonConverter(typeof(JsonStringEnumConverter<YtDlpChannel>))]
+    public YtDlpChannel Channel { get; set; } = YtDlpChannel.Stable;
+
+    public bool CheckComponentUpdates { get; set; }
+
+    /// <summary>Whether the user has asked not to be offered the download again.</summary>
+    public bool SkipComponentPrompt { get; set; }
+
+    internal YouTubeSettings Copy() => (YouTubeSettings)MemberwiseClone();
+
+    internal void Apply(YouTubeSettings source)
+    {
+        AudioOnly = source.AudioOnly;
+        Quality = source.Quality;
+        SearchResultCount = source.SearchResultCount;
+        MixedLink = source.MixedLink;
+        UseYtDlp = source.UseYtDlp;
+        Channel = source.Channel;
+        CheckComponentUpdates = source.CheckComponentUpdates;
+        SkipComponentPrompt = source.SkipComponentPrompt;
     }
 }
 

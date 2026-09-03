@@ -14,12 +14,21 @@ internal sealed record ProgressPrompt(
     string Starting,
     Func<ProgressUpdate, string> Describe)
 {
+    /// <summary>Whether the job reports several lines at a time - a name, a size, a proportion - rather
+    /// than one.</summary>
+    /// <remarks>
+    /// Decides the shape of the window: a block of lines goes in a read-only text area, because a label
+    /// that grew and shrank would move the Cancel button under the user's pointer on every report. The
+    /// Python player draws the same distinction, between its task dialog and its busy dialog.
+    /// </remarks>
+    internal bool Detailed { get; init; }
+
     /// <summary>Whether the job can say how far through it is.</summary>
     /// <remarks>
     /// False for a job that cannot know how much work there is until it has done it - searching a tree of
-    /// folders is the case in point, where the only way to learn the total is to walk the whole thing. Such a
-    /// job gets no bar at all rather than one pinned at nought, which would say nothing and be read out as
-    /// "nought per cent" for as long as it ran. Its message carries the running count instead.
+    /// folders is the case in point, where the only way to learn the total is to walk the whole thing. Its
+    /// bar sweeps rather than sitting at nought, which is what the Python player shows and the only honest
+    /// way to say "still going" without claiming a figure; its message carries the running count.
     /// </remarks>
     internal bool Proportional { get; init; } = true;
 }
@@ -94,7 +103,7 @@ internal static class BackgroundProgress
             _dispatcher = dispatcher;
             _prompt = prompt;
             _completed = completed;
-            _progress = view.BeginProgress(prompt.Title, prompt.Starting, prompt.Proportional);
+            _progress = view.BeginProgress(prompt.Title, prompt.Starting, prompt.Proportional, prompt.Detailed);
             // The token is given to Task.Run as well as to the job. Without it a job that aborts by throwing
             // OperationCanceledException leaves the task Faulted rather than Canceled - the exception's token
             // has to match the task's for .NET to read it as the abort it is - and the fault would then be
@@ -128,6 +137,9 @@ internal static class BackgroundProgress
                 _percent = Math.Max(_percent, percent);
                 _progress.Update(_percent, _prompt.Describe(shown));
             }
+            // Every tick, not only the ones that carried a report: a job that says nothing for a minute
+            // still has to look like it is running. The view ignores this when it has a real figure to show.
+            _progress.Pulse();
             if (_progress.Cancelled)
                 _cancellation.Cancel();
             if (_task.IsCompleted)
