@@ -2,12 +2,30 @@ using LunaPlayer.Configuration;
 
 namespace LunaPlayer.Playlist;
 
+/// <summary>What the player knows about one entry beyond its path.</summary>
+///
+/// <remarks>
+/// A side table rather than fields on a list of entries, because the list of paths is what almost every
+/// caller wants and what the playlist window is built on. All three values are optional and all three are
+/// forgotten together, which is the property that matters: a stale <see cref="Source"/> would be worse than
+/// a stale title, because it would match a video no longer in the list.
+/// </remarks>
+/// <param name="Title">The media title, as read from the media itself.</param>
+/// <param name="Source">The address the entry came from, when its path is not somewhere a user could point
+/// at. For a YouTube video this is its watch page, which outlives the stream URL in the path.</param>
+/// <param name="AudioFile">A second stream carrying the sound, played alongside the path. YouTube serves
+/// picture and sound separately above 360p, so a video entry has both.</param>
+internal readonly record struct EntryInfo(string? Title, string? Source, string? AudioFile)
+{
+    internal bool IsEmpty => Title is null && Source is null && AudioFile is null;
+}
+
 internal sealed class PlaylistState
 {
     private readonly List<string> _files = [];
     private readonly List<int> _shuffleOrder = [];
     private readonly MarkedFileSet _marks = new();
-    private readonly Dictionary<string, string> _titles = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Dictionary<string, EntryInfo> _info = new(StringComparer.OrdinalIgnoreCase);
     private int _currentIndex = -1;
     private int _shufflePosition = -1;
     private double? _pendingStart;
@@ -40,7 +58,7 @@ internal sealed class PlaylistState
         _files.Clear();
         _files.AddRange(files);
         _marks.Clear();
-        _titles.Clear();
+        _info.Clear();
         _currentIndex = selectedIndex;
         _pendingStart = selectedIndex == 0 && preferredPath is null ? null : startPosition;
         if (IsShuffleEnabled)
@@ -72,15 +90,47 @@ internal sealed class PlaylistState
     /// <summary>Remembers the media title for a file, as the player reads it from the media itself. An
     /// empty or whitespace title is treated as no title, so callers fall back to the file name.</summary>
     internal void SetTitle(string path, string? title)
-    {
-        if (string.IsNullOrWhiteSpace(path)) return;
-        if (string.IsNullOrWhiteSpace(title)) _titles.Remove(path);
-        else _titles[path] = title.Trim();
-    }
+        => Update(path, info => info with { Title = string.IsNullOrWhiteSpace(title) ? null : title.Trim() });
 
     /// <summary>The remembered media title for a file, or null when none is known.</summary>
-    internal string? GetTitle(string? path)
-        => path is not null && _titles.TryGetValue(path, out var title) ? title : null;
+    internal string? GetTitle(string? path) => Info(path).Title;
+
+    /// <summary>Records where an entry came from and, for a video, the second stream carrying its sound.
+    /// </summary>
+    internal void SetSource(string path, string? source, string? audioFile = null)
+        => Update(path, info => info with
+        {
+            Source = string.IsNullOrWhiteSpace(source) ? null : source,
+            AudioFile = string.IsNullOrWhiteSpace(audioFile) ? null : audioFile,
+        });
+
+    /// <summary>The address an entry came from, or null when its path is the address.</summary>
+    internal string? GetSource(string? path) => Info(path).Source;
+
+    /// <summary>The stream carrying the sound of a video whose path carries only the picture.</summary>
+    internal string? GetAudioFile(string? path) => Info(path).AudioFile;
+
+    internal string? CurrentSource => GetSource(CurrentPath);
+
+    /// <summary>Where in the list the entry that came from <paramref name="source"/> is, or -1.</summary>
+    /// <remarks>
+    /// Comparison is case-sensitive: these are addresses, and the part of a YouTube address that names a
+    /// video is. It is also what answers "is this video still in the list", so the caller that removes a
+    /// session's entries needs no separate record of what it queued.
+    /// </remarks>
+    internal int IndexOfSource(string source)
+        => _files.FindIndex(path => string.Equals(GetSource(path), source, StringComparison.Ordinal));
+
+    private EntryInfo Info(string? path)
+        => path is not null && _info.TryGetValue(path, out var info) ? info : default;
+
+    private void Update(string path, Func<EntryInfo, EntryInfo> change)
+    {
+        if (string.IsNullOrWhiteSpace(path)) return;
+        var updated = change(Info(path));
+        if (updated.IsEmpty) _info.Remove(path);
+        else _info[path] = updated;
+    }
 
     internal bool MoveNext(bool wrap)
         => IsShuffleEnabled ? MoveNextShuffled(wrap) : MoveNextSequential(wrap);
@@ -109,8 +159,8 @@ internal sealed class PlaylistState
         var oldPath = _files[_currentIndex];
         _files[_currentIndex] = path;
         _marks.Replace(oldPath, path);
-        if (_titles.Remove(oldPath, out var title))
-            _titles[path] = title;
+        if (_info.Remove(oldPath, out var info))
+            _info[path] = info;
         return true;
     }
 
@@ -121,6 +171,7 @@ internal sealed class PlaylistState
         var removed = _files[_currentIndex];
         _files.RemoveAt(_currentIndex);
         _marks.Remove([removed]);
+        _info.Remove(removed);
         if (_files.Count == 0)
             _currentIndex = -1;
         else if (_currentIndex >= _files.Count)
@@ -157,9 +208,12 @@ internal sealed class PlaylistState
         if (keys.Count == 0) return (false, false);
         var oldCurrent = CurrentPath;
         var oldIndex = _currentIndex;
-        var changed = _files.RemoveAll(path => keys.Contains(Paths.Key(path))) > 0;
-        if (!changed) return (false, false);
+        var removed = _files.Where(path => keys.Contains(Paths.Key(path))).ToList();
+        if (removed.Count == 0) return (false, false);
+        _files.RemoveAll(path => keys.Contains(Paths.Key(path)));
         _marks.Remove(paths);
+        foreach (var path in removed)
+            _info.Remove(path);
         if (_files.Count == 0)
             _currentIndex = -1;
         else if (oldCurrent is not null && !keys.Contains(Paths.Key(oldCurrent)))
@@ -176,6 +230,7 @@ internal sealed class PlaylistState
         if (_files.Count == 0) return false;
         _files.Clear();
         _marks.Clear();
+        _info.Clear();
         _currentIndex = -1;
         _pendingStart = null;
         ClearShuffleOrder();

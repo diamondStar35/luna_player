@@ -6,9 +6,11 @@ namespace LunaPlayer.Playback;
 
 internal sealed class MediaPlayer : IDisposable
 {
-    private readonly IPlaybackEngine _engine;
     private readonly PositionStore? _positions;
-    private readonly PlaylistState _playlist = new();
+    private readonly IPlaybackEngine _engine;
+    private PlaylistState _playlist = new();
+    /// <summary>The playlist a session was put in front of, or null when there is no session.</summary>
+    private Stage? _held;
     private bool _disposed;
     private bool _normalizationEnabled;
     private bool _monoEnabled;
@@ -23,6 +25,98 @@ internal sealed class MediaPlayer : IDisposable
         _positions = positions;
         _engine.Ended += OnEnded;
     }
+
+    /// <summary>Whether a list of videos is playing in front of the playlist the user opened.</summary>
+    internal bool InSession => _held is not null;
+
+    /// <summary>Puts an empty playlist in front of the one the user opened, remembering where it was.
+    /// </summary>
+    ///
+    /// <remarks>
+    /// This is what keeps a list of videos from YouTube out of the playlist the user opened. Appending them
+    /// to it, which is what the Python player does, merges them with the local files, throws away the
+    /// shuffle order, and leaves the current entry somewhere else entirely once they are taken out again -
+    /// so coming back from YouTube starts the last file in the folder rather than carrying on where it left
+    /// off.
+    ///
+    /// One engine, not two. What a session disturbs falls into two halves, and only one of them is the
+    /// engine's: the files, their order, the shuffle order and the current entry all live in
+    /// <see cref="PlaylistState"/>, which is a plain object and can simply be set aside. Everything the
+    /// engine holds - the volume, the speed, the output device, the filters - is not disturbed at all,
+    /// because it is the same engine throughout. A second engine would have to be given every one of those
+    /// on the way in and asked for them again on the way out, and every setting added afterwards would have
+    /// to be added to that list or be quietly lost; sharing one engine cannot get that wrong because there
+    /// is nothing to copy.
+    ///
+    /// What is lost is only the file that was loaded and how far into it playback had got. Both are
+    /// remembered here and put back by <see cref="LeaveSession"/>, which is what the player already does to
+    /// carry a position across a rename.
+    /// </remarks>
+    internal void EnterSession()
+    {
+        if (_held is not null)
+            return;
+        // Written to the store as well as remembered, so a session that ends in a crash still leaves the
+        // position behind for the next launch.
+        SavePosition();
+        _held = new Stage(_playlist, _playlist.CurrentPath, Elapsed ?? 0, _running);
+        _playlist = new PlaylistState();
+        _running = false;
+        // Nothing is announced here. The list is empty for the moment between this and the video being
+        // loaded, and telling the rest of the player that nothing is playing - only to tell it again a
+        // moment later - shows a state that never really existed and puts every handler through a
+        // half-built one. Whoever calls this loads something next, and that announces itself.
+    }
+
+    /// <summary>Takes the list of videos away and puts the playlist the user opened back, on the file it
+    /// was on and at the point it had reached.</summary>
+    /// <remarks>
+    /// It comes back paused rather than playing. The user pressed something to leave the videos, not to
+    /// start music, and a player that begins playing on its own is worse than one that waits to be asked.
+    /// </remarks>
+    internal void LeaveSession()
+    {
+        if (_held is not Stage held)
+            return;
+        _held = null;
+        _playlist = held.Playlist;
+        // Reloaded rather than resumed, because the video that played in the meantime replaced it.
+        // LoadCurrent raises the two events itself when it succeeds.
+        if (held.Running && held.Path is not null && LoadCurrent(held.Position, paused: true))
+            return;
+        // Either nothing was loaded before the videos, or what was is no longer there to load - a file
+        // renamed or deleted while they played. Either way the video has to stop, or it would carry on
+        // playing with no list in front of it.
+        StopEngine();
+        CurrentChanged?.Invoke();
+        StateChanged?.Invoke();
+    }
+
+    /// <summary>Plays a resolved video in front of the playlist the user opened.</summary>
+    internal bool PlaySessionStream(string url, string? title, string? source, string? audioFile)
+    {
+        EnterSession();
+        if (!_playlist.Append(url, jump: true))
+            return false;
+        Describe(url, title, source, audioFile);
+        return LoadCurrent();
+    }
+
+    /// <summary>Adds a resolved video to the end of the session's own list without playing it.</summary>
+    internal bool QueueSessionStream(string url, string? title, string? source, string? audioFile)
+    {
+        if (!InSession || !_playlist.Append(url, jump: false))
+            return false;
+        Describe(url, title, source, audioFile);
+        StateChanged?.Invoke();
+        return true;
+    }
+
+    /// <summary>The playlist a session was opened in front of, and the point playback had reached in it.
+    /// </summary>
+    /// <param name="Running">Whether a file was open at all, so an empty player is not sent to reload
+    /// nothing.</param>
+    private sealed record Stage(PlaylistState Playlist, string? Path, double Position, bool Running);
 
     internal event Action<PlaybackEndReason>? Ended;
     internal event Action? CurrentChanged;
@@ -52,22 +146,51 @@ internal sealed class MediaPlayer : IDisposable
 
     internal bool OpenFile(string path, double? startPosition = null)
     {
+        LeaveSession();
         SavePosition();
         return _playlist.OpenFile(path, startPosition) && LoadCurrent();
     }
 
     internal bool OpenFiles(IEnumerable<string> files, string? preferredPath = null, double? startPosition = null)
     {
+        LeaveSession();
         SavePosition();
         return _playlist.OpenFiles(files, preferredPath, startPosition) && LoadCurrent();
     }
 
     /// <summary>Opens a network stream. Unlike a file it is appended to the playlist rather than replacing
     /// it, matching the Python player's open_stream.</summary>
-    internal bool OpenStream(string url)
+    /// <param name="title">What to call the entry. A resolved stream address says nothing a user would
+    /// recognise, so the name comes from whoever resolved it.</param>
+    /// <param name="source">The address the stream was resolved from, which outlives the stream itself.
+    /// </param>
+    /// <param name="audioFile">A second stream carrying the sound, when the first carries only picture.
+    /// </param>
+    internal bool OpenStream(
+        string url, string? title = null, string? source = null, string? audioFile = null)
     {
+        // A plain stream, or a single video named by a link, belongs to the playlist the user is working
+        // in - as it does in the Python player. Only a list of videos from YouTube gets a stage of its own.
+        LeaveSession();
         SavePosition();
-        return _playlist.Append(url, jump: true) && LoadCurrent();
+        if (!_playlist.Append(url, jump: true))
+            return false;
+        Describe(url, title, source, audioFile);
+        return LoadCurrent();
+    }
+
+    /// <summary>The address whatever is playing was resolved from, or null when its path is its address.
+    /// </summary>
+    internal string? CurrentSource => _playlist.CurrentSource;
+
+    /// <summary>Where in the playlist the entry resolved from <paramref name="source"/> is, or -1.
+    /// </summary>
+    internal int IndexOfSource(string source) => _playlist.IndexOfSource(source);
+
+    private void Describe(string url, string? title, string? source, string? audioFile)
+    {
+        _playlist.SetTitle(url, title);
+        _playlist.SetSource(url, source, audioFile);
     }
 
     internal bool OpenFolder(string folderPath)
@@ -331,7 +454,7 @@ internal sealed class MediaPlayer : IDisposable
         if (!startPosition.HasValue && _trackPositions && _positions is not null && File.Exists(path))
             startPosition = _positions.Get(path);
         _engine.ClearLoop();
-        if (!_engine.Load(path, startPosition, paused))
+        if (!_engine.Load(path, startPosition, paused, _playlist.GetAudioFile(path)))
             return false;
         _engine.SetNormalization(_normalizationEnabled);
         _engine.SetMono(_monoEnabled);
@@ -349,7 +472,9 @@ internal sealed class MediaPlayer : IDisposable
         // mpv loads asynchronously, so the title is not there yet when the file is opened. Re-read it for
         // whatever is playing whenever a name is asked for, and keep it: once a file has been played its
         // title stays available for the playlist, which names entries that are not playing.
-        if (string.Equals(path, CurrentPath, StringComparison.Ordinal))
+        // A stream was named by whoever resolved it, and mpv's guess - often the numeric id in the
+        // address - is worse than that name. So a titled entry keeps the title it was given.
+        if (string.Equals(path, CurrentPath, StringComparison.Ordinal) && _playlist.GetSource(path) is null)
             RememberTitle(path);
         return _playlist.GetTitle(path) ?? MediaLibrary.DisplayName(path);
     }
@@ -361,10 +486,16 @@ internal sealed class MediaPlayer : IDisposable
     // dialog names every entry, not just the one playing.
     private void RememberTitle(string path)
     {
-        var title = _engine.MediaTitle;
-        if (title is not null && string.Equals(title, MediaLibrary.DisplayName(path), StringComparison.OrdinalIgnoreCase))
-            title = null;
-        _playlist.SetTitle(path, title);
+        // Nothing is written when mpv has no title to give. It has none before the file has loaded and
+        // none after Stop unloads it - and Stop asks for a display name on its way out, so writing there
+        // would throw away the title the file was playing under a moment earlier.
+        if (_engine.MediaTitle is not string title)
+            return;
+        _playlist.SetTitle(
+            path,
+            string.Equals(title, MediaLibrary.DisplayName(path), StringComparison.OrdinalIgnoreCase)
+                ? null
+                : title);
     }
 
     private void OnEnded(PlaybackEndReason reason)
