@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-09-05 04:00+0300\n"
+"POT-Creation-Date: 2026-09-06 02:10+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -491,95 +491,97 @@ msgstr ""
 
 #. Translators: Shown when the user confirms a bookmark name without typing anything.
 #: Application/ActionHandlers/BookmarkActions.cs:45
-#: Application/ActionHandlers/BookmarkActions.cs:117
+#: Application/ActionHandlers/BookmarkActions.cs:131
 msgid "Bookmark name cannot be empty."
 msgstr ""
 
+#. Translators: Title of an error message about reading or writing the bookmarks file.
 #. Translators: Name of the Bookmarks menu in the menu bar.
 #: Application/ActionHandlers/BookmarkActions.cs:45
-#: Application/ActionHandlers/BookmarkActions.cs:69
-#: Application/ActionHandlers/BookmarkActions.cs:98 UI/MenuBuilder.cs:232
+#: Application/ActionHandlers/BookmarkActions.cs:75
+#: Application/ActionHandlers/BookmarkActions.cs:112
+#: Application/ActionHandlers/BookmarkActions.cs:196 UI/MenuBuilder.cs:232
 msgid "Bookmarks"
 msgstr ""
 
 #. Translators: Shown once a bookmark has been made. {name} is what it is called and {time} the point in the
 #. file it was made at, such as 00:01:20.
-#: Application/ActionHandlers/BookmarkActions.cs:52
+#: Application/ActionHandlers/BookmarkActions.cs:56
 msgid "Bookmark '{name}' added at {time}."
 msgstr ""
 
 #. Translators: Title of the message shown once a bookmark has been made.
-#: Application/ActionHandlers/BookmarkActions.cs:54
+#: Application/ActionHandlers/BookmarkActions.cs:58
 msgid "Success"
 msgstr ""
 
 #. Translators: Shown when the user opens the bookmark list but the current file has none.
-#: Application/ActionHandlers/BookmarkActions.cs:69
+#: Application/ActionHandlers/BookmarkActions.cs:75
 msgid "No bookmarks found for the current file."
 msgstr ""
 
 #. Translators: Asks the user to confirm removing one bookmark. {name} is what the bookmark is called.
-#: Application/ActionHandlers/BookmarkActions.cs:89
+#: Application/ActionHandlers/BookmarkActions.cs:95
 msgid "Delete bookmark '{name}'?"
 msgstr ""
 
 #. Translators: Title of the window that asks the user to confirm removing a bookmark.
-#: Application/ActionHandlers/BookmarkActions.cs:91
+#: Application/ActionHandlers/BookmarkActions.cs:97
 msgid "Confirm delete"
 msgstr ""
 
 #. Translators: Shown once the last bookmark of the current file has been removed.
-#: Application/ActionHandlers/BookmarkActions.cs:98
+#: Application/ActionHandlers/BookmarkActions.cs:112
 msgid "All bookmarks for this file were removed."
 msgstr ""
 
 #. Translators: Asks the user for the new name of a bookmark they are renaming.
-#: Application/ActionHandlers/BookmarkActions.cs:111
+#: Application/ActionHandlers/BookmarkActions.cs:125
 msgid "Edit bookmark name"
 msgstr ""
 
 #. Translators: Bookmarks menu item that opens the window for renaming and deleting bookmarks.
-#: Application/ActionHandlers/BookmarkActions.cs:111
+#: Application/ActionHandlers/BookmarkActions.cs:125
 #: UI/BookmarkManagerDialog.cs:16 UI/MenuBuilder.cs:92
 msgid "Manage bookmarks"
 msgstr ""
 
 #. Translators: Title of a message telling the user that something went wrong.
-#: Application/ActionHandlers/BookmarkActions.cs:119
+#: Application/ActionHandlers/BookmarkActions.cs:133
 #: Application/ActionHandlers/FileActions.cs:138
 msgid "Error"
 msgstr ""
 
 #. Translators: Spoken when the user asks for one of the ten numbered bookmark slots but nothing is saved
 #. in it. {slot} is the slot number, 1 to 10.
-#: Application/ActionHandlers/BookmarkActions.cs:134
+#: Application/ActionHandlers/BookmarkActions.cs:151
 msgid "No bookmark in slot {slot}."
 msgstr ""
 
 #. Translators: The short wording spoken when a numbered bookmark slot is empty. {slot} is the slot number, 1 to 10.
-#: Application/ActionHandlers/BookmarkActions.cs:136
+#: Application/ActionHandlers/BookmarkActions.cs:153
 msgid "No bookmark {slot}."
 msgstr ""
 
 #. Translators: Spoken once playing has moved to a bookmark. {name} is what the bookmark is called.
-#: Application/ActionHandlers/BookmarkActions.cs:147
+#: Application/ActionHandlers/BookmarkActions.cs:164
 msgid "Jumped to bookmark {name}."
 msgstr ""
 
 #. Translators: The short wording spoken once playing has moved to a bookmark. {name} is what the bookmark is
 #. called and {time} the point in the file it sits at, such as 00:01:20.
-#: Application/ActionHandlers/BookmarkActions.cs:150
+#: Application/ActionHandlers/BookmarkActions.cs:167
 msgid "Jumped to '{name}' at {time}."
 msgstr ""
 
 #. Translators: Spoken when a command needs to know where playing has got to but the player cannot tell.
-#: Application/ActionHandlers/BookmarkActions.cs:161
+#: Application/ActionHandlers/BookmarkActions.cs:178
 #: Application/ActionHandlers/PlaybackActions.cs:146
 msgid "Time is not available for the current file."
 msgstr ""
 
 #. Translators: The short wording spoken when the player cannot tell where playing has got to.
-#: Application/ActionHandlers/BookmarkActions.cs:163
+#: Application/ActionHandlers/BookmarkActions.cs:180
 msgid "Time unavailable."
 msgstr ""
 
@@ -1233,7 +1235,7 @@ msgstr ""
 
 #. Translators: Title of the window that asks the user which point in the file to move to.
 #: Application/ActionHandlers/PlaybackActions.cs:148 UI/GoToTimeDialog.cs:22
-#: UI/GoToTimeDialog.cs:94
+#: UI/GoToTimeDialog.cs:113
 msgid "Go to time"
 msgstr ""
 
@@ -1935,7 +1937,7 @@ msgstr ""
 #: UI/AudioPreferences.cs:88
 msgid ""
 "Enable dynamic normalize and limiter audio filter. When enabled, audio uses "
-"dynaudnorm followed by alimiter to reduce clipping at high volume boosts. "
+"dynaudnorm followed by alimiter to even out loudness and hold back peaks. "
 "Disable it to use raw output without this processing."
 msgstr ""
 
@@ -2371,41 +2373,41 @@ msgid ""
 "keep separate user default selections managed by system settings."
 msgstr ""
 
+#. Translators: Label above the boxes where the user types the point in the file to move to.
+#: UI/GoToTimeDialog.cs:28
+msgid "Choose time position:"
+msgstr ""
+
+#. Translators: Label of the box holding the hours part of the point in the file to move to.
+#: UI/GoToTimeDialog.cs:30
+msgid "Hours"
+msgstr ""
+
+#. Translators: Label of the box holding the minutes part of the point in the file to move to.
+#: UI/GoToTimeDialog.cs:33
+msgid "Minutes"
+msgstr ""
+
+#. Translators: Label of the box holding the seconds part of the point in the file to move to.
+#: UI/GoToTimeDialog.cs:36
+msgid "Seconds"
+msgstr ""
+
 #. Translators: The button that accepts a window and carries the change out.
-#: UI/GoToTimeDialog.cs:43
+#: UI/GoToTimeDialog.cs:66
 msgid "OK"
 msgstr ""
 
 #. Translators: The button that closes a window and leaves everything as it was.
 #. Translators: The button that stops a job that is running behind a progress window.
 #. Translators: The button that closes a window and leaves everything as it was.
-#: UI/GoToTimeDialog.cs:48 UI/OpenedFilesDialog.cs:36 UI/ProgressView.cs:66
+#: UI/GoToTimeDialog.cs:71 UI/OpenedFilesDialog.cs:36 UI/ProgressView.cs:66
 #: UI/YouTube/LinkKindDialog.cs:33
 msgid "Cancel"
 msgstr ""
 
-#. Translators: Label above the boxes where the user types the point in the file to move to.
-#: UI/GoToTimeDialog.cs:52
-msgid "Choose time position:"
-msgstr ""
-
-#. Translators: Label of the box holding the hours part of the point in the file to move to.
-#: UI/GoToTimeDialog.cs:56
-msgid "Hours"
-msgstr ""
-
-#. Translators: Label of the box holding the minutes part of the point in the file to move to.
-#: UI/GoToTimeDialog.cs:62
-msgid "Minutes"
-msgstr ""
-
-#. Translators: Label of the box holding the seconds part of the point in the file to move to.
-#: UI/GoToTimeDialog.cs:66
-msgid "Seconds"
-msgstr ""
-
 #. Translators: Shown when the point in the file the user typed lies past the end of the file.
-#: UI/GoToTimeDialog.cs:94
+#: UI/GoToTimeDialog.cs:113
 msgid "The selected time exceeds the file duration."
 msgstr ""
 
