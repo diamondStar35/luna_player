@@ -5,8 +5,6 @@
 ;     dotnet build src\LunaPlayer.csproj -c Release
 ;     ISCC src\LunaPlayer.iss
 ;
-; Every path here is relative to this script, so the whole thing works from a clone with no machine-specific
-; setting anywhere. The installer lands in dist\ beside the repository root.
 
 #define BuildDir "bin\Release\net10.0-windows10.0.19041.0\win-x64"
 #define AppExeName "LunaPlayer.exe"
@@ -15,11 +13,16 @@
   #error Build the player in Release first: dotnet build src\LunaPlayer.csproj -c Release
 #endif
 
-; Taken from the executable rather than written out again, so a release cannot go out labelled with the
-; version before it. The rest are the same strings the player uses for itself; see Configuration\AppInfo.cs
-; and Media\Associations.cs, which must agree with these or the two registrations will not clean up after
-; each other.
-#define AppVersion GetVersionNumbersString(AddBackslash(SourcePath) + BuildDir + "\" + AppExeName)
+; Read all installer metadata from the application itself. The numeric file version remains separate because
+; Windows requires four numeric components for the installer resource.
+#define AppExePath AddBackslash(SourcePath) + BuildDir + "\" + AppExeName
+#define AppVersion GetFileProductVersion(AppExePath)
+#define AppBinaryVersion GetVersionNumbersString(AppExePath)
+#define AppCopyright GetFileCopyright(AppExePath)
+
+; These are the same strings the player uses for itself; see Configuration\AppInfo.cs and
+; Media\Associations.cs, which must agree with these or the two registrations will not clean up after each
+; other.
 #define AppName "Luna Player"
 #define AppIdentifier "LunaPlayer"
 #define AppPublisher "diamondStar35"
@@ -45,11 +48,12 @@ AppId={{7B2F1C4E-5A93-4D18-9C6B-0E5A7F3D82A1}
 AppName={#AppName}
 AppVersion={#AppVersion}
 AppVerName={#AppName} {#AppVersion}
+AppCopyright={#AppCopyright}
 AppPublisher={#AppPublisher}
 AppPublisherURL={#AppUrl}
 AppSupportURL={#AppUrl}
 AppUpdatesURL={#AppUrl}
-VersionInfoVersion={#AppVersion}
+VersionInfoVersion={#AppBinaryVersion}
 DefaultDirName={localappdata}\Programs\{#AppName}
 DefaultGroupName={#AppName}
 DisableProgramGroupPage=no
