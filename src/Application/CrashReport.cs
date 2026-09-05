@@ -69,6 +69,14 @@ internal static class CrashReport
         }
     }
 
+    /// <summary>Writes a failure to the file without interrupting anybody.</summary>
+    /// <remarks>
+    /// For a failure that has already been reported to the user in its own words, where the words are not
+    /// enough to work out what happened. The message box says "the audio format is not supported"; the log
+    /// says which call said so, and from where.
+    /// </remarks>
+    internal static void Note(Exception failure) => Write(failure, "noted");
+
     /// <summary>Writes a failure down and shows it.</summary>
     internal static void Report(Exception failure)
     {

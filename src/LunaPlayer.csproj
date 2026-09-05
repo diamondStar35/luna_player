@@ -51,6 +51,7 @@
     <Compile Include="Media\**\*.cs" />
     <Compile Include="Playback\**\*.cs" />
     <Compile Include="Playlist\**\*.cs" />
+    <Compile Include="Recording\**\*.cs" />
     <Compile Include="UI\**\*.cs" />
     <Compile Include="YouTube\**\*.cs" />
   </ItemGroup>
@@ -61,6 +62,16 @@
 
   <ItemGroup>
     <ProjectReference Include="..\third-party\WxSharp\src\WxSharp\WxSharp.csproj">
+      <AdditionalProperties>Configuration=$(Configuration)</AdditionalProperties>
+    </ProjectReference>
+    <!-- Built from source rather than taken from NuGet. The published 3.0.1 packages marshal their
+         WAVEFORMATEX and WAVEHDR structures through [StructLayout] classes, which NativeAOT lays out
+         differently from the runtime - so every WASAPI capture is refused as an unsupported format and
+         WaveOut plays nothing at all. See docs\issues\ for both. -->
+    <ProjectReference Include="..\third-party\NAudio\src\NAudio.Wasapi\NAudio.Wasapi.csproj">
+      <AdditionalProperties>Configuration=$(Configuration)</AdditionalProperties>
+    </ProjectReference>
+    <ProjectReference Include="..\third-party\NAudio\src\NAudio.Extras\NAudio.Extras.csproj">
       <AdditionalProperties>Configuration=$(Configuration)</AdditionalProperties>
     </ProjectReference>
     <ProjectReference Include="Speech\PrismSharp.csproj">
