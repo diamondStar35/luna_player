@@ -24,5 +24,13 @@ internal static class GlobalActionDefinitions
         new(ActionId.NextTrack, Tr("Play the next file"), new("page_down", WinAlt)),
         // Translators: Name of the command that plays the previous file, here in the list of shortcuts that work while another program is in front.
         new(ActionId.PreviousTrack, Tr("Play the previous file"), new("page_up", WinAlt)),
+        // The same three keys as the local bindings, with the global modifier - which is how the Python
+        // player binds them.
+        // Translators: Name of the system-wide command that begins recording.
+        new(ActionId.StartRecording, Tr("Start recording"), new("f9", WinAlt)),
+        // Translators: Name of the system-wide command that holds a recording where it is, or starts it again.
+        new(ActionId.PauseRecording, Tr("Pause or resume recording"), new("f7", WinAlt)),
+        // Translators: Name of the system-wide command that ends a recording and closes the file.
+        new(ActionId.StopRecording, Tr("Stop recording"), new("f8", WinAlt)),
     ];
 }

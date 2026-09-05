@@ -143,6 +143,9 @@ internal interface IMainView : IDisposable
     void SetMarkState(bool currentMarked, bool allMarked);
     void SetMarkedActionsEnabled(bool enabled);
     void SetVideoOptionsEnabled(bool enabled);
+
+    /// <summary>Puts the recording menu into the state the recorder is in.</summary>
+    void SetRecordingState(LunaPlayer.Recording.RecordingState state);
     FileSelection? ChooseFile(string initialDirectory);
     /// <param name="message">What the window asks for. Empty leaves the system's own wording, which is
     /// what the callers that are choosing "a folder" and nothing more particular want.</param>
@@ -177,6 +180,10 @@ internal interface IMainView : IDisposable
     /// <summary>Offers to fetch the programs a YouTube download needs. True when the user accepted.</summary>
     /// <param name="doNotAskAgain">Whether they asked not to be offered again, whatever they answered.</param>
     bool OfferYouTubeComponents(out bool doNotAskAgain);
+    /// <summary>Opens the window where recording is set up and run. It is modal, but closing it does not
+    /// end a recording: the sources and the recorder outlive it.</summary>
+    void ShowRecording(
+        LunaPlayer.Recording.AudioCatalog catalog, LunaPlayer.Recording.RecordingSources sources, LunaPlayer.Recording.RecordingEngine engine);
     PlayerSettings? EditPreferences(PlayerSettings settings, PrefsOps operations, Action<string> speakHelp);
     void ApplyShortcuts(ShortcutManager shortcuts);
     /// <summary>Starts watching for the system-wide shortcuts in <paramref name="shortcuts"/>, replacing any

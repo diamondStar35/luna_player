@@ -1,5 +1,7 @@
 using LunaPlayer.Actions;
+using LunaPlayer.Application;
 using LunaPlayer.Configuration;
+using LunaPlayer.Recording;
 using WxSharp;
 
 namespace LunaPlayer.UI;
@@ -27,11 +29,25 @@ internal sealed partial class MainFrame : IMainView
     private readonly MenuItem _shuffleItem;
     private readonly MenuItem _repeatFileItem;
     private readonly MenuItem _silenceRemovalItem;
+    private readonly MenuItem _startRecordingItem;
+    private readonly MenuItem _pauseRecordingItem;
+    private readonly MenuItem _stopRecordingItem;
     private readonly GlobalShortcuts _globalShortcuts;
+    private readonly IApplicationDispatcher _dispatcher;
+    private readonly LunaPlayer.Recording.AudioCatalog _catalog;
     private bool _disposed;
 
-    internal MainFrame(ShortcutManager shortcuts, IReadOnlyList<ActionDefinition> actions)
+    /// <param name="dispatcher">Handed on to the windows that fetch things in the background - the
+    /// recording window asks Windows for its devices and its encoders - so they post their answers back
+    /// through the same guarded path as everything else.</param>
+    internal MainFrame(
+        ShortcutManager shortcuts,
+        IReadOnlyList<ActionDefinition> actions,
+        IApplicationDispatcher dispatcher,
+        LunaPlayer.Recording.AudioCatalog catalog)
     {
+        _dispatcher = dispatcher;
+        _catalog = catalog;
         _frame = new Frame(title: AppInfo.Name, size: new Size(420, 160));
         BuildCommandIds(actions);
         var menu = MainMenuBuilder.Build(_frame, _commandIds, shortcuts);
@@ -51,6 +67,9 @@ internal sealed partial class MainFrame : IMainView
         _shuffleItem = menu.ShuffleItem;
         _repeatFileItem = menu.RepeatFileItem;
         _silenceRemovalItem = menu.SilenceRemovalItem;
+        _startRecordingItem = menu.StartRecordingItem;
+        _pauseRecordingItem = menu.PauseRecordingItem;
+        _stopRecordingItem = menu.StopRecordingItem;
         BuildAccelerators(shortcuts);
 
         var previousButton = new CustomButton(_frame, Tr("Previous"));
@@ -173,6 +192,24 @@ internal sealed partial class MainFrame : IMainView
     {
         _markCurrentItem.Checked = currentMarked;
         _markAllItem.Checked = allMarked;
+    }
+
+    public void SetRecordingState(RecordingState state)
+    {
+        var idle = state is RecordingState.Idle;
+        _startRecordingItem.Enabled = idle;
+        // Both of these need a recording to act on, and neither cares whether it is running or held.
+        _pauseRecordingItem.Enabled = !idle;
+        _stopRecordingItem.Enabled = !idle;
+        // Said the way the button in the window says it, so the menu and the window never disagree about
+        // what the key does. The shortcut is kept: it is the part after the tab, which the menu owns.
+        var parts = _pauseRecordingItem.Label.Split('	');
+        var label = state is RecordingState.Paused
+            // Translators: Recording menu item that starts a paused recording again.
+            ? Tr("Resume")
+            // Translators: Recording menu item that holds a recording where it is.
+            : Tr("Pause");
+        _pauseRecordingItem.Label = parts.Length > 1 ? $"{label}	{parts[1]}" : label;
     }
 
     public void SetVideoOptionsEnabled(bool enabled)

@@ -104,6 +104,15 @@ internal static class Paths
     /// half way leaves the previous file where it was.</summary>
     internal static string TemporaryFor(string path) => path + ".tmp";
 
+    /// <summary>Where recordings go unless the user says otherwise.</summary>
+    /// <remarks>
+    /// Under Documents rather than beside the settings, because these are the user's files rather than the
+    /// player's: they are meant to be found, played and sent on. The Python player put them in the same
+    /// place, so an existing user's recordings stay together.
+    /// </remarks>
+    internal static string DefaultRecordingsDirectory { get; } = Path.Combine(
+        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), AppInfo.Name, "Recordings");
+
     /// <summary>Creates the folder <paramref name="path"/> is about to be written into. Does nothing for a
     /// bare file name, which is already in a folder that exists.</summary>
     internal static void EnsureDirectoryFor(string path)

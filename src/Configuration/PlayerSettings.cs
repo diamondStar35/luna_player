@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Text.Json.Serialization;
 using LunaPlayer.Actions;
+using LunaPlayer.Recording;
 
 namespace LunaPlayer.Configuration;
 
@@ -21,6 +22,7 @@ internal sealed class PlayerSettings
     public SilenceSettings Silence { get; set; } = new();
     public ShortcutSettings Shortcuts { get; set; } = new();
     public YouTubeSettings YouTube { get; set; } = new();
+    public RecordingSettings Recording { get; set; } = new();
 
     internal PlayerSettings Copy() => new()
     {
@@ -31,6 +33,7 @@ internal sealed class PlayerSettings
         Silence = Silence.Copy(),
         Shortcuts = Shortcuts.Copy(),
         YouTube = YouTube.Copy(),
+        Recording = Recording.Copy(),
     };
 
     internal void Apply(PlayerSettings source)
@@ -42,6 +45,7 @@ internal sealed class PlayerSettings
         Silence.Apply(source.Silence);
         Shortcuts.Apply(source.Shortcuts);
         YouTube.Apply(source.YouTube);
+        Recording.Apply(source.Recording);
         Validate();
     }
 
@@ -57,6 +61,17 @@ internal sealed class PlayerSettings
         Audio.SeekStepKey = Audio.SeekStepKey.Length == 1 && "1234567890-".Contains(Audio.SeekStepKey, StringComparison.Ordinal)
             ? Audio.SeekStepKey : "2";
         YouTube.SearchResultCount = Math.Clamp(YouTube.SearchResultCount, 5, 100);
+        // Only that it is one of the rates the player offers at all. Whether the chosen format can be
+        // written at it is a question for the encoder, asked when a recording starts rather than here:
+        // this runs at load, and loading an encoder to interrogate it is not something to do then.
+        Recording.SampleRate = LunaPlayer.Recording.AudioCatalog.SampleRates.Contains(Recording.SampleRate)
+            ? Recording.SampleRate : 44100;
+        Recording.Channels = Math.Clamp(Recording.Channels, 1, 2);
+        // Only sanity bounds. What a format will actually accept is asked of Windows when the list is
+        // shown, and differs with the rate and the channel count, so it cannot be settled here.
+        Recording.Bitrate = Math.Clamp(Recording.Bitrate, 8000, 512000);
+        Recording.Folder = string.IsNullOrWhiteSpace(Recording.Folder)
+            ? Paths.DefaultRecordingsDirectory : Recording.Folder.Trim();
         Silence.StartPeriods = Math.Max(0, Silence.StartPeriods);
         Silence.StartDuration = Math.Max(0, Silence.StartDuration);
         Silence.StopPeriods = Math.Max(-1, Silence.StopPeriods);
@@ -248,6 +263,40 @@ internal sealed class YouTubeSettings
         Channel = source.Channel;
         CheckComponentUpdates = source.CheckComponentUpdates;
         SkipComponentPrompt = source.SkipComponentPrompt;
+    }
+}
+
+/// <summary>How a recording is written, when nothing more particular has been asked for.</summary>
+///
+/// <remarks>
+/// These are the defaults, and they are what the recording shortcuts use when no sources have been set
+/// up - which is the whole of recording for somebody who never opens the recording window. The window
+/// keeps its own copy of them for the session it is used in, so changing the format there for one
+/// afternoon does not rewrite what the player starts with tomorrow.
+/// </remarks>
+internal sealed class RecordingSettings
+{
+    [JsonConverter(typeof(JsonStringEnumConverter<RecordingFormat>))]
+    public RecordingFormat Format { get; set; } = RecordingFormat.Wav;
+
+    public int SampleRate { get; set; } = 44100;
+
+    public int Channels { get; set; } = 2;
+
+    /// <summary>Bits per second, for the formats that compress. Ignored by the rest.</summary>
+    public int Bitrate { get; set; } = 192000;
+
+    public string Folder { get; set; } = Paths.DefaultRecordingsDirectory;
+
+    internal RecordingSettings Copy() => (RecordingSettings)MemberwiseClone();
+
+    internal void Apply(RecordingSettings source)
+    {
+        Format = source.Format;
+        SampleRate = source.SampleRate;
+        Channels = source.Channels;
+        Bitrate = source.Bitrate;
+        Folder = source.Folder;
     }
 }
 

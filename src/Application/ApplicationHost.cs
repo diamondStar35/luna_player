@@ -25,6 +25,9 @@ internal sealed class ApplicationHost : IDisposable
     private readonly PathRequestQueue _pathQueue;
     private readonly LunaPlayer.YouTube.ResolveCache _resolveCache;
     private readonly LunaPlayer.YouTube.Components _components;
+    private readonly LunaPlayer.Recording.AudioCatalog _catalog;
+    private readonly LunaPlayer.Recording.RecordingSources _recordingSources;
+    private readonly LunaPlayer.Recording.RecordingEngine _recorder;
     private readonly LunaPlayer.YouTube.YouTubeSessions _sessions;
     private bool _disposed;
 
@@ -40,7 +43,8 @@ internal sealed class ApplicationHost : IDisposable
         _shortcuts.Apply(_settings.Shortcuts.Primary, _settings.Shortcuts.Secondary);
         _globalShortcuts = new ShortcutManager(GlobalActionDefinitions.All);
         _dispatcher = new WxDispatcher();
-        _view = new MainFrame(_shortcuts, ActionRegistry.All);
+        _catalog = new LunaPlayer.Recording.AudioCatalog();
+        _view = new MainFrame(_shortcuts, ActionRegistry.All, _dispatcher, _catalog);
         _speech = new SpeechOutput(_settings);
         _player = new MediaPlayer(new MpvPlaybackEngine(_view.NativeHandle), new PositionStore(Paths.PositionsFile));
         var clipboard = new WxClipboardService();
@@ -78,6 +82,10 @@ internal sealed class ApplicationHost : IDisposable
         _ = new SettingsActions(router, _view, _settings, _settingsStore,
             new BackupService(_settingsStore, bookmarks), new FileAssociations(), _player, _shortcuts,
             _globalShortcuts, _speech, youTube, _components);
+        _recordingSources = new LunaPlayer.Recording.RecordingSources(_settings.Recording);
+        _recorder = new LunaPlayer.Recording.RecordingEngine(_catalog);
+        _ = new RecordingActions(
+            router, _view, _settings, _speech, _dispatcher, _catalog, _recordingSources, _recorder);
         router.EnsureComplete(ActionRegistry.All);
         _controller = new ApplicationController(
             _view,
@@ -112,6 +120,9 @@ internal sealed class ApplicationHost : IDisposable
         _singleInstance.Dispose();
         _pathQueue.Dispose();
         _controller.Dispose();
+        // Before the player goes: a recording still running has a file to close, and the engine waits for
+        // the encoder to flush its last block rather than leaving a truncated one behind.
+        _recorder.Dispose();
         _sessions.Dispose();
         _resolveCache.Dispose();
         _player.Dispose();

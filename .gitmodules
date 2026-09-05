@@ -1,3 +1,6 @@
 [submodule "third-party/WxSharp"]
 	path = third-party/WxSharp
 	url = https://github.com/diamondStar35/wx_sharp.git
+[submodule "third-party/NAudio"]
+	path = third-party/NAudio
+	url = https://github.com/diamondStar35/NAudio
