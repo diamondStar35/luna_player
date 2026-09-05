@@ -48,6 +48,9 @@ internal sealed partial class MainFrame
     public int? ShowYouTubeResults(YouTubeResultsPrompt prompt) { using var dialog = new YouTube.ResultsDialog(DialogParent, prompt); return dialog.Show(); }
     public bool OfferYouTubeComponents(out bool doNotAskAgain) { using var dialog = new YouTube.ComponentsDialog(DialogParent); return dialog.Show(out doNotAskAgain); }
     public void ShowTextInfo(string title, string text) { using var dialog = new TextInfoDialog(DialogParent, title, text); dialog.Show(); }
+    public void ShowRecording(
+        LunaPlayer.Recording.AudioCatalog catalog, LunaPlayer.Recording.RecordingSources sources, LunaPlayer.Recording.RecordingEngine engine)
+    { using var dialog = new Recording.RecordingDialog(DialogParent, _dispatcher, catalog, sources, engine); dialog.Show(); }
     public PlayerSettings? EditPreferences(PlayerSettings settings, PrefsOps operations, Action<string> speakHelp)
-    { var editable = settings.Copy(); using var dialog = new PreferencesDialog(DialogParent, editable, operations, speakHelp, _globalShortcuts); return dialog.Show() ? editable : null; }
+    { var editable = settings.Copy(); using var dialog = new PreferencesDialog(DialogParent, editable, operations, speakHelp, _dispatcher, _catalog, _globalShortcuts); return dialog.Show() ? editable : null; }
 }
