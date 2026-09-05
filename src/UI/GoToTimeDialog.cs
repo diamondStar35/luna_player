@@ -20,9 +20,32 @@ internal sealed class GoToTimeDialog : IDisposable
         _hasMinutes = _duration >= 60;
         _dialog = new Dialog(parent,
             title: Tr("Go to time"), style: DialogStyle.Default | DialogStyle.ResizeBorder);
+
+        // Create every label immediately before its control. Windows uses native child order to infer the
+        // accessible name of an otherwise unnamed input; creating all inputs first leaves the spin controls
+        // unlabelled even when a sizer later draws the text beside them.
+        // Translators: Label above the boxes where the user types the point in the file to move to.
+        var prompt = new StaticText(_dialog, label: Tr("Choose time position:"));
+        // Translators: Label of the box holding the hours part of the point in the file to move to.
+        var hoursLabel = new StaticText(_dialog, label: Tr("Hours"));
         _hours = new SpinCtrl(_dialog, maximum: Math.Max(0, _duration / 3600));
+        // Translators: Label of the box holding the minutes part of the point in the file to move to.
+        var minutesLabel = new StaticText(_dialog, label: Tr("Minutes"));
         _minutes = new SpinCtrl(_dialog, maximum: 59);
+        // Translators: Label of the box holding the seconds part of the point in the file to move to.
+        var secondsLabel = new StaticText(_dialog, label: Tr("Seconds"));
         _seconds = new SpinCtrl(_dialog, maximum: 59);
+
+        if (!_hasHours)
+        {
+            hoursLabel.Show(false);
+            _hours.Show(false);
+        }
+        if (!_hasMinutes)
+        {
+            minutesLabel.Show(false);
+            _minutes.Show(false);
+        }
 
         var total = Math.Clamp((int)elapsed, 0, _duration);
         _hours.Value = total / 3600;
@@ -48,22 +71,18 @@ internal sealed class GoToTimeDialog : IDisposable
         buttons.Add(new Button(_dialog, StandardId.Cancel, Tr("Cancel")));
 
         var root = new BoxSizer(Orientation.Vertical);
-        // Translators: Label above the boxes where the user types the point in the file to move to.
-        root.Add(new StaticText(_dialog, label: Tr("Choose time position:")), flags: SizerFlags.All | SizerFlags.Expand, border: 8);
+        root.Add(prompt, flags: SizerFlags.All | SizerFlags.Expand, border: 8);
         if (_hasHours)
         {
-            // Translators: Label of the box holding the hours part of the point in the file to move to.
-            root.Add(new StaticText(_dialog, label: Tr("Hours")), flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
+            root.Add(hoursLabel, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
             root.Add(_hours, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom | SizerFlags.Expand, border: 8);
         }
         if (_hasMinutes)
         {
-            // Translators: Label of the box holding the minutes part of the point in the file to move to.
-            root.Add(new StaticText(_dialog, label: Tr("Minutes")), flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
+            root.Add(minutesLabel, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
             root.Add(_minutes, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom | SizerFlags.Expand, border: 8);
         }
-        // Translators: Label of the box holding the seconds part of the point in the file to move to.
-        root.Add(new StaticText(_dialog, label: Tr("Seconds")), flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
+        root.Add(secondsLabel, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         root.Add(_seconds, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom | SizerFlags.Expand, border: 8);
         root.Add(buttons, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom | SizerFlags.Expand, border: 8);
         _dialog.SetSizer(root);
