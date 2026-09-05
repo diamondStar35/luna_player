@@ -85,8 +85,8 @@ internal sealed class AudioPreferences : Preferences
         Help(_normalize,
             // Translators: Help text for the tick box that evens out the loudness and holds back the loudest peaks.
             // "dynaudnorm" and "alimiter" are the names of the filters doing the work and are not translated.
-            Tr("Enable dynamic normalize and limiter audio filter. When enabled, audio uses dynaudnorm followed by alimiter to reduce clipping at high volume boosts. " +
-            "Disable it to use raw output without this processing."));
+            Tr("Enable dynamic normalize and limiter audio filter. When enabled, audio uses dynaudnorm followed by alimiter to even out loudness and hold back peaks. " +
+                "Disable it to use raw output without this processing."));
         Help(_mono,
             // Translators: Help text for the tick box that plays the left and right channels mixed together.
             Tr("Play audio as Mono. When enabled, a mono downmix filter is applied so left and right channels are combined. " +
