@@ -19,7 +19,10 @@ internal sealed record MainMenuComponents(
     MenuItem MarkAllItem,
     MenuItem ShuffleItem,
     MenuItem RepeatFileItem,
-    MenuItem SilenceRemovalItem);
+    MenuItem SilenceRemovalItem,
+    MenuItem StartRecordingItem,
+    MenuItem PauseRecordingItem,
+    MenuItem StopRecordingItem);
 
 internal static class MainMenuBuilder
 {
@@ -203,6 +206,23 @@ internal static class MainMenuBuilder
         // Translators: Item in the Video options menu that copies the address of the video being played.
         Add(videoMenu, videoItems, commandIds, shortcuts, ActionId.VideoCopyLink, Tr("Copy video link"));
 
+        // Recording needs nothing loaded and nothing playing, so the window and the folder are always
+        // available. The three that run a recording are not: they follow the recorder itself, which is why
+        // they are kept rather than added to one of the enable lists above - each has its own condition.
+        var recordingMenu = new Menu();
+        // Translators: Recording menu item that opens the window where recording is set up and run.
+        recordingMenu.Append(commandIds[ActionId.OpenRecordingInterface], Label(Tr("Open the recording interface..."), ActionId.OpenRecordingInterface, shortcuts));
+        recordingMenu.AppendSeparator();
+        // Translators: Recording menu item that begins recording.
+        var startRecordingItem = recordingMenu.Append(commandIds[ActionId.StartRecording], Label(Tr("Start recording"), ActionId.StartRecording, shortcuts));
+        // Translators: Recording menu item that holds a recording where it is, or starts it again.
+        var pauseRecordingItem = recordingMenu.Append(commandIds[ActionId.PauseRecording], Label(Tr("Pause"), ActionId.PauseRecording, shortcuts));
+        // Translators: Recording menu item that ends a recording and closes the file.
+        var stopRecordingItem = recordingMenu.Append(commandIds[ActionId.StopRecording], Label(Tr("Stop"), ActionId.StopRecording, shortcuts));
+        recordingMenu.AppendSeparator();
+        // Translators: Recording menu item that opens the folder recordings are saved into.
+        recordingMenu.Append(commandIds[ActionId.OpenRecordingsFolder], Label(Tr("Open recordings folder"), ActionId.OpenRecordingsFolder, shortcuts));
+
         var menuBar = new MenuBar();
         // Translators: Name of the File menu in the menu bar.
         menuBar.Append(fileMenu, Tr("File"));
@@ -220,8 +240,12 @@ internal static class MainMenuBuilder
         var videoMenuIndex = 5;
         // Translators: Name of the menu bar menu holding what can be done with the YouTube video being played.
         menuBar.Append(videoMenu, Tr("Video options"));
+        // Last, and it has to be: the three indices returned below are written out as numbers, so a menu
+        // put in front of any of them would leave those pointing at the wrong one.
+        // Translators: Name of the menu bar menu holding what can be recorded and how.
+        menuBar.Append(recordingMenu, Tr("Recording"));
         frame.SetMenuBar(menuBar);
-        return new MainMenuComponents(menuBar, 2, markedMenuIndex, videoMenuIndex, playbackItems, mediaFileItems, localFileItems, markedItems, localEditItems, bookmarkItems, videoItems, markCurrentItem, markAllItem, shuffleItem, repeatItem, silenceItem);
+        return new MainMenuComponents(menuBar, 2, markedMenuIndex, videoMenuIndex, playbackItems, mediaFileItems, localFileItems, markedItems, localEditItems, bookmarkItems, videoItems, markCurrentItem, markAllItem, shuffleItem, repeatItem, silenceItem, startRecordingItem, pauseRecordingItem, stopRecordingItem);
     }
 
     private static void Add(
