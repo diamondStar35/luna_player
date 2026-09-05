@@ -5,6 +5,8 @@
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
     <AssemblyName>LunaPlayer</AssemblyName>
     <RootNamespace>LunaPlayer</RootNamespace>
+    <Version>0.1.0</Version>
+    <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <!-- The version resource Windows shows for the executable. AssemblyName is the file name and stays
          one word; these are what a person reads, and they are mirrored by ApplicationInfo. -->
     <Product>Luna Player</Product>
@@ -16,7 +18,10 @@
     <PublishAot>true</PublishAot>
     <OptimizationPreference>Speed</OptimizationPreference>
     <StripSymbols>true</StripSymbols>
-    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <!-- app.manifest is an input template. The build writes the manifest it embeds under obj after
+         replacing its Win32 identity with the numeric AssemblyVersion derived from Version. -->
+    <ApplicationManifest>$(BaseIntermediateOutputPath)$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\LunaPlayer.generated.manifest</ApplicationManifest>
+    <ApplicationManifestTemplate>$(MSBuildProjectDirectory)\app.manifest</ApplicationManifestTemplate>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <NoWarn>$(NoWarn);IL3050</NoWarn>
@@ -113,6 +118,19 @@
              CopyToOutputDirectory="PreserveNewest"
              CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
+
+  <Target Name="GenerateVersionedWin32Manifest"
+          BeforeTargets="SetWin32ManifestProperties"
+          DependsOnTargets="PrepareForBuild;GetAssemblyVersion">
+    <Copy SourceFiles="$(ApplicationManifestTemplate)"
+          DestinationFiles="$(ApplicationManifest)" />
+    <XmlPoke XmlInputPath="$(ApplicationManifest)"
+             Query="/*[local-name()='assembly']/*[local-name()='assemblyIdentity']/@version"
+             Value="$(AssemblyVersion)" />
+    <ItemGroup>
+      <FileWrites Include="$(ApplicationManifest)" />
+    </ItemGroup>
+  </Target>
 
   <Target Name="PublishNativeAotAfterBuild"
           AfterTargets="Build"

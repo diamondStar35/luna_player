@@ -2,8 +2,8 @@
 
 Pull requests and bug reports are welcome.
 
-Luna Player is in alpha and changes frequently. For anything beyond a small fix, open an issue first
-to discuss the approach before writing code.
+Luna Player is under active pre-1.0 development and changes frequently. For anything beyond a small
+fix, open an issue first to discuss the approach before writing code.
 
 ## Requirements
 
@@ -26,6 +26,15 @@ If the repository was cloned without submodules, run:
 ```
 git submodule update --init --recursive
 ```
+
+Enable the repository's version-consistency check once per clone:
+
+```
+git config core.hooksPath .githooks
+```
+
+The pre-commit hook blocks a release version that differs between `info.json` and the project. The
+release workflow runs the same check; the build derives the numeric Windows manifest version from it.
 
 ### Known build issue
 
