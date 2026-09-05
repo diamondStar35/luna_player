@@ -44,20 +44,9 @@ internal static class AppInfo
     /// <summary>Where the source lives, for an about box or a link.</summary>
     internal const string RepositoryUrl = "https://github.com/diamondStar35/luna_player";
 
-    /// <summary>The version, as three numbers. Read from the assembly rather than written out again here, so
-    /// it follows the one in the project file instead of drifting from it.</summary>
-    internal static string Version { get; } = Read();
-
-    private static string Read()
-    {
-        // The informational version carries the source revision after a '+', which is for a bug report
-        // rather than a window title; the numeric version is what a user is shown.
-        var version = typeof(AppInfo).Assembly.GetName().Version;
-        return version is null ? "0.0.0" : $"{version.Major}.{version.Minor}.{version.Build}";
-    }
-
-    /// <summary>The full version including the source revision, for a bug report.</summary>
-    internal static string FullVersion { get; } =
+    /// <summary>The release version. Read from the assembly rather than written out again here, so it
+    /// follows the one in the project file instead of drifting from it.</summary>
+    internal static string Version { get; } =
         typeof(AppInfo).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>()
-            ?.InformationalVersion ?? Version;
+            ?.InformationalVersion ?? "0.0.0";
 }

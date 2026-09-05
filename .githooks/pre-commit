@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+repo_root="$(git rev-parse --show-toplevel)"
+script_path="$repo_root/.githooks/check-version.ps1"
+
+if [ ! -f "$script_path" ]; then
+  echo "Commit blocked: missing version check script at .githooks/check-version.ps1"
+  exit 1
+fi
+
+if command -v pwsh >/dev/null 2>&1; then
+  pwsh -NoLogo -NoProfile -File "$script_path"
+elif command -v powershell >/dev/null 2>&1; then
+  powershell -NoLogo -NoProfile -ExecutionPolicy Bypass -File "$script_path"
+else
+  echo "Commit blocked: PowerShell was not found, so release versions cannot be validated."
+  exit 1
+fi

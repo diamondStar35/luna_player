@@ -7,8 +7,9 @@ driven by keyboard shortcuts, and each one can be reassigned.
 
 ## Status
 
-Luna Player is in alpha. Features, keyboard shortcuts, settings and configuration file formats may
-change between releases without notice, and saved settings are not guaranteed to carry forward.
+Luna Player is under active pre-1.0 development. Features, keyboard shortcuts, settings and
+configuration file formats may change between releases without notice, and saved settings are not
+guaranteed to carry forward.
 Bug reports are welcome.
 
 ## Features

@@ -45,7 +45,11 @@ internal sealed class BookmarkActions
                 Tr("Bookmark name cannot be empty."), Tr("Bookmarks"));
             return;
         }
-        _store.Add(path, name, position);
+        if (_store.Add(path, name, position) is null)
+        {
+            ShowStoreError();
+            return;
+        }
         _view.ShowInfo(
             // Translators: Shown once a bookmark has been made. {name} is what it is called and {time} the point in the
             // file it was made at, such as 00:01:20.
@@ -62,6 +66,8 @@ internal sealed class BookmarkActions
         while (true)
         {
             var bookmarks = _store.ListFor(path);
+            if (ShowStoreError())
+                return;
             if (bookmarks.Count == 0)
             {
                 _view.ShowInfo(
@@ -90,8 +96,16 @@ internal sealed class BookmarkActions
                         // Translators: Title of the window that asks the user to confirm removing a bookmark.
                         Tr("Confirm delete")))
                     {
-                        _store.Delete(path, bookmark.Id);
-                        if (_store.ListFor(path).Count == 0)
+                        if (!_store.Delete(path, bookmark.Id))
+                        {
+                            if (ShowStoreError())
+                                return;
+                            break;
+                        }
+                        var remaining = _store.ListFor(path);
+                        if (ShowStoreError())
+                            return;
+                        if (remaining.Count == 0)
                         {
                             _view.ShowInfo(
                                 // Translators: Shown once the last bookmark of the current file has been removed.
@@ -119,13 +133,16 @@ internal sealed class BookmarkActions
                 Tr("Error"));
             return;
         }
-        _store.Rename(path, bookmark.Id, name);
+        if (!_store.Rename(path, bookmark.Id, name))
+            ShowStoreError();
     }
 
     private void JumpToSlot(int slot)
     {
         var path = _player.CurrentPath;
         var bookmark = path is null ? null : _store.Slot(path, slot);
+        if (path is not null && ShowStoreError())
+            return;
         if (bookmark is null)
         {
             _speech.Speak(
@@ -166,4 +183,17 @@ internal sealed class BookmarkActions
 
     private static BookmarkListItem ToListItem(Bookmark bookmark)
         => new(bookmark.Id, bookmark.Name, PlaybackTimeFormatter.Format(bookmark.Position) ?? "00:00");
+
+    /// <summary>Shows a bookmark storage failure, when there is one. True means the caller must stop: the
+    /// store could not be read, or the change it requested was not saved.</summary>
+    private bool ShowStoreError()
+    {
+        if (_store.LastError.Length == 0)
+            return false;
+        _view.ShowError(
+            _store.LastError,
+            // Translators: Title of an error message about reading or writing the bookmarks file.
+            Tr("Bookmarks"));
+        return true;
+    }
 }

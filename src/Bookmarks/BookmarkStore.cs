@@ -15,7 +15,8 @@ internal sealed class BookmarkStore
 
     internal bool Export(string destination)
     {
-        var document = Load();
+        if (!TryLoadCurrent(out var document))
+            return false;
         return Report(SaveTo(destination, document, out var error), error);
     }
 
@@ -33,15 +34,17 @@ internal sealed class BookmarkStore
 
     internal IReadOnlyList<Bookmark> ListFor(string path)
     {
-        var document = Load();
+        if (!TryLoadCurrent(out var document))
+            return [];
         return document.Files.TryGetValue(Paths.Key(path), out var bookmarks)
             ? Sort(bookmarks.Where(value => value.Id.Length > 0 && value.Name.Length > 0 && value.Path.Length > 0))
             : [];
     }
 
-    internal Bookmark Add(string path, string name, double position)
+    internal Bookmark? Add(string path, string name, double position)
     {
-        var document = Load();
+        if (!TryLoadCurrent(out var document))
+            return null;
         var key = Paths.Key(path);
         if (!document.Files.TryGetValue(key, out var bookmarks))
         {
@@ -57,26 +60,26 @@ internal sealed class BookmarkStore
             Created = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
         };
         bookmarks.Add(bookmark);
-        Save(document);
-        return bookmark;
+        return Save(document) ? bookmark : null;
     }
 
     internal bool Rename(string path, string id, string name)
     {
-        var document = Load();
+        if (!TryLoadCurrent(out var document))
+            return false;
         if (!document.Files.TryGetValue(Paths.Key(path), out var bookmarks))
             return false;
         var bookmark = bookmarks.FirstOrDefault(value => value.Id == id);
         if (bookmark is null)
             return false;
         bookmark.Name = name;
-        Save(document);
-        return true;
+        return Save(document);
     }
 
     internal bool Delete(string path, string id)
     {
-        var document = Load();
+        if (!TryLoadCurrent(out var document))
+            return false;
         var key = Paths.Key(path);
         if (!document.Files.TryGetValue(key, out var bookmarks))
             return false;
@@ -85,16 +88,22 @@ internal sealed class BookmarkStore
             return false;
         if (bookmarks.Count == 0)
             document.Files.Remove(key);
-        Save(document);
-        return true;
+        return Save(document);
     }
 
     internal Bookmark? Slot(string path, int slot)
         => slot is >= 1 and <= 10 ? ListFor(path).ElementAtOrDefault(slot - 1) : null;
 
-    private BookmarkDocument Load()
+    /// <summary>Loads the live file. A missing file is a valid empty store; a file that exists but cannot
+    /// be read is an error and must not be replaced by a later mutation.</summary>
+    private bool TryLoadCurrent(out BookmarkDocument document)
     {
-        return TryLoad(_path, out var document, out _) ? document : new BookmarkDocument();
+        if (!File.Exists(_path))
+        {
+            document = new BookmarkDocument();
+            return Report(true, string.Empty);
+        }
+        return Report(TryLoad(_path, out document, out var error), error);
     }
 
     private static bool TryLoad(string path, out BookmarkDocument document, out string error)
@@ -111,7 +120,7 @@ internal sealed class BookmarkStore
             using var stream = File.OpenRead(path);
             document = JsonSerializer.Deserialize(stream, BookmarkJsonContext.Default.BookmarkDocument)
                 ?? throw new JsonException("The bookmarks file is empty.");
-            document.Files ??= [];
+            Validate(document);
             return true;
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
@@ -122,8 +131,34 @@ internal sealed class BookmarkStore
         }
     }
 
-    private void Save(BookmarkDocument document)
-        => SaveTo(_path, document, out _);
+    /// <summary>Rejects a document that parsed as JSON but is not a usable bookmarks document. Treating
+    /// malformed collections or entries as empty would let the next change replace the original file and
+    /// silently discard everything it contained.</summary>
+    private static void Validate(BookmarkDocument document)
+    {
+        if (document.Files is null)
+            throw new JsonException("The bookmarks file does not contain a valid files collection.");
+        foreach (var (key, bookmarks) in document.Files)
+        {
+            if (string.IsNullOrWhiteSpace(key) || bookmarks is null)
+                throw new JsonException("The bookmarks file contains an invalid file entry.");
+            foreach (var bookmark in bookmarks)
+            {
+                if (bookmark is null
+                    || string.IsNullOrWhiteSpace(bookmark.Id)
+                    || string.IsNullOrWhiteSpace(bookmark.Name)
+                    || string.IsNullOrWhiteSpace(bookmark.Path)
+                    || !double.IsFinite(bookmark.Position)
+                    || bookmark.Position < 0)
+                {
+                    throw new JsonException("The bookmarks file contains an invalid bookmark.");
+                }
+            }
+        }
+    }
+
+    private bool Save(BookmarkDocument document)
+        => Report(SaveTo(_path, document, out var error), error);
 
     private static bool SaveTo(string path, BookmarkDocument document, out string error)
     {
