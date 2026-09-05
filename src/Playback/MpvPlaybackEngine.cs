@@ -102,16 +102,9 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
     public double SetVolume(double volume)
     {
         _volume = Math.Clamp(volume, 0, 1000);
-        if (!_normalizationEnabled || _volume <= 100)
-        {
-            SetPreamp(1);
-            SetPropertySafely("volume", _volume);
-        }
-        else
-        {
-            SetPreamp(Math.Min(10, _volume / 100));
-            SetPropertySafely("volume", 100);
-        }
+        // Volume is mpv's continuously adjustable software mixer. Changing a live lavfi gain filter,
+        // even through af-command, can make buffered filters such as dynaudnorm audibly pump or drop out.
+        SetPropertySafely("volume", _volume);
         return _volume;
     }
 
@@ -158,7 +151,6 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
 
     public bool SetNormalization(bool enabled)
     {
-        RemoveFilter("@audiopreamp");
         RemoveFilter("@audionormalize");
         _normalizationEnabled = enabled;
         if (!enabled)
@@ -166,16 +158,14 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
             SetPropertySafely("volume", _volume);
             return true;
         }
-        if (!AddFilter("@audiopreamp:lavfi=[volume=1.0]")
-            || !AddFilter("@audionormalize:lavfi=[dynaudnorm=f=150:g=15,alimiter=limit=0.95]"))
+        if (!AddFilter("@audionormalize:lavfi=[dynaudnorm=f=150:g=15,alimiter=limit=0.95]"))
         {
-            RemoveFilter("@audiopreamp");
             RemoveFilter("@audionormalize");
             _normalizationEnabled = false;
             SetPropertySafely("volume", _volume);
             return false;
         }
-        SetVolume(_volume);
+        SetPropertySafely("volume", _volume);
         return true;
     }
 
@@ -293,11 +283,4 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
     private bool AddFilter(string filter) => TryDo(mpv => mpv.Command("af", "add", filter));
 
     private void RemoveFilter(string label) => TryDo(mpv => mpv.Command("af", "remove", label));
-
-    private void SetPreamp(double gain)
-    {
-        if (!_normalizationEnabled) return;
-        RemoveFilter("@audiopreamp");
-        AddFilter($"@audiopreamp:lavfi=[volume={gain.ToString("0.000", CultureInfo.InvariantCulture)}]");
-    }
 }
