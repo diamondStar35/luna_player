@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using LunaPlayer.Actions;
 using LunaPlayer.Application;
 using LunaPlayer.Configuration;
@@ -36,6 +37,15 @@ internal sealed partial class MainFrame : IMainView
     private readonly IApplicationDispatcher _dispatcher;
     private readonly LunaPlayer.Recording.AudioCatalog _catalog;
     private bool _disposed;
+    private bool _waitingForCloseKeys;
+    private bool _closing;
+
+    private const int VirtualKeyShift = 0x10;
+    private const int VirtualKeyControl = 0x11;
+    private const int VirtualKeyAlt = 0x12;
+    private const int VirtualKeyLeftWindows = 0x5B;
+    private const int VirtualKeyRightWindows = 0x5C;
+    private const int VirtualKeyF4 = 0x73;
 
     /// <param name="dispatcher">Handed on to the windows that fetch things in the background - the
     /// recording window asks Windows for its devices and its encoders - so they post their answers back
@@ -284,13 +294,58 @@ internal sealed partial class MainFrame : IMainView
 
     private void OnClosing(object? sender, CloseEventArgs args)
     {
+        // Alt+F4 asks the window to close while Alt is commonly still held. Destroying the foreground
+        // window before Windows delivers the rest of that chord can leave the newly focused thread with a
+        // stale logical modifier state. Keep this window as the keyboard target until the physical keys are
+        // up, then issue a fresh close on the UI thread. No synthetic key events are sent.
+        if (!_closing && args.CanVeto && CloseChordIsDown())
+        {
+            args.Veto();
+            if (!_waitingForCloseKeys)
+            {
+                _waitingForCloseKeys = true;
+                _ = CloseAfterKeysAreReleasedAsync();
+            }
+            return;
+        }
+
+        _closing = true;
         // Match Simple Player's shutdown order: stop the global listener before saving state or stopping
-        // playback. In particular, Alt+F4 must not leave the hook alive for the rest of synchronous
-        // shutdown while Alt is still being released.
+        // playback.
         _globalShortcuts.Dispose();
         CloseRequested?.Invoke();
         args.Skip();
     }
+
+    private async Task CloseAfterKeysAreReleasedAsync()
+    {
+        while (!_disposed && CloseChordIsDown())
+            await Task.Delay(10).ConfigureAwait(false);
+
+        if (_disposed)
+            return;
+
+        _dispatcher.Post(() =>
+        {
+            if (_disposed)
+                return;
+            _waitingForCloseKeys = false;
+            _frame.Close();
+        });
+    }
+
+    private static bool CloseChordIsDown()
+        => IsKeyDown(VirtualKeyShift)
+            || IsKeyDown(VirtualKeyControl)
+            || IsKeyDown(VirtualKeyAlt)
+            || IsKeyDown(VirtualKeyLeftWindows)
+            || IsKeyDown(VirtualKeyRightWindows)
+            || IsKeyDown(VirtualKeyF4);
+
+    private static bool IsKeyDown(int virtualKey) => (GetAsyncKeyState(virtualKey) & 0x8000) != 0;
+
+    [LibraryImport("user32.dll")]
+    private static partial short GetAsyncKeyState(int virtualKey);
 
     private void Request(ActionId action) => ActionRequested?.Invoke(action);
 }
