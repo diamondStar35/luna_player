@@ -60,7 +60,7 @@ internal sealed class FileActions
         var first = paths[0];
         if (Directory.Exists(first))
         {
-            if (_player.OpenFolder(first))
+            if (OpenFolderWithConfiguredMode(first))
                 _settings.General.LastDirectory = first;
             return;
         }
@@ -87,7 +87,7 @@ internal sealed class FileActions
     {
         if (Directory.Exists(path))
         {
-            var opened = _player.OpenFolder(path);
+            var opened = OpenFolderWithConfiguredMode(path);
             if (opened)
                 _settings.General.LastDirectory = path;
             return opened;
@@ -213,7 +213,7 @@ internal sealed class FileActions
         if (string.IsNullOrEmpty(folder))
             return;
         _settings.General.LastDirectory = folder;
-        if (!_player.OpenFolder(folder))
+        if (!OpenFolderWithConfiguredMode(folder))
             _speech.Speak(
                 // Translators: Spoken when the chosen folder holds nothing this player can play.
                 Tr("No audio files found in that folder."),
@@ -391,6 +391,29 @@ internal sealed class FileActions
         var folder = Path.GetDirectoryName(path);
         if (string.IsNullOrEmpty(folder))
             return;
+        OpenFolderAndSubfolders(folder, path, startPosition);
+    }
+
+    /// <summary>Opens a folder according to the configured scope.</summary>
+    /// <remarks>
+    /// A folder has no single-file equivalent, so FileOnly and MainFolder both mean its immediate contents.
+    /// The recursive mode starts its scan in the background and reports true once that work is accepted; an
+    /// empty result is reported when the scan completes.
+    /// </remarks>
+    private bool OpenFolderWithConfiguredMode(string folder)
+    {
+        if (_settings.General.OpenFilesMode != OpenFilesMode.MainAndSubfolders)
+            return _player.OpenFolder(folder);
+
+        OpenFolderAndSubfolders(folder);
+        return true;
+    }
+
+    /// <summary>Loads everything under a folder, scanning off the UI thread.</summary>
+    /// <param name="preferredPath">The file to select after scanning, or null to select the first file.</param>
+    private void OpenFolderAndSubfolders(
+        string folder, string? preferredPath = null, double? startPosition = null)
+    {
         var prompt = new ProgressPrompt(
             // Translators: Title of the progress window shown while a folder and the folders inside it are being searched for media.
             Tr("Opening files"),
@@ -409,7 +432,7 @@ internal sealed class FileActions
             files =>
             {
                 if (files.Count > 0)
-                    _player.OpenFiles(files, path, startPosition);
+                    _player.OpenFiles(files, preferredPath, startPosition);
                 else
                     _speech.Speak(
                         // Translators: Spoken when the folder and the folders inside it hold nothing this player can play.
