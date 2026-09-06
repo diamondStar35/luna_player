@@ -26,6 +26,7 @@ internal enum ActionId
     // Appended at the end on purpose: these names are what the settings file stores for a shortcut, so
     // inserting one anywhere else would rename every action after it.
     OpenRecordingInterface, StartRecording, PauseRecording, StopRecording, OpenRecordingsFolder,
+    PanLeft, PanRight, AnnouncePan,
 }
 
 internal sealed record ActionDefinition(ActionId Id, string Label, Shortcut? PrimaryShortcut = null, Shortcut? SecondaryShortcut = null);

@@ -69,7 +69,6 @@ Download the latest release from the
 [Releases](https://github.com/diamondStar35/luna_player/releases) page and follow the instructions
 for the package you choose.
 
-Important: As of now there are no releases published. The only way is to build it from source. This readme will be updated in the future as the project grows.
 
 ## Default shortcuts
 
@@ -92,9 +91,13 @@ The complete list is in **Settings → Keyboard Shortcuts**, where any shortcut 
 
 ## Supported formats
 
-Audio: AAC, AIFF, ALAC, FLAC, M4A, MP3, OGG, Opus, WAV, WMA
+Audio: AAC, AC-3, AIFF, ALAC, APE, AU, DTS, E-AC-3, FLAC, M4A, MKA, MP1, MP2,
+MP3, MPC, OGA, OGG, OGM, Opus, TAK, TrueHD, TTA, WAV, WMA, WavPack
 
-Video: 3GP, AVI, FLV, M2TS, M4V, MKV, MOV, MP4, MPEG, MPG, TS, WebM, WMV
+Video: 3G2, 3GP, AVI, FLV, IVF, M2TS, M4V, MJ2, MKV, MOV, MP4, MPEG, MPG, MXF,
+OGV, RMVB, TS, WebM, WMV, Y4M
+
+Playlists: M3U, M3U8 (including HLS)
 
 Playback is handled by [mpv](https://mpv.io/), so most formats it supports will play.
 

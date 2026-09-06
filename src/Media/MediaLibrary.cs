@@ -2,15 +2,30 @@ namespace LunaPlayer.Media;
 
 internal static class MediaLibrary
 {
-    private static readonly HashSet<string> Extensions = new(StringComparer.OrdinalIgnoreCase)
+    private static readonly HashSet<string> MediaExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
-        ".aac", ".aiff", ".alac", ".flac", ".m4a", ".mp3",
-        ".ogg", ".opus", ".wav", ".wma", ".3gp", ".avi", ".flv",
-        ".m2ts", ".m4v", ".mkv", ".mov", ".mpeg", ".mp4", ".mpg",
-        ".ts", ".webm", ".wmv",
+        ".aac", ".ac3", ".aiff", ".alac", ".ape", ".au", ".dts", ".eac3",
+        ".flac", ".m4a", ".mka", ".mp1", ".mp2", ".mp3", ".mpc", ".oga",
+        ".ogg", ".ogm", ".opus", ".tak", ".thd", ".tta", ".wav", ".wma", ".wv",
+        ".3g2", ".3gp", ".avi", ".flv", ".ivf", ".m2ts", ".m4v", ".mj2",
+        ".mkv", ".mov", ".mp4", ".mpeg", ".mpg", ".mxf", ".ogv", ".rmvb",
+        ".ts", ".webm", ".wmv", ".y4m",
     };
 
-    internal static IReadOnlyList<string> SupportedExtensions { get; } = Extensions.Order(StringComparer.OrdinalIgnoreCase).ToArray();
+    private static readonly HashSet<string> PlaylistExtensions = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ".m3u", ".m3u8",
+    };
+
+    internal static IReadOnlyList<string> SupportedExtensions { get; } = MediaExtensions
+        .Concat(PlaylistExtensions).Order(StringComparer.OrdinalIgnoreCase).ToArray();
+
+    internal static bool IsPlaylist(string path)
+    {
+        if (LinkValidator.TryGetHttpUrl(path, out var uri))
+            return PlaylistExtensions.Contains(Path.GetExtension(uri.AbsolutePath));
+        return PlaylistExtensions.Contains(Path.GetExtension(path));
+    }
 
     internal static string DialogWildcard
     {
@@ -72,7 +87,7 @@ internal static class MediaLibrary
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 processed++;
-                if (Extensions.Contains(Path.GetExtension(path)))
+                if (MediaExtensions.Contains(Path.GetExtension(path)))
                     files.Add(path);
                 // Reported in batches: a report per file would spend the walk queueing messages nobody has
                 // time to read.

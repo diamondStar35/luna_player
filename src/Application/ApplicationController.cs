@@ -64,6 +64,7 @@ internal sealed class ApplicationController : IDisposable
         _player.ConfigureSilence(settings.Silence);
         _player.SetNormalization(settings.Audio.NormalizeAudio);
         _player.SetMono(settings.Audio.MonoAudio);
+        _player.SetPan(settings.Audio.Pan);
         _player.SetSilenceRemoval(settings.Silence.Enabled);
         settings.Audio.NormalizeAudio = _player.IsNormalizationEnabled;
         settings.Audio.MonoAudio = _player.IsMonoEnabled;
@@ -102,6 +103,7 @@ internal sealed class ApplicationController : IDisposable
         StopMediaControlsClock();
         _settings.Audio.Volume = _player.Volume;
         _settings.Audio.Speed = _player.Speed;
+        _settings.Audio.Pan = _player.Pan;
         _player.SavePosition();
         if (_settings.General.RememberLastPosition && _player.CurrentPath is string path && File.Exists(path))
         {

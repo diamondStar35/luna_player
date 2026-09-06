@@ -10,6 +10,7 @@ internal sealed class AudioPreferences : Preferences
     private readonly TextCtrl _customSeek;
     private readonly TextCtrl _speedStep;
     private readonly SpinCtrl _volumeStep;
+    private readonly SpinCtrl _panStep;
     private readonly Choice _endBehavior;
     private readonly CheckBox _wrap;
     private readonly CheckBox _savePositions;
@@ -32,6 +33,9 @@ internal sealed class AudioPreferences : Preferences
         // Translators: Label of the box holding how much louder or quieter one press of the volume keys makes the sound.
         var volumeStepLabel = new StaticText(panel, label: Tr("Volume step"));
         _volumeStep = new SpinCtrl(panel, settings.VolumeStep, 1, 20);
+        // Translators: Label of the box holding how far one press moves the sound left or right.
+        var panStepLabel = new StaticText(panel, label: Tr("Pan step (percent)"));
+        _panStep = new SpinCtrl(panel, settings.PanStep, 1, 100);
         // Translators: Label of the list that chooses what the player does when it reaches the end of a file.
         var endBehaviorLabel = new StaticText(panel, label: Tr("What happens after a file ends?"));
         _endBehavior = Choice(panel, [
@@ -53,6 +57,7 @@ internal sealed class AudioPreferences : Preferences
         AddField(sizer, customSeekLabel, _customSeek);
         AddField(sizer, speedStepLabel, _speedStep);
         AddField(sizer, volumeStepLabel, _volumeStep);
+        AddField(sizer, panStepLabel, _panStep);
         AddField(sizer, endBehaviorLabel, _endBehavior);
         sizer.Add(_wrap, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         sizer.Add(_savePositions, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
@@ -69,6 +74,9 @@ internal sealed class AudioPreferences : Preferences
         Help(_volumeStep,
             // Translators: Help text for the box holding how much one press of the volume keys changes the loudness.
             Tr("Volume step used when pressing volume up or down. Allowed range is from 1 to 20."));
+        Help(_panStep,
+            // Translators: Help text for the box holding how far one press moves the sound left or right.
+            Tr("Pan step used when moving audio left or right. Allowed range is from 1 to 100 percent."));
         Help(_endBehavior,
             // Translators: Help text for the list that chooses what the player does at the end of a file. It names the
             // three entries in that list, which should read the same here as they do there.
@@ -104,6 +112,7 @@ internal sealed class AudioPreferences : Preferences
             _settings.CustomSeekStep = seek;
         _settings.SpeedStep = double.Parse(_speedStep.Value.Trim(), CultureInfo.InvariantCulture);
         _settings.VolumeStep = _volumeStep.Value;
+        _settings.PanStep = _panStep.Value;
         _settings.EndBehavior = (EndBehavior)Math.Max(0, _endBehavior.SelectedIndex);
         _settings.WrapPlaylist = _wrap.Checked;
         _settings.SaveFilePositions = _savePositions.Checked;
@@ -116,6 +125,7 @@ internal sealed class AudioPreferences : Preferences
         _customSeek.Value = _settings.CustomSeekStep.ToString(CultureInfo.InvariantCulture);
         _speedStep.Value = _settings.SpeedStep.ToString(CultureInfo.InvariantCulture);
         _volumeStep.Value = _settings.VolumeStep;
+        _panStep.Value = _settings.PanStep;
         _endBehavior.SelectedIndex = (int)_settings.EndBehavior;
         _wrap.Checked = _settings.WrapPlaylist;
         _savePositions.Checked = _settings.SaveFilePositions;

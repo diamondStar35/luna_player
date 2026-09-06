@@ -70,6 +70,9 @@ internal sealed partial class PlaybackActions
         router.Register(ActionId.SpeedUp, () => ChangeSpeed(_settings.Audio.SpeedStep));
         router.Register(ActionId.SpeedDown, () => ChangeSpeed(-_settings.Audio.SpeedStep));
         router.Register(ActionId.ResetSpeed, () => SetSpeed(1));
+        router.Register(ActionId.PanLeft, () => ChangePan(-_settings.Audio.PanStep));
+        router.Register(ActionId.PanRight, () => ChangePan(_settings.Audio.PanStep));
+        router.Register(ActionId.AnnouncePan, AnnouncePan);
         router.Register(ActionId.ToggleSilenceRemoval, ToggleSilenceRemoval);
         router.Register(ActionId.StartSelection, StartSelection);
         router.Register(ActionId.EndSelection, EndSelection);
@@ -206,6 +209,29 @@ internal sealed partial class PlaybackActions
         var speed = _player.SetSpeed(value);
         _settings.Audio.Speed = speed;
         _speech.SpeakText(TrFormat("{speed}x", FormatSpeed(speed)));
+    }
+
+    private void ChangePan(double delta)
+    {
+        if (!_guard.RequireFile(out _))
+            return;
+        AnnouncePanValue(_player.ChangePan(delta));
+    }
+
+    private void AnnouncePan()
+    {
+        if (!_guard.RequireFile(out _))
+            return;
+        AnnouncePanValue(_player.Pan);
+    }
+
+    private void AnnouncePanValue(double pan)
+    {
+        _settings.Audio.Pan = pan;
+        var value = pan.ToString("0.###", CultureInfo.InvariantCulture);
+        // Translators: Spoken after audio panning changes or when it is requested. Negative values are
+        // toward the left, positive values are toward the right, and zero is centered.
+        _speech.Speak(TrFormat("Pan {pan}%", value), $"{value}%");
     }
 
     private void ToggleVerbosity()

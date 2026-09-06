@@ -9,6 +9,8 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
     private readonly MPV _mpv;
     private readonly IDisposable _endRegistration;
     private double _volume = 100;
+    private double _pan;
+    private bool _panFilterActive;
     private bool _normalizationEnabled;
     private bool _disposed;
 
@@ -120,6 +122,39 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
     public double Speed => ReadDouble("speed") is double speed
         ? Precision.Normalize(Math.Clamp(speed, 0.5, 6))
         : 1;
+
+    public double SetPan(double pan)
+    {
+        var value = Precision.Normalize(Math.Clamp(pan, -100, 100));
+        if (value == 0)
+        {
+            if (_panFilterActive)
+                RemoveFilter("@audiopan");
+            _panFilterActive = false;
+            _pan = 0;
+            return _pan;
+        }
+
+        var balance = Precision.Normalize(value / 100).ToString("0.###", CultureInfo.InvariantCulture);
+        // stereotools marks balance_out as a runtime option. Updating it through af-command keeps the
+        // existing filter graph and audio buffers alive while a key is held down.
+        if (_panFilterActive
+            && TryDo(mpv => mpv.Command("af-command", "audiopan", "balance_out", balance, "stereotools")))
+        {
+            _pan = value;
+            return _pan;
+        }
+
+        if (_panFilterActive)
+            RemoveFilter("@audiopan");
+        _panFilterActive = AddFilter(
+            $"@audiopan:lavfi=[aformat=channel_layouts=stereo,stereotools=balance_out={balance}]");
+        if (_panFilterActive)
+            _pan = value;
+        return _pan;
+    }
+
+    public double Pan => _pan;
 
     public IReadOnlyList<AudioDevice> GetAudioDevices()
     {

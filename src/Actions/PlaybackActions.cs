@@ -110,6 +110,12 @@ internal static class PlaybackActionDefinitions
             new(ActionId.SpeedDown, Tr("Decrease playback speed"), new("down", ShortcutModifiers.Control)),
             // Translators: Name of the command that returns the playing speed to normal.
             new(ActionId.ResetSpeed, Tr("Reset playback speed to normal"), new("y", ShortcutModifiers.Alt)),
+            // Translators: Name of the command that moves the sound toward the left speaker.
+            new(ActionId.PanLeft, Tr("Pan audio left"), new("left", ShortcutModifiers.Control)),
+            // Translators: Name of the command that moves the sound toward the right speaker.
+            new(ActionId.PanRight, Tr("Pan audio right"), new("right", ShortcutModifiers.Control)),
+            // Translators: Name of the command that speaks the current left/right audio balance.
+            new(ActionId.AnnouncePan, Tr("Speak current pan"), new("b")),
             // Translators: Name of the command that turns skipping the silent parts of the file on or off.
             new(ActionId.ToggleSilenceRemoval, Tr("Turn silence removal on or off"), new("m", ShortcutModifiers.Control)),
             // Translators: Name of the command that marks the beginning of a part of the file to play on its own.

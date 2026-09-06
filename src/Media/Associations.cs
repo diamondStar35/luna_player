@@ -7,6 +7,9 @@ namespace LunaPlayer.Media;
 
 internal sealed class FileAssociations
 {
+    // This is the same central list used by the open dialog and folder scans. LunaPlayer.iss mirrors it
+    // for install-time machine registration; changing supported formats must update that mirror too.
+    private static IReadOnlyList<string> Extensions => MediaLibrary.SupportedExtensions;
     private const string ProgId = $"{AppInfo.Identifier}.Media";
     private const string AppName = AppInfo.Name;
     private const string Classes = @"Software\Classes";
@@ -29,7 +32,7 @@ internal sealed class FileAssociations
             WriteProgram(command);
             WriteApplication(alias, command);
             WriteCapabilities();
-            foreach (var extension in MediaLibrary.SupportedExtensions) WriteExtension(extension);
+            foreach (var extension in Extensions) WriteExtension(extension);
             NotifyShell();
             error = string.Empty;
             return true;
@@ -52,7 +55,7 @@ internal sealed class FileAssociations
         try
         {
             var alias = Path.GetFileName(Environment.ProcessPath ?? $"{AppInfo.Identifier}.exe");
-            foreach (var extension in MediaLibrary.SupportedExtensions) RemoveExtension(extension);
+            foreach (var extension in Extensions) RemoveExtension(extension);
             Registry.CurrentUser.DeleteSubKeyTree($@"{Classes}\{ProgId}", throwOnMissingSubKey: false);
             Registry.CurrentUser.DeleteSubKeyTree($@"{Classes}\Applications\{alias}", throwOnMissingSubKey: false);
             Registry.CurrentUser.DeleteSubKeyTree(Capabilities, throwOnMissingSubKey: false);
@@ -86,7 +89,7 @@ internal sealed class FileAssociations
         SetDefault($@"{root}\shell\open\command", command);
         SetDefault($@"{root}\shell\play_with_luna", "Play with Luna Player");
         SetDefault($@"{root}\shell\play_with_luna\command", command);
-        foreach (var extension in MediaLibrary.SupportedExtensions)
+        foreach (var extension in Extensions)
             SetValue($@"{root}\SupportedTypes", extension, string.Empty);
     }
 
@@ -95,7 +98,7 @@ internal sealed class FileAssociations
     {
         SetValue(Capabilities, "ApplicationName", AppName);
         SetValue(Capabilities, "ApplicationDescription", "Play audio and media files with Luna Player.");
-        foreach (var extension in MediaLibrary.SupportedExtensions)
+        foreach (var extension in Extensions)
             SetValue($@"{Capabilities}\FileAssociations", extension, ProgId);
         SetValue(RegisteredApps, AppName, Capabilities);
     }
