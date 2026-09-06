@@ -172,28 +172,7 @@ internal sealed class ShortcutPreferences : Preferences
             if (!(pair.Key == action && slot == ShortcutSlot.Primary) && pair.Value == shortcut) return true;
         foreach (var pair in _secondary)
             if (!(pair.Key == action && slot == ShortcutSlot.Secondary) && pair.Value == shortcut) return true;
-        // A collision with the other scope matters just as much: a global bound to a local combination would
-        // run the action twice whenever the player has the focus.
-        return OtherScope().Contains(shortcut);
-    }
-
-    /// <summary>The shortcuts currently in force on the page this one is not editing.</summary>
-    private HashSet<Shortcut> OtherScope()
-    {
-        var actions = _scope == ShortcutScope.Local ? GlobalActionDefinitions.All : ActionRegistry.All;
-        var effective = new Dictionary<ActionId, Shortcut>();
-        var secondary = new Dictionary<ActionId, Shortcut>();
-        foreach (var action in actions)
-        {
-            if (action.PrimaryShortcut is Shortcut primary) effective[action.Id] = primary;
-            if (action.SecondaryShortcut is Shortcut value) secondary[action.Id] = value;
-        }
-        foreach (var pair in _scope == ShortcutScope.Local ? _settings.Global : _settings.Primary)
-            if (effective.ContainsKey(pair.Key)) effective[pair.Key] = pair.Value;
-        if (_scope == ShortcutScope.Global)
-            foreach (var pair in _settings.Secondary)
-                if (secondary.ContainsKey(pair.Key)) secondary[pair.Key] = pair.Value;
-        return [.. effective.Values, .. secondary.Values];
+        return false;
     }
 
     private void Reset()
