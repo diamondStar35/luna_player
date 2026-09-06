@@ -139,8 +139,8 @@ internal sealed class MediaPlayer : IDisposable
     internal bool IsPlaying => _running && !_engine.IsPaused;
     internal double? Duration => _engine.Duration;
     internal double? Elapsed => _engine.Elapsed;
-    internal double? Remaining => _engine.Remaining
-        ?? (Duration is double duration && Elapsed is double elapsed ? duration - elapsed : null);
+    internal double? Remaining => Precision.Normalize(_engine.Remaining
+        ?? (Duration is double duration && Elapsed is double elapsed ? duration - elapsed : null));
     internal double Volume => _engine.Volume;
     internal double Speed => _engine.Speed;
 

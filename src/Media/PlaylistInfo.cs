@@ -1,4 +1,5 @@
 using System.Globalization;
+using LunaPlayer.Configuration;
 using MpvNet;
 
 namespace LunaPlayer.Media;
@@ -48,7 +49,12 @@ internal sealed class PlaylistInfoService
         for (var index = 0; index < currentIndex && index < durations.Length; index++) elapsed += durations[index] ?? 0;
         var remaining = Math.Max(0, currentRemaining ?? ((currentDuration ?? 0) - (currentElapsed ?? 0)));
         for (var index = currentIndex + 1; index < durations.Length; index++) remaining += durations[index] ?? 0;
-        return new PlaylistTotals(files.Count, totalSize, totalDuration, elapsed, remaining);
+        return new PlaylistTotals(
+            files.Count,
+            totalSize,
+            Precision.Normalize(totalDuration),
+            Precision.Normalize(elapsed),
+            Precision.Normalize(remaining));
     }
 
     /// <summary>How long one file is, from its header where that can say and from a demuxer where it cannot.

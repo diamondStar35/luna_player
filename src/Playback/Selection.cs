@@ -1,3 +1,5 @@
+using LunaPlayer.Configuration;
+
 namespace LunaPlayer.Playback;
 
 internal sealed class PlaybackSelection
@@ -9,11 +11,11 @@ internal sealed class PlaybackSelection
     internal void SetStart(string path, double seconds)
     {
         Path = path;
-        Start = seconds;
+        Start = Precision.Normalize(seconds);
         End = null;
     }
 
-    internal void SetEnd(double seconds) => End = seconds;
+    internal void SetEnd(double seconds) => End = Precision.Normalize(seconds);
 
     internal bool IsActive(string? path, bool requireEnd = true)
         => !string.IsNullOrEmpty(path)

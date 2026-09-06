@@ -56,7 +56,7 @@ internal sealed class BookmarkStore
             Id = Guid.NewGuid().ToString("N"),
             Name = name,
             Path = Paths.Absolute(path),
-            Position = Math.Max(0, position),
+            Position = Precision.Normalize(Math.Max(0, position)),
             Created = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
         };
         bookmarks.Add(bookmark);
@@ -153,6 +153,7 @@ internal sealed class BookmarkStore
                 {
                     throw new JsonException("The bookmarks file contains an invalid bookmark.");
                 }
+                bookmark.Position = Precision.Normalize(bookmark.Position);
             }
         }
     }
