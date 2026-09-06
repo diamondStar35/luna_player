@@ -128,6 +128,18 @@ internal static class MainMenuBuilder
         // Translators: Player submenu holding the items that change how fast the file plays.
         playerMenu.AppendSubMenu(speedMenu, Tr("Speed"));
 
+        var pitchMenu = new Menu();
+        // Translators: Item in the Pitch submenu: raise audio pitch without changing playback speed.
+        Add(pitchMenu, playbackItems, commandIds, shortcuts, ActionId.PitchUp, Tr("Raise Pitch"));
+        // Translators: Item in the Pitch submenu: lower audio pitch without changing playback speed.
+        Add(pitchMenu, playbackItems, commandIds, shortcuts, ActionId.PitchDown, Tr("Lower Pitch"));
+        // Translators: Item in the Pitch submenu: restore the audio's original pitch.
+        Add(pitchMenu, playbackItems, commandIds, shortcuts, ActionId.ResetPitch, Tr("Reset Pitch"));
+        // Translators: Item in the Pitch submenu: speak the current pitch adjustment.
+        Add(pitchMenu, playbackItems, commandIds, shortcuts, ActionId.AnnouncePitch, Tr("Speak Pitch"));
+        // Translators: Player submenu holding the controls that raise or lower audio pitch.
+        playerMenu.AppendSubMenu(pitchMenu, Tr("Pitch"));
+
         var panMenu = new Menu();
         // Translators: Item in the Pan submenu: move the sound toward the left speaker.
         Add(panMenu, playbackItems, commandIds, shortcuts, ActionId.PanLeft, Tr("Pan Left"));
