@@ -96,7 +96,7 @@ internal static class MediaLibrary
             }
             // Sorted by whole path when the tree was walked, so a folder's files stay together; by name
             // alone otherwise, which is what a single folder's listing should read like.
-            files.Sort(recursive ? StringComparer.OrdinalIgnoreCase : FileNameComparer.Instance);
+            files.Sort(recursive ? NaturalStringComparer.Instance : FileNameComparer.Instance);
             report?.Invoke(new ProgressUpdate(processed, 0, string.Empty, files.Count));
             return files;
         }
@@ -118,6 +118,6 @@ internal static class MediaLibrary
         internal static FileNameComparer Instance { get; } = new();
 
         public int Compare(string? left, string? right)
-            => StringComparer.OrdinalIgnoreCase.Compare(Path.GetFileName(left), Path.GetFileName(right));
+            => NaturalStringComparer.Instance.Compare(Path.GetFileName(left), Path.GetFileName(right));
     }
 }

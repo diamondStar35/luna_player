@@ -203,7 +203,7 @@ internal static partial class MediaHeader
         }
         catch (DecoderFallbackException)
         {
-            return FirstValue(Encoding.Latin1.GetString(bytes));
+            return FirstValue(LegacyMetadataEncoding.DecodeLatin1(bytes));
         }
     }
 
@@ -950,9 +950,9 @@ internal static partial class MediaHeader
             var tag = ReadWindow(stream, stream.Length - 128, new byte[128], 128);
             if (tag.Length < 128 || !tag[..3].SequenceEqual("TAG"u8))
                 return;
-            into.Title(Encoding.Latin1.GetString(tag.Slice(3, 30)));
-            into.Artist(Encoding.Latin1.GetString(tag.Slice(33, 30)));
-            into.Album(Encoding.Latin1.GetString(tag.Slice(63, 30)));
+            into.Title(LegacyMetadataEncoding.DecodeLatin1(tag.Slice(3, 30)));
+            into.Artist(LegacyMetadataEncoding.DecodeLatin1(tag.Slice(33, 30)));
+            into.Album(LegacyMetadataEncoding.DecodeLatin1(tag.Slice(63, 30)));
         }
 
         /// <summary>APEv2, from the APE tags specification.</summary>
@@ -1165,7 +1165,7 @@ internal static partial class MediaHeader
             var text = payload[1..];
             return payload[0] switch
             {
-                0 => FirstValue(Encoding.Latin1.GetString(text)),
+                0 => FirstValue(LegacyMetadataEncoding.DecodeLatin1(text)),
                 1 => FirstValue(Utf16WithMark(text)),
                 // Big endian without a mark, and UTF-8, are both v2.4 additions.
                 2 => FirstValue(Encoding.BigEndianUnicode.GetString(text)),
