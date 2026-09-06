@@ -40,6 +40,8 @@ internal static class MediaActionDefinitions
             new(ActionId.Exit, Tr("Exit the player")),
             // Translators: Name of the command that speaks the details of the current file, such as its name and length.
             new(ActionId.AnnounceFileInfo, Tr("Speak information about the current file"), new("f")),
+            // Translators: Name of the command that speaks the title stored in the current media file.
+            new(ActionId.AnnounceTitle, Tr("Speak current media title"), new("i")),
             // Translators: Name of the command that gives the current file a new name on the disk.
             new(ActionId.RenameFile, Tr("Rename the current file"), new("f2", ShortcutModifiers.Shift)),
             // Translators: Name of the command that deletes the current file from the disk.
