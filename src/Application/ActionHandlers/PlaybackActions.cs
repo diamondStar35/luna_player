@@ -70,6 +70,10 @@ internal sealed partial class PlaybackActions
         router.Register(ActionId.SpeedUp, () => ChangeSpeed(_settings.Audio.SpeedStep));
         router.Register(ActionId.SpeedDown, () => ChangeSpeed(-_settings.Audio.SpeedStep));
         router.Register(ActionId.ResetSpeed, () => SetSpeed(1));
+        router.Register(ActionId.PitchUp, () => ChangePitch(_settings.Audio.PitchStep));
+        router.Register(ActionId.PitchDown, () => ChangePitch(-_settings.Audio.PitchStep));
+        router.Register(ActionId.ResetPitch, () => SetPitch(0));
+        router.Register(ActionId.AnnouncePitch, AnnouncePitch);
         router.Register(ActionId.PanLeft, () => ChangePan(-_settings.Audio.PanStep));
         router.Register(ActionId.PanRight, () => ChangePan(_settings.Audio.PanStep));
         router.Register(ActionId.AnnouncePan, AnnouncePan);
@@ -209,6 +213,45 @@ internal sealed partial class PlaybackActions
         var speed = _player.SetSpeed(value);
         _settings.Audio.Speed = speed;
         _speech.SpeakText(TrFormat("{speed}x", FormatSpeed(speed)));
+    }
+
+    private void ChangePitch(double delta)
+    {
+        if (!_guard.RequireFile(out _))
+            return;
+        SetPitch(_player.Pitch + delta);
+    }
+
+    private void SetPitch(double value)
+    {
+        if (!_guard.RequireFile(out _))
+            return;
+        AnnouncePitchValue(_player.SetPitch(value));
+    }
+
+    private void AnnouncePitch()
+    {
+        if (!_guard.RequireFile(out _))
+            return;
+        AnnouncePitchValue(_player.Pitch);
+    }
+
+    private void AnnouncePitchValue(double pitch)
+    {
+        _settings.Audio.Pitch = pitch;
+        var value = pitch.ToString("+0.###;-0.###;0", CultureInfo.InvariantCulture);
+        // Translators: Short announcement of pitch in advanced mode. {pitch} is a signed number such as
+        // +1, -2, or +0.25, or zero when pitch is normal.
+        var advanced = TrFormat("{pitch} semitones", value);
+        if (pitch == 0)
+        {
+            // Translators: Spoken when audio is playing at its original pitch.
+            _speech.Speak(Tr("Pitch normal"), advanced);
+            return;
+        }
+        // Translators: Spoken after audio pitch changes or when it is requested. {pitch} is a signed
+        // number of semitones, such as +1, -2, or +0.25.
+        _speech.Speak(TrFormat("Pitch {pitch} semitones", value), advanced);
     }
 
     private void ChangePan(double delta)

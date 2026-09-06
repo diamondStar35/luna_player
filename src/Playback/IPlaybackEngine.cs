@@ -35,6 +35,8 @@ internal interface IPlaybackEngine : IDisposable
     double Volume { get; }
     double SetSpeed(double speed);
     double Speed { get; }
+    double SetPitch(double semitones);
+    double Pitch { get; }
     double SetPan(double pan);
     double Pan { get; }
     IReadOnlyList<AudioDevice> GetAudioDevices();

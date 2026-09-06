@@ -9,6 +9,7 @@ internal sealed class AudioPreferences : Preferences
     private readonly AudioSettings _settings;
     private readonly TextCtrl _customSeek;
     private readonly TextCtrl _speedStep;
+    private readonly TextCtrl _pitchStep;
     private readonly SpinCtrl _volumeStep;
     private readonly SpinCtrl _panStep;
     private readonly Choice _endBehavior;
@@ -30,6 +31,9 @@ internal sealed class AudioPreferences : Preferences
         // Translators: Label of the box holding how much faster or slower one press of the speed keys makes the file play.
         var speedStepLabel = new StaticText(panel, label: Tr("Speed step"));
         _speedStep = new TextCtrl(panel, value: settings.SpeedStep.ToString(CultureInfo.InvariantCulture));
+        // Translators: Label of the box holding how many semitones one press of a pitch key changes the sound.
+        var pitchStepLabel = new StaticText(panel, label: Tr("Pitch step (semitones)"));
+        _pitchStep = new TextCtrl(panel, value: settings.PitchStep.ToString(CultureInfo.InvariantCulture));
         // Translators: Label of the box holding how much louder or quieter one press of the volume keys makes the sound.
         var volumeStepLabel = new StaticText(panel, label: Tr("Volume step"));
         _volumeStep = new SpinCtrl(panel, settings.VolumeStep, 1, 20);
@@ -56,6 +60,7 @@ internal sealed class AudioPreferences : Preferences
         var sizer = new BoxSizer(Orientation.Vertical);
         AddField(sizer, customSeekLabel, _customSeek);
         AddField(sizer, speedStepLabel, _speedStep);
+        AddField(sizer, pitchStepLabel, _pitchStep);
         AddField(sizer, volumeStepLabel, _volumeStep);
         AddField(sizer, panStepLabel, _panStep);
         AddField(sizer, endBehaviorLabel, _endBehavior);
@@ -71,6 +76,10 @@ internal sealed class AudioPreferences : Preferences
         Help(_speedStep,
             // Translators: Help text for the box holding how much one press of the speed keys changes the playing speed.
             Tr("Speed step used when increasing or decreasing playback speed. Enter a positive decimal value like 0.025 or 0.1."));
+        Help(_pitchStep,
+            // Translators: Help text for the box holding how much one press of the pitch keys raises or lowers a sound.
+            Tr("Pitch step in semitones. One semitone is the distance between adjacent piano keys. " +
+                "Decimals provide finer control: 0.1 semitone is 10 cents. Allowed range is from 0.001 to 12."));
         Help(_volumeStep,
             // Translators: Help text for the box holding how much one press of the volume keys changes the loudness.
             Tr("Volume step used when pressing volume up or down. Allowed range is from 1 to 20."));
@@ -102,15 +111,32 @@ internal sealed class AudioPreferences : Preferences
     }
 
     public override string? Validate()
-        => double.TryParse(_speedStep.Value.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var value) && value > 0
+    {
+        if (!double.TryParse(_speedStep.Value.Trim(), NumberStyles.Float,
+                CultureInfo.InvariantCulture, out var speedStep)
+            || !double.IsFinite(speedStep) || speedStep <= 0)
+        {
             // Translators: Error message shown when the speed step was typed as something other than a number above zero.
-            ? null : Tr("Speed step must be a positive number.");
+            return Tr("Speed step must be a positive number.");
+        }
+        if (!double.TryParse(_pitchStep.Value.Trim(), NumberStyles.Float,
+                CultureInfo.InvariantCulture, out var pitchStep)
+            || !double.IsFinite(pitchStep)
+            || pitchStep < AudioSettings.MinimumPitchStep
+            || pitchStep > AudioSettings.MaximumPitchStep)
+        {
+            // Translators: Error shown when the pitch step is not a number from 0.001 through 12.
+            return Tr("Pitch step must be a number from 0.001 to 12.");
+        }
+        return null;
+    }
 
     public override void Apply()
     {
         if (double.TryParse(_customSeek.Value.Trim(), NumberStyles.Float, CultureInfo.InvariantCulture, out var seek) && seek > 0)
             _settings.CustomSeekStep = seek;
         _settings.SpeedStep = double.Parse(_speedStep.Value.Trim(), CultureInfo.InvariantCulture);
+        _settings.PitchStep = double.Parse(_pitchStep.Value.Trim(), CultureInfo.InvariantCulture);
         _settings.VolumeStep = _volumeStep.Value;
         _settings.PanStep = _panStep.Value;
         _settings.EndBehavior = (EndBehavior)Math.Max(0, _endBehavior.SelectedIndex);
@@ -124,6 +150,7 @@ internal sealed class AudioPreferences : Preferences
     {
         _customSeek.Value = _settings.CustomSeekStep.ToString(CultureInfo.InvariantCulture);
         _speedStep.Value = _settings.SpeedStep.ToString(CultureInfo.InvariantCulture);
+        _pitchStep.Value = _settings.PitchStep.ToString(CultureInfo.InvariantCulture);
         _volumeStep.Value = _settings.VolumeStep;
         _panStep.Value = _settings.PanStep;
         _endBehavior.SelectedIndex = (int)_settings.EndBehavior;
