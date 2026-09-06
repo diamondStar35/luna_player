@@ -58,6 +58,7 @@ internal sealed class ApplicationController : IDisposable
         // request rather than run where they land.
         _mediaControls.ButtonPressed += action => _dispatcher.Post(() => HandleAction(action));
         _player.SetVolume(settings.Audio.Volume);
+        settings.Audio.Pitch = _player.SetPitch(settings.Audio.Pitch);
         _player.SetSpeed(settings.Audio.Speed);
         _player.TrackPositions(settings.Audio.SaveFilePositions);
         _player.SetEndBehavior(settings.Audio.EndBehavior);
@@ -103,6 +104,7 @@ internal sealed class ApplicationController : IDisposable
         StopMediaControlsClock();
         _settings.Audio.Volume = _player.Volume;
         _settings.Audio.Speed = _player.Speed;
+        _settings.Audio.Pitch = _player.Pitch;
         _settings.Audio.Pan = _player.Pan;
         _player.SavePosition();
         if (_settings.General.RememberLastPosition && _player.CurrentPath is string path && File.Exists(path))

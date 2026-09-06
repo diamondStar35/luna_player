@@ -27,6 +27,7 @@ internal enum ActionId
     // inserting one anywhere else would rename every action after it.
     OpenRecordingInterface, StartRecording, PauseRecording, StopRecording, OpenRecordingsFolder,
     PanLeft, PanRight, AnnouncePan,
+    PitchUp, PitchDown, ResetPitch, AnnouncePitch,
 }
 
 internal sealed record ActionDefinition(ActionId Id, string Label, Shortcut? PrimaryShortcut = null, Shortcut? SecondaryShortcut = null);

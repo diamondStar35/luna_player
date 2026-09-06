@@ -9,6 +9,8 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
     private readonly MPV _mpv;
     private readonly IDisposable _endRegistration;
     private double _volume = 100;
+    private double _pitch;
+    private bool _pitchFilterActive;
     private double _pan;
     private bool _panFilterActive;
     private bool _normalizationEnabled;
@@ -114,14 +116,47 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
 
     public double SetSpeed(double speed)
     {
-        var value = Precision.Normalize(Math.Clamp(speed, 0.5, 6));
+        var value = Precision.Normalize(Math.Clamp(
+            speed, AudioSettings.MinimumSpeed, AudioSettings.MaximumSpeed));
         SetPropertySafely("speed", value);
         return value;
     }
 
     public double Speed => ReadDouble("speed") is double speed
-        ? Precision.Normalize(Math.Clamp(speed, 0.5, 6))
+        ? Precision.Normalize(Math.Clamp(
+            speed, AudioSettings.MinimumSpeed, AudioSettings.MaximumSpeed))
         : 1;
+
+    public double SetPitch(double semitones)
+    {
+        var value = Precision.Normalize(Math.Clamp(
+            semitones, AudioSettings.MinimumPitch, AudioSettings.MaximumPitch));
+        if (value == 0 && !_pitchFilterActive)
+        {
+            _pitch = 0;
+            return _pitch;
+        }
+
+        // MPV implements its pitch property by combining resampling with scaletempo2. This time-domain
+        // overlap algorithm is much closer to the one behind BASS_FX's tempo stream than Rubber Band,
+        // particularly for voices. Keeping an explicit filter in the graph prevents it being inserted
+        // and removed as pitch crosses zero. Luna's pitch and playback-speed ranges fit scaletempo2's
+        // normal 0.25-to-8 speed range exactly, even at their combined extremes.
+        if (!_pitchFilterActive)
+            _pitchFilterActive = AddFilter("@audiopitch:scaletempo2");
+        if (!_pitchFilterActive)
+            return _pitch;
+
+        // Semitones are logarithmic: twelve semitones double the frequency and twelve negative
+        // semitones halve it. Recompute the derived multiplier from the normalized semitone state so
+        // repeated changes cannot accumulate floating-point drift.
+        var scale = Math.Pow(2, value / 12);
+        if (TrySetProperty("pitch", scale))
+            _pitch = value;
+        return _pitch;
+    }
+
+    public double Pitch => _pitch;
 
     public double SetPan(double pan)
     {

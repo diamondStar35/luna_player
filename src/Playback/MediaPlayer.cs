@@ -143,6 +143,7 @@ internal sealed class MediaPlayer : IDisposable
         ?? (Duration is double duration && Elapsed is double elapsed ? duration - elapsed : null));
     internal double Volume => _engine.Volume;
     internal double Speed => _engine.Speed;
+    internal double Pitch => _engine.Pitch;
     internal double Pan => _engine.Pan;
 
     internal bool OpenFile(string path, double? startPosition = null)
@@ -281,6 +282,8 @@ internal sealed class MediaPlayer : IDisposable
     internal double ChangeVolume(double delta) => SetVolume(Volume + delta);
     internal double SetSpeed(double speed) => _engine.SetSpeed(speed);
     internal double ChangeSpeed(double delta) => SetSpeed(Speed + delta);
+    internal double SetPitch(double semitones) => _engine.SetPitch(semitones);
+    internal double ChangePitch(double delta) => SetPitch(Pitch + delta);
     internal double SetPan(double pan) => _engine.SetPan(pan);
     internal double ChangePan(double delta) => SetPan(Pan + delta);
     internal bool SetLoopStart(double seconds) => _engine.SetLoopStart(seconds);

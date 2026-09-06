@@ -54,8 +54,13 @@ internal sealed class PlayerSettings
         // Repeated step-based changes accumulate binary floating-point error; round so the stored
         // value stays the one the user actually selected rather than 1.0000000000000009.
         Audio.Volume = Precision.Normalize(Math.Clamp(Audio.Volume, 0, AudioSettings.MaximumVolume));
-        Audio.Speed = Precision.Normalize(Math.Clamp(Audio.Speed, 0.5, 6));
+        Audio.Speed = Precision.Normalize(Math.Clamp(
+            Audio.Speed, AudioSettings.MinimumSpeed, AudioSettings.MaximumSpeed));
         Audio.VolumeStep = Math.Clamp(Audio.VolumeStep, 1, 20);
+        Audio.Pitch = Precision.Normalize(Math.Clamp(Audio.Pitch, AudioSettings.MinimumPitch, AudioSettings.MaximumPitch));
+        Audio.PitchStep = Precision.Normalize(Math.Clamp(
+            Audio.PitchStep > 0 ? Audio.PitchStep : 0.1,
+            AudioSettings.MinimumPitchStep, AudioSettings.MaximumPitchStep));
         Audio.Pan = Precision.Normalize(Math.Clamp(Audio.Pan, -100, 100));
         Audio.PanStep = Math.Clamp(Audio.PanStep, 1, 100);
         Audio.SpeedStep = Precision.Normalize(Audio.SpeedStep > 0 ? Audio.SpeedStep : 0.1);
@@ -129,9 +134,17 @@ internal sealed class GeneralSettings
 internal sealed class AudioSettings
 {
     internal const double MaximumVolume = 2000;
+    internal const double MinimumSpeed = 0.5;
+    internal const double MaximumSpeed = 4;
+    internal const double MinimumPitch = -12;
+    internal const double MaximumPitch = 12;
+    internal const double MinimumPitchStep = 0.001;
+    internal const double MaximumPitchStep = 12;
 
     public double Volume { get; set; } = 100;
     public double Speed { get; set; } = 1;
+    public double Pitch { get; set; }
+    public double PitchStep { get; set; } = 0.1;
     public string Device { get; set; } = string.Empty;
     public int VolumeStep { get; set; } = 5;
     public double Pan { get; set; }
@@ -150,6 +163,8 @@ internal sealed class AudioSettings
     {
         Volume = source.Volume;
         Speed = source.Speed;
+        Pitch = source.Pitch;
+        PitchStep = source.PitchStep;
         Device = source.Device;
         VolumeStep = source.VolumeStep;
         Pan = source.Pan;

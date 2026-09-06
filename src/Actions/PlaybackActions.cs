@@ -87,9 +87,11 @@ internal static class PlaybackActionDefinitions
             // Translators: Name of the command that makes the sound quieter.
             new(ActionId.VolumeDown, Tr("Decrease volume"), new("down")),
             // Translators: Name of the command that sets the volume to the loudest setting in one step.
-            new(ActionId.VolumeMaximize, Tr("Set volume to maximum"), new("up", ShortcutModifiers.Shift)),
+            new(ActionId.VolumeMaximize, Tr("Set volume to maximum"),
+                new("up", ShortcutModifiers.Control | ShortcutModifiers.Alt)),
             // Translators: Name of the command that sets the volume to the quietest setting in one step.
-            new(ActionId.VolumeMinimize, Tr("Set volume to minimum"), new("down", ShortcutModifiers.Shift)),
+            new(ActionId.VolumeMinimize, Tr("Set volume to minimum"),
+                new("down", ShortcutModifiers.Control | ShortcutModifiers.Alt)),
             // Translators: Name of the command that speaks the current volume.
             new(ActionId.AnnounceVolume, Tr("Speak current volume"), new("v")),
             // Translators: Name of the command that speaks how much of the file has already played.
@@ -110,6 +112,15 @@ internal static class PlaybackActionDefinitions
             new(ActionId.SpeedDown, Tr("Decrease playback speed"), new("down", ShortcutModifiers.Control)),
             // Translators: Name of the command that returns the playing speed to normal.
             new(ActionId.ResetSpeed, Tr("Reset playback speed to normal"), new("y", ShortcutModifiers.Alt)),
+            // Translators: Name of the command that raises audio pitch without changing playback speed.
+            new(ActionId.PitchUp, Tr("Raise pitch"), new("up", ShortcutModifiers.Shift)),
+            // Translators: Name of the command that lowers audio pitch without changing playback speed.
+            new(ActionId.PitchDown, Tr("Lower pitch"), new("down", ShortcutModifiers.Shift)),
+            // Translators: Name of the command that returns audio pitch to its original value.
+            new(ActionId.ResetPitch, Tr("Reset pitch to normal"),
+                new("p", ShortcutModifiers.Alt | ShortcutModifiers.Shift)),
+            // Translators: Name of the command that speaks the current audio pitch.
+            new(ActionId.AnnouncePitch, Tr("Speak current pitch"), new("p", ShortcutModifiers.Shift)),
             // Translators: Name of the command that moves the sound toward the left speaker.
             new(ActionId.PanLeft, Tr("Pan audio left"), new("left", ShortcutModifiers.Control)),
             // Translators: Name of the command that moves the sound toward the right speaker.
