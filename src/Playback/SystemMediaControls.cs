@@ -170,10 +170,7 @@ internal sealed class SystemMediaControls : IDisposable
         _lastArtist = string.Empty;
         _lastAlbum = string.Empty;
         var updater = controls.DisplayUpdater;
-        updater.Type = MediaPlaybackType.Unknown;
-        updater.MusicProperties.Title = string.Empty;
-        updater.MusicProperties.Artist = string.Empty;
-        updater.MusicProperties.AlbumTitle = string.Empty;
+        updater.ClearAll();
         updater.Update();
     }
 
