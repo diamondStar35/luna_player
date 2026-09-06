@@ -74,6 +74,8 @@ internal sealed class SettingsStore
             settings.Audio.Speed = IniReader.Double(values, "audio", "speed", 1);
             settings.Audio.Device = IniReader.Value(values, "audio", "device") ?? string.Empty;
             settings.Audio.VolumeStep = IniReader.Integer(values, "audio", "volume_step", 5);
+            settings.Audio.Pan = IniReader.Double(values, "audio", "pan", 0);
+            settings.Audio.PanStep = IniReader.Integer(values, "audio", "pan_step", 5);
             settings.Audio.SpeedStep = IniReader.Double(values, "audio", "speed_step", 0.1);
             settings.Audio.SeekStepKey = IniReader.Value(values, "audio", "seek_step_key") ?? "2";
             settings.Audio.CustomSeekStep = IniReader.Double(values, "audio", "seek_step_custom", 5);

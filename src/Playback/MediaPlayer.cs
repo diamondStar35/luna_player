@@ -143,6 +143,7 @@ internal sealed class MediaPlayer : IDisposable
         ?? (Duration is double duration && Elapsed is double elapsed ? duration - elapsed : null));
     internal double Volume => _engine.Volume;
     internal double Speed => _engine.Speed;
+    internal double Pan => _engine.Pan;
 
     internal bool OpenFile(string path, double? startPosition = null)
     {
@@ -156,6 +157,19 @@ internal sealed class MediaPlayer : IDisposable
         LeaveSession();
         SavePosition();
         return _playlist.OpenFiles(files, preferredPath, startPosition) && LoadCurrent();
+    }
+
+    /// <summary>Replaces the opened-files list with the entries supplied by an M3U playlist, retaining
+    /// names declared by EXTINF lines.</summary>
+    internal bool OpenPlaylist(IReadOnlyList<M3uEntry> entries)
+    {
+        LeaveSession();
+        SavePosition();
+        if (!_playlist.OpenFiles(entries.Select(static entry => entry.Location)))
+            return false;
+        foreach (var entry in entries)
+            _playlist.SetTitle(entry.Location, entry.Title);
+        return LoadCurrent();
     }
 
     /// <summary>Opens a network stream. Unlike a file it is appended to the playlist rather than replacing
@@ -267,6 +281,8 @@ internal sealed class MediaPlayer : IDisposable
     internal double ChangeVolume(double delta) => SetVolume(Volume + delta);
     internal double SetSpeed(double speed) => _engine.SetSpeed(speed);
     internal double ChangeSpeed(double delta) => SetSpeed(Speed + delta);
+    internal double SetPan(double pan) => _engine.SetPan(pan);
+    internal double ChangePan(double delta) => SetPan(Pan + delta);
     internal bool SetLoopStart(double seconds) => _engine.SetLoopStart(seconds);
     internal bool SetLoopEnd(double seconds) => _engine.SetLoopEnd(seconds);
     internal bool ClearLoop() => _engine.ClearLoop();
@@ -474,7 +490,9 @@ internal sealed class MediaPlayer : IDisposable
         // title stays available for the playlist, which names entries that are not playing.
         // A stream was named by whoever resolved it, and mpv's guess - often the numeric id in the
         // address - is worse than that name. So a titled entry keeps the title it was given.
-        if (string.Equals(path, CurrentPath, StringComparison.Ordinal) && _playlist.GetSource(path) is null)
+        if (string.Equals(path, CurrentPath, StringComparison.Ordinal)
+            && _playlist.GetSource(path) is null
+            && _playlist.GetTitle(path) is null)
             RememberTitle(path);
         return _playlist.GetTitle(path) ?? MediaLibrary.DisplayName(path);
     }

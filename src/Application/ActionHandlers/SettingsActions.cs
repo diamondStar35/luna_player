@@ -39,6 +39,7 @@ internal sealed class SettingsActions
                 view.ShowError(
                     // Translators: Shown when the setting that mixes both channels into one could not be turned on or off.
                     Tr("Could not apply the mono audio filter."), Tr("Preferences"));
+            settings.Audio.Pan = player.SetPan(settings.Audio.Pan);
             if (!player.SetSilenceRemoval(settings.Silence.Enabled))
                 view.ShowError(
                     // Translators: Shown when the setting that trims the silent parts out could not be turned on or off.

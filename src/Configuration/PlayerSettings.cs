@@ -56,6 +56,8 @@ internal sealed class PlayerSettings
         Audio.Volume = Precision.Normalize(Math.Clamp(Audio.Volume, 0, AudioSettings.MaximumVolume));
         Audio.Speed = Precision.Normalize(Math.Clamp(Audio.Speed, 0.5, 6));
         Audio.VolumeStep = Math.Clamp(Audio.VolumeStep, 1, 20);
+        Audio.Pan = Precision.Normalize(Math.Clamp(Audio.Pan, -100, 100));
+        Audio.PanStep = Math.Clamp(Audio.PanStep, 1, 100);
         Audio.SpeedStep = Precision.Normalize(Audio.SpeedStep > 0 ? Audio.SpeedStep : 0.1);
         Audio.CustomSeekStep = Precision.Normalize(Audio.CustomSeekStep > 0 ? Audio.CustomSeekStep : 5);
         Audio.SeekStepKey = Audio.SeekStepKey.Length == 1 && "1234567890-".Contains(Audio.SeekStepKey, StringComparison.Ordinal)
@@ -132,6 +134,8 @@ internal sealed class AudioSettings
     public double Speed { get; set; } = 1;
     public string Device { get; set; } = string.Empty;
     public int VolumeStep { get; set; } = 5;
+    public double Pan { get; set; }
+    public int PanStep { get; set; } = 5;
     public double SpeedStep { get; set; } = 0.1;
     public string SeekStepKey { get; set; } = "2";
     public double CustomSeekStep { get; set; } = 5;
@@ -148,6 +152,8 @@ internal sealed class AudioSettings
         Speed = source.Speed;
         Device = source.Device;
         VolumeStep = source.VolumeStep;
+        Pan = source.Pan;
+        PanStep = source.PanStep;
         SpeedStep = source.SpeedStep;
         SeekStepKey = source.SeekStepKey;
         CustomSeekStep = source.CustomSeekStep;
