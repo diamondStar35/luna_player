@@ -48,6 +48,7 @@ internal sealed class FileActions
         router.Register(ActionId.CloseAllFiles, CloseAllFiles);
         router.Register(ActionId.Exit, _view.Close);
         router.Register(ActionId.AnnounceFileInfo, AnnounceFileInfo);
+        router.Register(ActionId.AnnounceTitle, AnnounceTitle);
     }
 
     internal void OpenPaths(IEnumerable<string> rawPaths)
@@ -235,9 +236,12 @@ internal sealed class FileActions
         // Translators: Spoken when the user asks for the Windows properties of what is playing but it is a stream rather than a file on this computer.
         if (!_guard.RequireLocalFile(Tr("File properties are available only for local files."), out var path))
             return;
-        TryStart(new ProcessStartInfo(path) { UseShellExecute = true, Verb = "properties" },
-            // Translators: Spoken when the Windows properties window for the current file could not be shown.
-            Tr("Could not open file properties."));
+        if (!WindowsShell.ShowFileProperties(path))
+            _speech.Speak(
+                // Translators: Spoken when the Windows properties window for the current file could not be shown.
+                Tr("Could not open file properties."),
+                // Translators: The short wording spoken when Windows could not show a file's properties.
+                Tr("Open failed."));
     }
 
     private void OpenedFiles()
@@ -354,7 +358,7 @@ internal sealed class FileActions
     {
         try { Process.Start(startInfo); }
         catch (Exception exception) when (exception is InvalidOperationException or System.ComponentModel.Win32Exception)
-        // Translators: The short wording spoken when Windows could not be asked to open a folder or a properties window.
+        // Translators: The short wording spoken when Windows could not be asked to open a folder.
         { _speech.Speak(failure, Tr("Open failed.")); }
     }
 
@@ -429,7 +433,7 @@ internal sealed class FileActions
         switch (_fileInfoPressCount)
         {
             case 1:
-                var name = _player.DisplayName(path);
+                var name = MediaLibrary.DisplayName(path);
                 _speech.Speak(name, name);
                 break;
             case 2:
@@ -447,6 +451,20 @@ internal sealed class FileActions
                 _fileInfoPressCount = 0;
                 break;
         }
+    }
+
+    private void AnnounceTitle()
+    {
+        if (!_guard.RequireFile(out _))
+            return;
+        if (_player.CurrentTitle is { Length: > 0 } title)
+            _speech.Speak(title, title);
+        else
+            _speech.Speak(
+                // Translators: Spoken when the current media file contains no title metadata.
+                Tr("The current file has no title."),
+                // Translators: Short announcement when the current media file contains no title metadata.
+                Tr("No title."));
     }
 
     private static List<string> NormalizePaths(IEnumerable<string> rawPaths)

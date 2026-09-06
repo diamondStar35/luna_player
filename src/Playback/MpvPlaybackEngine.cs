@@ -1,5 +1,6 @@
 using System.Globalization;
 using LunaPlayer.Configuration;
+using LunaPlayer.Media;
 using MpvNet;
 
 namespace LunaPlayer.Playback;
@@ -278,7 +279,9 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
 
     /// <summary>What mpv reports as media-title. mpv substitutes the file name when the media declares no
     /// title, so deciding whether this is a real title is left to the caller, which knows the path.</summary>
-    public string? MediaTitle => ReadString("media-title")?.Trim() is { Length: > 0 } title ? title : null;
+    public string? MediaTitle => ReadString("media-title")?.Trim() is { Length: > 0 } title
+        ? LegacyMetadataEncoding.RepairArabicMojibake(title)
+        : null;
 
     // mpv owns both halves of this: keep-open leaves a finished file loaded so it can still be seeked,
     // and loop-file repeats it without the gap a reload would leave. The managed end-of-file handler still

@@ -500,6 +500,19 @@ internal sealed class MediaPlayer : IDisposable
         return _playlist.GetTitle(path) ?? MediaLibrary.DisplayName(path);
     }
 
+    /// <summary>The title stored for whatever is playing, distinct from its name on disk.</summary>
+    internal string? CurrentTitle
+    {
+        get
+        {
+            if (CurrentPath is not string path)
+                return null;
+            if (_playlist.GetSource(path) is null && _playlist.GetTitle(path) is null)
+                RememberTitle(path);
+            return _playlist.GetTitle(path);
+        }
+    }
+
     /// <summary>The display name of whatever is playing, or null when nothing is.</summary>
     internal string? CurrentDisplayName => CurrentPath is string path ? DisplayName(path) : null;
 
