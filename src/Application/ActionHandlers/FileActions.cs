@@ -64,6 +64,12 @@ internal sealed class FileActions
             return;
         }
 
+        if (File.Exists(first) && MediaLibrary.IsPlaylist(first))
+        {
+            OpenLocalPlaylist(first);
+            return;
+        }
+
         var files = paths.Where(File.Exists).ToList();
         if (files.Count == 0)
             return;
@@ -88,6 +94,8 @@ internal sealed class FileActions
         if (!File.Exists(path))
             return false;
         _settings.General.LastDirectory = Path.GetDirectoryName(path) ?? string.Empty;
+        if (MediaLibrary.IsPlaylist(path))
+            return OpenLocalPlaylist(path);
         OpenFileWithConfiguredMode(path);
         return true;
     }
@@ -108,6 +116,11 @@ internal sealed class FileActions
         _settings.General.LastDirectory = string.IsNullOrEmpty(file.Directory)
             ? Path.GetDirectoryName(file.Path) ?? string.Empty
             : file.Directory;
+        if (MediaLibrary.IsPlaylist(file.Path))
+        {
+            OpenLocalPlaylist(file.Path);
+            return;
+        }
         OpenFileWithConfiguredMode(file.Path);
     }
 
@@ -132,10 +145,65 @@ internal sealed class FileActions
                 Tr("Invalid link"));
             return;
         }
+        if (MediaLibrary.IsPlaylist(url))
+        {
+            OpenNetworkPlaylist(url);
+            return;
+        }
         if (!_player.OpenStream(url))
             _view.ShowError(
                 // Translators: Shown when the stream at the address typed into Open Link could not be played.
                 Tr("Could not open the link."), Tr("Error"));
+    }
+
+    private bool OpenLocalPlaylist(string path)
+    {
+        _settings.General.LastDirectory = Path.GetDirectoryName(path) ?? string.Empty;
+        return UsePlaylistResult(path, M3uPlaylist.ReadLocal(path), network: false);
+    }
+
+    private void OpenNetworkPlaylist(string address)
+    {
+        var prompt = new ProgressPrompt(
+            // Translators: Title of the progress window shown while an M3U playlist is downloaded.
+            Tr("Opening playlist"),
+            // Translators: Message shown while an M3U playlist is downloaded.
+            Tr("Downloading playlist..."),
+            _ => Tr("Downloading playlist..."))
+        {
+            Proportional = false,
+        };
+        BackgroundProgress.Start(_view, _dispatcher, prompt,
+            (_, token) => M3uPlaylist.ReadNetwork(address, token),
+            result => UsePlaylistResult(address, result, network: true));
+    }
+
+    private bool UsePlaylistResult(string source, M3uPlaylistResult result, bool network)
+    {
+        if (result.Error is string error)
+        {
+            _view.ShowError(
+                // Translators: Shown when an M3U or M3U8 playlist could not be read. {error} is the reason.
+                TrFormat("Could not open the playlist: {error}", error), Tr("Error"));
+            return false;
+        }
+        // An HLS manifest is itself one stream. Its non-comment lines are media chunks and variant
+        // manifests, not tracks for Luna's opened-files list; mpv understands the manifest directly.
+        if (result.IsHls)
+            return network ? _player.OpenStream(source) : _player.OpenFile(source);
+        if (result.Entries.Count == 0)
+        {
+            _view.ShowError(
+                // Translators: Shown when an M3U or M3U8 file contains no usable local files or web links.
+                Tr("The playlist contains no playable entries."), Tr("Error"));
+            return false;
+        }
+        if (_player.OpenPlaylist(result.Entries))
+            return true;
+        _view.ShowError(
+            // Translators: Shown when the entries in an M3U or M3U8 playlist could not be loaded.
+            Tr("Could not load the playlist entries."), Tr("Error"));
+        return false;
     }
 
     private void OpenFolderFromDialog()

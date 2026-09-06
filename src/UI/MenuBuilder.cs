@@ -127,6 +127,16 @@ internal static class MainMenuBuilder
         Add(speedMenu, playbackItems, commandIds, shortcuts, ActionId.ResetSpeed, Tr("Reset Speed"));
         // Translators: Player submenu holding the items that change how fast the file plays.
         playerMenu.AppendSubMenu(speedMenu, Tr("Speed"));
+
+        var panMenu = new Menu();
+        // Translators: Item in the Pan submenu: move the sound toward the left speaker.
+        Add(panMenu, playbackItems, commandIds, shortcuts, ActionId.PanLeft, Tr("Pan Left"));
+        // Translators: Item in the Pan submenu: move the sound toward the right speaker.
+        Add(panMenu, playbackItems, commandIds, shortcuts, ActionId.PanRight, Tr("Pan Right"));
+        // Translators: Item in the Pan submenu: speak the current left/right audio balance.
+        Add(panMenu, playbackItems, commandIds, shortcuts, ActionId.AnnouncePan, Tr("Speak Pan"));
+        // Translators: Player submenu holding the left/right audio balance controls.
+        playerMenu.AppendSubMenu(panMenu, Tr("Pan"));
         playerMenu.AppendSeparator();
 
         // Translators: Player menu item that plays the file before the current one.
