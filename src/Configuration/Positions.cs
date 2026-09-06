@@ -14,7 +14,9 @@ internal sealed class PositionStore
         var key = Paths.Key(mediaPath);
         if (key.Length == 0) return null;
         var document = Load();
-        return document.Files.TryGetValue(key, out var entry) ? Math.Max(0, entry.Position) : null;
+        return document.Files.TryGetValue(key, out var entry)
+            ? Precision.Normalize(Math.Max(0, entry.Position))
+            : null;
     }
 
     internal bool Set(string mediaPath, double position)
@@ -25,7 +27,7 @@ internal sealed class PositionStore
         document.Files[key] = new PositionEntry
         {
             Path = Paths.Absolute(mediaPath),
-            Position = Math.Max(0, position),
+            Position = Precision.Normalize(Math.Max(0, position)),
             Updated = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
         };
         return Save(document);
@@ -37,7 +39,10 @@ internal sealed class PositionStore
         try
         {
             using var stream = File.OpenRead(_path);
-            return JsonSerializer.Deserialize(stream, PositionJsonContext.Default.PositionDocument) ?? new();
+            var document = JsonSerializer.Deserialize(stream, PositionJsonContext.Default.PositionDocument) ?? new();
+            foreach (var entry in document.Files.Values)
+                entry.Position = Precision.Normalize(entry.Position);
+            return document;
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
         {

@@ -52,7 +52,7 @@ internal sealed partial class PlaybackActions
         router.Register(ActionId.GoToTime, GoToTime);
         router.Register(ActionId.VolumeUp, () => ChangeVolume(_settings.Audio.VolumeStep));
         router.Register(ActionId.VolumeDown, () => ChangeVolume(-_settings.Audio.VolumeStep));
-        router.Register(ActionId.VolumeMaximize, () => SetVolume(1000));
+        router.Register(ActionId.VolumeMaximize, () => SetVolume(AudioSettings.MaximumVolume));
         router.Register(ActionId.VolumeMinimize, () => SetVolume(5));
         router.Register(ActionId.AnnounceVolume, AnnounceVolume);
         router.Register(ActionId.AnnounceElapsed, () => AnnounceTime(

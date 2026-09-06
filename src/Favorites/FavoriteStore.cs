@@ -58,7 +58,7 @@ internal sealed class FavoriteStore
         if (!Check(name, kind, link, out var favorite))
             return null;
         favorite.Id = Guid.NewGuid().ToString("N");
-        favorite.Created = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0;
+        favorite.Created = Precision.Normalize(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0);
         var document = Load();
         document.Items.Add(favorite);
         return Save(document) ? favorite : null;
@@ -215,6 +215,8 @@ internal sealed class FavoriteStore
             if (document is null)
                 return new FavoriteDocument();
             document.Items ??= [];
+            foreach (var favorite in document.Items)
+                favorite.Created = Precision.Normalize(favorite.Created);
             return document;
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
