@@ -126,7 +126,9 @@ internal sealed class ApplicationHost : IDisposable
         _sessions.Dispose();
         _resolveCache.Dispose();
         _player.Dispose();
-        _speech.Dispose();
+        // Closing a screen-reader backend sends a global stop command. Focus has already moved to the next
+        // application here, so that would cancel its focus announcement. Simple Player likewise leaves its
+        // accessible_output3 speaker to process termination.
         _view.Dispose();
     }
 
