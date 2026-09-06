@@ -53,11 +53,11 @@ internal sealed class PlayerSettings
     {
         // Repeated step-based changes accumulate binary floating-point error; round so the stored
         // value stays the one the user actually selected rather than 1.0000000000000009.
-        Audio.Volume = Math.Round(Math.Clamp(Audio.Volume, 0, 1000), 3);
-        Audio.Speed = Math.Round(Math.Clamp(Audio.Speed, 0.5, 6), 3);
+        Audio.Volume = Precision.Normalize(Math.Clamp(Audio.Volume, 0, AudioSettings.MaximumVolume));
+        Audio.Speed = Precision.Normalize(Math.Clamp(Audio.Speed, 0.5, 6));
         Audio.VolumeStep = Math.Clamp(Audio.VolumeStep, 1, 20);
-        Audio.SpeedStep = Audio.SpeedStep > 0 ? Audio.SpeedStep : 0.1;
-        Audio.CustomSeekStep = Audio.CustomSeekStep > 0 ? Audio.CustomSeekStep : 5;
+        Audio.SpeedStep = Precision.Normalize(Audio.SpeedStep > 0 ? Audio.SpeedStep : 0.1);
+        Audio.CustomSeekStep = Precision.Normalize(Audio.CustomSeekStep > 0 ? Audio.CustomSeekStep : 5);
         Audio.SeekStepKey = Audio.SeekStepKey.Length == 1 && "1234567890-".Contains(Audio.SeekStepKey, StringComparison.Ordinal)
             ? Audio.SeekStepKey : "2";
         YouTube.SearchResultCount = Math.Clamp(YouTube.SearchResultCount, 5, 100);
@@ -72,12 +72,14 @@ internal sealed class PlayerSettings
         Recording.Bitrate = Math.Clamp(Recording.Bitrate, 8000, 512000);
         Recording.Folder = string.IsNullOrWhiteSpace(Recording.Folder)
             ? Paths.DefaultRecordingsDirectory : Recording.Folder.Trim();
+        Playback.LastPosition = Precision.Normalize(Math.Max(0, Playback.LastPosition));
         Silence.StartPeriods = Math.Max(0, Silence.StartPeriods);
-        Silence.StartDuration = Math.Max(0, Silence.StartDuration);
+        Silence.StartDuration = Precision.Normalize(Math.Max(0, Silence.StartDuration));
+        Silence.Threshold = Precision.Normalize(Silence.Threshold);
         Silence.StopPeriods = Math.Max(-1, Silence.StopPeriods);
-        Silence.StopDuration = Math.Max(0, Silence.StopDuration);
-        Silence.StopSilence = Math.Max(0, Silence.StopSilence);
-        Silence.Window = Silence.Window > 0 ? Silence.Window : 0.02;
+        Silence.StopDuration = Precision.Normalize(Math.Max(0, Silence.StopDuration));
+        Silence.StopSilence = Precision.Normalize(Math.Max(0, Silence.StopSilence));
+        Silence.Window = Precision.Normalize(Silence.Window > 0 ? Silence.Window : 0.02);
         General.LastDirectory ??= string.Empty;
         General.Language = string.IsNullOrWhiteSpace(General.Language)
             ? Localization.SystemLanguage : General.Language.Trim();
@@ -124,6 +126,8 @@ internal sealed class GeneralSettings
 
 internal sealed class AudioSettings
 {
+    internal const double MaximumVolume = 2000;
+
     public double Volume { get; set; } = 100;
     public double Speed { get; set; } = 1;
     public string Device { get; set; } = string.Empty;

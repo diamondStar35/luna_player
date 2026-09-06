@@ -21,7 +21,7 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
             ["keep_open"] = "no",
             ["input_default_bindings"] = false,
             ["input_vo_keyboard"] = false,
-            ["volume_max"] = 1000,
+            ["volume_max"] = Math.Ceiling(ToMpvVolume(AudioSettings.MaximumVolume)),
         };
         if (windowHandle != 0)
             options["wid"] = windowHandle.ToString(CultureInfo.InvariantCulture);
@@ -45,7 +45,7 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
     public bool Load(string path, double? startPosition = null, bool paused = false, string? audioFile = null)
     {
         Dictionary<string, object?>? options = startPosition.HasValue
-            ? new Dictionary<string, object?> { ["start"] = startPosition.Value }
+            ? new Dictionary<string, object?> { ["start"] = Precision.Normalize(startPosition.Value) }
             : null;
         return TryDo(mpv =>
         {
@@ -70,27 +70,27 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
 
     public bool IsPaused => ReadBoolean("pause") ?? false;
 
-    public double? Duration => ReadDouble("duration");
+    public double? Duration => Precision.Normalize(ReadDouble("duration"));
 
-    public double? Elapsed => ReadDouble("time-pos");
+    public double? Elapsed => Precision.Normalize(ReadDouble("time-pos"));
 
-    public double? Remaining => ReadDouble("time-remaining");
+    public double? Remaining => Precision.Normalize(ReadDouble("time-remaining"));
 
     public void SeekRelative(double seconds)
-        => TryDo(mpv => mpv.Command("seek", seconds, "relative"));
+        => TryDo(mpv => mpv.Command("seek", Precision.Normalize(seconds), "relative"));
 
     public void SeekAbsolute(double seconds)
-        => TryDo(mpv => mpv.Command("seek", Math.Max(0, seconds), "absolute"));
+        => TryDo(mpv => mpv.Command("seek", Precision.Normalize(Math.Max(0, seconds)), "absolute"));
 
     public bool SetLoopStart(double seconds)
     {
-        var startSet = TrySetProperty("ab-loop-a", Math.Max(0, seconds));
+        var startSet = TrySetProperty("ab-loop-a", Precision.Normalize(Math.Max(0, seconds)));
         var endCleared = TrySetProperty("ab-loop-b", "no");
         return startSet && endCleared;
     }
 
     public bool SetLoopEnd(double seconds)
-        => TrySetProperty("ab-loop-b", Math.Max(0, seconds));
+        => TrySetProperty("ab-loop-b", Precision.Normalize(Math.Max(0, seconds)));
 
     public bool ClearLoop()
     {
@@ -101,10 +101,10 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
 
     public double SetVolume(double volume)
     {
-        _volume = Math.Clamp(volume, 0, 1000);
+        _volume = Precision.Normalize(Math.Clamp(volume, 0, AudioSettings.MaximumVolume));
         // Volume is mpv's continuously adjustable software mixer. Changing a live lavfi gain filter,
         // even through af-command, can make buffered filters such as dynaudnorm audibly pump or drop out.
-        SetPropertySafely("volume", _volume);
+        ApplyVolume();
         return _volume;
     }
 
@@ -112,12 +112,14 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
 
     public double SetSpeed(double speed)
     {
-        var value = Math.Clamp(speed, 0.5, 6);
+        var value = Precision.Normalize(Math.Clamp(speed, 0.5, 6));
         SetPropertySafely("speed", value);
         return value;
     }
 
-    public double Speed => ReadDouble("speed") is double speed ? Math.Clamp(speed, 0.5, 6) : 1;
+    public double Speed => ReadDouble("speed") is double speed
+        ? Precision.Normalize(Math.Clamp(speed, 0.5, 6))
+        : 1;
 
     public IReadOnlyList<AudioDevice> GetAudioDevices()
     {
@@ -155,17 +157,17 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
         _normalizationEnabled = enabled;
         if (!enabled)
         {
-            SetPropertySafely("volume", _volume);
+            ApplyVolume();
             return true;
         }
         if (!AddFilter("@audionormalize:lavfi=[dynaudnorm=f=150:g=15,alimiter=limit=0.95]"))
         {
             RemoveFilter("@audionormalize");
             _normalizationEnabled = false;
-            SetPropertySafely("volume", _volume);
+            ApplyVolume();
             return false;
         }
-        SetPropertySafely("volume", _volume);
+        ApplyVolume();
         return true;
     }
 
@@ -218,6 +220,13 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
     }
 
     private void SetPropertySafely(string name, object value) => TrySetProperty(name, value);
+
+    /// <summary>Converts Luna's linear percentage to mpv's cubic volume scale. For example, Luna's
+    /// 2000% is a 20x amplitude gain and maps to approximately 271.44 on mpv's volume property.</summary>
+    private static double ToMpvVolume(double volume)
+        => volume <= 0 ? 0 : Precision.Normalize(100 * Math.Cbrt(volume / 100));
+
+    private void ApplyVolume() => SetPropertySafely("volume", ToMpvVolume(_volume));
 
     /// <summary>The failures a call into libmpv can produce: mpv refusing the call, the player having been
     /// shut down under it, and a property whose value does not convert to the type the caller asked for.

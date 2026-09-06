@@ -60,7 +60,7 @@ internal sealed class PlaylistState
         _marks.Clear();
         _info.Clear();
         _currentIndex = selectedIndex;
-        _pendingStart = selectedIndex == 0 && preferredPath is null ? null : startPosition;
+        _pendingStart = selectedIndex == 0 && preferredPath is null ? null : Precision.Normalize(startPosition);
         if (IsShuffleEnabled)
             RebuildShuffleOrder();
         return true;
