@@ -284,6 +284,10 @@ internal sealed partial class MainFrame : IMainView
 
     private void OnClosing(object? sender, CloseEventArgs args)
     {
+        // Match Simple Player's shutdown order: stop the global listener before saving state or stopping
+        // playback. In particular, Alt+F4 must not leave the hook alive for the rest of synchronous
+        // shutdown while Alt is still being released.
+        _globalShortcuts.Dispose();
         CloseRequested?.Invoke();
         args.Skip();
     }
