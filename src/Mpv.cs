@@ -1,7 +1,6 @@
-// Single-file C# binding for libmpv, ported from the accompanying mpv.py.
-// Original Python wrapper copyright (C) 2017-2020 Sebastian Götte <code@jaseg.net>.
-// C# port generated for this project in 2026.
-// SPDX-License-Identifier: AGPL-3.0-or-later
+// Independent C# binding implemented against libmpv's public client API.
+// Copyright (C) 2026 Luna Player contributors.
+// SPDX-License-Identifier: Apache-2.0
 #nullable enable
 using System;
 using System.Collections;

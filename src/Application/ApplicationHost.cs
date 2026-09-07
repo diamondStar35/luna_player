@@ -34,8 +34,9 @@ internal sealed class ApplicationHost : IDisposable
     internal ApplicationHost(SingleInstanceService singleInstance, IReadOnlyList<string> initialPaths)
     {
         _singleInstance = singleInstance;
-        _settingsStore = new SettingsStore(Paths.SettingsFile, Paths.LegacySettingsFile);
+        _settingsStore = new SettingsStore(Paths.SettingsFile);
         _settings = _settingsStore.Load();
+        var settingsError = _settingsStore.LastError;
         // Before anything else: the action tables and every window below build their strings once, and they
         // have to be built in the user's language.
         Localization.Initialize(_settings.General.Language);
@@ -45,11 +46,17 @@ internal sealed class ApplicationHost : IDisposable
         _dispatcher = new WxDispatcher();
         _catalog = new LunaPlayer.Recording.AudioCatalog();
         _view = new MainFrame(_shortcuts, ActionRegistry.All, _dispatcher, _catalog);
+        if (settingsError.Length > 0)
+        {
+            _dispatcher.Post(() => _view.ShowError(
+                TrFormat("The settings file could not be loaded. Default settings will be used, and the existing file will not be overwritten. Import a valid settings file or reset the settings to replace it.\n\n{error}", settingsError),
+                Tr("Settings error")));
+        }
         _speech = new SpeechOutput(_settings);
         _player = new MediaPlayer(new MpvPlaybackEngine(_view.NativeHandle), new PositionStore(Paths.PositionsFile));
         var clipboard = new WxClipboardService();
         // Now that there is a toolkit, the crash window can offer to copy.
-        CrashReport.Install(clipboard);
+        CrashReport.SetClipboard(clipboard);
         var selection = new PlaybackSelection();
         var router = new ActionRouter();
         var fileActions = new FileActions(router, _view, _player, _settings, _speech, clipboard, _dispatcher);
@@ -65,10 +72,8 @@ internal sealed class ApplicationHost : IDisposable
         var youTube = new LunaPlayer.YouTube.Backend(explode, ytDlp, _settings);
         _resolveCache = new LunaPlayer.YouTube.ResolveCache(explode, ytDlp, youTube);
         _components = new LunaPlayer.YouTube.Components(_view, _settings, _speech, _dispatcher, ytDlp);
-        // The handler and the sessions each need the other: the sessions play what the list offers, and the
-        // handler saves, copies and opens what it names. The knot is tied with the three actions the
-        // sessions borrow rather than by handing over the whole handler, so neither can reach into the
-        // other for anything else.
+        // Sessions need three YouTube actions. Callbacks avoid giving either object access to the other's
+        // unrelated responsibilities.
         YouTubeActions? youTubeActions = null;
         _sessions = new LunaPlayer.YouTube.YouTubeSessions(
             _view, _player, _settings, _speech, _dispatcher, explode, youTube, _resolveCache,

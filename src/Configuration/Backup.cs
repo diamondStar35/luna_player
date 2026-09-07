@@ -35,7 +35,7 @@ internal sealed class BackupService
             _ = Failed(_settings.LastError);
             return null;
         }
-        if (!_settings.SaveExplicit(imported))
+        if (!_settings.ReplaceExplicit(imported))
         {
             _ = Failed(_settings.LastError);
             return null;
@@ -47,7 +47,7 @@ internal sealed class BackupService
     internal PlayerSettings? ResetSettings()
     {
         var defaults = new PlayerSettings();
-        if (!_settings.SaveExplicit(defaults))
+        if (!_settings.ReplaceExplicit(defaults))
         {
             _ = Failed(_settings.LastError);
             return null;

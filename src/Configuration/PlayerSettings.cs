@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 using LunaPlayer.Actions;
 using LunaPlayer.Recording;
@@ -47,6 +48,68 @@ internal sealed class PlayerSettings
         YouTube.Apply(source.YouTube);
         Recording.Apply(source.Recording);
         Validate();
+    }
+
+    /// <summary>Rejects malformed persisted settings before normalization can hide the problem.</summary>
+    internal void ValidateStored()
+    {
+        if (General is null || Audio is null || Playback is null || Silence is null
+            || Shortcuts is null || YouTube is null || Recording is null)
+            throw new JsonException("The settings file is missing a required section.");
+
+        Require(Version >= 1, "version");
+        Require(!string.IsNullOrWhiteSpace(General.Language), "general.language");
+        Require(General.LastDirectory is not null, "general.lastDirectory");
+        Require(Enum.IsDefined(General.Verbosity), "general.verbosity");
+        Require(Enum.IsDefined(General.OpenFilesMode), "general.openFilesMode");
+
+        Require(FiniteBetween(Audio.Volume, 0, AudioSettings.MaximumVolume), "audio.volume");
+        Require(FiniteBetween(Audio.Speed, AudioSettings.MinimumSpeed, AudioSettings.MaximumSpeed), "audio.speed");
+        Require(FiniteBetween(Audio.Pitch, AudioSettings.MinimumPitch, AudioSettings.MaximumPitch), "audio.pitch");
+        Require(FiniteBetween(Audio.PitchStep, AudioSettings.MinimumPitchStep, AudioSettings.MaximumPitchStep),
+            "audio.pitchStep");
+        Require(Audio.Device is not null, "audio.device");
+        Require(Audio.VolumeStep is >= 1 and <= 20, "audio.volumeStep");
+        Require(FiniteBetween(Audio.Pan, -100, 100), "audio.pan");
+        Require(Audio.PanStep is >= 1 and <= 100, "audio.panStep");
+        Require(double.IsFinite(Audio.SpeedStep) && Audio.SpeedStep > 0, "audio.speedStep");
+        Require(double.IsFinite(Audio.CustomSeekStep) && Audio.CustomSeekStep > 0, "audio.customSeekStep");
+        Require(Audio.SeekStepKey is { Length: 1 }
+            && "1234567890-".Contains(Audio.SeekStepKey, StringComparison.Ordinal), "audio.seekStepKey");
+        Require(Enum.IsDefined(Audio.EndBehavior), "audio.endBehavior");
+
+        Require(Playback.LastFile is not null, "playback.lastFile");
+        Require(double.IsFinite(Playback.LastPosition) && Playback.LastPosition >= 0,
+            "playback.lastPosition");
+
+        Require(Silence.StartPeriods >= 0, "silence.startPeriods");
+        Require(double.IsFinite(Silence.StartDuration) && Silence.StartDuration >= 0,
+            "silence.startDuration");
+        Require(double.IsFinite(Silence.Threshold), "silence.threshold");
+        Require(Silence.StopPeriods >= -1, "silence.stopPeriods");
+        Require(double.IsFinite(Silence.StopDuration) && Silence.StopDuration >= 0,
+            "silence.stopDuration");
+        Require(double.IsFinite(Silence.StopSilence) && Silence.StopSilence >= 0,
+            "silence.stopSilence");
+        Require(double.IsFinite(Silence.Window) && Silence.Window > 0, "silence.window");
+        Require(Enum.IsDefined(Silence.Detection), "silence.detection");
+
+        if (Shortcuts.Primary is null || Shortcuts.Secondary is null || Shortcuts.Global is null)
+            throw new JsonException("The settings file contains an invalid shortcuts section.");
+        ValidateShortcuts(Shortcuts.Primary, "shortcuts.primary");
+        ValidateShortcuts(Shortcuts.Secondary, "shortcuts.secondary");
+        ValidateShortcuts(Shortcuts.Global, "shortcuts.global");
+
+        Require(Enum.IsDefined(YouTube.Quality), "youTube.quality");
+        Require(YouTube.SearchResultCount is >= 5 and <= 100, "youTube.searchResultCount");
+        Require(Enum.IsDefined(YouTube.MixedLink), "youTube.mixedLink");
+        Require(Enum.IsDefined(YouTube.Channel), "youTube.channel");
+
+        Require(Enum.IsDefined(Recording.Format), "recording.format");
+        Require(AudioCatalog.SampleRates.Contains(Recording.SampleRate), "recording.sampleRate");
+        Require(Recording.Channels is >= 1 and <= 2, "recording.channels");
+        Require(Recording.Bitrate is >= 8000 and <= 512000, "recording.bitrate");
+        Require(!string.IsNullOrWhiteSpace(Recording.Folder), "recording.folder");
     }
 
     internal void Validate()
@@ -102,6 +165,29 @@ internal sealed class PlayerSettings
         var globalManager = new ShortcutManager(GlobalActionDefinitions.All);
         globalManager.Apply(Shortcuts.Global, ReadOnlyDictionary<ActionId, Shortcut>.Empty);
         Shortcuts.Global = globalManager.PrimaryOverrides();
+    }
+
+    private static bool FiniteBetween(double value, double minimum, double maximum)
+        => double.IsFinite(value) && value >= minimum && value <= maximum;
+
+    private static void ValidateShortcuts(IReadOnlyDictionary<ActionId, Shortcut> shortcuts, string section)
+    {
+        const ShortcutModifiers knownModifiers = ShortcutModifiers.Control | ShortcutModifiers.Shift
+            | ShortcutModifiers.Alt | ShortcutModifiers.Win;
+        foreach (var (action, shortcut) in shortcuts)
+        {
+            var normalized = new Shortcut((shortcut.Key ?? string.Empty).Trim().ToLowerInvariant(),
+                shortcut.Modifiers);
+            Require(Enum.IsDefined(action), $"{section}.{action}");
+            Require((shortcut.Modifiers & ~knownModifiers) == 0 && ShortcutManager.IsValid(normalized),
+                $"{section}.{action}");
+        }
+    }
+
+    private static void Require(bool condition, string name)
+    {
+        if (!condition)
+            throw new JsonException($"The settings value '{name}' is invalid.");
     }
 }
 
@@ -294,10 +380,8 @@ internal sealed class YouTubeSettings
 /// <summary>How a recording is written, when nothing more particular has been asked for.</summary>
 ///
 /// <remarks>
-/// These are the defaults, and they are what the recording shortcuts use when no sources have been set
-/// up - which is the whole of recording for somebody who never opens the recording window. The window
-/// keeps its own copy of them for the session it is used in, so changing the format there for one
-/// afternoon does not rewrite what the player starts with tomorrow.
+/// Recording shortcuts use these defaults when no sources are configured. The recording window works on
+/// a session copy, so temporary changes are not persisted automatically.
 /// </remarks>
 internal sealed class RecordingSettings
 {
