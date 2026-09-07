@@ -152,8 +152,8 @@ internal sealed class ExplodeClient
     ///
     /// <remarks>
     /// One stream, so one file. Playback pairs a picture stream with a separate sound stream, but joining
-    /// those into a file needs ffmpeg, which the player does not ship - so a video download takes the
-    /// muxed stream, which carries both and is what yt-dlp falls back to for the same reason.
+    /// those into a file needs ffmpeg, which this direct-download backend does not invoke - so a video
+    /// download takes the muxed stream, which carries both.
     ///
     /// The stream is chosen before the name is built, because the name ends in the container the chosen
     /// stream actually uses. Asking twice could answer differently, and did.

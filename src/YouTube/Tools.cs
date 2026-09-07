@@ -20,6 +20,9 @@ internal static class Tools
     /// <summary>The folder the programs are kept in: the one the player itself runs from.</summary>
     internal static string Directory { get; } = AppContext.BaseDirectory.TrimEnd(Path.DirectorySeparatorChar);
 
+    /// <summary>The folder containing libmpv, FFmpeg and the other native libraries shipped with Luna.</summary>
+    internal static string NativeDirectory { get; } = Path.Combine(Directory, "lib");
+
     internal static string YtDlpPath { get; } = Path.Combine(Directory, "yt-dlp.exe");
 
     internal static string DenoPath { get; } = Path.Combine(Directory, "deno.exe");
@@ -53,13 +56,14 @@ internal static class Tools
     internal static string? DenoRuntime
         => HasDeno ? $"deno:{Path.GetFullPath(DenoPath).Replace('\\', '/')}" : null;
 
-    /// <summary>Starts one of the programs with the player's folder on its PATH.</summary>
+    /// <summary>Starts one of the programs with the player's executable and native-library folders on its
+    /// PATH.</summary>
     ///
     /// <remarks>
-    /// The folder is prepended rather than the environment left alone, because yt-dlp looks for its helper
-    /// programs on PATH and would otherwise find whatever else on the machine is called ffmpeg. The Python
-    /// player does the same, by changing its own process's PATH; this changes only the child's, which
-    /// leaves the player itself alone.
+    /// The folders are prepended rather than the environment left alone, because yt-dlp looks for its helper
+    /// programs on PATH. This makes it use Luna's FFmpeg from <c>lib</c>, while still finding yt-dlp and Deno
+    /// beside LunaPlayer.exe. The Python player changes its own process's PATH; changing only the child's
+    /// leaves Luna itself alone.
     /// </remarks>
     internal static Process Start(string executable, IEnumerable<string> arguments)
     {
@@ -75,8 +79,11 @@ internal static class Tools
         };
         foreach (var argument in arguments)
             info.ArgumentList.Add(argument);
+        var bundledPath = $"{Directory}{Path.PathSeparator}{NativeDirectory}";
         var path = Environment.GetEnvironmentVariable("PATH") ?? string.Empty;
-        info.Environment["PATH"] = path.Length > 0 ? $"{Directory}{Path.PathSeparator}{path}" : Directory;
+        info.Environment["PATH"] = path.Length > 0
+            ? $"{bundledPath}{Path.PathSeparator}{path}"
+            : bundledPath;
         return Process.Start(info) ?? throw new InvalidOperationException($"Could not start {executable}.");
     }
 }
