@@ -16,10 +16,9 @@ mpv                                                                    mpv.dll
 -------------------------------------------------------------------------------
 
 Copyright (c) the mpv developers and the contributors to MPlayer and mplayer2,
-from which mpv is derived. mpv incorporates FFmpeg, copyright (c) the FFmpeg
-developers.
+from which mpv is derived.
 
-  Version:   v0.41.0-1023-g69e63f425
+  Version:   v0.41.0-1037-g989d32716
   Home page: https://mpv.io/
   Source:    https://github.com/mpv-player/mpv
   Licence:   GNU Lesser General Public License, version 2.1 or later
@@ -29,11 +28,31 @@ mpv is used through its client API to decode and play media. It is loaded at
 run time as a shared library and is not linked into the LunaPlayer executable.
 
 The Lesser General Public License entitles a recipient of this distribution to
-the corresponding source code for mpv and for the FFmpeg libraries built into
-it, and to modify those components and relink them with Luna Player. Both are
-satisfied by the addresses above and by the shared library remaining separate
-and replaceable: substituting a compatible mpv.dll requires no change to Luna
-Player.
+the corresponding source code for mpv and to modify and replace that component.
+Both are satisfied by the address above and by the shared library remaining
+separate and replaceable: substituting a compatible mpv.dll requires no change
+to Luna Player.
+
+
+-------------------------------------------------------------------------------
+FFmpeg                              ffmpeg.exe, avcodec-63.dll, avdevice-63.dll,
+                                    avfilter-12.dll, avformat-63.dll,
+                                    avutil-61.dll, swresample-7.dll,
+                                    swscale-10.dll
+-------------------------------------------------------------------------------
+
+Copyright (c) the FFmpeg developers.
+
+  Version:   N-126455-gecc7eb519
+  Home page: https://ffmpeg.org/
+  Source:    https://github.com/FFmpeg/FFmpeg
+  Licence:   GNU Lesser General Public License, version 3 or later
+             third-party/licenses/LGPL-3.0.txt
+
+mpv dynamically loads these FFmpeg libraries for media processing. The small
+ffmpeg.exe command-line front end uses the same libraries and is included for
+media conversion and export features. FFmpeg and its libraries remain separate
+from the LunaPlayer executable and may be replaced with compatible builds.
 
 
 -------------------------------------------------------------------------------
@@ -89,7 +108,7 @@ WxSharp                                                             (compiled in
 
 Copyright (c) the WxSharp contributors.
 
-  Source:    third-party/WxSharp (git submodule)
+  Source:    https://github.com/diamondStar35/wx_sharp
   Licence:   Apache License, Version 2.0
              third-party/WxSharp/LICENSE
 
