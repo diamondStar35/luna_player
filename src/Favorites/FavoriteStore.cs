@@ -6,16 +6,7 @@ namespace LunaPlayer.Favorites;
 
 /// <summary>The links the user has saved to come back to.</summary>
 ///
-/// <remarks>
-/// A port of the Python player's <c>favorites</c> package, keeping its file shape so a favourites file
-/// written by that player is read as it stands.
-///
-/// Nothing opens these yet. Three of the four kinds are YouTube addresses, and the player has no YouTube
-/// support to hand them to; the fourth is a plain network stream, which it could open today but which has
-/// nowhere to be chosen from until there is a window listing what is saved. What is here is the store and
-/// the rules about what may go in it, so that the part which is missing is the part that belongs with
-/// YouTube rather than the part underneath it.
-/// </remarks>
+/// <remarks>The JSON shape remains compatible with favorites exported by the Python player.</remarks>
 internal sealed class FavoriteStore
 {
     private readonly string _path;
@@ -28,16 +19,11 @@ internal sealed class FavoriteStore
     internal string LastError { get; private set; } = string.Empty;
 
     /// <summary>Everything saved, oldest first.</summary>
-    /// <remarks>
-    /// An entry that does not survive <see cref="IsUsable"/> is passed over rather than repaired or thrown
-    /// away: a file that has been edited by hand, or written by a newer version, still gives up the entries
-    /// that make sense, and nothing is deleted behind the user's back.
-    /// </remarks>
     internal IReadOnlyList<Favorite> ListAll()
     {
-        var document = Load();
+        if (!TryLoadCurrent(out var document))
+            return [];
         return document.Items
-            .Where(IsUsable)
             .OrderBy(favorite => favorite.Created)
             .ThenBy(favorite => favorite.Name, StringComparer.OrdinalIgnoreCase)
             .ToArray();
@@ -59,7 +45,8 @@ internal sealed class FavoriteStore
             return null;
         favorite.Id = Guid.NewGuid().ToString("N");
         favorite.Created = Precision.Normalize(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() / 1000.0);
-        var document = Load();
+        if (!TryLoadCurrent(out var document))
+            return null;
         document.Items.Add(favorite);
         return Save(document) ? favorite : null;
     }
@@ -70,7 +57,8 @@ internal sealed class FavoriteStore
         var target = (id ?? string.Empty).Trim();
         if (target.Length == 0 || !Check(name, kind, link, out var replacement))
             return false;
-        var document = Load();
+        if (!TryLoadCurrent(out var document))
+            return false;
         var existing = document.Items.FirstOrDefault(favorite => favorite.Id.Trim() == target);
         if (existing is null)
             return Report(false, NotFound);
@@ -85,7 +73,8 @@ internal sealed class FavoriteStore
         var target = (id ?? string.Empty).Trim();
         if (target.Length == 0)
             return Report(false, NotFound);
-        var document = Load();
+        if (!TryLoadCurrent(out var document))
+            return false;
         if (document.Items.RemoveAll(favorite => favorite.Id.Trim() == target) == 0)
             return Report(false, NotFound);
         return Save(document);
@@ -179,12 +168,6 @@ internal sealed class FavoriteStore
         _ => Tr("Generic stream"),
     };
 
-    /// <summary>Whether an entry read from the file is complete enough to show.</summary>
-    private static bool IsUsable(Favorite favorite)
-        => favorite.Id.Trim().Length > 0
-            && favorite.Name.Trim().Length > 0
-            && favorite.Link.Trim().Length > 0;
-
     /// <summary>Validates the fields and returns them trimmed, ready to store.</summary>
     private bool Check(string name, FavoriteKind kind, string link, out Favorite favorite)
     {
@@ -204,26 +187,48 @@ internal sealed class FavoriteStore
         return success;
     }
 
-    private FavoriteDocument Load()
+    /// <summary>Loads the live file. A missing file is an empty store; an unreadable or invalid file blocks
+    /// mutations so it cannot be overwritten accidentally.</summary>
+    private bool TryLoadCurrent(out FavoriteDocument document)
     {
         if (!File.Exists(_path))
-            return new FavoriteDocument();
+        {
+            document = new FavoriteDocument();
+            return Report(true, string.Empty);
+        }
         try
         {
             using var stream = File.OpenRead(_path);
-            var document = JsonSerializer.Deserialize(stream, FavoriteJsonContext.Default.FavoriteDocument);
-            if (document is null)
-                return new FavoriteDocument();
-            document.Items ??= [];
+            document = JsonSerializer.Deserialize(stream, FavoriteJsonContext.Default.FavoriteDocument)
+                ?? throw new JsonException("The favorites file is empty.");
+            ValidateDocument(document);
             foreach (var favorite in document.Items)
                 favorite.Created = Precision.Normalize(favorite.Created);
-            return document;
+            return Report(true, string.Empty);
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
         {
-            // A file that cannot be read is reported as empty rather than as an error, so that saving a new
-            // favourite still works. Save writes the whole document, which repairs it.
-            return new FavoriteDocument();
+            document = new FavoriteDocument();
+            return Report(false, exception.Message);
+        }
+    }
+
+    private static void ValidateDocument(FavoriteDocument document)
+    {
+        if (document.Version < 1 || document.Items is null)
+            throw new JsonException("The favorites file does not contain a valid items collection.");
+        foreach (var favorite in document.Items)
+        {
+            if (favorite is null
+                || string.IsNullOrWhiteSpace(favorite.Id)
+                || string.IsNullOrWhiteSpace(favorite.Name)
+                || string.IsNullOrWhiteSpace(favorite.Link)
+                || !Enum.IsDefined(favorite.Kind)
+                || !double.IsFinite(favorite.Created)
+                || favorite.Created < 0)
+            {
+                throw new JsonException("The favorites file contains an invalid entry.");
+            }
         }
     }
 

@@ -13,8 +13,7 @@ namespace LunaPlayer.Media;
 /// magic is not. A file whose format states no length - MPEG program and transport streams, raw ADTS - is
 /// reported as null so the caller can fall back to something that will actually decode it.
 ///
-/// Layouts are taken from each format's own specification; see the remarks on each reader for which. Every
-/// one of them is checked against ffprobe over a generated corpus covering all of them.
+/// Layouts are taken from each format's own specification; see the remarks on each reader for which.
 /// </remarks>
 /// <summary>What a file's header had to say about how long it is.</summary>
 internal enum MediaHeaderVerdict

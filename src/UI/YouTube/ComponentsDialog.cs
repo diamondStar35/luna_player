@@ -5,13 +5,7 @@ namespace LunaPlayer.UI.YouTube;
 /// <summary>Offers to fetch the programs the yt-dlp resolver needs.</summary>
 ///
 /// <remarks>
-/// Not shown at startup, which is where the Python player shows it. Nothing the player does by default
-/// needs these programs: searching, playing and saving are its own work now, and only the optional yt-dlp
-/// resolver wants them. So the offer is made at the moment one is asked for, where it has a reason the user
-/// can see, rather than on first launch about something they may never use.
-///
-/// The tick box is the reason it can be offered at the point of use at all: somebody who says no and means
-/// it can say so once.
+/// Shown only when the optional yt-dlp resolver is requested. The user may suppress future prompts.
 /// </remarks>
 internal sealed class ComponentsDialog : IDisposable
 {
@@ -38,14 +32,10 @@ internal sealed class ComponentsDialog : IDisposable
         yes.SetDefault();
         // Translators: Button that declines to fetch the extra programs the yt-dlp resolver needs.
         var no = new Button(_dialog, StandardId.No, Tr("No"));
-        // Bound by hand, and they have to be: wxWidgets ends a modal dialog by itself only for OK and
-        // Cancel. A Yes or a No button that nothing listens to leaves a window that cannot be dismissed at
-        // all, which is what this one was.
+        // wxWidgets auto-closes modal dialogs only for OK and Cancel, so Yes and No are bound explicitly.
         yes.Click += (_, _) => _dialog.EndModal(StandardId.Yes);
         no.Click += (_, _) => _dialog.EndModal(StandardId.No);
-        // There is no Cancel button for Escape to stand for, so it is pointed at No. The Python player
-        // leaves Escape doing nothing here, which makes the window a trap for anyone who reaches it by
-        // accident.
+        // Treat Escape as No because this dialog has no Cancel button.
         _dialog.SetEscapeId(StandardId.No);
 
         var buttons = new BoxSizer(Orientation.Horizontal);

@@ -23,10 +23,6 @@ internal static class Paths
     /// <summary>The settings file.</summary>
     internal static string SettingsFile { get; } = Path.Combine(RootDirectory, "settings.json");
 
-    /// <summary>The settings file written by the Python player, read once to carry old settings forward.
-    /// </summary>
-    internal static string LegacySettingsFile { get; } = Path.Combine(RootDirectory, "settings.ini");
-
     /// <summary>The bookmarks file.</summary>
     internal static string BookmarksFile { get; } = Path.Combine(RootDirectory, "bookmarks.json");
 

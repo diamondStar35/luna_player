@@ -158,7 +158,7 @@ internal sealed class ShortcutManager
         }
     }
 
-    private static bool IsValid(Shortcut shortcut)
+    internal static bool IsValid(Shortcut shortcut)
     {
         var key = shortcut.Key;
         if (key.Length == 1 && key[0] is >= ' ' and <= '~') return true;

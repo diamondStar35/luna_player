@@ -17,20 +17,15 @@ internal readonly record struct YtDlpRun(IReadOnlyList<string> Lines, string Dia
 /// <summary>Talks to yt-dlp.</summary>
 ///
 /// <remarks>
-/// The optional half of the player's YouTube support. Everything it does, the player can already do
-/// itself; what it adds is a second opinion for the videos YoutubeExplode cannot work out, which is what
-/// the setting that turns it on is for. A faithful port of the Python player's <c>youtube/resolver.py</c>
-/// and <c>youtube/download.py</c>, including the order of the fallbacks, because a video the two players
-/// disagree about is a video one of them gets wrong.
-///
-/// Every method here runs a program and waits for it, so every one of them belongs on a worker thread.
+/// Optional fallback resolver and downloader. Its operations wait for an external process and must run on
+/// a worker thread.
 /// </remarks>
 internal sealed partial class YtDlpClient
 {
     /// <summary>What to ask for when only the sound is wanted.</summary>
     private const string AudioFormat = "bestaudio[ext=m4a]/bestaudio/best";
 
-    /// <summary>What to ask for at each video quality. The Python player's three format strings.</summary>
+    /// <summary>The yt-dlp format selector for each video quality.</summary>
     private static string VideoFormat(YouTubeQuality quality) => quality switch
     {
         YouTubeQuality.Low => "best[height<=?360][ext=mp4]/best[height<=?360]/best[ext=mp4]/best",
@@ -44,17 +39,13 @@ internal sealed partial class YtDlpClient
     /// <summary>Turns a video into something playable.</summary>
     ///
     /// <remarks>
-    /// Three attempts, in the Python player's order: ask for everything about the video as JSON and read
-    /// the address out of it; ask for the address alone under the same format; ask for the address alone
-    /// under no format at all. Each is more likely to work and less likely to be what was asked for than
-    /// the one before, which is why they are tried in that order rather than the reverse.
+    /// Attempts JSON metadata first, then a formatted direct URL, and finally an unrestricted direct URL.
+    /// Later attempts provide less control over the selected format.
     /// </remarks>
     internal ResolveOutcome Resolve(
         string watchUrl, YouTubeResult item, bool audioOnly, YouTubeQuality quality, CancellationToken token)
     {
-        // Both, not just yt-dlp. Without Deno it still runs, and the addresses it produces are throttled
-        // to the point of being unplayable - a failure that looks like a broken video rather than a missing
-        // program, which is the worst way for this to go wrong.
+        // Deno is required as well as yt-dlp; without it, returned stream URLs can be severely throttled.
         if (!Tools.HasAll)
             return ResolveOutcome.Failed(ResolveFailure.MissingComponents);
         var format = Format(audioOnly, quality);
@@ -135,9 +126,7 @@ internal sealed partial class YtDlpClient
     /// <summary>Saves a video into <paramref name="folder"/>, reporting as the bytes arrive.</summary>
     ///
     /// <remarks>
-    /// The name is left to yt-dlp's own output template, as the Python player leaves it, so a file saved by
-    /// either player is called the same thing. Progress is read back off its own output: it prints one
-    /// line per update and the line carries a percentage and a total, which is all the window shows.
+    /// yt-dlp chooses the output name from its template. Progress is parsed from its line-oriented output.
     /// </remarks>
     /// <param name="report">The name being written, the bytes so far and the bytes expected. Called from
     /// the thread this runs on.</param>
@@ -193,8 +182,7 @@ internal sealed partial class YtDlpClient
     /// <summary>Has yt-dlp replace itself with the newest build on a channel.</summary>
     ///
     /// <remarks>
-    /// Its own updater rather than a fresh download, which is what the Python player does and is worth
-    /// keeping: yt-dlp knows how to replace a running executable on Windows and a plain overwrite does not.
+    /// Uses yt-dlp's updater because it can replace its running executable on Windows.
     /// </remarks>
     /// <param name="report">Each line yt-dlp prints, so the window shows what it is doing.</param>
     internal (string Before, string After, bool Updated) SelfUpdate(
@@ -351,9 +339,8 @@ internal sealed partial class YtDlpClient
     {
         if (Text(data, "url") is { Length: > 0 } direct)
             return direct;
-        // A format that needs joining is reported as its parts. The first is the one that carries the
-        // picture, and the Python player takes it for the same reason: this playback path cannot join the
-        // streams into one live address even when ffmpeg is installed.
+        // A format that needs joining is reported as parts. This playback path cannot join separate live
+        // streams, so use the first part, which carries the picture.
         if (!data.TryGetProperty("requested_formats", out var parts) || parts.ValueKind != JsonValueKind.Array)
             return null;
         foreach (var part in parts.EnumerateArray())

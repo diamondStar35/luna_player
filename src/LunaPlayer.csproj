@@ -31,7 +31,7 @@
     <RunCommand>$(NativeAotOutputDirectory)LunaPlayer.exe</RunCommand>
     <RunWorkingDirectory>$(NativeAotOutputDirectory)</RunWorkingDirectory>
     <ShouldUnsetParentConfigurationAndPlatform>false</ShouldUnsetParentConfigurationAndPlatform>
-    <StackTraceSupport>false</StackTraceSupport>
+    <StackTraceSupport>true</StackTraceSupport>
     <EventSourceSupport>false</EventSourceSupport>
     <MetricsSupport>false</MetricsSupport>
     <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
