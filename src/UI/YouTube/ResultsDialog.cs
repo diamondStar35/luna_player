@@ -6,16 +6,8 @@ namespace LunaPlayer.UI.YouTube;
 /// <summary>The window listing what a search or a playlist turned up.</summary>
 ///
 /// <remarks>
-/// The window closes for one thing only: playing a video. Copying an address, opening a browser, going to a
-/// channel and saving a video all happen with it still open and the user still on the row they chose, which
-/// is what the Python player does and what a list is for. Closing and reopening it for those would lose the
-/// scroll position and the focus, and read the whole list out again.
-///
-/// A plain list rather than a virtual one. The window that lists loaded files is virtual because a folder
-/// opened with its subfolders can hold a hundred thousand names; a page of results holds fifty, and the
-/// list grows only as far as somebody has scrolled. Virtual mode would also work against the design here:
-/// it wants the count before the rows exist, and it asks for text while painting, which is the worst place
-/// to be deciding whether to go to the network.
+/// Non-play actions leave the dialog open and preserve the current selection. Results are paged into a
+/// regular list because each page is small and rows arrive incrementally.
 /// </remarks>
 internal sealed class ResultsDialog : IDisposable
 {
@@ -173,10 +165,8 @@ internal sealed class ResultsDialog : IDisposable
     }
 
     /// <remarks>
-    /// Return is answered only while the list has the focus, which is also why Play is not made the default
-    /// button: a default button takes Return wherever the focus is, so pressing it on Close would play a
-    /// video instead of closing the window. The Python player has exactly that fault, through an
-    /// accelerator table rather than a default button.
+    /// Return plays only while the list has focus. Play is not the default button because that would also
+    /// capture Return from other controls.
     /// </remarks>
     private void OnCharHook(object? sender, KeyEventArgs args)
     {

@@ -23,8 +23,6 @@ internal enum ActionId
     ToggleSilenceRemoval,
     OpenYouTubeLink, SearchYouTube, OpenFavorites, VideoDownload, VideoDescription, VideoCopyLink,
     UpdateYouTubeComponents,
-    // Appended at the end on purpose: these names are what the settings file stores for a shortcut, so
-    // inserting one anywhere else would rename every action after it.
     OpenRecordingInterface, StartRecording, PauseRecording, StopRecording, OpenRecordingsFolder,
     PanLeft, PanRight, AnnouncePan,
     PitchUp, PitchDown, ResetPitch, AnnouncePitch,

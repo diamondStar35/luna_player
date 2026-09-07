@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-09-07 01:18+0300\n"
+"POT-Creation-Date: 2026-09-08 01:57+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -756,7 +756,7 @@ msgstr ""
 #. Translators: The short wording spoken once the current file has been copied to the clipboard.
 #. Translators: The short wording spoken once the address of a video has been copied.
 #: Application/ActionHandlers/EditActions.cs:119
-#: Application/ActionHandlers/FileActions.cs:450
+#: Application/ActionHandlers/FileActions.cs:473
 #: Application/ActionHandlers/MarkedFileActions.cs:70
 #: Application/ActionHandlers/MarkedFileActions.cs:149
 #: Application/ActionHandlers/YouTubeActions.cs:278
@@ -766,7 +766,7 @@ msgstr ""
 #. Translators: The short wording spoken when the current file could not be copied to the clipboard.
 #. Translators: The short wording spoken when the address of a video could not be copied.
 #: Application/ActionHandlers/EditActions.cs:121
-#: Application/ActionHandlers/FileActions.cs:450
+#: Application/ActionHandlers/FileActions.cs:473
 #: Application/ActionHandlers/MarkedFileActions.cs:70
 #: Application/ActionHandlers/YouTubeActions.cs:284
 msgid "Copy failed."
@@ -872,38 +872,38 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. Translators: Shown when the address saved as a plain stream could not be played.
-#: Application/ActionHandlers/FavoriteActions.cs:90
+#: Application/ActionHandlers/FavoriteActions.cs:89
 msgid "Could not open stream link."
 msgstr ""
 
 #. Translators: Title of the messages shown about the window of saved links.
 #. Translators: Title of the message shown when a saved link cannot be saved as it was typed.
 #. Translators: Title of the window listing the YouTube links and streams the user has saved.
-#: Application/ActionHandlers/FavoriteActions.cs:92
+#: Application/ActionHandlers/FavoriteActions.cs:91
 #: Application/ActionHandlers/FavoriteActions.cs:162
-#: UI/YouTube/FavoriteEditDialog.cs:78 UI/YouTube/FavoritesDialog.cs:25
+#: UI/YouTube/FavoriteEditDialog.cs:73 UI/YouTube/FavoritesDialog.cs:25
 msgid "Favorite videos"
 msgstr ""
 
 #. Translators: Title of the window for saving a new link.
-#: Application/ActionHandlers/FavoriteActions.cs:116
+#: Application/ActionHandlers/FavoriteActions.cs:115
 msgid "Add favorite"
 msgstr ""
 
 #. Translators: Title of the window for changing a link already saved.
-#: Application/ActionHandlers/FavoriteActions.cs:133
+#: Application/ActionHandlers/FavoriteActions.cs:132
 msgid "Edit favorite"
 msgstr ""
 
 #. Translators: Asks the user to confirm removing one saved link. {name} is what it is called and
 #. {kind} is what sort of thing it points at.
-#: Application/ActionHandlers/FavoriteActions.cs:148
+#: Application/ActionHandlers/FavoriteActions.cs:147
 msgid "Remove favorite '{name}' ({kind})?"
 msgstr ""
 
 #. Translators: Title of the window that asks the user to confirm removing a saved link.
 #. Translators: Title of the window that asks the user to confirm removing a recording source.
-#: Application/ActionHandlers/FavoriteActions.cs:150
+#: Application/ActionHandlers/FavoriteActions.cs:149
 #: UI/Recording/RecordingDialog.cs:333
 msgid "Confirm remove"
 msgstr ""
@@ -924,7 +924,7 @@ msgstr ""
 #. Translators: Shown when a favourite is saved with something that is not a web address.
 #: Application/ActionHandlers/FileActions.cs:144
 #: Application/ActionHandlers/YouTubeActions.cs:80
-#: Favorites/FavoriteStore.cs:139
+#: Favorites/FavoriteStore.cs:128
 msgid "The link must start with http or https."
 msgstr ""
 
@@ -968,14 +968,14 @@ msgstr ""
 #. Translators: Spoken when the chosen folder holds nothing this player can play.
 #. Translators: Spoken when the folder and the folders inside it hold nothing this player can play.
 #: Application/ActionHandlers/FileActions.cs:219
-#: Application/ActionHandlers/FileActions.cs:416
+#: Application/ActionHandlers/FileActions.cs:439
 msgid "No audio files found in that folder."
 msgstr ""
 
 #. Translators: The short wording spoken when the chosen folder holds nothing this player can play.
 #. Translators: The short wording spoken when a folder holds nothing this player can play.
 #: Application/ActionHandlers/FileActions.cs:221
-#: Application/ActionHandlers/FileActions.cs:418
+#: Application/ActionHandlers/FileActions.cs:441
 msgid "No audio files."
 msgstr ""
 
@@ -1079,38 +1079,38 @@ msgid "All files closed."
 msgstr ""
 
 #. Translators: Title of the progress window shown while a folder and the folders inside it are being searched for media.
-#: Application/ActionHandlers/FileActions.cs:396
+#: Application/ActionHandlers/FileActions.cs:419
 msgid "Opening files"
 msgstr ""
 
 #. Translators: First message in the progress window, before any file has been found.
-#: Application/ActionHandlers/FileActions.cs:398
+#: Application/ActionHandlers/FileActions.cs:421
 msgid "Loading files from folder and subfolders..."
 msgstr ""
 
 #. Translators: Progress message while a folder is being searched. {found} is how many media files
 #. have been found so far.
-#: Application/ActionHandlers/FileActions.cs:401
+#: Application/ActionHandlers/FileActions.cs:424
 msgid "Opening files... {found} media files found"
 msgstr ""
 
 #. Translators: Spoken once the full location of the current file has been copied to the clipboard.
-#: Application/ActionHandlers/FileActions.cs:447
+#: Application/ActionHandlers/FileActions.cs:470
 msgid "File path copied to clipboard."
 msgstr ""
 
 #. Translators: Spoken when the full location of the current file could not be copied to the clipboard.
-#: Application/ActionHandlers/FileActions.cs:449
+#: Application/ActionHandlers/FileActions.cs:472
 msgid "Unable to copy to clipboard."
 msgstr ""
 
 #. Translators: Spoken when the current media file contains no title metadata.
-#: Application/ActionHandlers/FileActions.cs:465
+#: Application/ActionHandlers/FileActions.cs:488
 msgid "The current file has no title."
 msgstr ""
 
 #. Translators: Short announcement when the current media file contains no title metadata.
-#: Application/ActionHandlers/FileActions.cs:467
+#: Application/ActionHandlers/FileActions.cs:490
 msgid "No title."
 msgstr ""
 
@@ -1299,7 +1299,7 @@ msgstr ""
 #. Translators: Button that plays the video chosen in the list of results.
 #: Application/ActionHandlers/PlaybackActions.cs:103
 #: Application/ActionHandlers/PlaybackActions.cs:111 UI/MainFrame.cs:87
-#: UI/MainFrame.cs:151 UI/YouTube/ResultsDialog.cs:49
+#: UI/MainFrame.cs:151 UI/YouTube/ResultsDialog.cs:41
 msgid "Play"
 msgstr ""
 
@@ -1774,6 +1774,19 @@ msgstr ""
 msgid "No YouTube video."
 msgstr ""
 
+#: Application/ApplicationHost.cs:52
+msgid ""
+"The settings file could not be loaded. Default settings will be used, and "
+"the existing file will not be overwritten. Import a valid settings file or "
+"reset the settings to replace it.\n"
+"\n"
+"{error}"
+msgstr ""
+
+#: Application/ApplicationHost.cs:53
+msgid "Settings error"
+msgstr ""
+
 #. Translators: Spoken or shown when the player could not start watching the keyboard, so the shortcuts that
 #. work while another program is in front will do nothing.
 #: Application/GlobalShortcutBinder.cs:17
@@ -1788,65 +1801,65 @@ msgid "Global Shortcuts"
 msgstr ""
 
 #. Translators: Shown when the user saves a favourite without typing a name for it.
-#: Favorites/FavoriteStore.cs:112
+#: Favorites/FavoriteStore.cs:101
 msgid "Name is required."
 msgstr ""
 
 #. Translators: Shown when the user saves a favourite without giving a link.
-#: Favorites/FavoriteStore.cs:119
+#: Favorites/FavoriteStore.cs:108
 msgid "Link is required."
 msgstr ""
 
 #. Translators: Shown when a favourite saved as a network stream is not a web address.
-#: Favorites/FavoriteStore.cs:129
+#: Favorites/FavoriteStore.cs:118
 msgid "Generic stream link must start with http or https."
 msgstr ""
 
 #. Translators: Shown when a favourite saved as a video, playlist or combined link is not a
 #. YouTube address.
-#: Favorites/FavoriteStore.cs:146
+#: Favorites/FavoriteStore.cs:135
 msgid "The link must be a valid YouTube link for this type."
 msgstr ""
 
 #. Translators: Shown when a favourite saved as a video does not name one.
-#: Favorites/FavoriteStore.cs:153
+#: Favorites/FavoriteStore.cs:142
 msgid "Video favorites require a YouTube video link."
 msgstr ""
 
 #. Translators: Shown when a favourite saved as a playlist does not name one.
-#: Favorites/FavoriteStore.cs:157
+#: Favorites/FavoriteStore.cs:146
 msgid "Playlist favorites require a YouTube playlist link."
 msgstr ""
 
 #. Translators: Shown when a favourite saved as a combined link does not carry both a video
 #. and a playlist.
-#: Favorites/FavoriteStore.cs:162
+#: Favorites/FavoriteStore.cs:151
 msgid ""
 "Combined link favorites require a link containing both video and playlist."
 msgstr ""
 
 #. Translators: The kind of a saved favourite: a single YouTube video.
-#: Favorites/FavoriteStore.cs:173
+#: Favorites/FavoriteStore.cs:162
 msgid "Video"
 msgstr ""
 
 #. Translators: The kind of a saved favourite: a YouTube playlist.
-#: Favorites/FavoriteStore.cs:175
+#: Favorites/FavoriteStore.cs:164
 msgid "Playlist"
 msgstr ""
 
 #. Translators: The kind of a saved favourite: a YouTube link naming both a video and a playlist.
-#: Favorites/FavoriteStore.cs:177
+#: Favorites/FavoriteStore.cs:166
 msgid "Combined link"
 msgstr ""
 
 #. Translators: The kind of a saved favourite: a web address played as a stream.
-#: Favorites/FavoriteStore.cs:179
+#: Favorites/FavoriteStore.cs:168
 msgid "Generic stream"
 msgstr ""
 
 #. Translators: Shown when the user edits or removes a favourite that is no longer saved.
-#: Favorites/FavoriteStore.cs:199
+#: Favorites/FavoriteStore.cs:182
 msgid "That favorite is no longer saved."
 msgstr ""
 
@@ -2264,7 +2277,7 @@ msgstr ""
 #. Translators: Label of the box holding what a saved link is called.
 #. Translators: Heading of the favourites list column holding what each saved link is called.
 #: UI/BookmarkManagerDialog.cs:19 UI/Recording/SourceDialogs.cs:49
-#: UI/YouTube/FavoriteEditDialog.cs:30 UI/YouTube/FavoritesDialog.cs:29
+#: UI/YouTube/FavoriteEditDialog.cs:26 UI/YouTube/FavoritesDialog.cs:29
 msgid "Name"
 msgstr ""
 
@@ -2291,7 +2304,7 @@ msgstr ""
 #. Translators: The button that closes a window.
 #: UI/BookmarkManagerDialog.cs:40 UI/CrashDialog.cs:48
 #: UI/Recording/RecordingDialog.cs:170 UI/TextInfoDialog.cs:18
-#: UI/YouTube/FavoritesDialog.cs:62 UI/YouTube/ResultsDialog.cs:55
+#: UI/YouTube/FavoritesDialog.cs:62 UI/YouTube/ResultsDialog.cs:47
 msgid "Close"
 msgstr ""
 
@@ -3596,13 +3609,13 @@ msgid "Information"
 msgstr ""
 
 #. Translators: Title of the window offering to fetch the extra programs yt-dlp needs.
-#: UI/YouTube/ComponentsDialog.cs:26
+#: UI/YouTube/ComponentsDialog.cs:20
 msgid "YouTube Components"
 msgstr ""
 
 #. Translators: Message offering to fetch the extra programs yt-dlp needs. Searching, playing and
 #. saving do not need them, which is what the last sentence says.
-#: UI/YouTube/ComponentsDialog.cs:31
+#: UI/YouTube/ComponentsDialog.cs:25
 msgid ""
 "The app detected that some components for YouTube are missing. Would you "
 "like to download the required libraries? If you do not wish to use the yt-"
@@ -3610,29 +3623,29 @@ msgid ""
 msgstr ""
 
 #. Translators: Tick box on the window offering to fetch the extra programs, so it stops being offered.
-#: UI/YouTube/ComponentsDialog.cs:34
+#: UI/YouTube/ComponentsDialog.cs:28
 msgid "Don't show this message again"
 msgstr ""
 
 #. Translators: Button that agrees to fetch the extra programs the yt-dlp resolver needs.
-#: UI/YouTube/ComponentsDialog.cs:37
+#: UI/YouTube/ComponentsDialog.cs:31
 msgid "Yes"
 msgstr ""
 
 #. Translators: Button that declines to fetch the extra programs the yt-dlp resolver needs.
-#: UI/YouTube/ComponentsDialog.cs:40
+#: UI/YouTube/ComponentsDialog.cs:34
 msgid "No"
 msgstr ""
 
 #. Translators: Label of the list saying what kind of thing a saved link points at.
 #. Translators: Heading of the favourites list column saying what kind of thing each saved link points at.
-#: UI/YouTube/FavoriteEditDialog.cs:33 UI/YouTube/FavoritesDialog.cs:31
+#: UI/YouTube/FavoriteEditDialog.cs:29 UI/YouTube/FavoritesDialog.cs:31
 msgid "Type"
 msgstr ""
 
 #. Translators: Label of the box holding the address a saved link points at.
 #. Translators: Heading of the favourites list column holding the address of each saved link.
-#: UI/YouTube/FavoriteEditDialog.cs:39 UI/YouTube/FavoritesDialog.cs:33
+#: UI/YouTube/FavoriteEditDialog.cs:35 UI/YouTube/FavoritesDialog.cs:33
 msgid "Link"
 msgstr ""
 
@@ -3827,7 +3840,7 @@ msgstr ""
 
 #. Translators: Button that saves the video chosen in the list of results to a folder on this computer.
 #. Translators: Context menu item in the results list that saves the chosen video to this computer.
-#: UI/YouTube/ResultsDialog.cs:52 UI/YouTube/ResultsDialog.cs:165
+#: UI/YouTube/ResultsDialog.cs:44 UI/YouTube/ResultsDialog.cs:157
 msgid "Download"
 msgstr ""
 

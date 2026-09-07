@@ -31,21 +31,24 @@ internal static class CrashReport
     /// <summary>Where the reports are kept, beside the settings.</summary>
     internal static string Path { get; } = System.IO.Path.Combine(Paths.RootDirectory, "crash.log");
 
-    /// <summary>Starts catching. Called before anything else the player does.</summary>
-    /// <param name="clipboard">Used by the Copy button. Null until the toolkit is up, and set again once
-    /// it is.</param>
-    internal static void Install(IClipboardService? clipboard = null)
+    /// <summary>Starts catching. Called once, before anything else the player does.</summary>
+    internal static void Install()
     {
-        _clipboard = clipboard ?? _clipboard;
         AppDomain.CurrentDomain.UnhandledException += (_, args) =>
             Write(args.ExceptionObject as Exception, "unhandled");
-        // A task nobody awaited that failed. Not fatal, and not shown - it would interrupt the user over
-        // something they did not ask for - but worth having in the file when a later crash is being read.
+        // An unobserved task failure is recorded without interrupting the user.
         TaskScheduler.UnobservedTaskException += (_, args) =>
         {
             Write(args.Exception, "unobserved");
             args.SetObserved();
         };
+    }
+
+    /// <summary>Provides clipboard access after the UI toolkit has started.</summary>
+    internal static void SetClipboard(IClipboardService clipboard)
+    {
+        lock (Sync)
+            _clipboard = clipboard;
     }
 
     /// <summary>Runs <paramref name="work"/>, showing anything it throws rather than letting it end the

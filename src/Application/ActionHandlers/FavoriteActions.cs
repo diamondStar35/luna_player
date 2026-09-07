@@ -10,11 +10,7 @@ namespace LunaPlayer.Application.ActionHandlers;
 
 /// <summary>The window of saved links, and what opening one does.</summary>
 ///
-/// <remarks>
-/// The one kind that works today is the plain stream: it needs nothing from YouTube and goes straight to
-/// the player. The three YouTube kinds are refused until the resolver is written, which is why the store
-/// keeps them apart rather than treating every saved link as an address to hand to mpv.
-/// </remarks>
+/// <remarks>Generic streams open directly; YouTube favorites are handed to the YouTube session manager.</remarks>
 internal sealed class FavoriteActions
 {
     private readonly IMainView _view;
@@ -48,7 +44,10 @@ internal sealed class FavoriteActions
         var selectedId = string.Empty;
         while (true)
         {
-            var request = _view.ManageFavorites(List(), selectedId);
+            var favorites = List();
+            if (ReportStoreFailure())
+                return;
+            var request = _view.ManageFavorites(favorites, selectedId);
             if (request is not FavoriteRequest chosen)
                 return;
             selectedId = chosen.Id;
@@ -156,9 +155,11 @@ internal sealed class FavoriteActions
     }
 
     /// <summary>Reports why the store refused. It has already worded the reason.</summary>
-    private void ReportStoreFailure()
+    private bool ReportStoreFailure()
     {
-        if (_store.LastError.Length > 0)
-            _view.ShowError(_store.LastError, Tr("Favorite videos"));
+        if (_store.LastError.Length == 0)
+            return false;
+        _view.ShowError(_store.LastError, Tr("Favorite videos"));
+        return true;
     }
 }

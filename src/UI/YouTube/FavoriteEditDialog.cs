@@ -5,12 +5,8 @@ namespace LunaPlayer.UI.YouTube;
 
 /// <summary>The window for saving a link or changing one already saved.</summary>
 /// <remarks>
-/// What was typed is checked when OK is pressed and the window is kept open when the check fails, so a
-/// mistyped address costs a correction rather than the whole entry. The Python player throws the window
-/// away and reopens an empty one, which loses everything the user wrote.
-///
-/// The rules themselves are <see cref="FavoriteStore.Validate"/>'s, so the window and the store cannot
-/// come to disagree about what may be saved.
+/// Validation runs before the dialog closes and uses <see cref="FavoriteStore.Validate"/>, keeping the UI
+/// and persistence rules consistent.
 /// </remarks>
 internal sealed class FavoriteEditDialog : IDisposable
 {
@@ -39,8 +35,7 @@ internal sealed class FavoriteEditDialog : IDisposable
         var linkLabel = new StaticText(_dialog, label: Tr("Link"));
         _link = new TextCtrl(_dialog, value: value.Link);
 
-        // A two-column form: label beside its box rather than above it. Three short labels stacked above
-        // three full-width boxes wastes the height the window has and reads as six things rather than three.
+        // Labels and fields use a compact two-column layout.
         var form = new FlexGridSizer(0, 2, 8, 8);
         form.AddGrowableColumn(1, 1);
         AddField(form, nameLabel, _name);
