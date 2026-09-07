@@ -89,6 +89,10 @@
              Link="lib\%(Filename)%(Extension)"
              CopyToOutputDirectory="PreserveNewest"
              CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="$(RepositoryRoot)third-party\ffmpeg.exe"
+             Link="lib\ffmpeg.exe"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
     <Content Include="$(RepositoryRoot)third-party\WxSharp\third-party\Windows\lib\vc_x64_dll\wxbase333u_vc_x64.dll"
              Link="lib\wxbase333u_vc_x64.dll"
              CopyToOutputDirectory="PreserveNewest"

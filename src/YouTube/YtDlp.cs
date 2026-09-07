@@ -352,8 +352,8 @@ internal sealed partial class YtDlpClient
         if (Text(data, "url") is { Length: > 0 } direct)
             return direct;
         // A format that needs joining is reported as its parts. The first is the one that carries the
-        // picture, and the Python player takes it for the same reason: without ffmpeg there is nothing to
-        // join them with.
+        // picture, and the Python player takes it for the same reason: this playback path cannot join the
+        // streams into one live address even when ffmpeg is installed.
         if (!data.TryGetProperty("requested_formats", out var parts) || parts.ValueKind != JsonValueKind.Array)
             return null;
         foreach (var part in parts.EnumerateArray())
