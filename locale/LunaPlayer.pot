@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-09-08 18:43+0300\n"
+"POT-Creation-Date: 2026-09-09 01:48+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -77,6 +77,26 @@ msgstr ""
 #. Translators: Name of the command that ends a recording and closes the file.
 #: Actions/GlobalActions.cs:34 Actions/RecordingActions.cs:24
 msgid "Stop recording"
+msgstr ""
+
+#. Translators: Name of the command that opens the Luna Player user guide.
+#. Translators: Help menu item that opens the user guide matching the application language.
+#: Actions/HelpActions.cs:9 Application/ActionHandlers/HelpActions.cs:33
+#: Application/ActionHandlers/HelpActions.cs:40 UI/MenuBuilder.cs:252
+msgid "User guide"
+msgstr ""
+
+#. Translators: Name of the command that shows information about Luna Player.
+#. Translators: Help menu item that shows information about Luna Player.
+#: Actions/HelpActions.cs:11 UI/MenuBuilder.cs:254
+msgid "About"
+msgstr ""
+
+#. Translators: Name of the command that opens the notes for the installed Luna Player release.
+#. Translators: Help menu item that opens the GitHub page for the installed release.
+#: Actions/HelpActions.cs:13 Application/ActionHandlers/HelpActions.cs:50
+#: UI/MenuBuilder.cs:256
+msgid "Release notes"
 msgstr ""
 
 #. Translators: Name of the command that opens one or more media files, in the shortcuts list.
@@ -626,7 +646,7 @@ msgstr ""
 #: Application/ActionHandlers/BookmarkActions.cs:45
 #: Application/ActionHandlers/BookmarkActions.cs:75
 #: Application/ActionHandlers/BookmarkActions.cs:112
-#: Application/ActionHandlers/BookmarkActions.cs:196 UI/MenuBuilder.cs:260
+#: Application/ActionHandlers/BookmarkActions.cs:196 UI/MenuBuilder.cs:267
 msgid "Bookmarks"
 msgstr ""
 
@@ -1200,6 +1220,26 @@ msgstr ""
 msgid "No title."
 msgstr ""
 
+#. Translators: Shown when Windows cannot open the installed HTML user guide.
+#: Application/ActionHandlers/HelpActions.cs:32
+msgid "The user guide could not be opened."
+msgstr ""
+
+#. Translators: Shown when no local user-guide HTML file was included with the application.
+#: Application/ActionHandlers/HelpActions.cs:39
+msgid "The user guide is not installed."
+msgstr ""
+
+#. Translators: Shown when Windows cannot open the release page in a web browser.
+#: Application/ActionHandlers/HelpActions.cs:49
+msgid "The release notes could not be opened."
+msgstr ""
+
+#. Translators: Detail shown when Windows accepts an item to open but starts no application.
+#: Application/ActionHandlers/HelpActions.cs:60
+msgid "Windows did not start an application for this item."
+msgstr ""
+
 #. Translators: Title of the progress window shown while the marked files are being moved into another folder.
 #: Application/ActionHandlers/MarkedFileActions.cs:41
 msgid "Moving marked files"
@@ -1635,7 +1675,7 @@ msgstr ""
 #. Translators: Name of the settings category for recording sound.
 #. Translators: Title of the window where recording is set up and started.
 #. Translators: Title of the messages shown about recording.
-#: Application/ActionHandlers/RecordingActions.cs:213 UI/MenuBuilder.cs:274
+#: Application/ActionHandlers/RecordingActions.cs:213 UI/MenuBuilder.cs:281
 #: UI/PreferencesDialog.cs:54 UI/Recording/RecordingDialog.cs:82
 #: UI/Recording/RecordingDialog.cs:712
 msgid "Recording"
@@ -1712,7 +1752,7 @@ msgstr ""
 #: Application/ActionHandlers/SettingsActions.cs:47
 #: Application/ActionHandlers/SettingsActions.cs:120
 #: Application/ActionHandlers/SettingsActions.cs:127
-#: UI/PreferencesDialog.cs:28 UI/PreferencesDialog.cs:189
+#: UI/PreferencesDialog.cs:28 UI/PreferencesDialog.cs:188
 msgid "Preferences"
 msgstr ""
 
@@ -2026,6 +2066,56 @@ msgstr ""
 msgid "{name} - {kind} - {volume}%"
 msgstr ""
 
+#. Translators: Title of the window containing Luna Player's version and website.
+#: UI/AboutDialog.cs:16
+msgid "About Luna Player"
+msgstr ""
+
+#. Translators: Description in the Luna Player About window.
+#: UI/AboutDialog.cs:22
+msgid ""
+"Luna Player is a fast, accessible media player for Windows. It is designed "
+"for effortless keyboard control and a clear screen-reader experience, and "
+"plays local media, network streams, and YouTube content without getting in "
+"your way."
+msgstr ""
+
+#. Translators: Additional description in the Luna Player About window.
+#: UI/AboutDialog.cs:26
+msgid "Luna Player is free and open-source software."
+msgstr ""
+
+#. Translators: Third-party copyright and licensing information in the About window. mpv and
+#. python-mpv are project names and should not be translated. NOTICE.txt and licenses are names
+#. found in Luna's installation folder.
+#: UI/AboutDialog.cs:30
+msgid ""
+"Luna includes mpv, copyright © the mpv developers and contributors to "
+"MPlayer and mplayer2, and a C# translation of python-mpv, copyright © 2017-"
+"2024 Sebastian Götte. These components are licensed under the GNU Lesser "
+"General Public License, version 2.1 or later. FFmpeg is licensed under the "
+"GNU Lesser General Public License, version 3 or later. See NOTICE.txt and "
+"the licenses folder for complete third-party notices and terms."
+msgstr ""
+
+#. Translators: Final two lines in the About window. {publisher} is the developer's name and
+#. {version} is the installed application version.
+#: UI/AboutDialog.cs:37
+msgid ""
+"Copyright © 2026 {publisher}\n"
+"Version: {version}"
+msgstr ""
+
+#. Translators: Link in the About window that opens the Luna Player project website.
+#: UI/AboutDialog.cs:45
+msgid "Visit the Luna Player website"
+msgstr ""
+
+#. Translators: The button that accepts a window and carries the change out.
+#: UI/AboutDialog.cs:48 UI/GoToTimeDialog.cs:66
+msgid "OK"
+msgstr ""
+
 #. Translators: Title of the window offering a newer Luna Player release.
 #: UI/AppUpdateDialog.cs:15
 msgid "New version detected"
@@ -2063,10 +2153,14 @@ msgid "Select sound card"
 msgstr ""
 
 #. Translators: Spoken description of the Audio settings page, read when the page is opened.
-#: UI/AudioPreferences.cs:23
+#. Translators: Spoken description of the General settings page, read when the page is opened.
+#. Translators: Spoken description of the Recording settings page, read when the page is opened.
+#. Translators: Spoken description of the YouTube settings page, read when the page is opened.
+#: UI/AudioPreferences.cs:23 UI/GeneralPreferences.cs:20
+#: UI/RecordingPreferences.cs:43 UI/YouTube/Preferences.cs:27
 msgid ""
-"Audio settings. Use Tab to move between controls. Press F1 on a specific "
-"control to hear detailed help."
+"Move through this page with Tab or Shift+Tab. Press F1 while a control is "
+"focused to hear what it changes."
 msgstr ""
 
 #. Translators: Label of the box holding the seek amount used by the "Custom value" seek step, in seconds.
@@ -2137,99 +2231,91 @@ msgstr ""
 #. Translators: Help text for the box holding the seek amount used by the "Custom value" seek step.
 #: UI/AudioPreferences.cs:74
 msgid ""
-"Custom seek value in seconds. This value is used when the custom seek step "
-"is selected. Enter a positive number like 5, 10, or 30. Decimals are "
-"allowed, for example 2.5 seconds."
+"Enter the number of seconds skipped by the seek shortcuts when Custom value "
+"is selected. Positive whole numbers and decimals are accepted; for example, "
+"2.5."
 msgstr ""
 
 #. Translators: Help text for the box holding how much one press of the speed keys changes the playing speed.
 #: UI/AudioPreferences.cs:78
 msgid ""
-"Speed step used when increasing or decreasing playback speed. Enter a "
-"positive decimal value like 0.025 or 0.1."
+"Sets how much each Speed Up or Speed Down command changes the playback rate. "
+"For example, 0.025 changes 1x speed to 1.025x."
 msgstr ""
 
 #. Translators: Help text for the box holding how much one press of the pitch keys raises or lowers a sound.
 #: UI/AudioPreferences.cs:81
 msgid ""
-"Pitch step in semitones. One semitone is the distance between adjacent piano "
-"keys. Decimals provide finer control: 0.1 semitone is 10 cents. Allowed "
-"range is from 0.001 to 12."
+"Sets how far each Raise Pitch or Lower Pitch command moves. One semitone is "
+"the distance between adjacent piano keys; 0.1 semitone is 10 cents. Enter a "
+"value from 0.001 to 12."
 msgstr ""
 
 #. Translators: Help text for the box holding how much one press of the volume keys changes the loudness.
 #: UI/AudioPreferences.cs:85
 msgid ""
-"Volume step used when pressing volume up or down. Allowed range is from 1 to "
-"20."
+"Sets the amount added or subtracted by each Volume Up or Volume Down "
+"command. Enter a whole number from 1 to 20."
 msgstr ""
 
 #. Translators: Help text for the box holding how far one press moves the sound left or right.
 #: UI/AudioPreferences.cs:88
 msgid ""
-"Pan step used when moving audio left or right. Allowed range is from 1 to "
-"100 percent."
+"Sets how many percentage points each Pan Left or Pan Right command moves the "
+"sound. Enter a whole number from 1 to 100."
 msgstr ""
 
-#. Translators: Help text for the list that chooses what the player does at the end of a file. It names the
-#. three entries in that list, which should read the same here as they do there.
-#: UI/AudioPreferences.cs:92
+#. Translators: Help text for the list that chooses what the player does at the end of a file.
+#: UI/AudioPreferences.cs:91
 msgid ""
-"What happens after a file ends. Advance to the next file moves to the next "
-"item in the playlist. Loop the file repeats the same file automatically. Do "
-"nothing keeps playback stopped at the end. Possible values: Advance to the "
-"next file, Loop the file, or Do nothing."
+"Choose whether reaching the end starts the next playlist item, repeats the "
+"current item, or leaves playback stopped at the end."
 msgstr ""
 
 #. Translators: Help text for the tick box that carries on from the first file after the last one.
-#: UI/AudioPreferences.cs:97
+#: UI/AudioPreferences.cs:94
 msgid ""
-"Wrap to top for multiple files. When enabled and the playlist has more than "
-"one file, moving next from the last file goes to the first file, and moving "
-"previous from the first file goes to the last file. Advance-at-end uses the "
-"same wrapping behavior."
+"With at least two items loaded, Next on the final item returns to the first "
+"and Previous on the first returns to the final item. Automatic advance "
+"follows the same rule."
 msgstr ""
 
 #. Translators: Help text for the tick box that remembers where each file was stopped.
-#: UI/AudioPreferences.cs:101
+#: UI/AudioPreferences.cs:98
 msgid ""
-"Save current position for each file. When enabled, the app stores the "
-"current position of files and restores that position when navigating between "
-"files."
+"Keeps a separate resume time for every item and returns to that time when "
+"the item is opened again during navigation."
 msgstr ""
 
 #. Translators: Help text for the tick box that evens out the loudness and holds back the loudest peaks.
-#. "dynaudnorm" and "alimiter" are the names of the filters doing the work and are not translated.
-#: UI/AudioPreferences.cs:105
+#: UI/AudioPreferences.cs:101
 msgid ""
-"Enable dynamic normalize and limiter audio filter. When enabled, audio uses "
-"dynaudnorm followed by alimiter to even out loudness and hold back peaks. "
-"Disable it to use raw output without this processing."
+"Evens out changing loudness and restrains the loudest peaks to reduce "
+"clipping. Clear this option to hear the source without those filters."
 msgstr ""
 
 #. Translators: Help text for the tick box that plays the left and right channels mixed together.
-#: UI/AudioPreferences.cs:109
+#: UI/AudioPreferences.cs:104
 msgid ""
-"Play audio as Mono. When enabled, a mono downmix filter is applied so left "
-"and right channels are combined. Disable it to keep the original channel "
-"layout."
+"Combines the left and right channels into one mono output. Clear this option "
+"to preserve the source channel layout."
 msgstr ""
 
 #. Translators: Error message shown when the speed step was typed as something other than a number above zero.
-#: UI/AudioPreferences.cs:120
+#: UI/AudioPreferences.cs:114
 msgid "Speed step must be a positive number."
 msgstr ""
 
 #. Translators: Error shown when the pitch step is not a number from 0.001 through 12.
-#: UI/AudioPreferences.cs:129
+#: UI/AudioPreferences.cs:123
 msgid "Pitch step must be a number from 0.001 to 12."
 msgstr ""
 
 #. Translators: Spoken description of the backup and restore settings page, read when the page is opened.
 #: UI/Backup.cs:14
 msgid ""
-"Backup and restore settings page. Use Export settings, Import settings, or "
-"Open user settings folder."
+"Save portable copies of preferences and bookmarks, restore them from earlier "
+"copies, or open Luna's configuration folder."
 msgstr ""
 
 #. Translators: Button on the backup and restore settings page that saves a copy of the settings to a file the user chooses.
@@ -2264,36 +2350,44 @@ msgstr ""
 
 #. Translators: Help text for the button that saves a copy of the settings, spoken when the user asks for help on it.
 #: UI/Backup.cs:39
-msgid "Export settings creates a copy of the current settings file."
+msgid ""
+"Saves the current preferences to a JSON file you choose while leaving Luna's "
+"working copy in place."
 msgstr ""
 
 #. Translators: Help text for the button that loads settings back from a file, spoken when the user asks for help on it.
 #: UI/Backup.cs:41
 msgid ""
-"Import settings replaces current settings with a selected settings file."
+"Loads preferences from a JSON file and replaces the values currently shown "
+"in this dialog."
 msgstr ""
 
 #. Translators: Help text for the button that saves a copy of the bookmarks, spoken when the user asks for help on it. JSON is the file format and is not translated.
 #: UI/Backup.cs:43
-msgid "Export bookmarks creates a copy of the bookmarks JSON file."
+msgid ""
+"Saves all bookmarks to a JSON file you choose without moving or deleting the "
+"working copy."
 msgstr ""
 
 #. Translators: Help text for the button that loads bookmarks back from a file, spoken when the user asks for help on it.
 #: UI/Backup.cs:45
 msgid ""
-"Import bookmarks replaces current bookmarks with a selected bookmarks file."
+"Loads bookmarks from a JSON file and replaces the collection Luna currently "
+"uses."
 msgstr ""
 
 #. Translators: Help text for the button that puts every setting back the way it started, spoken when the user asks for help on it.
 #: UI/Backup.cs:47
-msgid "Reset settings restores all preferences to default values."
+msgid ""
+"Returns every preference to its original value after you confirm. This "
+"cannot be undone from the dialog."
 msgstr ""
 
 #. Translators: Help text for the button that opens the folder where the player keeps its settings, spoken when the user asks for help on it.
 #: UI/Backup.cs:49
 msgid ""
-"Open user settings folder opens the folder where this app stores its "
-"configuration."
+"Opens Luna's configuration directory in File Explorer so you can inspect or "
+"copy its files directly."
 msgstr ""
 
 #. Translators: Message shown once the settings have been saved to the chosen file.
@@ -2404,7 +2498,7 @@ msgid "Jump"
 msgstr ""
 
 #. Translators: Name of the Edit menu in the menu bar.
-#: UI/BookmarkManagerDialog.cs:36 UI/MenuBuilder.cs:258
+#: UI/BookmarkManagerDialog.cs:36 UI/MenuBuilder.cs:265
 msgid "Edit"
 msgstr ""
 
@@ -2447,13 +2541,6 @@ msgstr ""
 #. on the window still has them.
 #: UI/CrashDialog.cs:79
 msgid "The details could not be copied. They are in the file named above."
-msgstr ""
-
-#. Translators: Spoken description of the General settings page, read when the page is opened.
-#: UI/GeneralPreferences.cs:20
-msgid ""
-"General settings. Use Tab to move between controls. Press F1 on a specific "
-"control to hear detailed help."
 msgstr ""
 
 #. Translators: Label of the list for choosing the language the player speaks and shows its windows in.
@@ -2574,74 +2661,69 @@ msgstr ""
 #. Translators: Help text for the language list, spoken when the user asks for help on it.
 #: UI/GeneralPreferences.cs:102
 msgid ""
-"Application language. System default follows your OS language. Choosing a "
-"specific language applies it on next app start."
+"Choose System default to follow the Windows display language, or select a "
+"language included with Luna. A different choice takes effect after Luna "
+"restarts."
 msgstr ""
 
 #. Translators: Help text for the tick box that starts again where playing stopped last time.
-#: UI/GeneralPreferences.cs:107
+#: UI/GeneralPreferences.cs:106
 msgid ""
-"Remember last file position. When enabled, the player saves the current file "
-"and playback time on exit, then restores that position next time. When "
-"disabled, the player starts fresh each launch."
+"Saves the active item and its playback time when Luna exits, then resumes "
+"there on the next launch. Clear this option to start without restoring the "
+"previous session."
 msgstr ""
 
 #. Translators: Help text for the tick box that says the name of each file as the user moves through the list.
-#: UI/GeneralPreferences.cs:111
+#: UI/GeneralPreferences.cs:110
 msgid ""
-"Speak file name when navigating. When enabled, the player will announce the "
-"name of the new file when you move to the previous or next track. This is "
-"helpful for identifying files without manually requesting file information."
+"Announces each newly selected item when you use Previous or Next, so you do "
+"not need to request its name separately."
 msgstr ""
 
 #. Translators: Help text for the tick box that looks for a newer version of the player when it starts.
-#: UI/GeneralPreferences.cs:115
+#: UI/GeneralPreferences.cs:113
 msgid ""
-"Check for app updates on startup. When enabled, the app checks online update "
-"metadata at launch and prompts when a newer version is available."
+"Checks for a newer Luna release in the background after startup. A prompt "
+"appears only when a newer package is ready to download."
 msgstr ""
 
 #. Translators: Help text for the tick box that keeps changes such as volume and speed when the player closes.
-#: UI/GeneralPreferences.cs:118
+#: UI/GeneralPreferences.cs:116
 msgid ""
-"Save settings on close. When enabled, current settings are written when the "
-"app closes. When disabled, closing the app does not save session changes "
-"such as volume, speed, or other setting updates."
+"Writes changes made during the session when Luna exits, including volume and "
+"speed. Clear this option if those changes should last only until the window "
+"closes."
 msgstr ""
 
-#. Translators: Help text for the list that chooses how much detail the player speaks. Beginner and Advanced are the two entries in that list and should read the same here as they do there.
-#: UI/GeneralPreferences.cs:122
+#. Translators: Help text for the list that chooses how much detail the player speaks.
+#: UI/GeneralPreferences.cs:120
 msgid ""
-"Verbosity controls speech detail. Beginner gives clearer full messages. "
-"Advanced gives shorter, compact announcements. Possible values: Beginner or "
-"Advanced."
+"Beginner uses complete, explanatory announcements. Advanced keeps "
+"confirmations brief for experienced users."
 msgstr ""
 
-#. Translators: Help text for the list that chooses how much of a folder is loaded when one file is opened. It names the three entries in that list, which should read the same here as they do there.
-#: UI/GeneralPreferences.cs:126
+#. Translators: Help text for the list that chooses how much of a folder is loaded when one file is opened.
+#: UI/GeneralPreferences.cs:123
 msgid ""
-"Open with files behavior controls what happens when you open a single file. "
-"Open the file only loads just that file. Open the file and the main folder "
-"files loads all supported files in the same folder. Open the file with the "
-"main and subfolder files scans the folder recursively and loads files from "
-"subfolders too."
+"Chooses the playlist Luna builds when Windows opens one media file: only the "
+"selected file, all supported media in its folder, or supported media in that "
+"folder and every folder below it."
 msgstr ""
 
 #. Translators: Help text for the button that tells Windows this player can open media files.
-#: UI/GeneralPreferences.cs:131
+#: UI/GeneralPreferences.cs:127
 msgid ""
-"Register file extensions writes Windows registry entries for supported media "
-"types. This lets files open with this app from Explorer and Open With. On "
-"modern Windows, default app choice can still require user confirmation in "
-"system Default apps settings."
+"Adds Luna to the Windows list of applications that can open supported media "
+"files. Windows may still ask you to choose Luna in Default apps before it "
+"becomes the default player."
 msgstr ""
 
 #. Translators: Help text for the button that undoes telling Windows this player can open media files.
-#: UI/GeneralPreferences.cs:136
+#: UI/GeneralPreferences.cs:131
 msgid ""
-"Unregister file extensions removes registry entries created by this app for "
-"media associations. This does not delete your media files. Windows may still "
-"keep separate user default selections managed by system settings."
+"Removes the media-file associations registered by Luna. It does not delete "
+"any media or change default-app choices managed separately by Windows."
 msgstr ""
 
 #. Translators: Label above the boxes where the user types the point in the file to move to.
@@ -2662,11 +2744,6 @@ msgstr ""
 #. Translators: Label of the box holding the seconds part of the point in the file to move to.
 #: UI/GoToTimeDialog.cs:36
 msgid "Seconds"
-msgstr ""
-
-#. Translators: The button that accepts a window and carries the change out.
-#: UI/GoToTimeDialog.cs:66
-msgid "OK"
 msgstr ""
 
 #. Translators: The button that closes a window and leaves everything as it was.
@@ -2979,7 +3056,7 @@ msgstr ""
 
 #. Translators: Player submenu for choosing how far one press of the seek keys moves.
 #: UI/MenuBuilder.cs:214
-msgid "Control the clicks movement value"
+msgid "Seek amount"
 msgstr ""
 
 #. Translators: Player menu item that opens the list of audio output devices to play through.
@@ -3019,32 +3096,32 @@ msgid "Open recordings folder"
 msgstr ""
 
 #. Translators: Help submenu containing the commands that update Luna Player and its YouTube tools.
-#: UI/MenuBuilder.cs:252
+#: UI/MenuBuilder.cs:259
 msgid "Updates"
 msgstr ""
 
 #. Translators: Name of the File menu in the menu bar.
-#: UI/MenuBuilder.cs:256
+#: UI/MenuBuilder.cs:263
 msgid "File"
 msgstr ""
 
 #. Translators: Name of the menu bar menu holding the things that can be done to the marked files at once.
-#: UI/MenuBuilder.cs:263
+#: UI/MenuBuilder.cs:270
 msgid "Actions for marked files"
 msgstr ""
 
 #. Translators: Name of the Player menu in the menu bar, holding the playing, seeking and volume items.
-#: UI/MenuBuilder.cs:265
+#: UI/MenuBuilder.cs:272
 msgid "Player"
 msgstr ""
 
 #. Translators: Name of the menu bar menu holding what can be done with the YouTube video being played.
-#: UI/MenuBuilder.cs:270
+#: UI/MenuBuilder.cs:277
 msgid "Video options"
 msgstr ""
 
 #. Translators: Name of the Help menu in the menu bar.
-#: UI/MenuBuilder.cs:276
+#: UI/MenuBuilder.cs:283
 msgid "Help"
 msgstr ""
 
@@ -3093,16 +3170,15 @@ msgstr ""
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#. Translators: Help text for the list of settings categories down the left of the Preferences window. General
-#. and Audio are two of those categories and should read the same here as they do there.
-#: UI/PreferencesDialog.cs:172
+#. Translators: Help text for the list of settings categories down the left of the Preferences window.
+#: UI/PreferencesDialog.cs:171
 msgid ""
-"Settings categories tree. Use up and down arrows to choose a category like "
-"General or Audio."
+"Use the Up and Down Arrow keys to select a category. Its controls appear on "
+"the right side of the window."
 msgstr ""
 
 #. Translators: Spoken when the user asks for help on a control that has none.
-#: UI/PreferencesDialog.cs:179
+#: UI/PreferencesDialog.cs:178
 msgid "No detailed help is available for this control."
 msgstr ""
 
@@ -3155,13 +3231,13 @@ msgstr ""
 
 #. Translators: One of the channel counts a recording can be made in: one channel.
 #: UI/Recording/RecordingDialog.cs:137 UI/Recording/RecordingDialog.cs:401
-#: UI/RecordingPreferences.cs:61 UI/RecordingPreferences.cs:198
+#: UI/RecordingPreferences.cs:61 UI/RecordingPreferences.cs:195
 msgid "Mono"
 msgstr ""
 
 #. Translators: One of the channel counts a recording can be made in: two channels.
 #: UI/Recording/RecordingDialog.cs:139 UI/Recording/RecordingDialog.cs:403
-#: UI/RecordingPreferences.cs:63 UI/RecordingPreferences.cs:200
+#: UI/RecordingPreferences.cs:63 UI/RecordingPreferences.cs:197
 msgid "Stereo"
 msgstr ""
 
@@ -3215,7 +3291,7 @@ msgid "Remove the source '{name}'?"
 msgstr ""
 
 #. Translators: Title of the window that asks where recordings should be saved.
-#: UI/Recording/RecordingDialog.cs:466 UI/RecordingPreferences.cs:257
+#: UI/Recording/RecordingDialog.cs:466 UI/RecordingPreferences.cs:254
 msgid "Select the folder for recordings"
 msgstr ""
 
@@ -3271,12 +3347,12 @@ msgid "Edit program"
 msgstr ""
 
 #. Translators: A sample rate, as shown in a list. {value} is a number such as 44100.
-#: UI/Recording/RecordingDialog.cs:705 UI/RecordingPreferences.cs:282
+#: UI/Recording/RecordingDialog.cs:705 UI/RecordingPreferences.cs:279
 msgid "{value} Hz"
 msgstr ""
 
 #. Translators: A bitrate, as shown in a list. {value} is a number such as 192.
-#: UI/Recording/RecordingDialog.cs:708 UI/RecordingPreferences.cs:285
+#: UI/Recording/RecordingDialog.cs:708 UI/RecordingPreferences.cs:282
 msgid "{value} kbps"
 msgstr ""
 
@@ -3317,13 +3393,6 @@ msgstr ""
 msgid "Recording source"
 msgstr ""
 
-#. Translators: Spoken description of the Recording settings page, read when the page is opened.
-#: UI/RecordingPreferences.cs:43
-msgid ""
-"Recording settings. Use Tab to move between controls. Press F1 on a specific "
-"control to hear detailed help."
-msgstr ""
-
 #. Translators: Label of the list that chooses what a recording is saved as.
 #: UI/RecordingPreferences.cs:52
 msgid "Audio format"
@@ -3339,57 +3408,52 @@ msgstr ""
 msgid "Recordings folder"
 msgstr ""
 
-#. Translators: Help text for the list that chooses what a recording is saved as. It names the
-#. four entries in that list, which should read the same here as they do there.
-#: UI/RecordingPreferences.cs:89
+#. Translators: Help text for the list that chooses what a recording is saved as.
+#: UI/RecordingPreferences.cs:88
 msgid ""
-"What a recording is saved as. WAV keeps everything and takes the most room. "
-"FLAC also keeps everything but takes about half as much. MP3 and AAC throw "
-"some away to take far less. Possible values: WAV, MP3, AAC, or FLAC."
+"WAV preserves the audio without compression and usually produces the largest "
+"file. FLAC also preserves it while reducing size. MP3 and AAC trade some "
+"detail for much smaller files."
 msgstr ""
 
 #. Translators: Help text for the list that chooses how many times a second a recording is sampled.
-#: UI/RecordingPreferences.cs:93
+#: UI/RecordingPreferences.cs:92
 msgid ""
-"How many times a second the sound is measured. 44100 is what a compact disc "
-"uses and is the usual choice. Higher costs room and is rarely audible; lower "
-"is for speech where size matters more than quality."
+"Controls how many audio samples are stored each second. 44100 Hz suits most "
+"recordings. Higher rates use more space; lower rates can reduce speech file "
+"sizes."
 msgstr ""
 
-#. Translators: Help text for the list that chooses whether a recording is mono or stereo. It
-#. names the two entries in that list, which should read the same here as they do there.
-#: UI/RecordingPreferences.cs:97
+#. Translators: Help text for the list that chooses whether a recording is mono or stereo.
+#: UI/RecordingPreferences.cs:95
 msgid ""
-"Whether a recording has one channel or two. Mono halves the size and suits a "
-"single microphone. Stereo keeps left and right apart, which matters when "
-"recording music or anything the computer plays. Possible values: Mono or "
-"Stereo."
+"Mono stores one channel and is usually enough for a single microphone. "
+"Stereo preserves separate left and right channels for music and system audio."
 msgstr ""
 
 #. Translators: Help text for the list that chooses how much room a second of compressed audio may take.
-#: UI/RecordingPreferences.cs:101
+#: UI/RecordingPreferences.cs:98
 msgid ""
-"How much room a second of sound may take, for the formats that compress. "
-"Higher sounds better and makes a larger file. This does nothing for WAV and "
-"FLAC, which keep everything and are not offered a choice."
+"For MP3 and AAC, a higher bitrate preserves more detail but creates a larger "
+"file. WAV and FLAC do not use this choice."
 msgstr ""
 
 #. Translators: Help text for the box holding the folder recordings are saved into.
-#: UI/RecordingPreferences.cs:104
+#: UI/RecordingPreferences.cs:101
 msgid ""
-"Where recordings are saved. The folder is made if it is not there. Each "
-"recording is named after the moment it started, so one can never overwrite "
-"another."
+"Enter the destination directory. Luna creates it when necessary and gives "
+"each recording a timestamped name to prevent accidental replacement."
 msgstr ""
 
 #. Translators: Help text for the button that opens a window for choosing the recordings folder.
-#: UI/RecordingPreferences.cs:107
+#: UI/RecordingPreferences.cs:104
 msgid ""
-"Choose the folder recordings are saved into, rather than typing the path."
+"Opens a directory picker and puts the selected path in the recordings folder "
+"box."
 msgstr ""
 
 #. Translators: Shown when the Recording settings page was left with no folder to save into.
-#: UI/RecordingPreferences.cs:135
+#: UI/RecordingPreferences.cs:132
 msgid "Choose a folder for recordings."
 msgstr ""
 
@@ -3496,43 +3560,46 @@ msgstr ""
 #. Translators: Spoken description of the box for the shortest silence that will be trimmed, on the silence removal settings page.
 #: UI/Silence.cs:10
 msgid ""
-"Minimum silence duration in seconds. Silence shorter than this is kept. "
-"Default is 0.5."
+"Quiet sections shorter than this many seconds remain unchanged. The default "
+"is 0.5 seconds."
 msgstr ""
 
 #. Translators: Spoken description of the box for the loudness under which sound counts as silence, on the silence removal settings page.
 #: UI/Silence.cs:12
 msgid ""
-"Silence level threshold. Audio below this level is treated as silence. Enter "
-"only a number, for example -30."
+"Samples quieter than this decibel level count as silence. Enter a number "
+"such as -30."
 msgstr ""
 
 #. Translators: Spoken description of the list of ways silence can be measured, on the silence removal settings page. Peak and RMS are the names of the two methods.
 #: UI/Silence.cs:14
 msgid ""
-"How silence is detected. Peak reacts faster to speech transients (default). "
-"RMS is smoother and less sensitive to short spikes."
+"Peak follows the loudest sample in each analysis window and reacts to brief "
+"sounds. RMS averages the window for steadier detection."
 msgstr ""
 
-#. Translators: Label of an advanced silence removal setting: how many silent parts to cut from the start of the file.
+#. Translators: Label of an advanced silence removal setting: which section of sound should end trimming at the start of the file.
 #: UI/Silence.cs:19
 msgid "Leading silent parts to trim"
 msgstr ""
 
-#. Translators: Spoken description of the advanced silence removal setting for how many silent parts to cut from the start of the file.
+#. Translators: Spoken description of the advanced setting that chooses which section of sound ends trimming at the start of the file.
 #: UI/Silence.cs:21
-msgid "How many silent chunks to remove from the beginning."
+msgid ""
+"Use 0 to leave the beginning untouched or 1 to remove its initial silence. "
+"Higher values continue trimming through additional sections of sound."
 msgstr ""
 
-#. Translators: Label of an advanced silence removal setting: how long silence at the start must be before it is cut.
+#. Translators: Label of an advanced silence removal setting: how long sound must continue before trimming at the start stops.
 #: UI/Silence.cs:23
-msgid "Minimum leading silence length (seconds)"
+msgid "Sound required before leading trim stops (seconds)"
 msgstr ""
 
-#. Translators: Spoken description of the advanced silence removal setting for how long silence at the start must be before it is cut.
+#. Translators: Spoken description of the advanced setting for how long sound must continue before trimming at the start stops.
 #: UI/Silence.cs:25
 msgid ""
-"Only trim leading silence chunks that are at least this long (default: 0.2)."
+"Sound must stay above the threshold for this long before leading-silence "
+"trimming stops. The default is 0.2 seconds."
 msgstr ""
 
 #. Translators: Label of an advanced silence removal setting: how many silent parts to cut once the sound has begun.
@@ -3542,7 +3609,9 @@ msgstr ""
 
 #. Translators: Spoken description of the advanced silence removal setting for how many silent parts to cut once the sound has begun. Minus one means every one of them.
 #: UI/Silence.cs:29
-msgid "How many silence chunks to trim after audio has started (-1 means all)."
+msgid ""
+"Use -1 to shorten every qualifying pause after sound begins, or 0 to leave "
+"later pauses untouched."
 msgstr ""
 
 #. Translators: Label of an advanced silence removal setting: how long silence in the middle or at the end must be before it is cut.
@@ -3552,7 +3621,9 @@ msgstr ""
 
 #. Translators: Spoken description of the advanced silence removal setting for how long silence in the middle or at the end must be before it is cut.
 #: UI/Silence.cs:33
-msgid "Only trim middle/end silence chunks that are at least this long."
+msgid ""
+"A quiet section after sound begins must last at least this long before it is "
+"shortened."
 msgstr ""
 
 #. Translators: Label of an advanced silence removal setting: how much of a pause to leave where silence was cut.
@@ -3562,7 +3633,9 @@ msgstr ""
 
 #. Translators: Spoken description of the advanced silence removal setting for how much of a pause to leave where silence was cut.
 #: UI/Silence.cs:37
-msgid "Leaves a short pause before the next word (default: 0.2)."
+msgid ""
+"Keeps up to this much of a pause instead of removing it completely. The "
+"default is 0.2 seconds."
 msgstr ""
 
 #. Translators: Label of an advanced silence removal setting: the length of sound looked at at once when deciding whether it is silent.
@@ -3572,14 +3645,17 @@ msgstr ""
 
 #. Translators: Spoken description of the advanced silence removal setting for the length of sound looked at at once when deciding whether it is silent.
 #: UI/Silence.cs:41
-msgid "Smoothing window used by silence detection (default: 0.02)."
+msgid ""
+"Sets how many seconds of samples are measured together. Larger windows are "
+"steadier; smaller windows react faster. The default is 0.02."
 msgstr ""
 
 #. Translators: Spoken description of the whole silence removal settings page, read when the page is opened.
 #: UI/Silence.cs:56
 msgid ""
-"Silence removal settings. Minimum silence duration and threshold are always "
-"shown. Enable advanced settings to configure all remaining filter options."
+"The basic controls decide how long and how quiet a pause must be before Luna "
+"shortens it. Advanced controls treat silence at the beginning and after "
+"sound starts separately."
 msgstr ""
 
 #. Translators: Title of the group holding the silence removal settings.
@@ -3621,31 +3697,32 @@ msgstr ""
 #. Translators: Help text for the box holding the shortest silence that will be trimmed, spoken when the user asks for help on it.
 #: UI/Silence.cs:115
 msgid ""
-"Minimum silence duration in seconds. Silence shorter than this value is "
-"kept. Increase it to preserve short pauses. Decrease it to trim more "
-"aggressively."
+"Raise this value to preserve more short pauses, or lower it to remove "
+"briefer pauses. A quiet section is changed only after it lasts for the "
+"entered number of seconds."
 msgstr ""
 
 #. Translators: Help text for the box holding the loudness under which sound counts as silence, spoken when the user asks for help on it.
 #: UI/Silence.cs:119
 msgid ""
-"Silence level threshold. Audio quieter than this level is treated as "
-"silence. Enter only the number, for example -20, -30, or -40."
+"Enter a decibel value such as -30. A less negative value treats louder audio "
+"as silence and removes more; a more negative value limits removal to very "
+"quiet audio."
 msgstr ""
 
 #. Translators: Help text for the tick box that shows the rest of the silence removal settings.
-#. "silenceremove" is the name of the filter doing the work and is not translated.
-#: UI/Silence.cs:124
+#: UI/Silence.cs:123
 msgid ""
-"Show advanced settings. When enabled, extra silenceremove parameters are "
-"displayed. When disabled, only minimum duration and threshold are used."
+"Reveals separate controls for leading and later silence, the amount of each "
+"pause to retain, and the method used to measure loudness."
 msgstr ""
 
 #. Translators: Help text for the list of ways silence can be measured. Peak and RMS are the names of the two methods.
-#: UI/Silence.cs:128
+#: UI/Silence.cs:127
 msgid ""
-"Detection mode for silence analysis. Peak reacts quickly to speech "
-"transients. RMS is smoother."
+"Peak uses the loudest sample in each analysis window and responds to brief "
+"sounds. RMS uses average energy, producing a steadier result that is less "
+"affected by short spikes."
 msgstr ""
 
 #. Translators: Error message shown when the shortest silence to trim was typed as something other than a number, or as a negative one.
@@ -3677,52 +3754,58 @@ msgid "{field} must be -1 or greater."
 msgstr ""
 
 #. Translators: Error message shown when an advanced silence removal setting needs a number that is not negative.
-#. {field} is the name of the setting, such as "Minimum leading silence length (seconds)".
+#. {field} is the name of the setting, such as "Sound required before leading trim stops (seconds)".
 #: UI/Silence.cs:180
 msgid "{field} must be a non-negative number."
 msgstr ""
 
-#. Translators: Help text for the advanced setting holding how many silent parts to cut from the start of the file.
+#. Translators: Help text for the advanced setting that chooses which section of sound ends trimming at the start of the file.
 #: UI/Silence.cs:270
 msgid ""
-"Leading silent parts to trim. This controls how many silent chunks are "
-"removed from the beginning. Typical value is 1."
+"Use 0 to preserve the beginning or 1 to remove initial silence until "
+"sustained sound is found. Values above 1 continue discarding audio through "
+"additional non-silent sections."
 msgstr ""
 
-#. Translators: Help text for the advanced setting holding how long silence at the start must be before it is cut.
-#: UI/Silence.cs:272
+#. Translators: Help text for the advanced setting holding how long sound must continue before trimming at the start stops.
+#: UI/Silence.cs:273
 msgid ""
-"Minimum leading silence length in seconds. Only leading silence at least "
-"this long is removed. Default is 0.2."
+"After initial trimming, sound must remain above the threshold for this many "
+"seconds before Luna starts keeping it. The default is 0.2."
 msgstr ""
 
 #. Translators: Help text for the advanced setting holding how many silent parts to cut once the sound has begun.
-#: UI/Silence.cs:274
+#: UI/Silence.cs:276
 msgid ""
-"Silent parts to trim after audio starts. Use -1 to trim all matching silent "
-"parts."
+"Use -1 to shorten every qualifying pause after sound begins. Use 0 to "
+"preserve later silence; positive values limit how many sections are removed."
 msgstr ""
 
 #. Translators: Help text for the advanced setting holding how long silence in the middle or at the end must be before it is cut.
-#: UI/Silence.cs:276
+#: UI/Silence.cs:278
 msgid ""
-"Minimum inner silence length in seconds. Only silence in the middle or end "
-"at least this long is removed."
+"A pause after sound begins must remain below the threshold for this many "
+"seconds before Luna shortens it."
 msgstr ""
 
 #. Translators: Help text for the advanced setting holding how much of a pause to leave where silence was cut.
-#: UI/Silence.cs:278
-msgid "Pause to keep after trimmed silence, in seconds. Default is 0.2."
+#: UI/Silence.cs:280
+msgid ""
+"Enter how many seconds of a removed pause should remain, so words do not run "
+"together. The default is 0.2."
 msgstr ""
 
 #. Translators: Help text for the advanced setting holding the length of sound looked at at once when deciding whether it is silent.
-#: UI/Silence.cs:280
-msgid "Detection window size in seconds. Default is 0.02."
+#: UI/Silence.cs:282
+msgid ""
+"Sets the span of audio used for each loudness measurement. Larger values "
+"smooth sudden changes; smaller values react faster. The default is 0.02 "
+"seconds."
 msgstr ""
 
 #. Translators: Help text used for any silence removal setting with no help text of its own.
-#: UI/Silence.cs:282
-msgid "Silence removal setting. Enter a value and press OK to save."
+#: UI/Silence.cs:285
+msgid "Enter a numeric value, then press OK to apply it."
 msgstr ""
 
 #. Translators: Title used for a window of read-only text when the caller supplies none.
@@ -3785,8 +3868,8 @@ msgstr ""
 #. asking which of the two the user wants.
 #: UI/YouTube/LinkKindDialog.cs:25
 msgid ""
-"The app detected that this YouTube link contains a playlist and a video ID. "
-"Choose how you want to proceed."
+"This address points to one video and also includes a playlist. Choose which "
+"content Luna should open."
 msgstr ""
 
 #. Translators: Button that plays the one video a link names, rather than the playlist it also names.
@@ -3799,13 +3882,6 @@ msgstr ""
 #. Translators: One of the choices for a link naming both: always open the whole playlist.
 #: UI/YouTube/LinkKindDialog.cs:31 UI/YouTube/Preferences.cs:55
 msgid "Open the playlist"
-msgstr ""
-
-#. Translators: Spoken description of the YouTube settings page, read when the page is opened.
-#: UI/YouTube/Preferences.cs:27
-msgid ""
-"YouTube settings. Use Tab to move between controls. Press F1 on a specific "
-"control to hear detailed help."
 msgstr ""
 
 #. Translators: Tick box on the YouTube settings page: play only the sound of a video, not the picture.
@@ -3889,75 +3965,62 @@ msgstr ""
 #. Translators: Help text for the tick box that plays only the sound of a video.
 #: UI/YouTube/Preferences.cs:97
 msgid ""
-"Play videos as audio only. When enabled, only the sound of a video is "
-"played, which uses less of the network and starts sooner. Disable it to play "
-"the picture as well."
+"Plays only the sound stream, reducing network use and usually starting "
+"sooner. Clear this option when you also want the picture."
 msgstr ""
 
-#. Translators: Help text for the list that chooses how good the picture and sound should be. It names the
-#. three entries in that list, which should read the same here as they do there.
-#: UI/YouTube/Preferences.cs:102
+#. Translators: Help text for the list that chooses how good the picture and sound should be.
+#: UI/YouTube/Preferences.cs:100
 msgid ""
-"How good the video should be. Low uses the least of the network and starts "
-"soonest. Medium is a balance. Best uses the finest the video offers, which "
-"may take longer to start. Possible values: Low, Medium, or Best."
+"Low minimizes network use and startup time. Medium balances quality and "
+"bandwidth. Best requests the highest quality the video offers."
 msgstr ""
 
 #. Translators: Help text for the box holding how many videos a search should look for. The two numbers are
 #. the smallest and largest it accepts.
-#: UI/YouTube/Preferences.cs:108
+#: UI/YouTube/Preferences.cs:104
 msgid ""
-"How many videos a search looks for. More takes longer to search and gives a "
-"longer list. Reaching the end of that list fetches more, whatever this is "
-"set to. Possible values: 5 to 100."
+"Sets the size of the first result page, from 5 through 100 videos. Larger "
+"pages take longer to fetch; reaching the end still loads more results."
 msgstr ""
 
-#. Translators: Help text for the list that chooses what to do with a link naming a video and a playlist at
-#. once. It names the three entries in that list, which should read the same here as they do there.
-#: UI/YouTube/Preferences.cs:114
+#. Translators: Help text for the list that chooses what to do with a link naming a video and a playlist at once.
+#: UI/YouTube/Preferences.cs:107
 msgid ""
-"What to do with a link that names a video and a playlist at the same time. "
-"Ask every time opens a window asking which you meant. Play the video plays "
-"the one video. Open the playlist lists every video in it. Possible values: "
-"Ask every time, Play the video, or Open the playlist."
+"For an address containing both a video and a playlist, Luna can ask each "
+"time, open only that video, or list the complete playlist."
 msgstr ""
 
 #. Translators: Help text for the tick box that hands stream finding to yt-dlp. "yt-dlp" is a program name
 #. and is not translated.
-#: UI/YouTube/Preferences.cs:120
+#: UI/YouTube/Preferences.cs:111
 msgid ""
-"Use yt-dlp to resolve streams. When enabled, the separate yt-dlp program "
-"finds the sound and picture of a video instead of the player doing it "
-"itself. yt-dlp has to be downloaded first, which the player offers to do. "
-"Leave it off unless a video the player cannot play works in yt-dlp."
+"Lets the separate yt-dlp program find playable sound and picture streams. "
+"Luna offers to download it when needed; leave this clear unless the built-in "
+"resolver cannot open a video."
 msgstr ""
 
-#. Translators: Help text for the list that chooses which line of yt-dlp releases to follow. It names the
-#. three entries in that list, which should read the same here as they do there. "yt-dlp" is a program name
-#. and is not translated.
-#: UI/YouTube/Preferences.cs:127
+#. Translators: Help text for the list that chooses which line of yt-dlp releases to follow. "yt-dlp" is a program name and is not translated.
+#: UI/YouTube/Preferences.cs:115
 msgid ""
-"Which line of yt-dlp releases to follow. Stable is tested and changes least "
-"often. Nightly is rebuilt each night. Master is rebuilt from the latest "
-"source and may not work. Possible values: Stable, Nightly, or Master."
+"Stable changes least often and is intended for normal use. Nightly is "
+"rebuilt each night. Master follows the newest source and may be unreliable."
 msgstr ""
 
 #. Translators: Help text for the tick box that looks for a newer yt-dlp at startup. "yt-dlp" is a program
 #. name and is not translated.
-#: UI/YouTube/Preferences.cs:133
+#: UI/YouTube/Preferences.cs:119
 msgid ""
-"Check for yt-dlp updates on startup. When enabled, the player looks for a "
-"newer yt-dlp each time it starts and offers to fetch it. This needs the "
-"network, so turn it off to start without one."
+"Looks for a newer yt-dlp in the background when Luna starts and offers to "
+"download it. Clear this option to avoid that startup network request."
 msgstr ""
 
 #. Translators: Help text for the button that fetches the extra programs YouTube downloads need. "yt-dlp" is
 #. a program name and is not translated.
-#: UI/YouTube/Preferences.cs:138
+#: UI/YouTube/Preferences.cs:123
 msgid ""
-"Download YouTube components. Fetches yt-dlp, which downloading a video needs "
-"and which resolving streams with yt-dlp needs. Nothing else on this page "
-"requires it."
+"Fetches yt-dlp for video downloads and optional stream resolution. The other "
+"YouTube features do not require this component."
 msgstr ""
 
 #. Translators: Button that saves the video chosen in the list of results to a folder on this computer.
