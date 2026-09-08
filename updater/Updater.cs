@@ -88,7 +88,7 @@ internal static partial class Program
                 Launch(Path.Combine(request.InstallDirectory, PlayerExecutable), request.InstallDirectory);
                 return 0;
             case ".exe":
-                Launch(request.AssetPath, request.InstallDirectory);
+                LaunchInstaller(request.AssetPath, request.InstallDirectory);
                 return 0;
             default:
                 throw new NotSupportedException("The update package must be a ZIP archive or an installer executable.");
@@ -148,6 +148,21 @@ internal static partial class Program
             {
             }
         }
+    }
+
+    private static void LaunchInstaller(string installerPath, string installDirectory)
+    {
+        var start = new ProcessStartInfo(installerPath)
+        {
+            UseShellExecute = true,
+            WorkingDirectory = installDirectory,
+        };
+        // /SILENT skips the wizard but keeps Inno Setup's installation progress window visible. The custom
+        // switch tells the script to launch Luna Player itself when installation has completed.
+        start.ArgumentList.Add("/SILENT");
+        start.ArgumentList.Add("/LUNAUPDATE");
+        using var installer = Process.Start(start)
+            ?? throw new InvalidOperationException("The update installer could not be started.");
     }
 
     private static void ExtractSafely(string archivePath, string destinationDirectory)
