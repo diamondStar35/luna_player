@@ -108,7 +108,10 @@ Name: "{group}\{cm:UninstallProgram,{#AppName}}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; AppUserModelID: "{#AppUserModelId}"; Tasks: desktopicon
 
 [Run]
-Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent; Check: IsNormalInstall
+; /LUNAUPDATE is paired with Inno's /SILENT mode by Updater.exe. It runs without a finish page, so this
+; separate entry starts the updated player automatically when setup completes.
+Filename: "{app}\{#AppExeName}"; Flags: nowait; Check: IsUpdateInstall
 
 [UninstallDelete]
 Type: files; Name: "{app}\{#InstallerMarker}"
@@ -151,6 +154,26 @@ Root: HKCU; Subkey: "{#CapabilitiesKey}\FileAssociations"; ValueType: string; Va
 #for {Index = 0; Index < DimOf(Extensions); Index++} EmitExtension
 
 [Code]
+function IsUpdateInstall: Boolean;
+var
+  Index: Integer;
+begin
+  Result := False;
+  for Index := 1 to ParamCount do
+  begin
+    if CompareText(ParamStr(Index), '/LUNAUPDATE') = 0 then
+    begin
+      Result := True;
+      Exit;
+    end;
+  end;
+end;
+
+function IsNormalInstall: Boolean;
+begin
+  Result := not IsUpdateInstall;
+end;
+
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if CurStep = ssPostInstall then
