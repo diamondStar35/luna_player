@@ -7,38 +7,38 @@ namespace LunaPlayer.UI;
 internal sealed class SilencePreferences : Preferences
 {
     // Translators: Spoken description of the box for the shortest silence that will be trimmed, on the silence removal settings page.
-    private static readonly string MinimumHint = Tr("Minimum silence duration in seconds. Silence shorter than this is kept. Default is 0.5.");
+    private static readonly string MinimumHint = Tr("Quiet sections shorter than this many seconds remain unchanged. The default is 0.5 seconds.");
     // Translators: Spoken description of the box for the loudness under which sound counts as silence, on the silence removal settings page.
-    private static readonly string ThresholdHint = Tr("Silence level threshold. Audio below this level is treated as silence. Enter only a number, for example -30.");
+    private static readonly string ThresholdHint = Tr("Samples quieter than this decibel level count as silence. Enter a number such as -30.");
     // Translators: Spoken description of the list of ways silence can be measured, on the silence removal settings page. Peak and RMS are the names of the two methods.
-    private static readonly string DetectionHint = Tr("How silence is detected. Peak reacts faster to speech transients (default). RMS is smoother and less sensitive to short spikes.");
+    private static readonly string DetectionHint = Tr("Peak follows the loudest sample in each analysis window and reacts to brief sounds. RMS averages the window for steadier detection.");
 
     private static readonly (string Key, string Label, string Hint)[] AdvancedFields =
     [
-        // Translators: Label of an advanced silence removal setting: how many silent parts to cut from the start of the file.
+        // Translators: Label of an advanced silence removal setting: which section of sound should end trimming at the start of the file.
         ("start_periods", Tr("Leading silent parts to trim"),
-            // Translators: Spoken description of the advanced silence removal setting for how many silent parts to cut from the start of the file.
-            Tr("How many silent chunks to remove from the beginning.")),
-        // Translators: Label of an advanced silence removal setting: how long silence at the start must be before it is cut.
-        ("start_duration", Tr("Minimum leading silence length (seconds)"),
-            // Translators: Spoken description of the advanced silence removal setting for how long silence at the start must be before it is cut.
-            Tr("Only trim leading silence chunks that are at least this long (default: 0.2).")),
+            // Translators: Spoken description of the advanced setting that chooses which section of sound ends trimming at the start of the file.
+            Tr("Use 0 to leave the beginning untouched or 1 to remove its initial silence. Higher values continue trimming through additional sections of sound.")),
+        // Translators: Label of an advanced silence removal setting: how long sound must continue before trimming at the start stops.
+        ("start_duration", Tr("Sound required before leading trim stops (seconds)"),
+            // Translators: Spoken description of the advanced setting for how long sound must continue before trimming at the start stops.
+            Tr("Sound must stay above the threshold for this long before leading-silence trimming stops. The default is 0.2 seconds.")),
         // Translators: Label of an advanced silence removal setting: how many silent parts to cut once the sound has begun.
         ("stop_periods", Tr("Silent parts to trim after audio starts"),
             // Translators: Spoken description of the advanced silence removal setting for how many silent parts to cut once the sound has begun. Minus one means every one of them.
-            Tr("How many silence chunks to trim after audio has started (-1 means all).")),
+            Tr("Use -1 to shorten every qualifying pause after sound begins, or 0 to leave later pauses untouched.")),
         // Translators: Label of an advanced silence removal setting: how long silence in the middle or at the end must be before it is cut.
         ("stop_duration", Tr("Minimum inner silence length (seconds)"),
             // Translators: Spoken description of the advanced silence removal setting for how long silence in the middle or at the end must be before it is cut.
-            Tr("Only trim middle/end silence chunks that are at least this long.")),
+            Tr("A quiet section after sound begins must last at least this long before it is shortened.")),
         // Translators: Label of an advanced silence removal setting: how much of a pause to leave where silence was cut.
         ("stop_silence", Tr("Pause to keep after trimmed silence (seconds)"),
             // Translators: Spoken description of the advanced silence removal setting for how much of a pause to leave where silence was cut.
-            Tr("Leaves a short pause before the next word (default: 0.2).")),
+            Tr("Keeps up to this much of a pause instead of removing it completely. The default is 0.2 seconds.")),
         // Translators: Label of an advanced silence removal setting: the length of sound looked at at once when deciding whether it is silent.
         ("window", Tr("Detection window size (seconds)"),
             // Translators: Spoken description of the advanced silence removal setting for the length of sound looked at at once when deciding whether it is silent.
-            Tr("Smoothing window used by silence detection (default: 0.02).")),
+            Tr("Sets how many seconds of samples are measured together. Larger windows are steadier; smaller windows react faster. The default is 0.02.")),
     ];
 
     private readonly SilenceSettings _settings;
@@ -53,8 +53,8 @@ internal sealed class SilencePreferences : Preferences
     internal SilencePreferences(Window parent, SilenceSettings settings)
         : base(new ScrolledWindow(parent),
             // Translators: Spoken description of the whole silence removal settings page, read when the page is opened.
-            Tr("Silence removal settings. Minimum silence duration and threshold are always shown. " +
-            "Enable advanced settings to configure all remaining filter options."))
+            Tr("The basic controls decide how long and how quiet a pause must be before Luna shortens it. " +
+            "Advanced controls treat silence at the beginning and after sound starts separately."))
     {
         _settings = settings;
         var page = (ScrolledWindow)Window;
@@ -112,20 +112,20 @@ internal sealed class SilencePreferences : Preferences
 
         Help(_minimum,
             // Translators: Help text for the box holding the shortest silence that will be trimmed, spoken when the user asks for help on it.
-            Tr("Minimum silence duration in seconds. Silence shorter than this value is kept. " +
-            "Increase it to preserve short pauses. Decrease it to trim more aggressively."));
+            Tr("Raise this value to preserve more short pauses, or lower it to remove briefer pauses. " +
+            "A quiet section is changed only after it lasts for the entered number of seconds."));
         Help(_threshold,
             // Translators: Help text for the box holding the loudness under which sound counts as silence, spoken when the user asks for help on it.
-            Tr("Silence level threshold. Audio quieter than this level is treated as silence. " +
-            "Enter only the number, for example -20, -30, or -40."));
+            Tr("Enter a decibel value such as -30. A less negative value treats louder audio as silence and removes more; " +
+            "a more negative value limits removal to very quiet audio."));
         Help(_advanced,
             // Translators: Help text for the tick box that shows the rest of the silence removal settings.
-            // "silenceremove" is the name of the filter doing the work and is not translated.
-            Tr("Show advanced settings. When enabled, extra silenceremove parameters are displayed. " +
-            "When disabled, only minimum duration and threshold are used."));
+            Tr("Reveals separate controls for leading and later silence, the amount of each pause to retain, " +
+            "and the method used to measure loudness."));
         Help(_detection,
             // Translators: Help text for the list of ways silence can be measured. Peak and RMS are the names of the two methods.
-            Tr("Detection mode for silence analysis. Peak reacts quickly to speech transients. RMS is smoother."));
+            Tr("Peak uses the loudest sample in each analysis window and responds to brief sounds. " +
+            "RMS uses average energy, producing a steadier result that is less affected by short spikes."));
     }
 
     public override string? Validate()
@@ -176,7 +176,7 @@ internal sealed class SilencePreferences : Preferences
             {
                 control.Focus();
                 // Translators: Error message shown when an advanced silence removal setting needs a number that is not negative.
-                // {field} is the name of the setting, such as "Minimum leading silence length (seconds)".
+                // {field} is the name of the setting, such as "Sound required before leading trim stops (seconds)".
                 return TrFormat("{field} must be a non-negative number.", label);
             }
         }
@@ -266,19 +266,22 @@ internal sealed class SilencePreferences : Preferences
 
     private static string HelpFor(string key) => key switch
     {
-        // Translators: Help text for the advanced setting holding how many silent parts to cut from the start of the file.
-        "start_periods" => Tr("Leading silent parts to trim. This controls how many silent chunks are removed from the beginning. Typical value is 1."),
-        // Translators: Help text for the advanced setting holding how long silence at the start must be before it is cut.
-        "start_duration" => Tr("Minimum leading silence length in seconds. Only leading silence at least this long is removed. Default is 0.2."),
+        // Translators: Help text for the advanced setting that chooses which section of sound ends trimming at the start of the file.
+        "start_periods" => Tr("Use 0 to preserve the beginning or 1 to remove initial silence until sustained sound is found. " +
+            "Values above 1 continue discarding audio through additional non-silent sections."),
+        // Translators: Help text for the advanced setting holding how long sound must continue before trimming at the start stops.
+        "start_duration" => Tr("After initial trimming, sound must remain above the threshold for this many seconds before Luna starts keeping it. " +
+            "The default is 0.2."),
         // Translators: Help text for the advanced setting holding how many silent parts to cut once the sound has begun.
-        "stop_periods" => Tr("Silent parts to trim after audio starts. Use -1 to trim all matching silent parts."),
+        "stop_periods" => Tr("Use -1 to shorten every qualifying pause after sound begins. Use 0 to preserve later silence; positive values limit how many sections are removed."),
         // Translators: Help text for the advanced setting holding how long silence in the middle or at the end must be before it is cut.
-        "stop_duration" => Tr("Minimum inner silence length in seconds. Only silence in the middle or end at least this long is removed."),
+        "stop_duration" => Tr("A pause after sound begins must remain below the threshold for this many seconds before Luna shortens it."),
         // Translators: Help text for the advanced setting holding how much of a pause to leave where silence was cut.
-        "stop_silence" => Tr("Pause to keep after trimmed silence, in seconds. Default is 0.2."),
+        "stop_silence" => Tr("Enter how many seconds of a removed pause should remain, so words do not run together. The default is 0.2."),
         // Translators: Help text for the advanced setting holding the length of sound looked at at once when deciding whether it is silent.
-        "window" => Tr("Detection window size in seconds. Default is 0.02."),
+        "window" => Tr("Sets the span of audio used for each loudness measurement. Larger values smooth sudden changes; smaller values react faster. " +
+            "The default is 0.02 seconds."),
         // Translators: Help text used for any silence removal setting with no help text of its own.
-        _ => Tr("Silence removal setting. Enter a value and press OK to save."),
+        _ => Tr("Enter a numeric value, then press OK to apply it."),
     };
 }

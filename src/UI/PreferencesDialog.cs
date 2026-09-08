@@ -167,9 +167,8 @@ internal sealed class PreferencesDialog : IDisposable
         var focused = Window.FindFocus();
         if (ReferenceEquals(focused, _tree))
         {
-            // Translators: Help text for the list of settings categories down the left of the Preferences window. General
-            // and Audio are two of those categories and should read the same here as they do there.
-            _speakHelp(Tr("Settings categories tree. Use up and down arrows to choose a category like General or Audio."));
+            // Translators: Help text for the list of settings categories down the left of the Preferences window.
+            _speakHelp(Tr("Use the Up and Down Arrow keys to select a category. Its controls appear on the right side of the window."));
             return;
         }
 

@@ -24,7 +24,7 @@ internal sealed class Preferences : UI.Preferences
 
     internal Preferences(Window parent, YouTubeSettings settings, PrefsOps operations)
         // Translators: Spoken description of the YouTube settings page, read when the page is opened.
-        : base(new ScrolledWindow(parent), Tr("YouTube settings. Use Tab to move between controls. Press F1 on a specific control to hear detailed help."))
+        : base(new ScrolledWindow(parent), Tr("Move through this page with Tab or Shift+Tab. Press F1 while a control is focused to hear what it changes."))
     {
         _settings = settings;
         var panel = (ScrolledWindow)Window;
@@ -94,49 +94,33 @@ internal sealed class Preferences : UI.Preferences
 
         Help(_audioOnly,
             // Translators: Help text for the tick box that plays only the sound of a video.
-            Tr("Play videos as audio only. When enabled, only the sound of a video is played, which uses less of the network " +
-            "and starts sooner. Disable it to play the picture as well."));
+            Tr("Plays only the sound stream, reducing network use and usually starting sooner. Clear this option when you also want the picture."));
         Help(_quality,
-            // Translators: Help text for the list that chooses how good the picture and sound should be. It names the
-            // three entries in that list, which should read the same here as they do there.
-            Tr("How good the video should be. Low uses the least of the network and starts soonest. Medium is a balance. " +
-            "Best uses the finest the video offers, which may take longer to start. " +
-            "Possible values: Low, Medium, or Best."));
+            // Translators: Help text for the list that chooses how good the picture and sound should be.
+            Tr("Low minimizes network use and startup time. Medium balances quality and bandwidth. Best requests the highest quality the video offers."));
         Help(_resultCount,
             // Translators: Help text for the box holding how many videos a search should look for. The two numbers are
             // the smallest and largest it accepts.
-            Tr("How many videos a search looks for. More takes longer to search and gives a longer list. Reaching the end " +
-            "of that list fetches more, whatever this is set to. " +
-            "Possible values: 5 to 100."));
+            Tr("Sets the size of the first result page, from 5 through 100 videos. Larger pages take longer to fetch; reaching the end still loads more results."));
         Help(_mixedLink,
-            // Translators: Help text for the list that chooses what to do with a link naming a video and a playlist at
-            // once. It names the three entries in that list, which should read the same here as they do there.
-            Tr("What to do with a link that names a video and a playlist at the same time. Ask every time opens a window " +
-            "asking which you meant. Play the video plays the one video. Open the playlist lists every video in it. " +
-            "Possible values: Ask every time, Play the video, or Open the playlist."));
+            // Translators: Help text for the list that chooses what to do with a link naming a video and a playlist at once.
+            Tr("For an address containing both a video and a playlist, Luna can ask each time, open only that video, or list the complete playlist."));
         Help(_useYtDlp,
             // Translators: Help text for the tick box that hands stream finding to yt-dlp. "yt-dlp" is a program name
             // and is not translated.
-            Tr("Use yt-dlp to resolve streams. When enabled, the separate yt-dlp program finds the sound and picture of a " +
-            "video instead of the player doing it itself. yt-dlp has to be downloaded first, which the player offers to do. " +
-            "Leave it off unless a video the player cannot play works in yt-dlp."));
+            Tr("Lets the separate yt-dlp program find playable sound and picture streams. Luna offers to download it when needed; " +
+            "leave this clear unless the built-in resolver cannot open a video."));
         Help(_channel,
-            // Translators: Help text for the list that chooses which line of yt-dlp releases to follow. It names the
-            // three entries in that list, which should read the same here as they do there. "yt-dlp" is a program name
-            // and is not translated.
-            Tr("Which line of yt-dlp releases to follow. Stable is tested and changes least often. Nightly is rebuilt each " +
-            "night. Master is rebuilt from the latest source and may not work. " +
-            "Possible values: Stable, Nightly, or Master."));
+            // Translators: Help text for the list that chooses which line of yt-dlp releases to follow. "yt-dlp" is a program name and is not translated.
+            Tr("Stable changes least often and is intended for normal use. Nightly is rebuilt each night. Master follows the newest source and may be unreliable."));
         Help(_checkUpdates,
             // Translators: Help text for the tick box that looks for a newer yt-dlp at startup. "yt-dlp" is a program
             // name and is not translated.
-            Tr("Check for yt-dlp updates on startup. When enabled, the player looks for a newer yt-dlp each time it starts " +
-            "and offers to fetch it. This needs the network, so turn it off to start without one."));
+            Tr("Looks for a newer yt-dlp in the background when Luna starts and offers to download it. Clear this option to avoid that startup network request."));
         Help(download,
             // Translators: Help text for the button that fetches the extra programs YouTube downloads need. "yt-dlp" is
             // a program name and is not translated.
-            Tr("Download YouTube components. Fetches yt-dlp, which downloading a video needs and which resolving streams " +
-            "with yt-dlp needs. Nothing else on this page requires it."));
+            Tr("Fetches yt-dlp for video downloads and optional stream resolution. The other YouTube features do not require this component."));
     }
 
     /// <summary>The release line the page is showing, which is not the one in the settings until the
