@@ -30,6 +30,16 @@ internal static partial class Localization
     /// <summary>Where the catalogues live.</summary>
     internal static string Directory => Path.Combine(AppContext.BaseDirectory, "locale");
 
+    /// <summary>The active locale as a language code suitable for a translated resource directory.</summary>
+    internal static string CurrentLanguageCode
+    {
+        get
+        {
+            var code = _locale?.CanonicalName?.Trim() ?? string.Empty;
+            return code.Length == 0 ? "en" : code;
+        }
+    }
+
     /// <summary>Sets the language to a code such as <c>ar</c> or <c>pt-BR</c>, or to whatever Windows is set
     /// to when it is <see cref="SystemLanguage"/>, unrecognised, or empty. Loading a catalogue that is not
     /// there is not a failure: the strings stay as they are written in the source.</summary>

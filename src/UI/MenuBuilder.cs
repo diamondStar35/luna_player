@@ -248,6 +248,13 @@ internal static class MainMenuBuilder
         // Translators: Help menu item that fetches a newer yt-dlp. "YouTube" is a service name.
         updatesMenu.Append(commandIds[ActionId.UpdateYouTubeComponents], Label(Tr("Update YouTube components"), ActionId.UpdateYouTubeComponents, shortcuts));
         var helpMenu = new Menu();
+        // Translators: Help menu item that opens the user guide matching the application language.
+        helpMenu.Append(commandIds[ActionId.UserGuide], Label(Tr("User guide"), ActionId.UserGuide, shortcuts));
+        // Translators: Help menu item that shows information about Luna Player.
+        helpMenu.Append(commandIds[ActionId.About], Label(Tr("About"), ActionId.About, shortcuts));
+        // Translators: Help menu item that opens the GitHub page for the installed release.
+        helpMenu.Append(commandIds[ActionId.ReleaseNotes], Label(Tr("Release notes"), ActionId.ReleaseNotes, shortcuts));
+        helpMenu.AppendSeparator();
         // Translators: Help submenu containing the commands that update Luna Player and its YouTube tools.
         helpMenu.AppendSubMenu(updatesMenu, Tr("Updates"));
 

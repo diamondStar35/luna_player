@@ -156,6 +156,7 @@ internal interface IMainView : IDisposable
     void ShowInfo(string message, string caption);
     void ShowWarning(string message, string caption);
     void ShowError(string message, string caption);
+    void ShowAbout();
     /// <summary>Offers a newer Luna Player release and shows its change list. True means update now.</summary>
     bool OfferAppUpdate(AppUpdatePrompt prompt);
     double? ChooseTime(double duration, double elapsed);

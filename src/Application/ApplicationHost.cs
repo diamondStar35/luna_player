@@ -60,6 +60,7 @@ internal sealed class ApplicationHost : IDisposable
         CrashReport.SetClipboard(clipboard);
         var selection = new PlaybackSelection();
         var router = new ActionRouter();
+        _ = new HelpActions(router, _view);
         _appUpdates = new AppUpdateActions(router, _view, _settings, _dispatcher);
         var fileActions = new FileActions(router, _view, _player, _settings, _speech, clipboard, _dispatcher);
         _ = new PlaybackActions(router, _view, _player, _settings, _settingsStore, _speech, selection);

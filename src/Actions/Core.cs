@@ -22,7 +22,7 @@ internal enum ActionId
     GoToTime, SoundCards,
     ToggleSilenceRemoval,
     OpenYouTubeLink, SearchYouTube, OpenFavorites, VideoDownload, VideoDescription, VideoCopyLink,
-    CheckAppUpdates, UpdateYouTubeComponents,
+    UserGuide, About, ReleaseNotes, CheckAppUpdates, UpdateYouTubeComponents,
     OpenRecordingInterface, StartRecording, PauseRecording, StopRecording, OpenRecordingsFolder,
     PanLeft, PanRight, AnnouncePan,
     PitchUp, PitchDown, ResetPitch, AnnouncePitch,
@@ -35,6 +35,6 @@ internal static class ActionRegistry
 {
     internal static IReadOnlyList<ActionDefinition> All { get; } =
     [.. MediaActionDefinitions.All, .. PlaybackActionDefinitions.All, .. YouTubeActionDefinitions.All,
-        .. UpdateActionDefinitions.All,
+        .. HelpActionDefinitions.All, .. UpdateActionDefinitions.All,
         .. RecordingActionDefinitions.All];
 }
