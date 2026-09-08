@@ -149,6 +149,11 @@
   <Target Name="PublishUpdater"
           AfterTargets="Publish"
           Condition="'$(DesignTimeBuild)' != 'true'">
+    <!-- MSBuild's Publish target does not restore a project first. The updater is invoked directly rather
+         than referenced by this project, so a clean release runner has no assets file until we do it here. -->
+    <MSBuild Projects="$(RepositoryRoot)updater\Updater.csproj"
+             Targets="Restore"
+             Properties="Configuration=$(Configuration);RuntimeIdentifier=$(RuntimeIdentifier)" />
     <MSBuild Projects="$(RepositoryRoot)updater\Updater.csproj"
              Targets="Publish"
              Properties="Configuration=$(Configuration);RuntimeIdentifier=$(RuntimeIdentifier);PublishDir=$(UpdaterPublishDirectory)" />
