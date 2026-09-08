@@ -42,9 +42,6 @@ internal static class MainMenuBuilder
         fileMenu.Append(commandIds[ActionId.OpenYouTubeLink], Label(Tr("Open YouTube Link..."), ActionId.OpenYouTubeLink, shortcuts));
         // Translators: File menu item that asks what to look for on YouTube and lists what it finds.
         fileMenu.Append(commandIds[ActionId.SearchYouTube], Label(Tr("Search YouTube..."), ActionId.SearchYouTube, shortcuts));
-        // Translators: File menu item that fetches a newer yt-dlp. Its home in the original player is a
-        // submenu of the Help menu, which this player does not have yet.
-        fileMenu.Append(commandIds[ActionId.UpdateYouTubeComponents], Label(Tr("Update YouTube components"), ActionId.UpdateYouTubeComponents, shortcuts));
         // Translators: File menu item that lists the YouTube links and streams the user has saved.
         fileMenu.Append(commandIds[ActionId.OpenFavorites], Label(Tr("Favorite videos..."), ActionId.OpenFavorites, shortcuts));
         var localFileItems = new List<MenuItem>();
@@ -245,6 +242,15 @@ internal static class MainMenuBuilder
         // Translators: Recording menu item that opens the folder recordings are saved into.
         recordingMenu.Append(commandIds[ActionId.OpenRecordingsFolder], Label(Tr("Open recordings folder"), ActionId.OpenRecordingsFolder, shortcuts));
 
+        var updatesMenu = new Menu();
+        // Translators: Help menu item that checks whether a newer Luna Player release is available.
+        updatesMenu.Append(commandIds[ActionId.CheckAppUpdates], Label(Tr("Check for app updates"), ActionId.CheckAppUpdates, shortcuts));
+        // Translators: Help menu item that fetches a newer yt-dlp. "YouTube" is a service name.
+        updatesMenu.Append(commandIds[ActionId.UpdateYouTubeComponents], Label(Tr("Update YouTube components"), ActionId.UpdateYouTubeComponents, shortcuts));
+        var helpMenu = new Menu();
+        // Translators: Help submenu containing the commands that update Luna Player and its YouTube tools.
+        helpMenu.AppendSubMenu(updatesMenu, Tr("Updates"));
+
         var menuBar = new MenuBar();
         // Translators: Name of the File menu in the menu bar.
         menuBar.Append(fileMenu, Tr("File"));
@@ -266,6 +272,8 @@ internal static class MainMenuBuilder
         // put in front of any of them would leave those pointing at the wrong one.
         // Translators: Name of the menu bar menu holding what can be recorded and how.
         menuBar.Append(recordingMenu, Tr("Recording"));
+        // Translators: Name of the Help menu in the menu bar.
+        menuBar.Append(helpMenu, Tr("Help"));
         frame.SetMenuBar(menuBar);
         return new MainMenuComponents(menuBar, 2, markedMenuIndex, videoMenuIndex, playbackItems, mediaFileItems, localFileItems, markedItems, localEditItems, bookmarkItems, videoItems, markCurrentItem, markAllItem, shuffleItem, repeatItem, silenceItem, startRecordingItem, pauseRecordingItem, stopRecordingItem);
     }

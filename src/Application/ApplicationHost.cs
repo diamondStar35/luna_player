@@ -25,6 +25,7 @@ internal sealed class ApplicationHost : IDisposable
     private readonly PathRequestQueue _pathQueue;
     private readonly LunaPlayer.YouTube.ResolveCache _resolveCache;
     private readonly LunaPlayer.YouTube.Components _components;
+    private readonly AppUpdateActions _appUpdates;
     private readonly LunaPlayer.Recording.AudioCatalog _catalog;
     private readonly LunaPlayer.Recording.RecordingSources _recordingSources;
     private readonly LunaPlayer.Recording.RecordingEngine _recorder;
@@ -59,6 +60,7 @@ internal sealed class ApplicationHost : IDisposable
         CrashReport.SetClipboard(clipboard);
         var selection = new PlaybackSelection();
         var router = new ActionRouter();
+        _appUpdates = new AppUpdateActions(router, _view, _settings, _dispatcher);
         var fileActions = new FileActions(router, _view, _player, _settings, _speech, clipboard, _dispatcher);
         _ = new PlaybackActions(router, _view, _player, _settings, _settingsStore, _speech, selection);
 
@@ -108,6 +110,8 @@ internal sealed class ApplicationHost : IDisposable
         _dispatcher.Post(() => GlobalShortcutBinder.Apply(_view, _globalShortcuts, _settings, _speech));
         // Looks for a newer yt-dlp only when the setting asks for it, and says nothing unless there is one.
         _dispatcher.Post(_components.CheckForUpdateInBackground);
+        // The application check is also quiet at startup: only a newer release opens a window.
+        _dispatcher.Post(_appUpdates.CheckAtStartup);
 
         if (initialPaths.Count > 0)
             _dispatcher.Post(() => _controller.OpenPaths(initialPaths));
@@ -130,6 +134,7 @@ internal sealed class ApplicationHost : IDisposable
         _recorder.Dispose();
         _sessions.Dispose();
         _resolveCache.Dispose();
+        _appUpdates.Dispose();
         _player.Dispose();
         // Closing a screen-reader backend sends a global stop command. Focus has already moved to the next
         // application here, so that would cancel its focus announcement. Simple Player likewise leaves its
