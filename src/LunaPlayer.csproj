@@ -5,7 +5,7 @@
     <SupportedOSPlatformVersion>10.0.17763.0</SupportedOSPlatformVersion>
     <AssemblyName>LunaPlayer</AssemblyName>
     <RootNamespace>LunaPlayer</RootNamespace>
-    <Version>0.1.0</Version>
+    <Version>0.2.0</Version>
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
     <!-- The version resource Windows shows for the executable. AssemblyName is the file name and stays
          one word; these are what a person reads, and they are mirrored by ApplicationInfo. -->
@@ -27,6 +27,7 @@
     <NoWarn>$(NoWarn);IL3050</NoWarn>
     <BaseOutputPath>$(BaseIntermediateOutputPath)managed\</BaseOutputPath>
     <NativeAotOutputDirectory>$(MSBuildProjectDirectory)\bin\$(Configuration)\$(TargetFramework)\$(RuntimeIdentifier)\</NativeAotOutputDirectory>
+    <UpdaterPublishDirectory>$(MSBuildProjectDirectory)\obj\updater\$(Configuration)\$(RuntimeIdentifier)\</UpdaterPublishDirectory>
     <PublishDir>$(NativeAotOutputDirectory)</PublishDir>
     <RunCommand>$(NativeAotOutputDirectory)LunaPlayer.exe</RunCommand>
     <RunWorkingDirectory>$(NativeAotOutputDirectory)</RunWorkingDirectory>
@@ -57,6 +58,7 @@
     <Compile Include="Playback\**\*.cs" />
     <Compile Include="Playlist\**\*.cs" />
     <Compile Include="Recording\**\*.cs" />
+    <Compile Include="Update\**\*.cs" />
     <Compile Include="UI\**\*.cs" />
     <Compile Include="YouTube\**\*.cs" />
   </ItemGroup>
@@ -142,5 +144,16 @@
     <MSBuild Projects="$(MSBuildProjectFullPath)"
              Targets="Publish"
              Properties="Configuration=$(Configuration);NativeAotBuildInvocation=true" />
+  </Target>
+
+  <Target Name="PublishUpdater"
+          AfterTargets="Publish"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    <MSBuild Projects="$(RepositoryRoot)updater\Updater.csproj"
+             Targets="Publish"
+             Properties="Configuration=$(Configuration);RuntimeIdentifier=$(RuntimeIdentifier);PublishDir=$(UpdaterPublishDirectory)" />
+    <Delete Files="$(NativeAotOutputDirectory)Updater.dll;$(NativeAotOutputDirectory)Updater.pdb;$(NativeAotOutputDirectory)Updater.runtimeconfig.json" />
+    <Copy SourceFiles="$(UpdaterPublishDirectory)Updater.exe"
+          DestinationFolder="$(NativeAotOutputDirectory)" />
   </Target>
 </Project>

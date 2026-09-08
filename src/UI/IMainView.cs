@@ -12,6 +12,7 @@ internal readonly record struct BookmarkManagementRequest(BookmarkManagementActi
 internal enum OpenedFilesAction { Jump, Information }
 internal readonly record struct OpenedFilesRequest(OpenedFilesAction Action, int SelectedIndex);
 internal readonly record struct UiOperation(bool Success, string Error = "");
+internal readonly record struct AppUpdatePrompt(string CurrentVersion, string AvailableVersion, string Changes);
 
 /// <summary>Which half of a link naming a video and a playlist at once the user meant.</summary>
 internal enum YouTubeLinkKind { Video, Playlist }
@@ -155,6 +156,8 @@ internal interface IMainView : IDisposable
     void ShowInfo(string message, string caption);
     void ShowWarning(string message, string caption);
     void ShowError(string message, string caption);
+    /// <summary>Offers a newer Luna Player release and shows its change list. True means update now.</summary>
+    bool OfferAppUpdate(AppUpdatePrompt prompt);
     double? ChooseTime(double duration, double elapsed);
     int? ChooseAudioDevice(IReadOnlyList<string> descriptions, int selectedIndex);
     BookmarkManagementRequest? ManageBookmarks(IReadOnlyList<BookmarkListItem> bookmarks);

@@ -68,6 +68,9 @@ jobs:
           if ($builtVersion -ne $env:VERSION) {
             throw "Built application version '$builtVersion' does not match release version '$env:VERSION'."
           }
+          if (-not (Test-Path -LiteralPath 'src/bin/Release/net10.0-windows10.0.19041.0/win-x64/Updater.exe')) {
+            throw "Updater.exe was not included in the published application."
+          }
 
       - name: Create Archive
         shell: pwsh
