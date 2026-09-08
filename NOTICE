@@ -1,14 +1,15 @@
 Luna Player
 Copyright 2026 diamondStar35
 
-Luna Player is licensed under the Apache License, Version 2.0. The LICENSE file
-in the root of this distribution contains those terms, and they apply to Luna
-Player's own source code and to the LunaPlayer executable built from it.
+Luna Player's original source code is licensed under the Apache License,
+Version 2.0. The LICENSE file in the root of this distribution contains those
+terms. The LunaPlayer executable combines that code with the separately
+licensed components described below and is distributed subject to their terms.
 
 Luna Player is distributed together with the third-party components listed
 below. Each remains under its own licence, which Luna Player's licence neither
-replaces nor modifies. Verbatim licence texts are in third-party/licenses, and
-are installed alongside the program.
+replaces nor modifies. The root LICENSE file and the licence texts under
+third-party/licenses are installed alongside the program.
 
 
 -------------------------------------------------------------------------------
@@ -20,7 +21,9 @@ from which mpv is derived.
 
   Version:   v0.41.0-1037-g989d32716
   Home page: https://mpv.io/
-  Source:    https://github.com/mpv-player/mpv
+  Source:    https://github.com/mpv-player/mpv/tree/989d32716ed53497e27d11bebf3334fa329329ae
+  Build:     https://github.com/diamondStar35/mpv-winbuild
+  Binary:    https://github.com/diamondStar35/mpv-winbuild/releases/download/2026-09-07-989d32716e/mpv-dev-lgpl-shared-x86_64-v3-20260907-git-989d32716e.7z
   Licence:   GNU Lesser General Public License, version 2.1 or later
              third-party/licenses/LGPL-2.1.txt
 
@@ -29,9 +32,63 @@ run time as a shared library and is not linked into the LunaPlayer executable.
 
 The Lesser General Public License entitles a recipient of this distribution to
 the corresponding source code for mpv and to modify and replace that component.
-Both are satisfied by the address above and by the shared library remaining
-separate and replaceable: substituting a compatible mpv.dll requires no change
-to Luna Player.
+The exact source revision and binary build are linked above. The shared library
+also remains separate and replaceable: substituting a compatible mpv.dll
+requires no change to Luna Player.
+
+
+-------------------------------------------------------------------------------
+python-mpv C# binding                                      src/Mpv.cs (compiled in)
+-------------------------------------------------------------------------------
+
+Copyright (c) 2017-2024 Sebastian Götte <code@jaseg.net>
+Copyright (c) 2026 diamondStar35
+
+  Based on:   python-mpv 1.0.8
+  Home page:  https://github.com/jaseg/python-mpv
+  Source:     https://github.com/jaseg/python-mpv/blob/v1.0.8/mpv.py
+  Licence:    GNU Lesser General Public License, version 2.1 or later
+              third-party/licenses/LGPL-2.1.txt
+
+src/Mpv.cs is a C# translation and adaptation of python-mpv. The LGPL option
+offered by python-mpv has been selected for this file. The translated source,
+the application source that uses it, and the build scripts needed to produce
+the executable are available in the Luna Player repository at the release tag
+corresponding to each distributed version.
+
+
+-------------------------------------------------------------------------------
+NAudio                                                          (compiled in)
+-------------------------------------------------------------------------------
+
+Copyright 2008-2026 Mark Heath
+
+  Version:   3.1.0
+  Home page: https://github.com/naudio/NAudio
+  Source:    https://github.com/diamondStar35/NAudio/tree/467e168ef531b7e600fef1d45ba3a3b5a663da21
+  Licence:   MIT License
+             third-party/licenses/MIT.txt
+
+Luna Player builds NAudio from the listed source revision, including its
+Native AOT interoperability fixes. The required NAudio assemblies are compiled
+into the LunaPlayer executable.
+
+
+-------------------------------------------------------------------------------
+YoutubeExplode                                                  (compiled in)
+-------------------------------------------------------------------------------
+
+Copyright (c) 2016-2026 Oleksii Holub
+
+  Version:   6.6.2
+  Home page: https://github.com/Tyrrrz/YoutubeExplode
+  Source:    https://github.com/Tyrrrz/YoutubeExplode/tree/6b90e284c8775056fdd35d5770e3adb28dd80759
+  Licence:   MIT License
+             third-party/licenses/MIT.txt
+
+YoutubeExplode provides the client used to search YouTube and resolve video,
+playlist, and stream information. It is compiled into the LunaPlayer
+executable.
 
 
 -------------------------------------------------------------------------------
@@ -45,7 +102,9 @@ Copyright (c) the FFmpeg developers.
 
   Version:   N-126455-gecc7eb519
   Home page: https://ffmpeg.org/
-  Source:    https://github.com/FFmpeg/FFmpeg
+  Source:    https://github.com/FFmpeg/FFmpeg/tree/ecc7eb519ec8a6625eaec5bb6ba0607980d43c82
+  Build:     https://github.com/diamondStar35/mpv-winbuild
+  Binary:    https://github.com/diamondStar35/mpv-winbuild/releases/download/2026-09-07-989d32716e/ffmpeg-lgpl-shared-x86_64-v3-git-ecc7eb519.7z
   Licence:   GNU Lesser General Public License, version 3 or later
              third-party/licenses/LGPL-3.0.txt
 
@@ -65,6 +124,7 @@ Copyright (c) 1998-2005 Julian Smart, Robert Roebling et al.
   Version:   3.3.3
   Home page: https://www.wxwidgets.org/
   Source:    https://github.com/wxWidgets/wxWidgets
+  Build:     https://github.com/diamondStar35/wx_sharp/tree/c48592e57dc2746d87f6cb8c1ba8fa9adf9a6009
   Licence:   wxWindows Library Licence, Version 3.1
              third-party/licenses/wxWindows-3.1.txt
              third-party/licenses/LGPL-2.0.txt
@@ -110,7 +170,7 @@ Copyright (c) the WxSharp contributors.
 
   Source:    https://github.com/diamondStar35/wx_sharp
   Licence:   Apache License, Version 2.0
-             third-party/WxSharp/LICENSE
+             LICENSE
 
 WxSharp is the managed binding for wxWidgets, together with the native layer
 built as wx.dll. Its sources are compiled into the LunaPlayer executable.
@@ -125,9 +185,3 @@ PrismSharp                                                          (compiled in
 
 PrismSharp is the managed binding for Prism. Its sources are compiled into the
 LunaPlayer executable.
-
-
--------------------------------------------------------------------------------
-
-Requests for source code corresponding to the binaries in this distribution may
-be made at https://github.com/diamondStar35/luna_player/issues.
