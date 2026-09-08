@@ -12,7 +12,7 @@
     <Product>Luna Player</Product>
     <AssemblyTitle>Luna Player</AssemblyTitle>
     <Company>diamondStar35</Company>
-    <Copyright>Licensed under the Apache License 2.0</Copyright>
+    <Copyright>Copyright © 2026 diamondStar35</Copyright>
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
     <PublishAot>true</PublishAot>
