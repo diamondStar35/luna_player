@@ -61,3 +61,6 @@ locale/**/*.mo
 
 # The compiled installer.
 dist/
+
+# Generated documentation; the Markdown sources under docs/ are authoritative.
+docs/**/*.html

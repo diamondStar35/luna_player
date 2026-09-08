@@ -123,6 +123,10 @@
              Link="licenses\%(Filename)%(Extension)"
              CopyToOutputDirectory="PreserveNewest"
              CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="$(RepositoryRoot)docs\**\*.html"
+             Link="docs\%(RecursiveDir)%(Filename)%(Extension)"
+             CopyToOutputDirectory="PreserveNewest"
+             CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
   <Target Name="GenerateVersionedWin32Manifest"
@@ -144,6 +148,38 @@
     <MSBuild Projects="$(MSBuildProjectFullPath)"
              Targets="Publish"
              Properties="Configuration=$(Configuration);NativeAotBuildInvocation=true" />
+  </Target>
+
+  <Target Name="RenderDocumentation"
+          BeforeTargets="Build;Publish"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    <Exec Command="python &quot;$(RepositoryRoot)docs\render_docs.py&quot;" />
+  </Target>
+
+  <!-- These dynamic globs matter on a clean checkout: generated HTML does not exist when MSBuild first
+       evaluates the Content items above. Only the rendered files are copied; Markdown remains source-only. -->
+  <Target Name="CopyDocumentationToOutput"
+          AfterTargets="Build"
+          DependsOnTargets="RenderDocumentation"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    <ItemGroup>
+      <_RenderedDocumentation Include="$(RepositoryRoot)docs\**\*.html" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_RenderedDocumentation)"
+          DestinationFiles="@(_RenderedDocumentation->'$(OutDir)docs\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+  </Target>
+
+  <Target Name="CopyDocumentationToPublish"
+          AfterTargets="Publish"
+          DependsOnTargets="RenderDocumentation"
+          Condition="'$(DesignTimeBuild)' != 'true' and '$(PublishDir)' != ''">
+    <ItemGroup>
+      <_PublishedDocumentation Include="$(RepositoryRoot)docs\**\*.html" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_PublishedDocumentation)"
+          DestinationFiles="@(_PublishedDocumentation->'$(PublishDir)docs\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
   </Target>
 
   <Target Name="PublishUpdater"

@@ -9,6 +9,7 @@ fix, open an issue first to discuss the approach before writing code.
 
 - .NET 10 SDK
 - Visual Studio 2022 Build Tools or later, with the MSVC v143 x64 build tools
+- Python 3, with the documentation packages in `docs/requirements.txt`
 - CMake, only if you modify the native windowing wrapper
 
 ## Building
@@ -16,6 +17,7 @@ fix, open an issue first to discuss the approach before writing code.
 ```
 git clone --recurse-submodules https://github.com/diamondStar35/luna_player
 cd luna_player
+python -m pip install --requirement docs/requirements.txt
 dotnet build src/LunaPlayer.csproj
 ```
 
@@ -59,6 +61,27 @@ powershell -ExecutionPolicy Bypass -File scripts/build-wrapper-windows.ps1 -Conf
 ```
 
 Copy the resulting `wx.dll` from `third-party/WxSharp/build/stage/win-x64/native/` to `third-party/`.
+
+## Documentation
+
+User-guide sources are Markdown files named `docs/<language-code>/user-guide.md`. The language-code
+directory uses the same code as the corresponding application translation, such as `en` or `ar`.
+Generated HTML is build output and must not be committed.
+
+After changing a guide or adding one for another language, render every guide locally:
+
+```powershell
+python docs/render_docs.py
+```
+
+Open the generated `docs/<language-code>/user-guide.html` and check its headings, lists, tables,
+links, code blocks and language. Then build Luna and confirm that the HTML appears under
+`src/bin/<Configuration>/net10.0-windows10.0.19041.0/win-x64/docs/<language-code>/`, while the
+Markdown source does not. If the Help integration changed, run Luna in that language and verify
+that <kbd>F1</kbd> opens the corresponding guide, falling back to English when necessary.
+
+The normal build runs the same renderer, so Python and the packages from `docs/requirements.txt`
+must be installed even when documentation is not the focus of the change.
 
 ## Testing changes
 
