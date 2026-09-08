@@ -37,6 +37,7 @@ internal sealed partial class MainFrame
     public void ShowInfo(string message, string caption) => Wx.MessageBox(message, caption, MessageBoxStyle.Ok | MessageBoxStyle.IconInformation, DialogParent);
     public void ShowWarning(string message, string caption) => Wx.MessageBox(message, caption, MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, DialogParent);
     public void ShowError(string message, string caption) => Wx.MessageBox(message, caption, MessageBoxStyle.Ok | MessageBoxStyle.IconError, DialogParent);
+    public bool OfferAppUpdate(AppUpdatePrompt prompt) { using var dialog = new AppUpdateDialog(DialogParent, prompt); return dialog.Show(); }
     public double? ChooseTime(double duration, double elapsed) { using var dialog = new GoToTimeDialog(DialogParent, duration, elapsed); return dialog.Show(); }
     public int? ChooseAudioDevice(IReadOnlyList<string> descriptions, int selectedIndex) { using var dialog = new AudioDeviceDialog(DialogParent, descriptions, selectedIndex); return dialog.Show(); }
     public BookmarkManagementRequest? ManageBookmarks(IReadOnlyList<BookmarkListItem> bookmarks) { using var dialog = new BookmarkManagerDialog(DialogParent, bookmarks); return dialog.Show(); }

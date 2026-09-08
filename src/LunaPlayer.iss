@@ -8,6 +8,7 @@
 
 #define BuildDir "bin\Release\net10.0-windows10.0.19041.0\win-x64"
 #define AppExeName "LunaPlayer.exe"
+#define InstallerMarker ".luna_installed"
 
 #if !FileExists(AddBackslash(SourcePath) + BuildDir + "\" + AppExeName)
   #error Build the player in Release first: dotnet build src\LunaPlayer.csproj -c Release
@@ -109,6 +110,9 @@ Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; AppUserModelI
 [Run]
 Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
+[UninstallDelete]
+Type: files; Name: "{app}\{#InstallerMarker}"
+
 [Registry]
 ; The same registrations the player writes for itself from its settings, so a user who never opens that page
 ; still finds the player where Windows expects it. All of it hangs off the file association task, which the
@@ -145,3 +149,10 @@ Root: HKCU; Subkey: "Software\Classes\{#Extension}\OpenWithProgids"; ValueType: 
 Root: HKCU; Subkey: "{#CapabilitiesKey}\FileAssociations"; ValueType: string; ValueName: "{#Extension}"; ValueData: "{#ProgId}"; Flags: uninsdeletevalue; Tasks: associate
 #endsub
 #for {Index = 0; Index < DimOf(Extensions); Index++} EmitExtension
+
+[Code]
+procedure CurStepChanged(CurStep: TSetupStep);
+begin
+  if CurStep = ssPostInstall then
+    SaveStringToFile(ExpandConstant('{app}\{#InstallerMarker}'), 'installer', False);
+end;
