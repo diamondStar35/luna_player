@@ -80,8 +80,8 @@ OutputBaseFilename={#AppIdentifier}Setup
 Compression=lzma2/ultra64
 SolidCompression=yes
 WizardStyle=modern
-; The licence the player is published under, shown for the user to accept. The old script this was ported
-; from skipped the page altogether.
+; The licence for Luna's original source code, shown for the user to accept. Notices and licence texts for
+; separately licensed components are installed with the application.
 LicenseFile=..\LICENSE
 ChangesAssociations=yes
 

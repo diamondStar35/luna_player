@@ -1,6 +1,7 @@
-// Independent C# binding implemented against libmpv's public client API.
-// Copyright (C) 2026 Luna Player contributors.
-// SPDX-License-Identifier: Apache-2.0
+// C# translation of python-mpv 1.0.8.
+// python-mpv copyright (C) 2017-2024 Sebastian Götte <code@jaseg.net>.
+// C# translation and modifications copyright (C) 2026 diamondStar35.
+// SPDX-License-Identifier: LGPL-2.1-or-later
 #nullable enable
 using System;
 using System.Collections;

@@ -115,11 +115,11 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for full build instructions and known iss
 
 ## Credits
 
-Luna Player is a fork and complete rewrite of
+Luna Player is an independent C# application inspired by
 [Simple Audio Player](https://github.com/kamalyaser31/simple-player) by kamalyaser31. The original
-project defined the feature set and interaction model that Luna Player is based on. The two have
-since diverged: some features of the original are not yet implemented here, and some functionality
-in Luna Player is new.
+project inspired Luna's initial feature set and interaction model, but Luna does not incorporate
+source code or assets from Simple Audio Player. Its implementation, architecture and user
+interface have since developed independently.
 
 ## Contributing
 
@@ -127,8 +127,10 @@ Pull requests are welcome. Please read [CONTRIBUTING.md](CONTRIBUTING.md) before
 
 ## License
 
-Luna Player is licensed under the [Apache License 2.0](LICENSE).
+Luna Player's original source code is licensed under the [Apache License 2.0](LICENSE).
+The translated [mpv binding](src/Mpv.cs) is licensed under the GNU Lesser General Public
+License, version 2.1 or later.
 
-It is distributed with mpv, wxWidgets and Prism, which remain under their own
-licences. [NOTICE](NOTICE) records each of them, and the full licence texts are in
-[third-party/licenses](third-party/licenses). Both are installed alongside the program.
+The application also uses separately licensed third-party components. [NOTICE](NOTICE) records
+their copyrights, versions and source locations, and their licence texts are installed with the
+program.
