@@ -20,7 +20,7 @@ internal sealed class AudioPreferences : Preferences
 
     internal AudioPreferences(Window parent, AudioSettings settings)
         // Translators: Spoken description of the Audio settings page, read when the page is opened.
-        : base(new ScrolledWindow(parent), Tr("Audio settings. Use Tab to move between controls. Press F1 on a specific control to hear detailed help."))
+        : base(new ScrolledWindow(parent), Tr("Move through this page with Tab or Shift+Tab. Press F1 while a control is focused to hear what it changes."))
     {
         _settings = settings;
         var panel = (ScrolledWindow)Window;
@@ -71,43 +71,37 @@ internal sealed class AudioPreferences : Preferences
         panel.SetSizer(sizer);
         Help(_customSeek,
             // Translators: Help text for the box holding the seek amount used by the "Custom value" seek step.
-            Tr("Custom seek value in seconds. This value is used when the custom seek step is selected. " +
-            "Enter a positive number like 5, 10, or 30. Decimals are allowed, for example 2.5 seconds."));
+            Tr("Enter the number of seconds skipped by the seek shortcuts when Custom value is selected. " +
+            "Positive whole numbers and decimals are accepted; for example, 2.5."));
         Help(_speedStep,
             // Translators: Help text for the box holding how much one press of the speed keys changes the playing speed.
-            Tr("Speed step used when increasing or decreasing playback speed. Enter a positive decimal value like 0.025 or 0.1."));
+            Tr("Sets how much each Speed Up or Speed Down command changes the playback rate. For example, 0.025 changes 1x speed to 1.025x."));
         Help(_pitchStep,
             // Translators: Help text for the box holding how much one press of the pitch keys raises or lowers a sound.
-            Tr("Pitch step in semitones. One semitone is the distance between adjacent piano keys. " +
-                "Decimals provide finer control: 0.1 semitone is 10 cents. Allowed range is from 0.001 to 12."));
+            Tr("Sets how far each Raise Pitch or Lower Pitch command moves. One semitone is the distance between adjacent piano keys; " +
+                "0.1 semitone is 10 cents. Enter a value from 0.001 to 12."));
         Help(_volumeStep,
             // Translators: Help text for the box holding how much one press of the volume keys changes the loudness.
-            Tr("Volume step used when pressing volume up or down. Allowed range is from 1 to 20."));
+            Tr("Sets the amount added or subtracted by each Volume Up or Volume Down command. Enter a whole number from 1 to 20."));
         Help(_panStep,
             // Translators: Help text for the box holding how far one press moves the sound left or right.
-            Tr("Pan step used when moving audio left or right. Allowed range is from 1 to 100 percent."));
+            Tr("Sets how many percentage points each Pan Left or Pan Right command moves the sound. Enter a whole number from 1 to 100."));
         Help(_endBehavior,
-            // Translators: Help text for the list that chooses what the player does at the end of a file. It names the
-            // three entries in that list, which should read the same here as they do there.
-            Tr("What happens after a file ends. Advance to the next file moves to the next item in the playlist. " +
-            "Loop the file repeats the same file automatically. Do nothing keeps playback stopped at the end. " +
-            "Possible values: Advance to the next file, Loop the file, or Do nothing."));
+            // Translators: Help text for the list that chooses what the player does at the end of a file.
+            Tr("Choose whether reaching the end starts the next playlist item, repeats the current item, or leaves playback stopped at the end."));
         Help(_wrap,
             // Translators: Help text for the tick box that carries on from the first file after the last one.
-            Tr("Wrap to top for multiple files. When enabled and the playlist has more than one file, moving next from the last file goes to the first file, " +
-            "and moving previous from the first file goes to the last file. Advance-at-end uses the same wrapping behavior."));
+            Tr("With at least two items loaded, Next on the final item returns to the first and Previous on the first returns to the final item. " +
+            "Automatic advance follows the same rule."));
         Help(_savePositions,
             // Translators: Help text for the tick box that remembers where each file was stopped.
-            Tr("Save current position for each file. When enabled, the app stores the current position of files and restores that position when navigating between files."));
+            Tr("Keeps a separate resume time for every item and returns to that time when the item is opened again during navigation."));
         Help(_normalize,
             // Translators: Help text for the tick box that evens out the loudness and holds back the loudest peaks.
-            // "dynaudnorm" and "alimiter" are the names of the filters doing the work and are not translated.
-            Tr("Enable dynamic normalize and limiter audio filter. When enabled, audio uses dynaudnorm followed by alimiter to even out loudness and hold back peaks. " +
-                "Disable it to use raw output without this processing."));
+            Tr("Evens out changing loudness and restrains the loudest peaks to reduce clipping. Clear this option to hear the source without those filters."));
         Help(_mono,
             // Translators: Help text for the tick box that plays the left and right channels mixed together.
-            Tr("Play audio as Mono. When enabled, a mono downmix filter is applied so left and right channels are combined. " +
-            "Disable it to keep the original channel layout."));
+            Tr("Combines the left and right channels into one mono output. Clear this option to preserve the source channel layout."));
     }
 
     public override string? Validate()

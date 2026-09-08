@@ -211,7 +211,7 @@ internal static class MainMenuBuilder
         foreach (var step in PlaybackActionDefinitions.SeekSteps)
             Add(movementMenu, playbackItems, commandIds, shortcuts, step.Id, step.Label);
         // Translators: Player submenu for choosing how far one press of the seek keys moves.
-        playerMenu.AppendSubMenu(movementMenu, Tr("Control the clicks movement value"));
+        playerMenu.AppendSubMenu(movementMenu, Tr("Seek amount"));
         playerMenu.AppendSeparator();
         // Translators: Player menu item that opens the list of audio output devices to play through.
         playerMenu.Append(commandIds[ActionId.SoundCards], Label(Tr("Sound Cards..."), ActionId.SoundCards, shortcuts));

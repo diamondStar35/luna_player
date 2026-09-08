@@ -40,7 +40,7 @@ internal sealed class RecordingPreferences : Preferences
     internal RecordingPreferences(
         Window parent, RecordingSettings settings, IApplicationDispatcher dispatcher, AudioCatalog catalog)
         // Translators: Spoken description of the Recording settings page, read when the page is opened.
-        : base(new ScrolledWindow(parent), Tr("Recording settings. Use Tab to move between controls. Press F1 on a specific control to hear detailed help."))
+        : base(new ScrolledWindow(parent), Tr("Move through this page with Tab or Shift+Tab. Press F1 while a control is focused to hear what it changes."))
     {
         _settings = settings;
         _dispatcher = dispatcher;
@@ -84,27 +84,24 @@ internal sealed class RecordingPreferences : Preferences
         panel.SetSizer(sizer);
 
         Help(_format,
-            // Translators: Help text for the list that chooses what a recording is saved as. It names the
-            // four entries in that list, which should read the same here as they do there.
-            Tr("What a recording is saved as. WAV keeps everything and takes the most room. FLAC also keeps everything but takes about half as much. MP3 and AAC throw some away to take far less. " +
-            "Possible values: WAV, MP3, AAC, or FLAC."));
+            // Translators: Help text for the list that chooses what a recording is saved as.
+            Tr("WAV preserves the audio without compression and usually produces the largest file. FLAC also preserves it while reducing size. " +
+            "MP3 and AAC trade some detail for much smaller files."));
         Help(_rate,
             // Translators: Help text for the list that chooses how many times a second a recording is sampled.
-            Tr("How many times a second the sound is measured. 44100 is what a compact disc uses and is the usual choice. Higher costs room and is rarely audible; lower is for speech where size matters more than quality."));
+            Tr("Controls how many audio samples are stored each second. 44100 Hz suits most recordings. Higher rates use more space; lower rates can reduce speech file sizes."));
         Help(_channels,
-            // Translators: Help text for the list that chooses whether a recording is mono or stereo. It
-            // names the two entries in that list, which should read the same here as they do there.
-            Tr("Whether a recording has one channel or two. Mono halves the size and suits a single microphone. Stereo keeps left and right apart, which matters when recording music or anything the computer plays. " +
-            "Possible values: Mono or Stereo."));
+            // Translators: Help text for the list that chooses whether a recording is mono or stereo.
+            Tr("Mono stores one channel and is usually enough for a single microphone. Stereo preserves separate left and right channels for music and system audio."));
         Help(_bitrate,
             // Translators: Help text for the list that chooses how much room a second of compressed audio may take.
-            Tr("How much room a second of sound may take, for the formats that compress. Higher sounds better and makes a larger file. This does nothing for WAV and FLAC, which keep everything and are not offered a choice."));
+            Tr("For MP3 and AAC, a higher bitrate preserves more detail but creates a larger file. WAV and FLAC do not use this choice."));
         Help(_folder,
             // Translators: Help text for the box holding the folder recordings are saved into.
-            Tr("Where recordings are saved. The folder is made if it is not there. Each recording is named after the moment it started, so one can never overwrite another."));
+            Tr("Enter the destination directory. Luna creates it when necessary and gives each recording a timestamped name to prevent accidental replacement."));
         Help(browse,
             // Translators: Help text for the button that opens a window for choosing the recordings folder.
-            Tr("Choose the folder recordings are saved into, rather than typing the path."));
+            Tr("Opens a directory picker and puts the selected path in the recordings folder box."));
 
         LoadBitrates();
     }

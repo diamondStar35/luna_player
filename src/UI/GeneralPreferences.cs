@@ -17,7 +17,7 @@ internal sealed class GeneralPreferences : Preferences
 
     internal GeneralPreferences(Window parent, GeneralSettings settings, PrefsOps operations)
         // Translators: Spoken description of the General settings page, read when the page is opened.
-        : base(new Panel(parent), Tr("General settings. Use Tab to move between controls. Press F1 on a specific control to hear detailed help."))
+        : base(new Panel(parent), Tr("Move through this page with Tab or Shift+Tab. Press F1 while a control is focused to hear what it changes."))
     {
         _settings = settings;
         var panel = (Panel)Window;
@@ -99,42 +99,36 @@ internal sealed class GeneralPreferences : Preferences
 
         Help(_language,
             // Translators: Help text for the language list, spoken when the user asks for help on it.
-            Tr("Application language. " +
-            "System default follows your OS language. " +
-            "Choosing a specific language applies it on next app start."));
+            Tr("Choose System default to follow the Windows display language, or select a language included with Luna. " +
+            "A different choice takes effect after Luna restarts."));
         Help(_rememberPosition,
             // Translators: Help text for the tick box that starts again where playing stopped last time.
-            Tr("Remember last file position. When enabled, the player saves the current file and playback time on exit, " +
-            "then restores that position next time. When disabled, the player starts fresh each launch."));
+            Tr("Saves the active item and its playback time when Luna exits, then resumes there on the next launch. " +
+            "Clear this option to start without restoring the previous session."));
         Help(_speakNavigation,
             // Translators: Help text for the tick box that says the name of each file as the user moves through the list.
-            Tr("Speak file name when navigating. When enabled, the player will announce the name of the new file when you move to the previous or next track. " +
-            "This is helpful for identifying files without manually requesting file information."));
+            Tr("Announces each newly selected item when you use Previous or Next, so you do not need to request its name separately."));
         Help(_checkUpdates,
             // Translators: Help text for the tick box that looks for a newer version of the player when it starts.
-            Tr("Check for app updates on startup. When enabled, the app checks online update metadata at launch and prompts when a newer version is available."));
+            Tr("Checks for a newer Luna release in the background after startup. A prompt appears only when a newer package is ready to download."));
         Help(_saveOnClose,
             // Translators: Help text for the tick box that keeps changes such as volume and speed when the player closes.
-            Tr("Save settings on close. When enabled, current settings are written when the app closes. " +
-            "When disabled, closing the app does not save session changes such as volume, speed, or other setting updates."));
+            Tr("Writes changes made during the session when Luna exits, including volume and speed. " +
+            "Clear this option if those changes should last only until the window closes."));
         Help(_verbosity,
-            // Translators: Help text for the list that chooses how much detail the player speaks. Beginner and Advanced are the two entries in that list and should read the same here as they do there.
-            Tr("Verbosity controls speech detail. Beginner gives clearer full messages. Advanced gives shorter, compact announcements. " +
-            "Possible values: Beginner or Advanced."));
+            // Translators: Help text for the list that chooses how much detail the player speaks.
+            Tr("Beginner uses complete, explanatory announcements. Advanced keeps confirmations brief for experienced users."));
         Help(_openMode,
-            // Translators: Help text for the list that chooses how much of a folder is loaded when one file is opened. It names the three entries in that list, which should read the same here as they do there.
-            Tr("Open with files behavior controls what happens when you open a single file. " +
-            "Open the file only loads just that file. Open the file and the main folder files loads all supported files in the same folder. " +
-            "Open the file with the main and subfolder files scans the folder recursively and loads files from subfolders too."));
+            // Translators: Help text for the list that chooses how much of a folder is loaded when one file is opened.
+            Tr("Chooses the playlist Luna builds when Windows opens one media file: only the selected file, all supported media in its folder, " +
+            "or supported media in that folder and every folder below it."));
         Help(register,
             // Translators: Help text for the button that tells Windows this player can open media files.
-            Tr("Register file extensions writes Windows registry entries for supported media types. " +
-            "This lets files open with this app from Explorer and Open With. " +
-            "On modern Windows, default app choice can still require user confirmation in system Default apps settings."));
+            Tr("Adds Luna to the Windows list of applications that can open supported media files. " +
+            "Windows may still ask you to choose Luna in Default apps before it becomes the default player."));
         Help(unregister,
             // Translators: Help text for the button that undoes telling Windows this player can open media files.
-            Tr("Unregister file extensions removes registry entries created by this app for media associations. " +
-            "This does not delete your media files. Windows may still keep separate user default selections managed by system settings."));
+            Tr("Removes the media-file associations registered by Luna. It does not delete any media or change default-app choices managed separately by Windows."));
     }
 
     public override void Apply()

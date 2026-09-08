@@ -310,8 +310,8 @@ internal sealed partial class MainFrame : IMainView
         }
 
         _closing = true;
-        // Match Simple Player's shutdown order: stop the global listener before saving state or stopping
-        // playback.
+        // Stop system-wide shortcuts before the close handlers save state and stop playback, so no action can
+        // arrive while shutdown is in progress.
         _globalShortcuts.Dispose();
         CloseRequested?.Invoke();
         args.Skip();

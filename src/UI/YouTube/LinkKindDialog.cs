@@ -22,7 +22,7 @@ internal sealed class LinkKindDialog : IDisposable
 
         // Translators: Message shown when a YouTube address names a video and a playlist at the same time,
         // asking which of the two the user wants.
-        var message = new StaticText(_dialog, label: Tr("The app detected that this YouTube link contains a playlist and a video ID. Choose how you want to proceed."));
+        var message = new StaticText(_dialog, label: Tr("This address points to one video and also includes a playlist. Choose which content Luna should open."));
 
         // Translators: Button that plays the one video a link names, rather than the playlist it also names.
         var video = new Button(_dialog, StandardId.Yes, Tr("Play the video"));

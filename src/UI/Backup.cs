@@ -11,7 +11,7 @@ internal sealed class BackupPreferences : Preferences
     internal BackupPreferences(Window parent, PrefsOps operations, Action<PlayerSettings> replaceSettings)
         : base(new Panel(parent),
             // Translators: Spoken description of the backup and restore settings page, read when the page is opened.
-            Tr("Backup and restore settings page. Use Export settings, Import settings, or Open user settings folder."))
+            Tr("Save portable copies of preferences and bookmarks, restore them from earlier copies, or open Luna's configuration folder."))
     {
         _operations = operations;
         _replaceSettings = replaceSettings;
@@ -36,17 +36,17 @@ internal sealed class BackupPreferences : Preferences
         panel.SetSizer(sizer);
 
         // Translators: Help text for the button that saves a copy of the settings, spoken when the user asks for help on it.
-        Help(exportSettings, Tr("Export settings creates a copy of the current settings file."));
+        Help(exportSettings, Tr("Saves the current preferences to a JSON file you choose while leaving Luna's working copy in place."));
         // Translators: Help text for the button that loads settings back from a file, spoken when the user asks for help on it.
-        Help(importSettings, Tr("Import settings replaces current settings with a selected settings file."));
+        Help(importSettings, Tr("Loads preferences from a JSON file and replaces the values currently shown in this dialog."));
         // Translators: Help text for the button that saves a copy of the bookmarks, spoken when the user asks for help on it. JSON is the file format and is not translated.
-        Help(exportBookmarks, Tr("Export bookmarks creates a copy of the bookmarks JSON file."));
+        Help(exportBookmarks, Tr("Saves all bookmarks to a JSON file you choose without moving or deleting the working copy."));
         // Translators: Help text for the button that loads bookmarks back from a file, spoken when the user asks for help on it.
-        Help(importBookmarks, Tr("Import bookmarks replaces current bookmarks with a selected bookmarks file."));
+        Help(importBookmarks, Tr("Loads bookmarks from a JSON file and replaces the collection Luna currently uses."));
         // Translators: Help text for the button that puts every setting back the way it started, spoken when the user asks for help on it.
-        Help(reset, Tr("Reset settings restores all preferences to default values."));
+        Help(reset, Tr("Returns every preference to its original value after you confirm. This cannot be undone from the dialog."));
         // Translators: Help text for the button that opens the folder where the player keeps its settings, spoken when the user asks for help on it.
-        Help(openFolder, Tr("Open user settings folder opens the folder where this app stores its configuration."));
+        Help(openFolder, Tr("Opens Luna's configuration directory in File Explorer so you can inspect or copy its files directly."));
     }
 
     public override void Apply() { }
