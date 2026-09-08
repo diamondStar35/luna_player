@@ -34,9 +34,13 @@ internal sealed class PlaylistState
         ? _files[_currentIndex]
         : null;
 
-    internal int CurrentIndex => _currentIndex;
+    /// <summary>The current entry's position in the order the user is navigating.</summary>
+    internal int CurrentIndex => IsShuffleEnabled ? _shufflePosition : _currentIndex;
     internal int Count => _files.Count;
-    internal IReadOnlyList<string> Files => _files.AsReadOnly();
+    /// <summary>The files in their active order: shuffled while shuffle is enabled, source order otherwise.</summary>
+    internal IReadOnlyList<string> Files => IsShuffleEnabled
+        ? _shuffleOrder.Select(index => _files[index]).ToArray()
+        : _files.AsReadOnly();
     internal bool IsShuffleEnabled { get; private set; }
     internal bool IsRepeatFileEnabled { get; private set; }
 
@@ -144,11 +148,24 @@ internal sealed class PlaylistState
 
     internal bool GoToIndex(int index)
     {
-        if (index < 0 || index >= _files.Count || index == _currentIndex)
+        if (index < 0 || index >= _files.Count)
             return false;
-        _currentIndex = index;
+        if (IsShuffleEnabled)
+        {
+            SyncShufflePosition();
+            var fileIndex = _shuffleOrder[index];
+            if (fileIndex == _currentIndex)
+                return false;
+            _currentIndex = fileIndex;
+            _shufflePosition = index;
+        }
+        else
+        {
+            if (index == _currentIndex)
+                return false;
+            _currentIndex = index;
+        }
         _pendingStart = null;
-        SyncShufflePosition();
         return true;
     }
 

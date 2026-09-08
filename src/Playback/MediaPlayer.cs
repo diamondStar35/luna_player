@@ -516,6 +516,11 @@ internal sealed class MediaPlayer : IDisposable
     /// <summary>The display name of whatever is playing, or null when nothing is.</summary>
     internal string? CurrentDisplayName => CurrentPath is string path ? DisplayName(path) : null;
 
+    /// <summary>The file name for local media, or the stored title for a network entry.</summary>
+    internal string? CurrentName => CurrentPath is string path
+        ? LinkValidator.IsHttpUrl(path) ? DisplayName(path) : MediaLibrary.DisplayName(path)
+        : null;
+
     // mpv only knows a title once the file is loaded, so it is read here and kept per path: the playlist
     // dialog names every entry, not just the one playing.
     private void RememberTitle(string path)

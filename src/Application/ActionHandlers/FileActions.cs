@@ -456,7 +456,7 @@ internal sealed class FileActions
         switch (_fileInfoPressCount)
         {
             case 1:
-                var name = MediaLibrary.DisplayName(path);
+                var name = _player.CurrentName ?? MediaLibrary.DisplayName(path);
                 _speech.Speak(name, name);
                 break;
             case 2:
