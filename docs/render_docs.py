@@ -75,6 +75,7 @@ def render(source: Path) -> None:
     body = markdown.markdown(
         text,
         extensions=["extra", "fenced_code", "sane_lists", "tables", "toc"],
+        extension_configs={"toc": {"toc_depth": "2-2"}},
         output_format="html5",
     )
     language = source.parent.name
