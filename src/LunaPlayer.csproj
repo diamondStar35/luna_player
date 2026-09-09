@@ -36,6 +36,7 @@
     <EventSourceSupport>false</EventSourceSupport>
     <MetricsSupport>false</MetricsSupport>
     <HttpActivityPropagationSupport>false</HttpActivityPropagationSupport>
+    <SkipTranslationCompilation Condition="'$(SkipTranslationCompilation)' == ''">false</SkipTranslationCompilation>
   </PropertyGroup>
 
   <ItemDefinitionGroup>
@@ -68,6 +69,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TranslationPo Include="$(RepositoryRoot)locale\**\LunaPlayer.po" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\third-party\WxSharp\src\WxSharp\WxSharp.csproj">
       <AdditionalProperties>Configuration=$(Configuration)</AdditionalProperties>
     </ProjectReference>
@@ -97,12 +102,6 @@
              CopyToPublishDirectory="PreserveNewest" />
     <Content Include="$(RepositoryRoot)third-party\WxSharp\third-party\Windows\lib\vc_x64_dll\wxbase333u_vc_x64.dll"
              Link="lib\wxbase333u_vc_x64.dll"
-             CopyToOutputDirectory="PreserveNewest"
-             CopyToPublishDirectory="PreserveNewest" />
-    <!-- The compiled message catalogues, in the locale/<language>/LC_MESSAGES layout wx looks them up in.
-         scripts\update-pot.ps1 builds them from the .po files; a build with none simply stays English. -->
-    <Content Include="$(RepositoryRoot)locale\**\*.mo"
-             Link="locale\%(RecursiveDir)%(Filename)%(Extension)"
              CopyToOutputDirectory="PreserveNewest"
              CopyToPublishDirectory="PreserveNewest" />
     <Content Include="$(RepositoryRoot)third-party\WxSharp\third-party\Windows\lib\vc_x64_dll\wxmsw333u_core_vc_x64.dll"
@@ -154,6 +153,43 @@
           BeforeTargets="Build;Publish"
           Condition="'$(DesignTimeBuild)' != 'true'">
     <Exec Command="python &quot;$(RepositoryRoot)docs\render_docs.py&quot;" />
+  </Target>
+
+  <Target Name="CompileTranslations"
+          BeforeTargets="Build;Publish"
+          Condition="'$(DesignTimeBuild)' != 'true' and '@(TranslationPo)' != '' and '$(SkipTranslationCompilation)' != 'true'"
+          Inputs="@(TranslationPo)"
+          Outputs="@(TranslationPo->'%(RootDir)%(Directory)%(Filename).mo')">
+    <Message Importance="high" Text="Compiling translations (.po -> .mo)." />
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(RepositoryRoot)scripts\compile-translations.ps1&quot;" />
+  </Target>
+
+  <!-- The dynamic globs are required on a clean checkout because compiled catalogues do not exist when
+       MSBuild evaluates the project. Catalogue binaries are generated output and remain untracked. -->
+  <Target Name="CopyTranslationsToOutput"
+          AfterTargets="Build"
+          DependsOnTargets="CompileTranslations"
+          Condition="'$(DesignTimeBuild)' != 'true' and '$(SkipTranslationCompilation)' != 'true'">
+    <ItemGroup>
+      <_CompiledTranslation Include="$(RepositoryRoot)locale\**\LunaPlayer.mo" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_CompiledTranslation)"
+          DestinationFiles="@(_CompiledTranslation->'$(OutDir)locale\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          Condition="'@(_CompiledTranslation)' != ''" />
+  </Target>
+
+  <Target Name="CopyTranslationsToPublish"
+          AfterTargets="Publish"
+          DependsOnTargets="CompileTranslations"
+          Condition="'$(DesignTimeBuild)' != 'true' and '$(SkipTranslationCompilation)' != 'true' and '$(PublishDir)' != ''">
+    <ItemGroup>
+      <_PublishedTranslation Include="$(RepositoryRoot)locale\**\LunaPlayer.mo" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_PublishedTranslation)"
+          DestinationFiles="@(_PublishedTranslation->'$(PublishDir)locale\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true"
+          Condition="'@(_PublishedTranslation)' != ''" />
   </Target>
 
   <!-- These dynamic globs matter on a clean checkout: generated HTML does not exist when MSBuild first
