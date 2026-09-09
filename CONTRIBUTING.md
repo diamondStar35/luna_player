@@ -10,6 +10,7 @@ fix, open an issue first to discuss the approach before writing code.
 - .NET 10 SDK
 - Visual Studio 2022 Build Tools or later, with the MSVC v143 x64 build tools
 - Python 3, with the documentation packages in `docs/requirements.txt`
+- GNU gettext tools
 - CMake, only if you modify the native windowing wrapper
 
 ## Building
@@ -134,17 +135,21 @@ TrFormat("Enter file number (1-{count})", _player.Count)
 Names bind values to placeholders, not positions, so a translation is free to reorder them. Two
 `Tr` calls on one line share a single comment, so give each string its own line.
 
-After changing any string, rebuild the template and the catalogues:
+After changing any string, rebuild the template and update the catalogues:
 
 ```powershell
 ./scripts/update-pot.ps1
 ```
 
 This needs the GNU gettext tools on `PATH`. It rewrites `locale/LunaPlayer.pot`, merges it into
-every `locale/<language>/LC_MESSAGES/LunaPlayer.po`, compiles each one to the `.mo` the player
-loads, and fails if a translation uses different placeholder names from the string it translates.
-Pass `-Language <code>` to start a new catalogue, or `-Compile` to only rebuild the `.mo` files.
-The `.po` and `.pot` files are committed; the `.mo` files are build output and are not.
+every `locale/<language>/LC_MESSAGES/LunaPlayer.po`, and accepts `-Language <code>` to start a new
+catalogue.
+
+Normal builds run `scripts/compile-translations.ps1` to compile every catalogue and fail if a
+translation changes the named placeholders in its source message. The build copies the resulting
+`.mo` files into the matching locale directories in the application output. Run that script directly
+when you only want to compile translations. The `.po` and `.pot` files are committed; the `.mo` files
+are generated build output and are not.
 
 ## Submodules
 

@@ -36,6 +36,10 @@ jobs:
         shell: pwsh
         run: python -m pip install --requirement docs/requirements.txt
 
+      - name: Install translation tools
+        shell: pwsh
+        run: choco install gettext --yes --no-progress
+
       - name: Validate Metadata
         id: release_info
         shell: pwsh
@@ -84,6 +88,21 @@ jobs:
           }
           if (Test-Path -LiteralPath 'src/bin/Release/net10.0-windows10.0.19041.0/win-x64/docs/en/user-guide.md') {
             throw "The Markdown user-guide source was included in the published application."
+          }
+
+          $localeRoot = (Resolve-Path 'locale').Path
+          $publishRoot = (Resolve-Path 'src/bin/Release/net10.0-windows10.0.19041.0/win-x64').Path
+          $catalogues = @(Get-ChildItem -LiteralPath $localeRoot -Recurse -Filter 'LunaPlayer.po')
+          if ($catalogues.Count -eq 0) {
+            throw 'No translation catalogues were found.'
+          }
+          foreach ($catalogue in $catalogues) {
+            $compiledCatalogue = [System.IO.Path]::ChangeExtension($catalogue.FullName, '.mo')
+            $relativePath = [System.IO.Path]::GetRelativePath($localeRoot, $compiledCatalogue)
+            $publishedCatalogue = Join-Path (Join-Path $publishRoot 'locale') $relativePath
+            if (-not (Test-Path -LiteralPath $publishedCatalogue)) {
+              throw "The compiled translation '$relativePath' was not included in the published application."
+            }
           }
 
       - name: Create Archive
