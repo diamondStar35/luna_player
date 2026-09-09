@@ -87,20 +87,44 @@ internal sealed class RecordingWriter : IDisposable
     private static void Encode(CaptureBridge bridge, string path, RecordingFormat format, int bitrate)
     {
         MediaFoundation.Start();
+        // Media Foundation normally reads files, whose providers fill its requested buffer. A live
+        // provider returns as soon as a few milliseconds are available. Passing those short reads on
+        // makes the encoder allocate and submit a large native sample hundreds of times per second.
+        // Coalesce them into the buffer Media Foundation asked for; Stop still ends a partial final read.
+        var source = new CompleteReadProvider(bridge);
         switch (format)
         {
             case RecordingFormat.Mp3:
-                MediaFoundationEncoder.EncodeToMp3(bridge, path, bitrate);
+                MediaFoundationEncoder.EncodeToMp3(source, path, bitrate);
                 break;
             case RecordingFormat.Aac:
-                MediaFoundationEncoder.EncodeToAac(bridge, path, bitrate);
+                MediaFoundationEncoder.EncodeToAac(source, path, bitrate);
                 break;
             case RecordingFormat.Flac:
                 // No bitrate: it is lossless, and the encoder has nothing to do with the figure.
-                MediaFoundationEncoder.EncodeToFlac(bridge, path);
+                MediaFoundationEncoder.EncodeToFlac(source, path);
                 break;
             default:
                 throw new InvalidOperationException($"{format} is not an encoded format.");
+        }
+    }
+
+    /// <summary>Turns a live provider's short reads into the complete reads a file encoder expects.</summary>
+    private sealed class CompleteReadProvider(IWaveProvider source) : IWaveProvider
+    {
+        public WaveFormat WaveFormat => source.WaveFormat;
+
+        public int Read(Span<byte> buffer)
+        {
+            var total = 0;
+            while (total < buffer.Length)
+            {
+                var read = source.Read(buffer[total..]);
+                if (read == 0)
+                    break;
+                total += read;
+            }
+            return total;
         }
     }
 

@@ -33,6 +33,7 @@ internal sealed class RecordingDialog : IDisposable
     private readonly StaticText _bitrateLabel;
     private readonly Choice _bitrate;
     private readonly TextCtrl _folder;
+    private readonly Button _browse;
     /// <summary>The one button that starts and stops. See <see cref="SyncButtons"/>.</summary>
     private readonly Button _record;
     private readonly Button _pause;
@@ -144,8 +145,8 @@ internal sealed class RecordingDialog : IDisposable
         var folderLabel = new StaticText(_dialog, label: Tr("Folder"));
         _folder = new TextCtrl(_dialog, value: _sources.Options.Folder);
         // Translators: Button that opens a window for choosing the folder recordings are saved into.
-        var browse = new Button(_dialog, label: Tr("Browse..."));
-        browse.Click += (_, _) => Browse();
+        _browse = new Button(_dialog, label: Tr("Browse..."));
+        _browse.Click += (_, _) => Browse();
         _format.SelectionChanged += (_, _) => OnFormatChanged();
         _rate.SelectionChanged += (_, _) => OnRateChanged();
         _channels.SelectionChanged += (_, _) => LoadBitrates();
@@ -158,7 +159,7 @@ internal sealed class RecordingDialog : IDisposable
         Add(form, _bitrateLabel, _bitrate);
         Add(form, folderLabel, _folder);
         form.AddSpacer(0);
-        form.Add(browse, flags: SizerFlags.AlignLeft);
+        form.Add(_browse, flags: SizerFlags.AlignLeft);
         settingsBox.Add(form, flags: SizerFlags.All | SizerFlags.Expand, border: 8);
 
         // ---- the buttons that run it ----
@@ -343,7 +344,7 @@ internal sealed class RecordingDialog : IDisposable
     {
         var compressed = AudioCatalog.HasBitrate(Format());
         _bitrateLabel.Enabled = compressed;
-        _bitrate.Enabled = compressed;
+        _bitrate.Enabled = _engine.State is RecordingState.Idle && compressed;
         LoadSupport();
     }
 
@@ -455,7 +456,9 @@ internal sealed class RecordingDialog : IDisposable
                 best = index;
         }
         _bitrate.SelectedIndex = best;
-        _bitrate.Enabled = true;
+        // The lookup runs on a worker and may have started before recording began. Do not let its
+        // delayed result unlock a setting that is fixed for the recording already in progress.
+        _bitrate.Enabled = _engine.State is RecordingState.Idle;
     }
 
     private void Browse()
@@ -629,6 +632,11 @@ internal sealed class RecordingDialog : IDisposable
         _channels.Enabled = idle;
         _bitrate.Enabled = idle && AudioCatalog.HasBitrate(Format()) && _bitrates.Count > 0;
         _folder.Enabled = idle;
+        _browse.Enabled = idle;
+        _bitrateLabel.Show(idle);
+        _bitrate.Show(idle);
+        _browse.Show(idle);
+        _dialog.Layout();
     }
 
     private void OnCharHook(object? sender, KeyEventArgs args)
