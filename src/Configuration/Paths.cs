@@ -29,6 +29,10 @@ internal static class Paths
     /// <summary>The file holding how far through each file playing had reached.</summary>
     internal static string PositionsFile { get; } = Path.Combine(RootDirectory, "positions.json");
 
+    /// <summary>The file holding the equalizer presets the user made. Apart from the settings, because a
+    /// preset is content rather than configuration.</summary>
+    internal static string EqualizerFile { get; } = Path.Combine(RootDirectory, "equalizer.json");
+
     /// <summary>The saved links file.</summary>
     internal static string FavoritesFile { get; } = Path.Combine(RootDirectory, "favorites.json");
 

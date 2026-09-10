@@ -337,6 +337,53 @@ The Audio Preferences page contains two additional filters:
 
 Neither option changes the source file.
 
+### Equalizer
+
+The equalizer lifts and cuts individual frequency ranges. Choose **Player > Equalizer** and pick an entry from the list. The change takes effect at once and is remembered between sessions.
+
+The list opens with **Off**, followed by six presets for common listening problems:
+
+- **Bass Boost** and **Bass Reduce** raise or lower the bass. The effect is strongest below 100 Hz, still substantial at 170 Hz, and fades out by 600 Hz, so it covers the range a kick drum and a bass guitar occupy without thickening voices.
+- **Treble Boost** raises everything from about 4 kHz upward.
+- **Headphones** adds bass weight, eases the 3.5 kHz range where headphones sound shouty, and opens up the top.
+- **Voice** removes rumble and boxiness and raises the presence range, which is what makes consonants distinct. It suits audiobooks, podcasts and lectures rather than music.
+- **Loudness** raises both ends and leaves the middle alone, for listening at low volume where the ear is least sensitive to them.
+
+Then come the genre presets: Classical, Club, Dance, Live, Pop, Reggae, Rock, Ska, Soft, Soft Rock, and Techno. **Custom** is last. It changes nothing until you edit it, and is the starting point for presets of your own.
+
+A preset that raises a range makes the sound louder rather than only different, and no range is quietened to make the change seem larger. Material already mastered close to the limit can therefore clip. **Enable dynamic normalize and limiter** on the Audio Preferences page prevents this and is on by default; with it turned off, lower the volume instead.
+
+**Off** flattens every band rather than removing the equalizer. The preset you used last is remembered while the equalizer is off, so selecting it again returns to it.
+
+### Editing a preset
+
+Choose **Player > Equalizer > Edit current preset** to open the preset the equalizer is set to. Every preset can be edited, including the ones Luna supplies.
+
+The dialog holds one group per band: a low shelf, fifteen bands from 25 Hz to 16 kHz, and a high shelf. Each group contains three fields.
+
+- **Frequency** is the centre of the band, or the point a shelf turns at.
+- **Gain** is how far the band is raised or lowered, in decibels, from -20 to 20.
+- **Q** is how wide the band is, from 0.1 to 10. Larger values are narrower.
+
+While the preset being edited is the one in use, each change is applied as you type, so you can judge it by ear before keeping it. **Save** keeps the result; **Cancel** restores the preset as it was.
+
+**Base preset** fills every band from another preset. Use it to start from something close to what you want. **Reset to defaults** returns the bands to the way the preset chosen there was supplied.
+
+Editing a preset Luna supplies records only the values you changed, so bands you leave alone continue to follow Luna and later improvements to that preset still reach you. Resetting discards those changes. The name of a supplied preset cannot be changed.
+
+### Managing presets
+
+Choose **Player > Equalizer > Manage presets** for the full list.
+
+- **New** creates a preset, starting from the base preset you choose in the editor.
+- **Edit** opens the selected preset.
+- **Delete** removes it after confirmation.
+- **Close** leaves the list.
+
+Edit and Delete apply to your own presets and are hidden while a preset Luna supplies is selected; use **Edit current preset** for those. To copy a preset, create a new one and choose the original as its base.
+
+Presets you create appear in the Equalizer menu alongside the rest and are stored in `equalizer.json`, next to the settings file.
+
 ## 9. Local file management
 
 The rename, delete, containing-folder, and Windows properties commands work only with local files. They are unavailable for network streams and YouTube media.

@@ -1,4 +1,5 @@
 using System.Globalization;
+using LunaPlayer.Equalizer;
 using LunaPlayer.Configuration;
 using LunaPlayer.Media;
 using MpvNet;
@@ -15,6 +16,7 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
     private double _pan;
     private bool _panFilterActive;
     private bool _normalizationEnabled;
+    private bool _equalizerFilterActive;
     private bool _disposed;
 
     internal MpvPlaybackEngine(nint windowHandle)
@@ -36,6 +38,10 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
         SetPropertySafely("media-controls", "yes");
         SetPropertySafely("input-media-keys", "yes");
         _endRegistration = _mpv.OnEvent(HandleEndFile, MpvEventId.EndFile);
+        // First into the chain, and before anything the settings switch on later, so that what the
+        // equalizer lifts is still ahead of the limiter normalization puts at the end. Added here
+        // rather than when a preset is chosen: it stays for the life of the engine.
+        BuildEqualizer(Bands.Slots(null));
     }
 
     public event Action<PlaybackEndReason>? Ended;
@@ -159,30 +165,26 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
 
     public double Pitch => _pitch;
 
+    /// <remarks>
+    /// Rebuilt rather than adjusted through <c>af-command</c>. The command reaches the running filter but
+    /// not the string mpv built it from, and mpv builds the lavfi graph out of that string again whenever
+    /// the audio chain is reinitialized - a seek or a pause is enough - at which point the balance goes
+    /// back to whatever the string still says. Keeping the value nowhere but in the string is the only
+    /// arrangement that survives that, and it is what the equalizer does for the same reason.
+    /// </remarks>
     public double SetPan(double pan)
     {
         var value = Precision.Normalize(Math.Clamp(pan, -100, 100));
+        if (_panFilterActive)
+            RemoveFilter("@audiopan");
+        _panFilterActive = false;
         if (value == 0)
         {
-            if (_panFilterActive)
-                RemoveFilter("@audiopan");
-            _panFilterActive = false;
             _pan = 0;
             return _pan;
         }
 
         var balance = Precision.Normalize(value / 100).ToString("0.###", CultureInfo.InvariantCulture);
-        // stereotools marks balance_out as a runtime option. Updating it through af-command keeps the
-        // existing filter graph and audio buffers alive while a key is held down.
-        if (_panFilterActive
-            && TryDo(mpv => mpv.Command("af-command", "audiopan", "balance_out", balance, "stereotools")))
-        {
-            _pan = value;
-            return _pan;
-        }
-
-        if (_panFilterActive)
-            RemoveFilter("@audiopan");
         _panFilterActive = AddFilter(
             $"@audiopan:lavfi=[aformat=channel_layouts=stereo,stereotools=balance_out={balance}]");
         if (_panFilterActive)
@@ -253,6 +255,35 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
         RemoveFilter("@silenceremove");
         return !enabled || (graph.Length > 0 && AddFilter($"@silenceremove:lavfi=[{graph}]"));
     }
+
+    public bool SetEqualizer(Preset? preset)
+        => BuildEqualizer(Bands.Slots(preset));
+
+    /// <summary>Puts the equalizer into the chain, carrying the bands it is to apply.</summary>
+    ///
+    /// <remarks>
+    /// Built afresh for every change rather than adjusted in place, and that is the point of it. mpv keeps
+    /// two things: the filter string it was given, and the running filters made from that string. Changing
+    /// a running filter through <c>af-command</c> leaves the string as it was, so the moment anything makes
+    /// mpv build its audio chain again - a seek, a pause, the next file, a change of output format - it
+    /// builds the old string and whatever was chosen is gone. That is not something to notice afterwards
+    /// and put right; it is a reason to keep the state nowhere but in the string.
+    ///
+    /// What it costs is the chain rebuilt each time a preset is chosen, which is what switching
+    /// normalization or silence removal on already costs, and it happens only when the user asks for it.
+    ///
+    /// Prepended rather than appended, so the equalizer stays ahead of the limiter normalization puts in
+    /// the chain and a lifted band is still limited. If this build of mpv will not take <c>pre</c> it goes
+    /// on the end instead - the wrong side of the limiter, but present and right in every other respect.
+    /// </remarks>
+    private bool BuildEqualizer(Band[] bands)
+    {
+        var filter = $"@{AudioFilters.EqualizerLabel}:lavfi=[{AudioFilters.EqualizerGraph(bands)}]";
+        RemoveFilter($"@{AudioFilters.EqualizerLabel}");
+        _equalizerFilterActive = TryDo(mpv => mpv.Command("af", "pre", filter)) || AddFilter(filter);
+        return _equalizerFilterActive;
+    }
+
 
     public void Dispose()
     {

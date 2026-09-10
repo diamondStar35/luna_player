@@ -1,3 +1,4 @@
+using LunaPlayer.Equalizer;
 using LunaPlayer.Configuration;
 
 namespace LunaPlayer.Playback;
@@ -45,6 +46,16 @@ internal interface IPlaybackEngine : IDisposable
     bool SetNormalization(bool enabled);
     bool SetMono(bool enabled);
     bool SetSilenceRemoval(bool enabled, string graph);
+
+    /// <summary>Puts a preset's curve into the equalizer, or flattens it when <paramref name="preset"/>
+    /// is null.</summary>
+    /// <remarks>
+    /// Off flattens rather than removing the filter. The filter is built once and stays in the chain for
+    /// the life of the engine, because taking a filter out of a running graph is audible and switching
+    /// the equalizer off should not be.
+    /// </remarks>
+    bool SetEqualizer(Preset? preset);
+
     void SetEndBehavior(EndBehavior behavior);
 
     /// <summary>The title the media declares for itself, from tags or a stream's metadata. Null when the

@@ -2,6 +2,9 @@ using System.Runtime.InteropServices;
 using LunaPlayer.Actions;
 using LunaPlayer.Application;
 using LunaPlayer.Configuration;
+using LunaPlayer.Equalizer;
+using LunaPlayer.Playback;
+using LunaPlayer.UI.Equalizer;
 using LunaPlayer.Recording;
 using WxSharp;
 
@@ -21,6 +24,10 @@ internal sealed partial class MainFrame : IMainView
     private readonly List<MenuItem> _videoItems = [];
     private readonly List<MenuItem> _localEditItems = [];
     private readonly List<MenuItem> _bookmarkItems = [];
+    private readonly Dictionary<int, string> _equalizerCommands = [];
+    private readonly Dictionary<string, MenuItem> _equalizerItems = new(StringComparer.Ordinal);
+    private readonly Menu _equalizerMenu;
+    private ShortcutManager _shortcuts;
     private readonly MenuBar _menuBar;
     private readonly int _bookmarksMenuIndex;
     private readonly int _markedMenuIndex;
@@ -54,13 +61,15 @@ internal sealed partial class MainFrame : IMainView
         ShortcutManager shortcuts,
         IReadOnlyList<ActionDefinition> actions,
         IApplicationDispatcher dispatcher,
-        LunaPlayer.Recording.AudioCatalog catalog)
+        LunaPlayer.Recording.AudioCatalog catalog,
+        IReadOnlyList<PresetEntry> presets)
     {
+        _shortcuts = shortcuts;
         _dispatcher = dispatcher;
         _catalog = catalog;
         _frame = new Frame(title: AppInfo.Name, size: new Size(420, 160));
         BuildCommandIds(actions);
-        var menu = MainMenuBuilder.Build(_frame, _commandIds, shortcuts);
+        var menu = MainMenuBuilder.Build(_frame, _commandIds, shortcuts, presets);
         _menuBar = menu.MenuBar;
         _bookmarksMenuIndex = menu.BookmarksMenuIndex;
         _markedMenuIndex = menu.MarkedMenuIndex;
@@ -72,6 +81,11 @@ internal sealed partial class MainFrame : IMainView
         _videoItems.AddRange(menu.VideoItems);
         _localEditItems.AddRange(menu.LocalEditItems);
         _bookmarkItems.AddRange(menu.BookmarkItems);
+        foreach (var command in menu.EqualizerCommands)
+            _equalizerCommands[command.Key] = command.Value;
+        foreach (var item in menu.EqualizerItems)
+            _equalizerItems[item.Key] = item.Value;
+        _equalizerMenu = menu.EqualizerMenu;
         _markCurrentItem = menu.MarkCurrentItem;
         _markAllItem = menu.MarkAllItem;
         _shuffleItem = menu.ShuffleItem;
@@ -114,6 +128,7 @@ internal sealed partial class MainFrame : IMainView
     }
 
     public event Action<ActionId>? ActionRequested;
+    public event Action<string?>? EqualizerPresetRequested;
     public event Action? CloseRequested;
     public event Func<bool>? EscapePressed;
 
@@ -156,11 +171,48 @@ internal sealed partial class MainFrame : IMainView
 
     public void SetSilenceRemovalChecked(bool isChecked) => _silenceRemovalItem.Checked = isChecked;
 
+    public void SetEqualizerPreset(string? presetId)
+    {
+        // Callers only ever name a preset the menu was built from, or nothing at all. The lookup is a
+        // guard against a name that is neither rather than a case that is expected to happen.
+        var key = presetId ?? MainMenuBuilder.EqualizerOffKey;
+        if (_equalizerItems.TryGetValue(key, out var item))
+            item.Checked = true;
+    }
+
+    public void RebuildEqualizerMenu(IReadOnlyList<PresetEntry> presets, string? selected)
+    {
+        // Emptied and filled again rather than replaced. The submenu is already attached to the menu bar,
+        // and swapping it would leave the bar pointing at a menu nothing else knows about.
+        while (_equalizerMenu.Count > 0)
+            _equalizerMenu.Delete(_equalizerMenu[0]);
+        _equalizerCommands.Clear();
+        _equalizerItems.Clear();
+        MainMenuBuilder.FillEqualizerMenu(
+            _equalizerMenu, presets, _commandIds, _shortcuts, _equalizerCommands, _equalizerItems);
+        SetEqualizerPreset(selected);
+    }
+
+    public EqualizerEditResult? EditEqualizerPreset(EqualizerEditContext context)
+    {
+        using var dialog = new EqualizerEditDialog(
+            _frame, context.Title, context.Name, context.CanRename, context.BasePresetId, context.Slots,
+            context.Library.All, context.Library.Slots, context.Library.DefaultSlots, context.Preview);
+        return dialog.Show();
+    }
+
+    public bool ManageEqualizerPresets(Library library)
+    {
+        using var dialog = new EqualizerPresetsDialog(_frame, library);
+        return dialog.Show();
+    }
+
     public bool ApplyGlobalShortcuts(ShortcutManager shortcuts)
         => _globalShortcuts.Apply(shortcuts.GetBindings());
 
     public void ApplyShortcuts(ShortcutManager shortcuts)
     {
+        _shortcuts = shortcuts;
         BuildAccelerators(shortcuts);
         foreach (var pair in _commandIds)
         {
@@ -289,7 +341,17 @@ internal sealed partial class MainFrame : IMainView
     private void OnMenuCommand(object? sender, CommandEventArgs args)
     {
         if (_commands.TryGetValue(args.Id, out var action))
+        {
             Request(action);
+            return;
+        }
+        if (!_equalizerCommands.TryGetValue(args.Id, out var presetId))
+            return;
+        // Guarded here rather than further along. Menu commands bound to an action are guarded where they
+        // are dispatched, but this one is not one of those, and it is still wxWidgets calling in: an
+        // exception let past would unwind into C++ frames.
+        var wanted = presetId.Length == 0 ? null : presetId;
+        LunaPlayer.Application.CrashReport.Guard(() => EqualizerPresetRequested?.Invoke(wanted));
     }
 
     private void OnClosing(object? sender, CloseEventArgs args)

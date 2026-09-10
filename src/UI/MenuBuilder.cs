@@ -1,4 +1,6 @@
 using LunaPlayer.Actions;
+using LunaPlayer.Equalizer;
+using LunaPlayer.Playback;
 using WxSharp;
 
 namespace LunaPlayer.UI;
@@ -15,6 +17,9 @@ internal sealed record MainMenuComponents(
     IReadOnlyList<MenuItem> LocalEditItems,
     IReadOnlyList<MenuItem> BookmarkItems,
     IReadOnlyList<MenuItem> VideoItems,
+    IReadOnlyDictionary<int, string> EqualizerCommands,
+    IReadOnlyDictionary<string, MenuItem> EqualizerItems,
+    Menu EqualizerMenu,
     MenuItem MarkCurrentItem,
     MenuItem MarkAllItem,
     MenuItem ShuffleItem,
@@ -29,7 +34,8 @@ internal static class MainMenuBuilder
     internal static MainMenuComponents Build(
         Frame frame,
         IReadOnlyDictionary<ActionId, int> commandIds,
-        ShortcutManager shortcuts)
+        ShortcutManager shortcuts,
+        IReadOnlyList<PresetEntry> presets)
     {
         var fileMenu = new Menu();
         // Translators: File menu item that opens one or more media files. The three dots mean it opens a window to choose them.
@@ -146,6 +152,13 @@ internal static class MainMenuBuilder
         Add(panMenu, playbackItems, commandIds, shortcuts, ActionId.AnnouncePan, Tr("Speak Pan"));
         // Translators: Player submenu holding the left/right audio balance controls.
         playerMenu.AppendSubMenu(panMenu, Tr("Pan"));
+
+        var equalizerCommands = new Dictionary<int, string>();
+        var equalizerItems = new Dictionary<string, MenuItem>(StringComparer.Ordinal);
+        var equalizerMenu = new Menu();
+        FillEqualizerMenu(equalizerMenu, presets, commandIds, shortcuts, equalizerCommands, equalizerItems);
+        // Translators: Player submenu holding the equalizer presets and the commands for editing them.
+        playerMenu.AppendSubMenu(equalizerMenu, Tr("Equalizer"));
         playerMenu.AppendSeparator();
 
         // Translators: Player menu item that plays the file before the current one.
@@ -282,7 +295,61 @@ internal static class MainMenuBuilder
         // Translators: Name of the Help menu in the menu bar.
         menuBar.Append(helpMenu, Tr("Help"));
         frame.SetMenuBar(menuBar);
-        return new MainMenuComponents(menuBar, 2, markedMenuIndex, videoMenuIndex, playbackItems, mediaFileItems, localFileItems, markedItems, localEditItems, bookmarkItems, videoItems, markCurrentItem, markAllItem, shuffleItem, repeatItem, silenceItem, startRecordingItem, pauseRecordingItem, stopRecordingItem);
+        return new MainMenuComponents(menuBar, 2, markedMenuIndex, videoMenuIndex, playbackItems, mediaFileItems, localFileItems, markedItems, localEditItems, bookmarkItems, videoItems, equalizerCommands, equalizerItems, equalizerMenu, markCurrentItem, markAllItem, shuffleItem, repeatItem, silenceItem, startRecordingItem, pauseRecordingItem, stopRecordingItem);
+    }
+
+    /// <summary>What <see cref="MainMenuComponents.EqualizerCommands"/> holds for the item that switches
+    /// the equalizer off, in place of a preset name. Not a name any preset can have, because a preset
+    /// whose name was empty could not be stored.</summary>
+    internal const string EqualizerOffKey = "";
+
+    /// <summary>Puts Off, every preset and the two editing commands into the equalizer submenu.</summary>
+    ///
+    /// <remarks>
+    /// Called again whenever the user adds or removes a preset, so it fills a menu rather than making
+    /// one: the submenu itself is already attached to the menu bar and outlives its contents.
+    ///
+    /// Off and the presets are one unbroken run of radio items on purpose. wxWidgets ends a radio group at
+    /// the first item that is not one, a separator included, and two groups would let Off stay ticked
+    /// beside a ticked preset. The two commands below the separator are ordinary items with an
+    /// <see cref="ActionId"/> apiece, so they can be given a shortcut; the presets cannot, because which
+    /// presets exist is not something the fixed action table can describe.
+    /// </remarks>
+    internal static void FillEqualizerMenu(
+        Menu menu,
+        IReadOnlyList<PresetEntry> presets,
+        IReadOnlyDictionary<ActionId, int> commandIds,
+        ShortcutManager shortcuts,
+        IDictionary<int, string> commands,
+        IDictionary<string, MenuItem> items)
+    {
+        // Translators: Item in the Equalizer submenu that leaves the sound unequalized. It is ticked while no preset is in use.
+        AddEqualizerItem(menu, commands, items, EqualizerOffKey, Tr("Off"));
+        foreach (var preset in presets)
+            AddEqualizerItem(menu, commands, items, preset.Id, preset.Name);
+        menu.AppendSeparator();
+        // Translators: Item in the Equalizer submenu that opens the preset in use for editing, band by band.
+        menu.Append(commandIds[ActionId.EditEqualizerPreset],
+            Label(Tr("Edit current preset..."), ActionId.EditEqualizerPreset, shortcuts));
+        // Translators: Item in the Equalizer submenu that opens the window listing every preset.
+        menu.Append(commandIds[ActionId.ManageEqualizerPresets],
+            Label(Tr("Manage presets..."), ActionId.ManageEqualizerPresets, shortcuts));
+    }
+
+    /// <remarks>
+    /// These carry no shortcut and no <see cref="ActionId"/>: which presets exist changes while the player
+    /// runs, so there is no fixed action for a key to be bound to.
+    /// </remarks>
+    private static void AddEqualizerItem(
+        Menu menu,
+        IDictionary<int, string> commands,
+        IDictionary<string, MenuItem> items,
+        string presetId,
+        string label)
+    {
+        var id = IdManager.NewId();
+        commands[id] = presetId;
+        items[presetId] = menu.AppendRadioItem(id, label);
     }
 
     private static void Add(
