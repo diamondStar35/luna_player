@@ -22,6 +22,8 @@ internal sealed class ApplicationHost : IDisposable
     private readonly ISpeechOutput _speech;
     private readonly MediaPlayer _player;
     private readonly ApplicationController _controller;
+    private readonly EqualizerActions _equalizer;
+    private readonly LunaPlayer.Equalizer.Library _equalizerLibrary;
     private readonly PathRequestQueue _pathQueue;
     private readonly LunaPlayer.YouTube.ResolveCache _resolveCache;
     private readonly LunaPlayer.YouTube.Components _components;
@@ -46,7 +48,11 @@ internal sealed class ApplicationHost : IDisposable
         _globalShortcuts = new ShortcutManager(GlobalActionDefinitions.All);
         _dispatcher = new WxDispatcher();
         _catalog = new LunaPlayer.Recording.AudioCatalog();
-        _view = new MainFrame(_shortcuts, ActionRegistry.All, _dispatcher, _catalog);
+        // Before the window, because the equalizer submenu is built with the presets in it.
+        _equalizerLibrary = new LunaPlayer.Equalizer.Library(
+            _settings, _settingsStore, new LunaPlayer.Equalizer.PresetStore(Paths.EqualizerFile));
+        _view = new MainFrame(
+            _shortcuts, ActionRegistry.All, _dispatcher, _catalog, _equalizerLibrary.All);
         if (settingsError.Length > 0)
         {
             _dispatcher.Post(() => _view.ShowError(
@@ -70,6 +76,8 @@ internal sealed class ApplicationHost : IDisposable
         var bookmarks = new BookmarkStore(Paths.BookmarksFile);
         _ = new BookmarkActions(router, _view, _player, _speech, bookmarks);
         _ = new DeviceActions(router, _view, _player, _settings, _settingsStore, _speech);
+        _equalizer = new EqualizerActions(
+            router, _view, _player, _settings, _settingsStore, _speech, _equalizerLibrary);
         var explode = new LunaPlayer.YouTube.ExplodeClient();
         var ytDlp = new LunaPlayer.YouTube.YtDlpClient();
         var youTube = new LunaPlayer.YouTube.Backend(explode, ytDlp, _settings);
@@ -105,6 +113,8 @@ internal sealed class ApplicationHost : IDisposable
             fileActions,
             selection,
             _sessions);
+        // After the controller, which sets the rest of the audio state up from the same settings.
+        _equalizer.Restore();
         _pathQueue = new PathRequestQueue(HandleExternalPaths, _dispatcher);
         _singleInstance.StartListening(_pathQueue.Enqueue);
         // Posted rather than run here so a refusal is reported over a window the user can already see.

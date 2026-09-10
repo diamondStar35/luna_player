@@ -2,7 +2,10 @@ using System.Collections.ObjectModel;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using LunaPlayer.Actions;
+using LunaPlayer.Equalizer;
+using LunaPlayer.Playback;
 using LunaPlayer.Recording;
+
 
 namespace LunaPlayer.Configuration;
 
@@ -16,11 +19,12 @@ internal enum YtDlpChannel { Stable, Nightly, Master }
 
 internal sealed class PlayerSettings
 {
-    public int Version { get; set; } = 2;
+    public int Version { get; set; } = 3;
     public GeneralSettings General { get; set; } = new();
     public AudioSettings Audio { get; set; } = new();
     public PlaybackSettings Playback { get; set; } = new();
     public SilenceSettings Silence { get; set; } = new();
+    public EqualizerSettings Equalizer { get; set; } = new();
     public ShortcutSettings Shortcuts { get; set; } = new();
     public YouTubeSettings YouTube { get; set; } = new();
     public RecordingSettings Recording { get; set; } = new();
@@ -32,6 +36,7 @@ internal sealed class PlayerSettings
         Audio = Audio.Copy(),
         Playback = Playback.Copy(),
         Silence = Silence.Copy(),
+        Equalizer = Equalizer.Copy(),
         Shortcuts = Shortcuts.Copy(),
         YouTube = YouTube.Copy(),
         Recording = Recording.Copy(),
@@ -39,11 +44,12 @@ internal sealed class PlayerSettings
 
     internal void Apply(PlayerSettings source)
     {
-        Version = Math.Max(2, source.Version);
+        Version = Math.Max(3, source.Version);
         General.Apply(source.General);
         Audio.Apply(source.Audio);
         Playback.Apply(source.Playback);
         Silence.Apply(source.Silence);
+        Equalizer.Apply(source.Equalizer);
         Shortcuts.Apply(source.Shortcuts);
         YouTube.Apply(source.YouTube);
         Recording.Apply(source.Recording);
@@ -54,7 +60,7 @@ internal sealed class PlayerSettings
     internal void ValidateStored()
     {
         if (General is null || Audio is null || Playback is null || Silence is null
-            || Shortcuts is null || YouTube is null || Recording is null)
+            || Shortcuts is null || YouTube is null || Recording is null || Equalizer is null)
             throw new JsonException("The settings file is missing a required section.");
 
         Require(Version >= 1, "version");
@@ -94,22 +100,31 @@ internal sealed class PlayerSettings
         Require(double.IsFinite(Silence.Window) && Silence.Window > 0, "silence.window");
         Require(Enum.IsDefined(Silence.Detection), "silence.detection");
 
-        if (Shortcuts.Primary is null || Shortcuts.Secondary is null || Shortcuts.Global is null)
-            throw new JsonException("The settings file contains an invalid shortcuts section.");
-        ValidateShortcuts(Shortcuts.Primary, "shortcuts.primary");
-        ValidateShortcuts(Shortcuts.Secondary, "shortcuts.secondary");
-        ValidateShortcuts(Shortcuts.Global, "shortcuts.global");
-
-        Require(Enum.IsDefined(YouTube.Quality), "youTube.quality");
-        Require(YouTube.SearchResultCount is >= 5 and <= 100, "youTube.searchResultCount");
-        Require(Enum.IsDefined(YouTube.MixedLink), "youTube.mixedLink");
-        Require(Enum.IsDefined(YouTube.Channel), "youTube.channel");
-
-        Require(Enum.IsDefined(Recording.Format), "recording.format");
-        Require(AudioCatalog.SampleRates.Contains(Recording.SampleRate), "recording.sampleRate");
-        Require(Recording.Channels is >= 1 and <= 2, "recording.channels");
-        Require(Recording.Bitrate is >= 8000 and <= 512000, "recording.bitrate");
-        Require(!string.IsNullOrWhiteSpace(Recording.Folder), "recording.folder");
+        Require(!string.IsNullOrWhiteSpace(Equalizer.Preset), "equalizer.preset");
+        // Written out rather than run through Require, because the compiler cannot see that Require throws
+        // and would take everything below as a possible null.
+        if (Equalizer.Overrides is null)
+            throw new JsonException("The settings file contains an invalid equalizer section.");
+        foreach (var (preset, bands) in Equalizer.Overrides)
+        {
+            if (string.IsNullOrWhiteSpace(preset) || bands is null)
+                throw new JsonException("The settings file contains an invalid equalizer override.");
+            foreach (var band in bands)
+            {
+                if (band is null)
+                    throw new JsonException($"The equalizer override for '{preset}' is missing a band.");
+                Require(band.Slot >= 0 && band.Slot < Bands.SlotCount,
+                    $"equalizer.overrides.{preset}.slot");
+                Require(band.Frequency is not double frequency
+                    || FiniteBetween(frequency, Bands.MinimumFrequency, Bands.MaximumFrequency),
+                    $"equalizer.overrides.{preset}.frequency");
+                Require(band.Q is not double q || FiniteBetween(q, Bands.MinimumQ, Bands.MaximumQ),
+                    $"equalizer.overrides.{preset}.q");
+                Require(band.Gain is not double gain
+                    || FiniteBetween(gain, Bands.MinimumGain, Bands.MaximumGain),
+                    $"equalizer.overrides.{preset}.gain");
+            }
+        }
     }
 
     internal void Validate()
@@ -150,6 +165,17 @@ internal sealed class PlayerSettings
         Silence.StopDuration = Precision.Normalize(Math.Max(0, Silence.StopDuration));
         Silence.StopSilence = Precision.Normalize(Math.Max(0, Silence.StopSilence));
         Silence.Window = Precision.Normalize(Silence.Window > 0 ? Silence.Window : 0.02);
+        Equalizer.Preset = string.IsNullOrWhiteSpace(Equalizer.Preset)
+            ? Presets.DefaultId : Equalizer.Preset.Trim();
+        Equalizer.Overrides ??= [];
+        // An entry that changes nothing is the same as no entry, and leaving it would keep a preset
+        // looking edited in the manager long after the change was taken back out of it.
+        foreach (var preset in Equalizer.Overrides.Keys.ToArray())
+        {
+            var bands = Equalizer.Overrides[preset];
+            if (bands is null || bands.TrueForAll(band => band is null || band.IsEmpty))
+                Equalizer.Overrides.Remove(preset);
+        }
         General.LastDirectory ??= string.Empty;
         General.Language = string.IsNullOrWhiteSpace(General.Language)
             ? Localization.SystemLanguage : General.Language.Trim();
@@ -406,6 +432,67 @@ internal sealed class RecordingSettings
         Channels = source.Channels;
         Bitrate = source.Bitrate;
         Folder = source.Folder;
+    }
+}
+
+/// <summary>One band of a preset the player ships, as the user has changed it.</summary>
+///
+/// <remarks>
+/// Only what was changed is written. A band the user left alone has all three of these null and follows
+/// whatever the player ships, so improving a preset in a later release still reaches everyone who only
+/// moved one band of it.
+/// </remarks>
+internal sealed class EqualizerBandOverride
+{
+    /// <summary>Which of the equalizer's slots this changes.</summary>
+    public int Slot { get; set; }
+
+    public double? Frequency { get; set; }
+    public double? Q { get; set; }
+    public double? Gain { get; set; }
+
+    internal EqualizerBandOverride Copy()
+        => new() { Slot = Slot, Frequency = Frequency, Q = Q, Gain = Gain };
+
+    internal bool IsEmpty => Frequency is null && Q is null && Gain is null;
+}
+
+internal sealed class EqualizerSettings
+{
+    public bool Enabled { get; set; }
+
+    /// <summary>The preset's stable name, not the one shown in the menu.</summary>
+    /// <remarks>
+    /// Kept even while the equalizer is switched off, so that turning it back on returns to the curve the
+    /// user last chose rather than to whatever comes first in the list.
+    /// </remarks>
+    public string Preset { get; set; } = Presets.DefaultId;
+
+    /// <summary>What the user has changed about the presets the player ships, keyed by preset name.
+    /// </summary>
+    /// <remarks>
+    /// Presets the user made themselves are not here. Those are whole presets and live in their own file;
+    /// these are differences, and a difference is meaningless apart from the thing it differs from.
+    /// A preset with no entry here is exactly as it ships, which is also what resetting one to its
+    /// defaults does: the entry is removed rather than filled with the defaults.
+    /// </remarks>
+    public Dictionary<string, List<EqualizerBandOverride>> Overrides { get; set; } = [];
+
+    internal EqualizerSettings Copy()
+    {
+        var copy = new EqualizerSettings { Enabled = Enabled, Preset = Preset };
+        foreach (var (preset, bands) in Overrides)
+            copy.Overrides[preset] = [.. bands.Select(band => band.Copy())];
+        return copy;
+    }
+
+    internal void Apply(EqualizerSettings source)
+    {
+        Enabled = source.Enabled;
+        Preset = source.Preset;
+        Overrides.Clear();
+        foreach (var (preset, bands) in source.Overrides)
+            Overrides[preset] = [.. bands.Select(band => band.Copy())];
     }
 }
 

@@ -1,5 +1,6 @@
 using LunaPlayer.Media;
 using LunaPlayer.Playlist;
+using LunaPlayer.Equalizer;
 using LunaPlayer.Configuration;
 
 namespace LunaPlayer.Playback;
@@ -17,6 +18,7 @@ internal sealed class MediaPlayer : IDisposable
     private bool _silenceEnabled;
     private bool _running;
     private SilenceSettings _silence = new();
+    private Preset? _equalizer;
     private bool _trackPositions;
 
     internal MediaPlayer(IPlaybackEngine engine, PositionStore? positions = null)
@@ -331,6 +333,19 @@ internal sealed class MediaPlayer : IDisposable
         if (_engine.SetNormalization(enabled)) return true;
         _normalizationEnabled = previous;
         _engine.SetNormalization(previous);
+        return false;
+    }
+
+    /// <summary>The preset the equalizer is on, or null when it is off.</summary>
+    internal Preset? CurrentEqualizer => _equalizer;
+
+    internal bool SetEqualizer(Preset? preset)
+    {
+        var previous = _equalizer;
+        _equalizer = preset;
+        if (_engine.SetEqualizer(preset)) return true;
+        _equalizer = previous;
+        _engine.SetEqualizer(previous);
         return false;
     }
 

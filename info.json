@@ -1,6 +1,6 @@
 {
-  "version": "0.3.0",
+  "version": "0.4.0",
   "changes": [
-    "Add full English documentation."
+    "Add a 15-band Equalizer support with 17 default presets, the ability to edit default ones or create your own."
   ]
 }

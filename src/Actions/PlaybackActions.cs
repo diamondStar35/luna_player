@@ -129,6 +129,10 @@ internal static class PlaybackActionDefinitions
             new(ActionId.AnnouncePan, Tr("Speak current pan"), new("b")),
             // Translators: Name of the command that turns skipping the silent parts of the file on or off.
             new(ActionId.ToggleSilenceRemoval, Tr("Turn silence removal on or off"), new("m", ShortcutModifiers.Control)),
+            // Translators: Name of the command that opens the equalizer editor on the preset in use, shown in the shortcut list.
+            new(ActionId.EditEqualizerPreset, Tr("Edit the current equalizer preset")),
+            // Translators: Name of the command that opens the window listing every equalizer preset, shown in the shortcut list.
+            new(ActionId.ManageEqualizerPresets, Tr("Manage equalizer presets")),
             // Translators: Name of the command that marks the beginning of a part of the file to play on its own.
             new(ActionId.StartSelection, Tr("Mark start of selection"), new("[")),
             // Translators: Name of the command that marks the end of a part of the file to play on its own.

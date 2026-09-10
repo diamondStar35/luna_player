@@ -1,6 +1,9 @@
 using LunaPlayer.Actions;
 using LunaPlayer.Configuration;
 using LunaPlayer.Favorites;
+using LunaPlayer.Equalizer;
+using LunaPlayer.Playback;
+using LunaPlayer.UI.Equalizer;
 using LunaPlayer.YouTube;
 
 namespace LunaPlayer.UI;
@@ -124,6 +127,13 @@ internal interface IProgressView : IDisposable
 internal interface IMainView : IDisposable
 {
     event Action<ActionId>? ActionRequested;
+
+    /// <summary>The user has chosen an equalizer preset from the menu, or null to switch it off.</summary>
+    /// <remarks>
+    /// Not an <see cref="ActionId"/>, because which presets exist is not something the fixed action table
+    /// can describe and no key is bound to any of them.
+    /// </remarks>
+    event Action<string?>? EqualizerPresetRequested;
     event Action? CloseRequested;
 
     /// <summary>Asked when Escape is pressed on the main window with no modifier. Returning true means it
@@ -139,6 +149,22 @@ internal interface IMainView : IDisposable
     void SetShuffleChecked(bool isChecked);
     void SetRepeatFileChecked(bool isChecked);
     void SetSilenceRemovalChecked(bool isChecked);
+
+    /// <summary>Ticks the equalizer preset in force, or the Off item when <paramref name="presetId"/> is
+    /// null.</summary>
+    void SetEqualizerPreset(string? presetId);
+
+    /// <summary>Builds the equalizer submenu again, for when a preset has been added, renamed or removed.
+    /// </summary>
+    void RebuildEqualizerMenu(IReadOnlyList<PresetEntry> presets, string? selected);
+
+    /// <summary>Opens the band editor on one preset, giving back what was saved or null if it was not.
+    /// </summary>
+    EqualizerEditResult? EditEqualizerPreset(EqualizerEditContext context);
+
+    /// <summary>Opens the window listing every preset, giving back whether anything changed in it.
+    /// </summary>
+    bool ManageEqualizerPresets(Library library);
     void SetEditState(bool hasLocalFile, bool hasMedia);
     void SetBookmarkState(bool enabled);
     void SetMarkState(bool currentMarked, bool allMarked);
