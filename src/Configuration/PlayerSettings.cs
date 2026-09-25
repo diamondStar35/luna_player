@@ -224,6 +224,24 @@ internal sealed class GeneralSettings
     public bool SpeakFileOnNavigation { get; set; }
     public bool CheckUpdatesOnStartup { get; set; } = true;
     public bool SaveOnClose { get; set; } = true;
+
+    /// <summary>Whether the player stays out of the system's media controls entirely: the Windows overlay
+    /// for the volume keys and lock screen, and mpv's own media-key and transport-control integration.</summary>
+    /// <remarks>
+    /// The equivalent of mpv's <c>--no-media-controls</c>, offered because that integration can misbehave with
+    /// some headphones - a play/pause button that pauses twice, or reaches the wrong application. Off by
+    /// default, so the controls are there for everyone who is not troubled by them.
+    /// </remarks>
+    public bool DisableMediaControls { get; set; }
+
+    /// <summary>Whether the window title follows the playing track - the title bar showing what is open, and
+    /// paused when it is - rather than staying the plain program name.</summary>
+    /// <remarks>
+    /// Off by default: a screen reader announces the foreground window whenever its title changes, so a title
+    /// that tracks playback speaks over the player on every track change and pause. Some users want it anyway,
+    /// so it is offered as a choice rather than left out.
+    /// </remarks>
+    public bool SpeakWindowTitle { get; set; }
     [JsonConverter(typeof(JsonStringEnumConverter<SpeechVerbosity>))]
     public SpeechVerbosity Verbosity { get; set; } = SpeechVerbosity.Beginner;
     [JsonConverter(typeof(JsonStringEnumConverter<OpenFilesMode>))]
@@ -237,6 +255,8 @@ internal sealed class GeneralSettings
         SpeakFileOnNavigation = source.SpeakFileOnNavigation;
         CheckUpdatesOnStartup = source.CheckUpdatesOnStartup;
         SaveOnClose = source.SaveOnClose;
+        DisableMediaControls = source.DisableMediaControls;
+        SpeakWindowTitle = source.SpeakWindowTitle;
         Verbosity = source.Verbosity;
         OpenFilesMode = source.OpenFilesMode;
         LastDirectory = source.LastDirectory;

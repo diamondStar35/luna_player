@@ -145,6 +145,10 @@ internal interface IMainView : IDisposable
     void Close();
     void RestoreAndRaise();
     void SetPlaying(bool isPlaying);
+
+    /// <summary>Sets the window title. A screen reader announces the foreground window when its title changes,
+    /// so the caller sets it only when the title feature is on and the text has actually changed.</summary>
+    void SetWindowTitle(string title);
     void SetMediaLoaded(bool loaded);
     void SetShuffleChecked(bool isChecked);
     void SetRepeatFileChecked(bool isChecked);

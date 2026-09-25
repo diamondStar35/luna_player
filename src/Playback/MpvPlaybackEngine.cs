@@ -19,7 +19,7 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
     private bool _equalizerFilterActive;
     private bool _disposed;
 
-    internal MpvPlaybackEngine(nint windowHandle)
+    internal MpvPlaybackEngine(nint windowHandle, bool mediaControls = true)
     {
         var options = new Dictionary<string, object?>
         {
@@ -35,8 +35,7 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
 
         _mpv = new MPV(options: options);
         SetPropertySafely("network-timeout", 10);
-        SetPropertySafely("media-controls", "yes");
-        SetPropertySafely("input-media-keys", "yes");
+        ApplyMediaControls(mediaControls);
         _endRegistration = _mpv.OnEvent(HandleEndFile, MpvEventId.EndFile);
         // First into the chain, and before anything the settings switch on later, so that what the
         // equalizer lifts is still ahead of the limiter normalization puts at the end. Added here
@@ -321,6 +320,19 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
     {
         SetPropertySafely("keep-open", behavior == EndBehavior.None ? "yes" : "no");
         SetPropertySafely("loop-file", behavior == EndBehavior.Loop ? "inf" : "no");
+    }
+
+    public void SetMediaControls(bool enabled) => ApplyMediaControls(enabled);
+
+    // Both halves are set together: media-controls is the OS transport overlay mpv publishes, and
+    // input-media-keys is whether it answers the play/pause keys on a keyboard or headset. Disabling the
+    // controls while still capturing the keys is the arrangement that surprises people, so the setting
+    // moves them as one.
+    private void ApplyMediaControls(bool enabled)
+    {
+        var value = enabled ? "yes" : "no";
+        SetPropertySafely("media-controls", value);
+        SetPropertySafely("input-media-keys", value);
     }
 
     private void SetPropertySafely(string name, object value) => TrySetProperty(name, value);

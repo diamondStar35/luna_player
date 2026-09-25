@@ -58,6 +58,10 @@ internal interface IPlaybackEngine : IDisposable
 
     void SetEndBehavior(EndBehavior behavior);
 
+    /// <summary>Turns mpv's own system-media integration on or off: the media keys it answers and the
+    /// transport controls it publishes to the OS. The equivalent of mpv's <c>--media-controls</c>.</summary>
+    void SetMediaControls(bool enabled);
+
     /// <summary>The title the media declares for itself, from tags or a stream's metadata. Null when the
     /// media carries none, in which case callers fall back to the file name.</summary>
     string? MediaTitle { get; }

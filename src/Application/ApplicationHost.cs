@@ -60,7 +60,7 @@ internal sealed class ApplicationHost : IDisposable
                 Tr("Settings error")));
         }
         _speech = new SpeechOutput(_settings);
-        _player = new MediaPlayer(new MpvPlaybackEngine(_view.NativeHandle), new PositionStore(Paths.PositionsFile));
+        _player = new MediaPlayer(new MpvPlaybackEngine(_view.NativeHandle, !_settings.General.DisableMediaControls), new PositionStore(Paths.PositionsFile));
         var clipboard = new WxClipboardService();
         // Now that there is a toolkit, the crash window can offer to copy.
         CrashReport.SetClipboard(clipboard);

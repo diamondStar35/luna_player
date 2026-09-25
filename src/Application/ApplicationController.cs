@@ -84,7 +84,9 @@ internal sealed class ApplicationController : IDisposable
         // in front of the one the user opened and change back when it goes.
         _view.SetShuffleChecked(_player.IsShuffleEnabled);
         _view.SetRepeatFileChecked(_player.IsRepeatFileEnabled);
+        ApplyMediaControlsSetting();
         SyncMediaControls();
+        UpdateWindowTitle();
         UpdateMediaControlsClock();
     }
 
@@ -161,8 +163,51 @@ internal sealed class ApplicationController : IDisposable
         _view.SetVideoOptionsEnabled(
             LinkValidator.IsYouTubeUrl(_player.CurrentSource ?? _player.CurrentPath));
         _view.SetSilenceRemovalChecked(_player.IsSilenceRemovalEnabled);
+        ApplyMediaControlsSetting();
         SyncMediaControls();
+        UpdateWindowTitle();
         UpdateMediaControlsClock();
+    }
+
+    /// <summary>Brings the Windows media overlay into line with the general setting that governs it. Reads
+    /// the setting rather than being told, so it stays right whether the change came in at startup or from
+    /// the preferences window while the player was running.</summary>
+    private void ApplyMediaControlsSetting()
+        => _mediaControls.SetEnabled(!_settings.General.DisableMediaControls);
+
+    /// <summary>Puts what is playing, and whether it is paused, into the window title when the general
+    /// setting asks for it, and otherwise leaves the plain program name there. Reads the setting each time,
+    /// so turning it off in preferences takes the title back to the program name while the player runs.</summary>
+    /// <remarks>
+    /// A screen reader announces the foreground window whenever its title changes, so this speaks over the
+    /// player on every track change and pause. That is why the setting is off by default and why nothing here
+    /// tries to suppress the announcement - some users want the title to follow playback and accept the cost.
+    /// </remarks>
+    private void UpdateWindowTitle()
+    {
+        if (_shutDown) return;
+        _view.SetWindowTitle(_settings.General.SpeakWindowTitle ? ComposeWindowTitle() : AppInfo.Name);
+    }
+
+    /// <summary>The window title for the current state: the plain program name when nothing is open, the
+    /// track's title otherwise, marked as paused when it is.</summary>
+    private string ComposeWindowTitle()
+    {
+        var path = _player.CurrentPath;
+        if (string.IsNullOrEmpty(path))
+            return AppInfo.Name;
+        var tags = TagsFor(path);
+        // The same title the overlay shows: what the media calls itself, falling back to the name on disk.
+        var title = tags.Title.Length > 0 ? tags.Title : _player.CurrentDisplayName ?? string.Empty;
+        if (string.IsNullOrWhiteSpace(title))
+            return AppInfo.Name;
+        // Loaded but not playing is paused; stopped unloads mpv and leaves the entry, which is not the same
+        // thing and reads as the plain title.
+        return _player.IsLoaded && !_player.IsPlaying
+            // Translators: Window title while playback is paused. {title} is the track, {app} the program name.
+            ? TrFormat("[Paused]: {title} - {app}", title, AppInfo.Name)
+            // Translators: Window title while a track is open. {title} is the track, {app} the program name.
+            : TrFormat("{title} - {app}", title, AppInfo.Name);
     }
 
     /// <summary>Publishes the current state to the Windows media overlay. Called whenever playback state

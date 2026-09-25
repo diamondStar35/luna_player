@@ -38,6 +38,7 @@ internal sealed class SystemMediaControls : IDisposable
     private string _lastTitle = string.Empty;
     private string _lastArtist = string.Empty;
     private string _lastAlbum = string.Empty;
+    private bool _enabled = true;
     private bool _disposed;
 
     internal SystemMediaControls()
@@ -64,7 +65,26 @@ internal sealed class SystemMediaControls : IDisposable
     /// <summary>A media button was pressed. Raised on a Windows Runtime thread.</summary>
     internal event Action<ActionId>? ButtonPressed;
 
-    internal bool IsAvailable => _controls is not null && !_disposed;
+    internal bool IsAvailable => _controls is not null && !_disposed && _enabled;
+
+    /// <summary>Turns the overlay off or back on without giving up the session, so the setting that
+    /// disables it can be flipped while the player runs. Disabling takes the overlay off the screen; the
+    /// buttons stop being answered because the disabled control raises nothing.</summary>
+    internal void SetEnabled(bool enabled)
+    {
+        if (_controls is not { } controls || _disposed || enabled == _enabled) return;
+        _enabled = enabled;
+        try
+        {
+            controls.IsEnabled = enabled;
+            // Clear what is showing on the way down, so Windows takes the overlay away rather than leaving
+            // the last track frozen on it. On the way up the next Update repopulates it.
+            if (!enabled) ClearDisplay(controls);
+        }
+        catch (COMException)
+        {
+        }
+    }
 
     /// <summary>Pushes the current playback state to the overlay. Cheap enough to call on a timer: the
     /// display is only rewritten when the text actually changes.</summary>

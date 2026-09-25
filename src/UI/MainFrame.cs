@@ -46,6 +46,9 @@ internal sealed partial class MainFrame : IMainView
     private bool _disposed;
     private bool _waitingForCloseKeys;
     private bool _closing;
+    // The title last handed to the frame, so an unchanged one is not set again: every set is a name-change
+    // event a screen reader reads out, and repeating the same text would announce it for nothing.
+    private string _windowTitle = AppInfo.Name;
 
     private const int VirtualKeyShift = 0x10;
     private const int VirtualKeyControl = 0x11;
@@ -164,6 +167,13 @@ internal sealed partial class MainFrame : IMainView
     }
 
     public void SetPlaying(bool isPlaying) => _playButton.Label = isPlaying ? Tr("Pause") : Tr("Play");
+
+    public void SetWindowTitle(string title)
+    {
+        if (string.Equals(title, _windowTitle, StringComparison.Ordinal)) return;
+        _windowTitle = title;
+        _frame.Title = title;
+    }
 
     public void SetShuffleChecked(bool isChecked) => _shuffleItem.Checked = isChecked;
 

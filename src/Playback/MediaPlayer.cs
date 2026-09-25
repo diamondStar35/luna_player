@@ -263,6 +263,15 @@ internal sealed class MediaPlayer : IDisposable
 
     internal void SetEndBehavior(EndBehavior behavior) => _engine.SetEndBehavior(behavior);
 
+    /// <summary>Turns the system media controls - mpv's transport overlay and media keys - on or off.
+    /// Raises <see cref="StateChanged"/> so the Windows overlay the controller owns is reconciled from the
+    /// same setting.</summary>
+    internal void SetMediaControls(bool enabled)
+    {
+        _engine.SetMediaControls(enabled);
+        StateChanged?.Invoke();
+    }
+
     // Pausing, resuming and stopping are state changes like any other, and they are announced like any other.
     // Nothing about them is visible in a property that raises an event of its own, so a listener that has to
     // follow whether the player is running - the play button and the Windows overlay both do - would

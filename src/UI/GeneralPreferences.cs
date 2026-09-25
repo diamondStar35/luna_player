@@ -12,6 +12,8 @@ internal sealed class GeneralPreferences : Preferences
     private readonly CheckBox _checkUpdates;
     private readonly CheckBox _rememberPosition;
     private readonly CheckBox _saveOnClose;
+    private readonly CheckBox _disableMediaControls;
+    private readonly CheckBox _speakWindowTitle;
     private readonly Choice _verbosity;
     private readonly Choice _openMode;
 
@@ -41,6 +43,10 @@ internal sealed class GeneralPreferences : Preferences
         _checkUpdates = new CheckBox(panel, label: Tr("Check for app updates on startup")) { Checked = settings.CheckUpdatesOnStartup };
         // Translators: Tick box on the General settings page: keep changes such as volume and speed when the player closes.
         _saveOnClose = new CheckBox(panel, label: Tr("Save settings on close")) { Checked = settings.SaveOnClose };
+        // Translators: Tick box on the General settings page: keep the player out of the system's media controls entirely.
+        _disableMediaControls = new CheckBox(panel, label: Tr("Disable system media controls")) { Checked = settings.DisableMediaControls };
+        // Translators: Tick box on the General settings page: show the playing track in the window title.
+        _speakWindowTitle = new CheckBox(panel, label: Tr("Show the playing track in the window title")) { Checked = settings.SpeakWindowTitle };
         // Translators: Label of the list that chooses how much detail the player speaks.
         var verbosityLabel = new StaticText(panel, label: Tr("Verbosity"));
         _verbosity = Choice(panel, [
@@ -89,6 +95,8 @@ internal sealed class GeneralPreferences : Preferences
         sizer.Add(_speakNavigation, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         sizer.Add(_checkUpdates, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         sizer.Add(_saveOnClose, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
+        sizer.Add(_disableMediaControls, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
+        sizer.Add(_speakWindowTitle, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         AddChoice(sizer, verbosityLabel, _verbosity);
         AddChoice(sizer, openModeLabel, _openMode);
         var buttons = new BoxSizer(Orientation.Horizontal);
@@ -115,6 +123,13 @@ internal sealed class GeneralPreferences : Preferences
             // Translators: Help text for the tick box that keeps changes such as volume and speed when the player closes.
             Tr("Writes changes made during the session when Luna exits, including volume and speed. " +
             "Clear this option if those changes should last only until the window closes."));
+        Help(_disableMediaControls,
+            // Translators: Help text for the tick box that keeps the player out of the system's media controls.
+            Tr("Keeps Luna out of the system media controls and the play, pause and track keys on a keyboard or headset. " +
+            "Enable this if those keys misbehave with your headphones."));
+        Help(_speakWindowTitle,
+            // Translators: Help text for the tick box that shows the playing track in the window title.
+            Tr("Shows the playing track in the window title, marked as paused when it is."));
         Help(_verbosity,
             // Translators: Help text for the list that chooses how much detail the player speaks.
             Tr("Beginner uses complete, explanatory announcements. Advanced keeps confirmations brief for experienced users."));
@@ -140,6 +155,8 @@ internal sealed class GeneralPreferences : Preferences
         _settings.SpeakFileOnNavigation = _speakNavigation.Checked;
         _settings.CheckUpdatesOnStartup = _checkUpdates.Checked;
         _settings.SaveOnClose = _saveOnClose.Checked;
+        _settings.DisableMediaControls = _disableMediaControls.Checked;
+        _settings.SpeakWindowTitle = _speakWindowTitle.Checked;
         _settings.Verbosity = (SpeechVerbosity)Math.Max(0, _verbosity.SelectedIndex);
         _settings.OpenFilesMode = (OpenFilesMode)Math.Max(0, _openMode.SelectedIndex);
     }
@@ -151,6 +168,8 @@ internal sealed class GeneralPreferences : Preferences
         _speakNavigation.Checked = _settings.SpeakFileOnNavigation;
         _checkUpdates.Checked = _settings.CheckUpdatesOnStartup;
         _saveOnClose.Checked = _settings.SaveOnClose;
+        _disableMediaControls.Checked = _settings.DisableMediaControls;
+        _speakWindowTitle.Checked = _settings.SpeakWindowTitle;
         _verbosity.SelectedIndex = (int)_settings.Verbosity;
         _openMode.SelectedIndex = (int)_settings.OpenFilesMode;
     }
