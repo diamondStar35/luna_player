@@ -271,6 +271,13 @@ internal static class MainMenuBuilder
         // Translators: Help submenu containing the commands that update Luna Player and its YouTube tools.
         helpMenu.AppendSubMenu(updatesMenu, Tr("Updates"));
 
+        // Every index returned to the caller is written out as a number, and the last of them is the video
+        // menu. This is appended after all of them, so it disturbs none - it lands between Recording and
+        // Help, which nothing counts by position.
+        var toolsMenu = new Menu();
+        // Translators: Tools menu item that opens the window for converting files to another audio format.
+        toolsMenu.Append(commandIds[ActionId.OpenMediaConverter], Label(Tr("Media converter..."), ActionId.OpenMediaConverter, shortcuts));
+
         var menuBar = new MenuBar();
         // Translators: Name of the File menu in the menu bar.
         menuBar.Append(fileMenu, Tr("File"));
@@ -292,6 +299,9 @@ internal static class MainMenuBuilder
         // put in front of any of them would leave those pointing at the wrong one.
         // Translators: Name of the menu bar menu holding what can be recorded and how.
         menuBar.Append(recordingMenu, Tr("Recording"));
+        // Safe after the indexed menus above: nothing counts the tools or help menus by position.
+        // Translators: Name of the Tools menu in the menu bar, holding the media converter.
+        menuBar.Append(toolsMenu, Tr("Tools"));
         // Translators: Name of the Help menu in the menu bar.
         menuBar.Append(helpMenu, Tr("Help"));
         frame.SetMenuBar(menuBar);

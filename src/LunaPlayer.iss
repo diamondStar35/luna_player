@@ -32,6 +32,11 @@
 #define ProgId AppIdentifier + ".Media"
 #define ContextLabel "Play with Luna Player"
 #define ContextVerb "play_with_luna"
+; The converter's own shell verb, added to the media types and to folders. It passes --convert so the player
+; can tell an invocation meant for the converter from one meant to play; the routing behind the flag is part
+; of the conversion work and is not written yet.
+#define ConvertLabel "Convert with Luna"
+#define ConvertVerb "convert_with_luna"
 #define CapabilitiesKey "Software\" + AppIdentifier + "\Capabilities"
 
 ; The file types the player opens, as Media\MediaLibrary.cs lists them. The entries at the end are written
@@ -126,12 +131,22 @@ Root: HKCU; Subkey: "Software\Classes\{#ProgId}"; ValueType: string; ValueName: 
 Root: HKCU; Subkey: "Software\Classes\{#ProgId}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: associate
 Root: HKCU; Subkey: "Software\Classes\{#ProgId}\shell\{#ContextVerb}"; ValueType: string; ValueName: ""; ValueData: "{#ContextLabel}"; Flags: uninsdeletekey; Tasks: associate
 Root: HKCU; Subkey: "Software\Classes\{#ProgId}\shell\{#ContextVerb}\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: associate
+Root: HKCU; Subkey: "Software\Classes\{#ProgId}\shell\{#ConvertVerb}"; ValueType: string; ValueName: ""; ValueData: "{#ConvertLabel}"; Flags: uninsdeletekey; Tasks: associate
+Root: HKCU; Subkey: "Software\Classes\{#ProgId}\shell\{#ConvertVerb}\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" --convert ""%1"""; Flags: uninsdeletekey; Tasks: associate
 
 ; The application registration, which is what puts the player in Open With and names it there.
 Root: HKCU; Subkey: "Software\Classes\Applications\{#AppExeName}"; ValueType: string; ValueName: "FriendlyAppName"; ValueData: "{#AppName}"; Flags: uninsdeletekey; Tasks: associate
 Root: HKCU; Subkey: "Software\Classes\Applications\{#AppExeName}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: associate
 Root: HKCU; Subkey: "Software\Classes\Applications\{#AppExeName}\shell\{#ContextVerb}"; ValueType: string; ValueName: ""; ValueData: "{#ContextLabel}"; Flags: uninsdeletekey; Tasks: associate
 Root: HKCU; Subkey: "Software\Classes\Applications\{#AppExeName}\shell\{#ContextVerb}\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: associate
+Root: HKCU; Subkey: "Software\Classes\Applications\{#AppExeName}\shell\{#ConvertVerb}"; ValueType: string; ValueName: ""; ValueData: "{#ConvertLabel}"; Flags: uninsdeletekey; Tasks: associate
+Root: HKCU; Subkey: "Software\Classes\Applications\{#AppExeName}\shell\{#ConvertVerb}\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" --convert ""%1"""; Flags: uninsdeletekey; Tasks: associate
+
+; The convert verb on folders, so a whole folder can be sent to the converter from its right-click menu. The
+; player expands the folder to the supported files under it; passing the one folder path rather than each file
+; is also what keeps a folder of thousands from launching the verb thousands of times.
+Root: HKCU; Subkey: "Software\Classes\Directory\shell\{#ConvertVerb}"; ValueType: string; ValueName: ""; ValueData: "{#ConvertLabel}"; Flags: uninsdeletekey; Tasks: associate
+Root: HKCU; Subkey: "Software\Classes\Directory\shell\{#ConvertVerb}\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" --convert ""%1"""; Flags: uninsdeletekey; Tasks: associate
 
 ; The Default Programs entry, which is what the Settings app reads when it offers the player as a default.
 Root: HKCU; Subkey: "{#CapabilitiesKey}"; ValueType: string; ValueName: "ApplicationName"; ValueData: "{#AppName}"; Flags: uninsdeletekey; Tasks: associate

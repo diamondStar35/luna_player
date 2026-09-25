@@ -53,6 +53,11 @@ internal sealed partial class MainFrame
     public void ShowRecording(
         LunaPlayer.Recording.AudioCatalog catalog, LunaPlayer.Recording.RecordingSources sources, LunaPlayer.Recording.RecordingEngine engine)
     { using var dialog = new Recording.RecordingDialog(DialogParent, _dispatcher, catalog, sources, engine); dialog.Show(); }
+    public ConversionRequest? ShowMediaConverter(IReadOnlyList<string>? initialFiles = null)
+    { using var dialog = new MediaConverterDialog(DialogParent, initialFiles); return dialog.Show(); }
+    public ConversionOutcome? RunConversion(
+        Func<Action<ConversionProgress>, CancellationToken, ConversionOutcome> work)
+    { using var dialog = new ConversionProgressDialog(DialogParent, _dispatcher, work); return dialog.Show(); }
     public PlayerSettings? EditPreferences(PlayerSettings settings, PrefsOps operations, Action<string> speakHelp)
     { var editable = settings.Copy(); using var dialog = new PreferencesDialog(DialogParent, editable, operations, speakHelp, _dispatcher, _catalog, _globalShortcuts); return dialog.Show() ? editable : null; }
 }

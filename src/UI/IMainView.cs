@@ -218,6 +218,20 @@ internal interface IMainView : IDisposable
     /// end a recording: the sources and the recorder outlive it.</summary>
     void ShowRecording(
         LunaPlayer.Recording.AudioCatalog catalog, LunaPlayer.Recording.RecordingSources sources, LunaPlayer.Recording.RecordingEngine engine);
+    /// <summary>Opens the window where files are converted to another audio format and returns what the user
+    /// chose to convert, or null if they closed it without starting. It is modal; the conversion the caller
+    /// then runs from the request is shown behind <see cref="RunConversion"/>'s own window.</summary>
+    /// <param name="initialFiles">Files to put in the list before the window opens, for the "Convert with
+    /// Luna" verb, or null to open it empty.</param>
+    LunaPlayer.Media.ConversionRequest? ShowMediaConverter(IReadOnlyList<string>? initialFiles = null);
+
+    /// <summary>Runs a conversion behind the converter's progress window, which does not return until the
+    /// batch has finished or the user stopped it. Gives back what the batch produced, or null when it was
+    /// stopped.</summary>
+    /// <param name="work">The batch. It is handed something to report progress to and a token set when the
+    /// user stops it, and returns what it converted.</param>
+    LunaPlayer.Media.ConversionOutcome? RunConversion(
+        Func<Action<LunaPlayer.Media.ConversionProgress>, CancellationToken, LunaPlayer.Media.ConversionOutcome> work);
     PlayerSettings? EditPreferences(PlayerSettings settings, PrefsOps operations, Action<string> speakHelp);
     void ApplyShortcuts(ShortcutManager shortcuts);
     /// <summary>Starts watching for the system-wide shortcuts in <paramref name="shortcuts"/>, replacing any

@@ -27,6 +27,7 @@ internal enum ActionId
     PanLeft, PanRight, AnnouncePan,
     PitchUp, PitchDown, ResetPitch, AnnouncePitch,
     AnnounceTitle,
+    OpenMediaConverter,
 }
 
 internal sealed record ActionDefinition(ActionId Id, string Label, Shortcut? PrimaryShortcut = null, Shortcut? SecondaryShortcut = null);
@@ -36,5 +37,5 @@ internal static class ActionRegistry
     internal static IReadOnlyList<ActionDefinition> All { get; } =
     [.. MediaActionDefinitions.All, .. PlaybackActionDefinitions.All, .. YouTubeActionDefinitions.All,
         .. HelpActionDefinitions.All, .. UpdateActionDefinitions.All,
-        .. RecordingActionDefinitions.All];
+        .. RecordingActionDefinitions.All, .. ToolsActionDefinitions.All];
 }

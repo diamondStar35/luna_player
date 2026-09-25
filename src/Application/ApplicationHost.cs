@@ -32,6 +32,7 @@ internal sealed class ApplicationHost : IDisposable
     private readonly LunaPlayer.Recording.RecordingSources _recordingSources;
     private readonly LunaPlayer.Recording.RecordingEngine _recorder;
     private readonly LunaPlayer.YouTube.YouTubeSessions _sessions;
+    private readonly ToolsActions _tools;
     private bool _disposed;
 
     internal ApplicationHost(SingleInstanceService singleInstance, IReadOnlyList<string> initialPaths)
@@ -102,6 +103,7 @@ internal sealed class ApplicationHost : IDisposable
         _recorder = new LunaPlayer.Recording.RecordingEngine(_catalog);
         _ = new RecordingActions(
             router, _view, _settings, _speech, _dispatcher, _catalog, _recordingSources, _recorder);
+        _tools = new ToolsActions(router, _view);
         router.EnsureComplete(ActionRegistry.All);
         _controller = new ApplicationController(
             _view,
@@ -125,7 +127,15 @@ internal sealed class ApplicationHost : IDisposable
         _dispatcher.Post(_appUpdates.CheckAtStartup);
 
         if (initialPaths.Count > 0)
-            _dispatcher.Post(() => _controller.OpenPaths(initialPaths));
+        {
+            // Windows Explorer's "Convert with Luna" verb launches the player with --convert and the file or
+            // folder, which opens the converter rather than playing anything. Everything else is opened to
+            // play as before.
+            if (IsConvertRequest(initialPaths, out var convertFiles))
+                _dispatcher.Post(() => _tools.OpenFor(convertFiles));
+            else
+                _dispatcher.Post(() => _controller.OpenPaths(initialPaths));
+        }
         else if (_settings.General.RememberLastPosition && File.Exists(_settings.Playback.LastFile))
             _dispatcher.Post(() => fileActions.RestoreSession(_settings.Playback.LastFile, _settings.Playback.LastPosition));
     }
@@ -156,7 +166,48 @@ internal sealed class ApplicationHost : IDisposable
     private void HandleExternalPaths(IReadOnlyList<string> paths)
     {
         _view.RestoreAndRaise();
-        if (paths.Count > 0)
+        if (paths.Count == 0)
+            return;
+        // A second launch carrying "Convert with Luna" opens the converter for its files rather than playing
+        // them, the same as the first launch does.
+        if (IsConvertRequest(paths, out var convertFiles))
+            _tools.OpenFor(convertFiles);
+        else
             _controller.OpenPaths(paths);
+    }
+
+    /// <summary>Whether a set of launch arguments is a "Convert with Luna" request, and if so the files it
+    /// names with any folder among them expanded to the supported files under it.</summary>
+    /// <remarks>
+    /// The verb passes --convert and one path; several files selected in Explorer launch the player once
+    /// each, and those launches are gathered into one list before they reach here, so the flag can arrive
+    /// beside any number of paths.
+    /// </remarks>
+    private static bool IsConvertRequest(IReadOnlyList<string> paths, out IReadOnlyList<string> files)
+    {
+        var convert = false;
+        var targets = new List<string>();
+        foreach (var path in paths)
+        {
+            if (path.Equals("--convert", StringComparison.OrdinalIgnoreCase))
+                convert = true;
+            else
+                targets.Add(path);
+        }
+        if (!convert)
+        {
+            files = [];
+            return false;
+        }
+        var collected = new List<string>();
+        foreach (var target in targets)
+        {
+            if (Directory.Exists(target))
+                collected.AddRange(MediaLibrary.CollectFiles(target, recursive: true));
+            else if (File.Exists(target))
+                collected.Add(target);
+        }
+        files = collected;
+        return true;
     }
 }
