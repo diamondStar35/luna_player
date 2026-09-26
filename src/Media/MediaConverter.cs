@@ -159,18 +159,29 @@ internal sealed class MediaConverter
         return new ConversionOutcome(total - failures.Count, failures.ToArray(), stopwatch.Elapsed);
     }
 
-    /// <summary>Gives each job a destination nothing else will write and nothing already holds.</summary>
+    /// <summary>Gives each job a destination nothing else will write, nothing already holds, and no file in
+    /// the batch is being read from.</summary>
     ///
     /// <remarks>
     /// Done here rather than in each worker because the answer depends on the other jobs: two files of the
     /// same name headed for one folder, or a job whose chosen name matches one an earlier job took, must be
     /// told apart before the writing starts. The claimed set stands in for the files that do not exist yet;
-    /// <see cref="File.Exists"/> stands in for the ones that do, the sources among them.
+    /// <see cref="File.Exists"/> stands in for the ones that do.
+    ///
+    /// The sources are claimed up front rather than left to <see cref="File.Exists"/> to notice, because it
+    /// notices only a source it can see: it answers false for one it cannot open to check - a file another
+    /// program holds open, or a cloud-backed file not on the disk yet - and a source that slipped through
+    /// that way would be handed to FFmpeg as both the file it reads and the file it writes. FFmpeg cannot
+    /// write its output onto the file it is reading and fails the whole file with "Invalid argument", so the
+    /// default of writing a ".wav" beside the ".wav" it came from - the format the window offers first for a
+    /// file already in that format - must never resolve to the source itself.
     /// </remarks>
     private static IReadOnlyList<ConversionJob> ResolveDestinations(IReadOnlyList<ConversionJob> jobs)
     {
         var resolved = new List<ConversionJob>(jobs.Count);
         var claimed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var job in jobs)
+            claimed.Add(job.Source);
         foreach (var job in jobs)
         {
             var destination = UniqueDestination(job.Destination, claimed);
