@@ -41,29 +41,51 @@ internal sealed class ToolsActions
         // Runs behind the converter's own progress window, which does not return until the batch has finished
         // or the user stopped it. A stopped batch gives back nothing, and nothing is said about it.
         if (_view.RunConversion((report, token) => _converter.Run(request, report, token)) is ConversionOutcome outcome)
-            Report(outcome);
+            Report(request, outcome);
     }
 
-    private void Report(ConversionOutcome outcome)
+    /// <summary>Tells the user how the batch went: a plain confirmation when every file converted, and a
+    /// report listing each file that did not, with its reason, when some failed.</summary>
+    private void Report(ConversionRequest request, ConversionOutcome outcome)
     {
+        var summary = Summarize(request.Format, outcome);
         if (outcome.Failures.Count == 0)
         {
-            _view.ShowInfo(
-                // Translators: Shown when every file was converted. {count} is how many.
-                TrPluralFormat("Converted {count} file.", "Converted {count} files.",
-                    outcome.Converted, outcome.Converted),
-                Title);
+            // Translators: Title of the message shown when every file in a batch was converted.
+            _view.ShowInfo(summary, Tr("Success"));
             return;
         }
-        _view.ShowWarning(
-            // Translators: Shown when some files converted and some did not. {converted} of {total} succeeded;
-            // {names} lists the ones that failed, separated by commas.
-            TrFormat("Converted {converted} of {total} files. These could not be converted: {names}",
-                outcome.Converted, outcome.Total, string.Join(", ", outcome.Failures)),
-            Title);
+        // One block per failed file: the file on its own line, the reason below it, a blank line between blocks.
+        var details = string.Join(
+            Environment.NewLine + Environment.NewLine,
+            outcome.Failures.Select(failure =>
+                // Translators: Names a file the converter could not convert. {path} is its full path, shown on
+                // the line above the reason.
+                TrFormat("File: {path}", failure.File) + Environment.NewLine + failure.Error));
+        var message = summary + Environment.NewLine + Environment.NewLine
+            // Translators: Follows the summary when some files failed, pointing at the list below it.
+            + Tr("Some files were not converted. Check the details below.");
+        // Translators: Title of the report shown when a batch converted but some files failed.
+        _view.ShowConversionReport(Tr("Warning"), message, details);
     }
 
-    private static string Title =>
-        // Translators: Title of the messages the media converter shows.
-        Tr("Media converter");
+    /// <summary>The one-line result: how many files were written, to what format, and how long it took.
+    /// </summary>
+    private static string Summarize(string format, ConversionOutcome outcome) =>
+        // Translators: The converter's result. {count} is how many files were written, {format} the format
+        // they were written to, {time} how long it took, such as 0:45 or 1:05:00.
+        TrPluralFormat(
+            "Converted {count} file to {format}. The operation took {time}.",
+            "Converted {count} files to {format}. The operation took {time}.",
+            outcome.Converted, outcome.Converted, format, FormatDuration(outcome.Elapsed));
+
+    /// <summary>A span as M:SS, or H:MM:SS once it runs to an hour.</summary>
+    private static string FormatDuration(TimeSpan span)
+    {
+        if (span < TimeSpan.Zero)
+            span = TimeSpan.Zero;
+        return span.TotalHours >= 1
+            ? $"{(int)span.TotalHours}:{span.Minutes:00}:{span.Seconds:00}"
+            : $"{span.Minutes}:{span.Seconds:00}";
+    }
 }

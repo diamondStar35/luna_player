@@ -159,7 +159,7 @@ internal sealed class MediaConverterDialog : IDisposable
         _opusProfile.Add(Tr("Low delay"));
         // Translators: Label of the box that chooses how many files are converted at the same time.
         var threadsLabel = new StaticText(_dialog, label: Tr("Maximum simultaneous conversions"));
-        _threads = new SpinCtrl(_dialog, value: 1, minimum: 1, maximum: 64);
+        _threads = new SpinCtrl(_dialog, value: 1, minimum: 1, maximum: 32);
 
         // Translators: Title of the group holding where the converted files are written and what happens to
         // the originals.
@@ -463,7 +463,9 @@ internal sealed class MediaConverterDialog : IDisposable
             var name = Path.GetFileNameWithoutExtension(source) + extension;
             jobs.Add(new ConversionJob(source, Path.Combine(directory, name)));
         }
-        _request = new ConversionRequest(jobs, BuildSettings(extension), _threads.Value, _deleteOriginals.Checked);
+        _request = new ConversionRequest(
+            jobs, BuildSettings(extension), _threads.Value, _deleteOriginals.Checked,
+            Formats[_format.SelectedIndex].Label);
         _dialog.EndModal(StandardId.Ok);
     }
 

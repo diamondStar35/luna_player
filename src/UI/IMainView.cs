@@ -232,6 +232,13 @@ internal interface IMainView : IDisposable
     /// user stops it, and returns what it converted.</param>
     LunaPlayer.Media.ConversionOutcome? RunConversion(
         Func<Action<LunaPlayer.Media.ConversionProgress>, CancellationToken, LunaPlayer.Media.ConversionOutcome> work);
+    /// <summary>Shows a read-only report of a batch that mostly worked: a summary line, then a scrollable list
+    /// of the files that failed with their reasons. For the fully successful case a plain message box is used
+    /// instead.</summary>
+    /// <param name="title">The window title.</param>
+    /// <param name="message">The summary shown above the list.</param>
+    /// <param name="details">The per-file failures, one block each.</param>
+    void ShowConversionReport(string title, string message, string details);
     PlayerSettings? EditPreferences(PlayerSettings settings, PrefsOps operations, Action<string> speakHelp);
     void ApplyShortcuts(ShortcutManager shortcuts);
     /// <summary>Starts watching for the system-wide shortcuts in <paramref name="shortcuts"/>, replacing any

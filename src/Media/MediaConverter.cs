@@ -31,13 +31,22 @@ internal readonly record struct ConversionJob(string Source, string Destination)
 /// <param name="MaxConcurrency">How many files may be converted at once. Each file is handled by exactly one
 /// worker, so no two ever touch the same file.</param>
 /// <param name="DeleteOriginals">Whether each source is removed once its conversion has succeeded.</param>
+/// <param name="Format">The display name of the format being written, for the result the user is shown.</param>
 internal sealed record ConversionRequest(
-    IReadOnlyList<ConversionJob> Jobs, ConversionSettings Settings, int MaxConcurrency, bool DeleteOriginals);
+    IReadOnlyList<ConversionJob> Jobs, ConversionSettings Settings, int MaxConcurrency, bool DeleteOriginals,
+    string Format);
+
+/// <summary>One file that could not be converted, and why.</summary>
+/// <param name="File">The source file, as its full path.</param>
+/// <param name="Error">Why it failed, in words fit to show the user.</param>
+internal readonly record struct ConversionFailure(string File, string Error);
 
 /// <summary>What a finished batch produced.</summary>
 /// <param name="Converted">How many files were written.</param>
-/// <param name="Failures">The names of the files that could not be converted.</param>
-internal sealed record ConversionOutcome(int Converted, IReadOnlyList<string> Failures)
+/// <param name="Failures">The files that could not be converted, each with its reason.</param>
+/// <param name="Elapsed">How long the whole batch took.</param>
+internal sealed record ConversionOutcome(
+    int Converted, IReadOnlyList<ConversionFailure> Failures, TimeSpan Elapsed)
 {
     internal int Total => Converted + Failures.Count;
 }
@@ -88,7 +97,7 @@ internal sealed class MediaConverter
     {
         var jobs = ResolveDestinations(request.Jobs);
         var total = jobs.Count;
-        var failures = new ConcurrentBag<string>();
+        var failures = new ConcurrentBag<ConversionFailure>();
         // One slot per file, holding its fraction from 0 to 1. The total is their mean, so a file that is
         // half done counts half whether it is the biggest in the batch or the smallest. Their running sum is
         // kept beside them so a report costs nothing extra however many files the batch holds - a folder sent
@@ -130,15 +139,16 @@ internal sealed class MediaConverter
             var job = jobs[index];
             var name = MediaLibrary.DisplayName(job.Source);
             Emit(index, name, 0);
-            if (ConvertOne(job.Source, job.Destination, request.Settings,
-                    fraction => Emit(index, name, fraction), token))
+            var error = ConvertOne(job.Source, job.Destination, request.Settings,
+                fraction => Emit(index, name, fraction), token);
+            if (error is null)
             {
                 if (request.DeleteOriginals)
                     DeleteOriginal(job.Source);
             }
             else
             {
-                failures.Add(name);
+                failures.Add(new ConversionFailure(job.Source, error));
             }
             lock (gate)
             {
@@ -146,7 +156,7 @@ internal sealed class MediaConverter
             }
             Emit(index, name, 1);
         });
-        return new ConversionOutcome(total - failures.Count, failures.ToArray());
+        return new ConversionOutcome(total - failures.Count, failures.ToArray(), stopwatch.Elapsed);
     }
 
     /// <summary>Gives each job a destination nothing else will write and nothing already holds.</summary>
@@ -190,12 +200,12 @@ internal sealed class MediaConverter
 
     /// <summary>Runs FFmpeg once, turning <paramref name="source"/> into <paramref name="destination"/>.
     /// </summary>
-    /// <returns>True when FFmpeg wrote the file and exited cleanly; false when it failed, the partial output
-    /// discarded either way.</returns>
+    /// <returns>Null when FFmpeg wrote the file and exited cleanly; otherwise a reason fit to show the user,
+    /// the partial output discarded.</returns>
     /// <remarks>Throws <see cref="OperationCanceledException"/> when the user aborts, after killing FFmpeg
-    /// and removing whatever it had written. A failure of one file is caught and returned as false so the
+    /// and removing whatever it had written. A failure of one file is caught and returned as a reason so the
     /// rest of the batch carries on; only an abort stops everything.</remarks>
-    private static bool ConvertOne(
+    private static string? ConvertOne(
         string source, string destination, ConversionSettings settings,
         Action<double> onProgress, CancellationToken token)
     {
@@ -208,7 +218,8 @@ internal sealed class MediaConverter
             using var abort = token.Register(() => Stop(process));
             // FFmpeg writes its progress and its complaints to stderr and can fill the pipe; drain both on
             // threads of their own so a full pipe never stops it. The stderr side is read for the file's
-            // duration and its running time, which is where the per-file percentage comes from.
+            // duration and running time - the per-file percentage - and its last complaint, kept in case the
+            // run fails.
             var draining = Task.Run(() => Drain(process, onProgress), CancellationToken.None);
             process.WaitForExit();
             draining.Wait(DrainTimeout);
@@ -216,9 +227,9 @@ internal sealed class MediaConverter
             // for a program that failed.
             token.ThrowIfCancellationRequested();
             if (process.ExitCode == 0)
-                return true;
+                return null;
             Discard(destination);
-            return false;
+            return TranslateError(draining.IsCompletedSuccessfully ? draining.Result : null);
         }
         catch (OperationCanceledException)
         {
@@ -231,7 +242,7 @@ internal sealed class MediaConverter
             // failure to report, not a crash to end the batch with. Noted so the cause is not lost.
             LunaPlayer.Application.CrashReport.Note(failure);
             Discard(destination);
-            return false;
+            return failure.Message;
         }
     }
 
@@ -266,17 +277,20 @@ internal sealed class MediaConverter
 
     /// <summary>Reads a process's output to the end so its pipes never fill and stall it, watching stderr
     /// for the file's duration and running time and turning them into a fraction from 0 to 1.</summary>
+    /// <returns>FFmpeg's last non-progress line, which for a failed run is its own account of what went
+    /// wrong, or null when it said nothing but its progress.</returns>
     /// <remarks>
     /// FFmpeg prints "Duration: HH:MM:SS.ss" once near the top and then a stream of "time=HH:MM:SS.ss"
     /// lines as it works, each overwriting the last with a lone carriage return. A .NET line reader treats
     /// that carriage return as a line break, so every one of those status writes arrives here as its own
     /// line and the percentage climbs smoothly. Stdout carries nothing we need but is drained anyway.
     /// </remarks>
-    private static void Drain(Process process, Action<double> onProgress)
+    private static string? Drain(Process process, Action<double> onProgress)
     {
         var output = Task.Run(
             () => { while (process.StandardOutput.ReadLine() is not null) { } }, CancellationToken.None);
         var duration = 0.0;
+        string? lastLine = null;
         string? line;
         while ((line = process.StandardError.ReadLine()) is not null)
         {
@@ -293,10 +307,47 @@ internal sealed class MediaConverter
             {
                 var time = ParseClockAfter(line, "time=", ' ');
                 if (time >= 0)
+                {
                     onProgress(Math.Clamp(time / duration, 0, 1));
+                    continue;
+                }
             }
+            // Every other line is diagnostic. Keep the last one seen: when the run fails it is FFmpeg's
+            // parting complaint, which stands in for a reason when nothing more specific is recognised.
+            var trimmed = line.Trim();
+            if (trimmed.Length > 0)
+                lastLine = trimmed;
         }
         output.Wait(DrainTimeout);
+        return lastLine;
+    }
+
+    /// <summary>Turns FFmpeg's parting line into a reason fit to show the user: a plain sentence for the
+    /// handful of failures worth naming, and FFmpeg's own words for everything else, which beats a guess.
+    /// </summary>
+    private static string TranslateError(string? detail)
+    {
+        if (string.IsNullOrWhiteSpace(detail))
+            return Tr("The file could not be converted.");
+        if (Mentions(detail, "Invalid data found", "could not find codec", "does not contain any stream"))
+            return Tr("Unsupported file type.");
+        if (Mentions(detail, "No such file", "does not exist"))
+            return Tr("The file could not be found.");
+        if (Mentions(detail, "Permission denied"))
+            return Tr("Access to the file was denied.");
+        if (Mentions(detail, "No space left"))
+            return Tr("There is not enough free disk space.");
+        return detail;
+    }
+
+    /// <summary>Whether <paramref name="text"/> contains any of <paramref name="needles"/>, ignoring case.
+    /// </summary>
+    private static bool Mentions(string text, params string[] needles)
+    {
+        foreach (var needle in needles)
+            if (text.Contains(needle, StringComparison.OrdinalIgnoreCase))
+                return true;
+        return false;
     }
 
     /// <summary>Reads the "HH:MM:SS.ss" clock that follows <paramref name="marker"/> on a line, up to

@@ -32,11 +32,12 @@
 #define ProgId AppIdentifier + ".Media"
 #define ContextLabel "Play with Luna Player"
 #define ContextVerb "play_with_luna"
-; The converter's own shell verb, added to the media types and to folders. It passes --convert so the player
-; can tell an invocation meant for the converter from one meant to play; the routing behind the flag is part
-; of the conversion work and is not written yet.
+; The converter is reached through the Send To menu rather than a shell verb (see the Send To shortcut in
+; [Icons]). One Send To entry covers files and folders of every type in one place, and Windows hands every
+; selected path to a single launch after the --convert argument the shortcut carries - which is how the
+; player tells an invocation meant for the converter from one meant to play, and which opens the converter
+; once for a whole selection rather than launching a verb per file.
 #define ConvertLabel "Convert with Luna"
-#define ConvertVerb "convert_with_luna"
 #define CapabilitiesKey "Software\" + AppIdentifier + "\Capabilities"
 
 ; The file types the player opens, as Media\MediaLibrary.cs lists them. The entries at the end are written
@@ -112,6 +113,12 @@ Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"; AppUserModelID: "{#
 Name: "{group}\{cm:UninstallProgram,{#AppName}}"; Filename: "{uninstallexe}"
 Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; AppUserModelID: "{#AppUserModelId}"; Tasks: desktopicon
 
+; The converter's Send To entry. A shortcut in the Send To folder shows for files and folders of every type,
+; and Windows appends every selected path to the shortcut's --convert argument in one launch, so a whole
+; selection opens the converter once. Inno removes the shortcut on uninstall along with the rest. Gated on the
+; same file-association task the play verb is, so clearing that task leaves neither behind.
+Name: "{sendto}\{#ConvertLabel}"; Filename: "{app}\{#AppExeName}"; Parameters: "--convert"; Tasks: associate
+
 [Run]
 Filename: "{app}\{#AppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(AppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent; Check: IsNormalInstall
 ; /LUNAUPDATE is paired with Inno's /SILENT mode by Updater.exe. It runs without a finish page, so this
@@ -131,22 +138,12 @@ Root: HKCU; Subkey: "Software\Classes\{#ProgId}"; ValueType: string; ValueName: 
 Root: HKCU; Subkey: "Software\Classes\{#ProgId}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: associate
 Root: HKCU; Subkey: "Software\Classes\{#ProgId}\shell\{#ContextVerb}"; ValueType: string; ValueName: ""; ValueData: "{#ContextLabel}"; Flags: uninsdeletekey; Tasks: associate
 Root: HKCU; Subkey: "Software\Classes\{#ProgId}\shell\{#ContextVerb}\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: associate
-Root: HKCU; Subkey: "Software\Classes\{#ProgId}\shell\{#ConvertVerb}"; ValueType: string; ValueName: ""; ValueData: "{#ConvertLabel}"; Flags: uninsdeletekey; Tasks: associate
-Root: HKCU; Subkey: "Software\Classes\{#ProgId}\shell\{#ConvertVerb}\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" --convert ""%1"""; Flags: uninsdeletekey; Tasks: associate
 
 ; The application registration, which is what puts the player in Open With and names it there.
 Root: HKCU; Subkey: "Software\Classes\Applications\{#AppExeName}"; ValueType: string; ValueName: "FriendlyAppName"; ValueData: "{#AppName}"; Flags: uninsdeletekey; Tasks: associate
 Root: HKCU; Subkey: "Software\Classes\Applications\{#AppExeName}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: associate
 Root: HKCU; Subkey: "Software\Classes\Applications\{#AppExeName}\shell\{#ContextVerb}"; ValueType: string; ValueName: ""; ValueData: "{#ContextLabel}"; Flags: uninsdeletekey; Tasks: associate
 Root: HKCU; Subkey: "Software\Classes\Applications\{#AppExeName}\shell\{#ContextVerb}\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" ""%1"""; Flags: uninsdeletekey; Tasks: associate
-Root: HKCU; Subkey: "Software\Classes\Applications\{#AppExeName}\shell\{#ConvertVerb}"; ValueType: string; ValueName: ""; ValueData: "{#ConvertLabel}"; Flags: uninsdeletekey; Tasks: associate
-Root: HKCU; Subkey: "Software\Classes\Applications\{#AppExeName}\shell\{#ConvertVerb}\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" --convert ""%1"""; Flags: uninsdeletekey; Tasks: associate
-
-; The convert verb on folders, so a whole folder can be sent to the converter from its right-click menu. The
-; player expands the folder to the supported files under it; passing the one folder path rather than each file
-; is also what keeps a folder of thousands from launching the verb thousands of times.
-Root: HKCU; Subkey: "Software\Classes\Directory\shell\{#ConvertVerb}"; ValueType: string; ValueName: ""; ValueData: "{#ConvertLabel}"; Flags: uninsdeletekey; Tasks: associate
-Root: HKCU; Subkey: "Software\Classes\Directory\shell\{#ConvertVerb}\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" --convert ""%1"""; Flags: uninsdeletekey; Tasks: associate
 
 ; The Default Programs entry, which is what the Settings app reads when it offers the player as a default.
 Root: HKCU; Subkey: "{#CapabilitiesKey}"; ValueType: string; ValueName: "ApplicationName"; ValueData: "{#AppName}"; Flags: uninsdeletekey; Tasks: associate

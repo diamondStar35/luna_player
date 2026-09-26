@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-09-11 00:44+0300\n"
+"POT-Creation-Date: 2026-09-26 13:19+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -504,6 +504,11 @@ msgstr ""
 msgid "Open the recordings folder"
 msgstr ""
 
+#. Translators: Name of the command that opens the window for converting files to another audio format.
+#: Actions/ToolsActions.cs:16
+msgid "Open the media converter"
+msgstr ""
+
 #. Translators: Name of the command that checks whether a newer Luna Player release is available.
 #. Translators: Help menu item that checks whether a newer Luna Player release is available.
 #: Actions/UpdateActions.cs:9 UI/MenuBuilder.cs:260
@@ -657,7 +662,7 @@ msgstr ""
 #: Application/ActionHandlers/BookmarkActions.cs:45
 #: Application/ActionHandlers/BookmarkActions.cs:75
 #: Application/ActionHandlers/BookmarkActions.cs:112
-#: Application/ActionHandlers/BookmarkActions.cs:196 UI/MenuBuilder.cs:280
+#: Application/ActionHandlers/BookmarkActions.cs:196 UI/MenuBuilder.cs:287
 msgid "Bookmarks"
 msgstr ""
 
@@ -668,7 +673,9 @@ msgid "Bookmark '{name}' added at {time}."
 msgstr ""
 
 #. Translators: Title of the message shown once a bookmark has been made.
+#. Translators: Title of the message shown when every file in a batch was converted.
 #: Application/ActionHandlers/BookmarkActions.cs:58
+#: Application/ActionHandlers/ToolsActions.cs:55
 msgid "Success"
 msgstr ""
 
@@ -1464,8 +1471,8 @@ msgstr ""
 #. Translators: Spoken when playing starts or carries on again.
 #. Translators: Button that plays the video chosen in the list of results.
 #: Application/ActionHandlers/PlaybackActions.cs:103
-#: Application/ActionHandlers/PlaybackActions.cs:111 UI/MainFrame.cs:101
-#: UI/MainFrame.cs:166 UI/YouTube/ResultsDialog.cs:41
+#: Application/ActionHandlers/PlaybackActions.cs:111 UI/MainFrame.cs:104
+#: UI/MainFrame.cs:169 UI/YouTube/ResultsDialog.cs:41
 msgid "Play"
 msgstr ""
 
@@ -1474,8 +1481,8 @@ msgstr ""
 #. Translators: Recording menu item that holds a recording where it is, or starts it again.
 #. Translators: Button that holds a recording where it is, and starts it again when pressed a second time.
 #. Translators: Button that holds a recording where it is.
-#: Application/ActionHandlers/PlaybackActions.cs:113 UI/MainFrame.cs:166
-#: UI/MainFrame.cs:273 UI/MenuBuilder.cs:251
+#: Application/ActionHandlers/PlaybackActions.cs:113 UI/MainFrame.cs:169
+#: UI/MainFrame.cs:283 UI/MenuBuilder.cs:251
 #: UI/Recording/RecordingDialog.cs:169 UI/Recording/RecordingDialog.cs:625
 msgid "Pause"
 msgstr ""
@@ -1682,8 +1689,11 @@ msgstr ""
 #. {reason} is what went wrong, in the language of the system rather than the player.
 #. Translators: Adds the technical reason under a message about recording. {message} is that
 #. message and {reason} is the reason, which is not translated.
+#. Translators: Shown when the chosen destination folder could not be created. {reason} is
+#. what went wrong, in the language of the system rather than the player.
 #: Application/ActionHandlers/RecordingActions.cs:185
-#: Recording/RecordingSources.cs:81 YouTube/Components.cs:132
+#: Recording/RecordingSources.cs:81 UI/MediaConverterDialog.cs:454
+#: YouTube/Components.cs:132
 msgid ""
 "{message}\n"
 "{reason}"
@@ -1715,7 +1725,7 @@ msgstr ""
 #. Translators: Name of the settings category for recording sound.
 #. Translators: Title of the window where recording is set up and started.
 #. Translators: Title of the messages shown about recording.
-#: Application/ActionHandlers/RecordingActions.cs:213 UI/MenuBuilder.cs:294
+#: Application/ActionHandlers/RecordingActions.cs:213 UI/MenuBuilder.cs:301
 #: UI/PreferencesDialog.cs:54 UI/Recording/RecordingDialog.cs:83
 #: UI/Recording/RecordingDialog.cs:720
 msgid "Recording"
@@ -1790,8 +1800,8 @@ msgstr ""
 #: Application/ActionHandlers/SettingsActions.cs:37
 #: Application/ActionHandlers/SettingsActions.cs:41
 #: Application/ActionHandlers/SettingsActions.cs:47
-#: Application/ActionHandlers/SettingsActions.cs:120
-#: Application/ActionHandlers/SettingsActions.cs:127
+#: Application/ActionHandlers/SettingsActions.cs:123
+#: Application/ActionHandlers/SettingsActions.cs:130
 #: UI/PreferencesDialog.cs:28 UI/PreferencesDialog.cs:188
 msgid "Preferences"
 msgstr ""
@@ -1807,14 +1817,38 @@ msgid "Could not apply the silence removal filter."
 msgstr ""
 
 #. Translators: Shown when the settings the user accepted could not be written to disk.
-#: Application/ActionHandlers/SettingsActions.cs:120
+#: Application/ActionHandlers/SettingsActions.cs:123
 msgid "Could not save settings."
 msgstr ""
 
 #. Translators: Shown after the user picks a different language, because the player only reads it when it starts.
-#: Application/ActionHandlers/SettingsActions.cs:127
+#: Application/ActionHandlers/SettingsActions.cs:130
 msgid "Please restart the app for language changes to take effect."
 msgstr ""
+
+#. Translators: Names a file the converter could not convert. {path} is its full path, shown on
+#. the line above the reason.
+#: Application/ActionHandlers/ToolsActions.cs:64
+msgid "File: {path}"
+msgstr ""
+
+#. Translators: Follows the summary when some files failed, pointing at the list below it.
+#: Application/ActionHandlers/ToolsActions.cs:67
+msgid "Some files were not converted. Check the details below."
+msgstr ""
+
+#. Translators: Title of the report shown when a batch converted but some files failed.
+#. Translators: Title of the prompt shown when the user tries to stop a running conversion.
+#: Application/ActionHandlers/ToolsActions.cs:69
+#: UI/ConversionProgressDialog.cs:180
+msgid "Warning"
+msgstr ""
+
+#: Application/ActionHandlers/ToolsActions.cs:78
+msgid "Converted {count} file to {format}. The operation took {time}."
+msgid_plural "Converted {count} files to {format}. The operation took {time}."
+msgstr[0] ""
+msgstr[1] ""
 
 #. Translators: Asks the user for the address of the YouTube video or playlist they want to play.
 #: Application/ActionHandlers/YouTubeActions.cs:70
@@ -1940,7 +1974,17 @@ msgstr ""
 msgid "No YouTube video."
 msgstr ""
 
-#: Application/ApplicationHost.cs:59
+#. Translators: Window title while playback is paused. {title} is the track, {app} the program name.
+#: Application/ApplicationController.cs:208
+msgid "[Paused]: {title} - {app}"
+msgstr ""
+
+#. Translators: Window title while a track is open. {title} is the track, {app} the program name.
+#: Application/ApplicationController.cs:210
+msgid "{title} - {app}"
+msgstr ""
+
+#: Application/ApplicationHost.cs:60
 msgid ""
 "The settings file could not be loaded. Default settings will be used, and "
 "the existing file will not be overwritten. Import a valid settings file or "
@@ -1949,7 +1993,7 @@ msgid ""
 "{error}"
 msgstr ""
 
-#: Application/ApplicationHost.cs:60
+#: Application/ApplicationHost.cs:61
 msgid "Settings error"
 msgstr ""
 
@@ -1966,94 +2010,94 @@ msgstr ""
 msgid "Global Shortcuts"
 msgstr ""
 
-#. Translators: Name of the equalizer preset that changes nothing, and which the user is meant to edit into whatever they want.
-#: Equalizer/Presets.cs:90
-msgid "Custom"
-msgstr ""
-
 #. Translators: Name of an equalizer preset that lifts the low frequencies.
-#: Equalizer/Presets.cs:96
+#: Equalizer/Presets.cs:93
 msgid "Bass Boost"
 msgstr ""
 
 #. Translators: Name of an equalizer preset that reduces the low frequencies.
-#: Equalizer/Presets.cs:98
+#: Equalizer/Presets.cs:95
 msgid "Bass Reduce"
 msgstr ""
 
 #. Translators: Name of an equalizer preset that lifts the high frequencies.
-#: Equalizer/Presets.cs:100
+#: Equalizer/Presets.cs:97
 msgid "Treble Boost"
 msgstr ""
 
 #. Translators: Name of an equalizer preset meant for listening through headphones.
-#: Equalizer/Presets.cs:102
+#: Equalizer/Presets.cs:99
 msgid "Headphones"
 msgstr ""
 
 #. Translators: Name of an equalizer preset that makes speech easier to follow. It suits audiobooks, podcasts and lectures rather than music.
-#: Equalizer/Presets.cs:110
+#: Equalizer/Presets.cs:107
 msgid "Voice"
 msgstr ""
 
 #. Translators: Name of an equalizer preset for listening quietly, which lifts the lowest and highest frequencies without touching the middle.
-#: Equalizer/Presets.cs:122
+#: Equalizer/Presets.cs:119
 msgid "Loudness"
 msgstr ""
 
 #. Translators: Name of an equalizer preset suited to classical music.
-#: Equalizer/Presets.cs:128
+#: Equalizer/Presets.cs:125
 msgid "Classical"
 msgstr ""
 
 #. Translators: Name of an equalizer preset suited to club and dance-floor music.
-#: Equalizer/Presets.cs:136
+#: Equalizer/Presets.cs:133
 msgid "Club"
 msgstr ""
 
 #. Translators: Name of an equalizer preset suited to dance music.
-#: Equalizer/Presets.cs:138
+#: Equalizer/Presets.cs:135
 msgid "Dance"
 msgstr ""
 
 #. Translators: Name of an equalizer preset that imitates the sound of a live performance.
-#: Equalizer/Presets.cs:140
+#: Equalizer/Presets.cs:137
 msgid "Live"
 msgstr ""
 
 #. Translators: Name of an equalizer preset suited to pop music.
-#: Equalizer/Presets.cs:143
+#: Equalizer/Presets.cs:140
 msgid "Pop"
 msgstr ""
 
 #. Translators: Name of an equalizer preset suited to reggae music.
-#: Equalizer/Presets.cs:146
+#: Equalizer/Presets.cs:143
 msgid "Reggae"
 msgstr ""
 
 #. Translators: Name of an equalizer preset suited to rock music.
-#: Equalizer/Presets.cs:148
+#: Equalizer/Presets.cs:145
 msgid "Rock"
 msgstr ""
 
 #. Translators: Name of an equalizer preset suited to ska music.
-#: Equalizer/Presets.cs:151
+#: Equalizer/Presets.cs:148
 msgid "Ska"
 msgstr ""
 
 #. Translators: Name of an equalizer preset suited to soft and quiet music.
-#: Equalizer/Presets.cs:154
+#: Equalizer/Presets.cs:151
 msgid "Soft"
 msgstr ""
 
 #. Translators: Name of an equalizer preset suited to soft rock music.
-#: Equalizer/Presets.cs:156
+#: Equalizer/Presets.cs:153
 msgid "Soft Rock"
 msgstr ""
 
 #. Translators: Name of an equalizer preset suited to techno music.
-#: Equalizer/Presets.cs:158
+#: Equalizer/Presets.cs:155
 msgid "Techno"
+msgstr ""
+
+#. Translators: Name of the equalizer preset that changes nothing, and which the user is meant to edit into whatever they want.
+#: Equalizer/Presets.cs:161
+msgid "Custom"
 msgstr ""
 
 #. Translators: Shown when the user saves a favourite without typing a name for it.
@@ -2134,6 +2178,26 @@ msgstr ""
 
 #: Media/M3uPlaylist.cs:67
 msgid "The playlist request timed out."
+msgstr ""
+
+#: Media/MediaConverter.cs:331
+msgid "The file could not be converted."
+msgstr ""
+
+#: Media/MediaConverter.cs:333
+msgid "Unsupported file type."
+msgstr ""
+
+#: Media/MediaConverter.cs:335
+msgid "The file could not be found."
+msgstr ""
+
+#: Media/MediaConverter.cs:337
+msgid "Access to the file was denied."
+msgstr ""
+
+#: Media/MediaConverter.cs:339
+msgid "There is not enough free disk space."
 msgstr ""
 
 #. Translators: Shown when recording was asked for with nothing to record from.
@@ -2286,7 +2350,7 @@ msgstr ""
 #. Translators: Spoken description of the General settings page, read when the page is opened.
 #. Translators: Spoken description of the Recording settings page, read when the page is opened.
 #. Translators: Spoken description of the YouTube settings page, read when the page is opened.
-#: UI/AudioPreferences.cs:23 UI/GeneralPreferences.cs:20
+#: UI/AudioPreferences.cs:23 UI/GeneralPreferences.cs:22
 #: UI/RecordingPreferences.cs:43 UI/YouTube/Preferences.cs:27
 msgid ""
 "Move through this page with Tab or Shift+Tab. Press F1 while a control is "
@@ -2613,7 +2677,7 @@ msgstr ""
 #. Translators: Label of the box holding what the user calls a recording source.
 #. Translators: Label of the box holding what a saved link is called.
 #. Translators: Heading of the favourites list column holding what each saved link is called.
-#: UI/BookmarkManagerDialog.cs:19 UI/Equalizer/EditDialog.cs:86
+#: UI/BookmarkManagerDialog.cs:19 UI/Equalizer/EditDialog.cs:87
 #: UI/Recording/SourceDialogs.cs:49 UI/YouTube/FavoriteEditDialog.cs:26
 #: UI/YouTube/FavoritesDialog.cs:29
 msgid "Name"
@@ -2630,7 +2694,7 @@ msgid "Jump"
 msgstr ""
 
 #. Translators: Name of the Edit menu in the menu bar.
-#: UI/BookmarkManagerDialog.cs:36 UI/MenuBuilder.cs:278
+#: UI/BookmarkManagerDialog.cs:36 UI/MenuBuilder.cs:285
 msgid "Edit"
 msgstr ""
 
@@ -2643,12 +2707,76 @@ msgstr ""
 
 #. Translators: The button that closes a window.
 #. Translators: Button that closes a window when there is nothing to accept or cancel.
+#. Translators: Button that closes the media converter without converting anything.
 #. Translators: The button that closes a window.
-#: UI/BookmarkManagerDialog.cs:40 UI/CrashDialog.cs:48
-#: UI/Equalizer/PresetsDialog.cs:56 UI/Recording/RecordingDialog.cs:171
+#: UI/BookmarkManagerDialog.cs:40 UI/ConversionReportDialog.cs:23
+#: UI/CrashDialog.cs:48 UI/Equalizer/PresetsDialog.cs:56
+#: UI/MediaConverterDialog.cs:217 UI/Recording/RecordingDialog.cs:171
 #: UI/TextInfoDialog.cs:18 UI/YouTube/FavoritesDialog.cs:62
 #: UI/YouTube/ResultsDialog.cs:47
 msgid "Close"
+msgstr ""
+
+#. Translators: Shown in the converter's progress window before the first file has reported.
+#: UI/ConversionProgressDialog.cs:73
+msgid "Preparing to convert…"
+msgstr ""
+
+#. Translators: The button that stops a running conversion. It asks for confirmation first.
+#. Translators: The button that closes a window and leaves everything as it was.
+#. Translators: The button that stops a job that is running behind a progress window.
+#. Translators: The button that closes a window and leaves everything as it was.
+#: UI/ConversionProgressDialog.cs:84 UI/Equalizer/EditDialog.cs:116
+#: UI/GoToTimeDialog.cs:71 UI/OpenedFilesDialog.cs:36 UI/ProgressView.cs:66
+#: UI/YouTube/LinkKindDialog.cs:33
+msgid "Cancel"
+msgstr ""
+
+#. Translators: The converter's progress. {number} is the file's place, {total} how many files
+#. there are, {name} the file being converted right now.
+#: UI/ConversionProgressDialog.cs:152
+msgid "Converting file {number} of {total}: {name}"
+msgstr ""
+
+#. Translators: How far the file being converted right now has got. {percent} is a whole number.
+#: UI/ConversionProgressDialog.cs:155
+msgid "Percentage: {percent}%"
+msgstr ""
+
+#. Translators: How many files have not been converted yet. {count} is a whole number.
+#: UI/ConversionProgressDialog.cs:157
+msgid "Remaining files: {count}"
+msgstr ""
+
+#. Translators: A guess at the time left. {time} is a clock such as 3:20 or 1:05:00, or the word
+#. for a guess not yet worth making.
+#: UI/ConversionProgressDialog.cs:160
+msgid "Estimated time left: {time}"
+msgstr ""
+
+#. Translators: Shown for the estimated time left before enough is done to guess it.
+#: UI/ConversionProgressDialog.cs:164
+msgid "calculating…"
+msgstr ""
+
+#. Translators: How far the whole batch has got. {percent} is a whole number.
+#: UI/ConversionProgressDialog.cs:166
+msgid "Total percentage: {percent}%"
+msgstr ""
+
+#. Translators: Asks the user to confirm stopping a conversion that is still running.
+#: UI/ConversionProgressDialog.cs:178
+msgid "The conversion is still running. Would you like to stop it?"
+msgstr ""
+
+#. Translators: Title of the window shown while files are being converted.
+#: UI/ConversionProgressDialog.cs:235
+msgid "Converting files"
+msgstr ""
+
+#. Translators: Label of the box listing the files a conversion could not convert.
+#: UI/ConversionReportDialog.cs:18
+msgid "Details"
 msgstr ""
 
 #. Translators: Title of the window shown when the player has hit an error it cannot carry on from.
@@ -2681,73 +2809,64 @@ msgid "The details could not be copied. They are in the file named above."
 msgstr ""
 
 #. Translators: Label of the list for choosing which preset a preset being edited starts out from.
-#: UI/Equalizer/EditDialog.cs:78
+#: UI/Equalizer/EditDialog.cs:79
 msgid "Base preset"
 msgstr ""
 
 #. Translators: Button in the equalizer editor that puts every band back the way the chosen base preset ships.
-#: UI/Equalizer/EditDialog.cs:101
+#: UI/Equalizer/EditDialog.cs:106
 msgid "Reset to defaults"
 msgstr ""
 
 #. Translators: Button in the equalizer editor that keeps the changes.
-#: UI/Equalizer/EditDialog.cs:106
+#: UI/Equalizer/EditDialog.cs:111
 msgid "Save"
 msgstr ""
 
-#. Translators: The button that closes a window and leaves everything as it was.
-#. Translators: The button that stops a job that is running behind a progress window.
-#. Translators: The button that closes a window and leaves everything as it was.
-#: UI/Equalizer/EditDialog.cs:111 UI/GoToTimeDialog.cs:71
-#: UI/OpenedFilesDialog.cs:36 UI/ProgressView.cs:66
-#: UI/YouTube/LinkKindDialog.cs:33
-msgid "Cancel"
-msgstr ""
-
 #. Translators: Label of the box holding the centre frequency of one equalizer band, in hertz.
-#: UI/Equalizer/EditDialog.cs:141
+#: UI/Equalizer/EditDialog.cs:152
 msgid "Frequency (Hz)"
 msgstr ""
 
 #. Translators: Label of the box holding how far one equalizer band lifts or cuts, in decibels.
-#: UI/Equalizer/EditDialog.cs:147
+#: UI/Equalizer/EditDialog.cs:158
 msgid "Gain (dB)"
 msgstr ""
 
 #. Translators: Label of the box holding how wide one equalizer band is. Q is the usual name for it and is normally left as it is.
-#: UI/Equalizer/EditDialog.cs:150
+#: UI/Equalizer/EditDialog.cs:161
 msgid "Q (width)"
 msgstr ""
 
 #. Translators: Title of the group of settings for the equalizer band that lifts or cuts everything below a frequency.
-#: UI/Equalizer/EditDialog.cs:174
+#: UI/Equalizer/EditDialog.cs:185
 msgid "Low shelf"
 msgstr ""
 
 #. Translators: Title of the group of settings for the equalizer band that lifts or cuts everything above a frequency.
-#: UI/Equalizer/EditDialog.cs:176
+#: UI/Equalizer/EditDialog.cs:187
 msgid "High shelf"
 msgstr ""
 
 #. Translators: Title of the group of settings for one equalizer band. {frequency} is the band's frequency in hertz, such as 250.
-#: UI/Equalizer/EditDialog.cs:178
+#: UI/Equalizer/EditDialog.cs:189
 msgid "{frequency} Hz"
 msgstr ""
 
 #. Translators: Shown when the user saves an equalizer preset without giving it a name.
-#: UI/Equalizer/EditDialog.cs:223
+#: UI/Equalizer/EditDialog.cs:234
 msgid "Enter a name for the preset."
 msgstr ""
 
 #. Translators: Shown when a gain typed into the equalizer editor is not a number or is out of range. {band} names the band, such as "250 Hz"; {minimum} and {maximum} are the smallest and largest allowed.
-#: UI/Equalizer/EditDialog.cs:258
+#: UI/Equalizer/EditDialog.cs:268
 msgid ""
 "The gain for {band} must be a number between {minimum} and {maximum} "
 "decibels."
 msgstr ""
 
 #. Translators: Shown when a Q typed into the equalizer editor is not a number or is out of range. {band} names the band, such as "250 Hz"; {minimum} and {maximum} are the smallest and largest allowed. Q is the usual name for a band's width.
-#: UI/Equalizer/EditDialog.cs:268
+#: UI/Equalizer/EditDialog.cs:278
 msgid "The Q for {band} must be a number between {minimum} and {maximum}."
 msgstr ""
 
@@ -2785,122 +2904,132 @@ msgid "Delete preset"
 msgstr ""
 
 #. Translators: Label of the list for choosing the language the player speaks and shows its windows in.
-#: UI/GeneralPreferences.cs:25
+#: UI/GeneralPreferences.cs:27
 msgid "Language"
 msgstr ""
 
 #. Translators: First entry in the language list: use whatever language Windows itself is set to.
-#: UI/GeneralPreferences.cs:34
+#: UI/GeneralPreferences.cs:36
 msgid "System default"
 msgstr ""
 
 #. Translators: Tick box on the General settings page: start again where playing stopped last time.
-#: UI/GeneralPreferences.cs:37
+#: UI/GeneralPreferences.cs:39
 msgid "Remember last file position"
 msgstr ""
 
 #. Translators: Tick box on the General settings page: say the name of each file as the user moves through the list.
-#: UI/GeneralPreferences.cs:39
+#: UI/GeneralPreferences.cs:41
 msgid "Speak file name when navigating (Previous/Next)"
 msgstr ""
 
 #. Translators: Tick box on the General settings page: look for a newer version of the player when it starts.
-#: UI/GeneralPreferences.cs:41
+#: UI/GeneralPreferences.cs:43
 msgid "Check for app updates on startup"
 msgstr ""
 
 #. Translators: Tick box on the General settings page: keep changes such as volume and speed when the player closes.
-#: UI/GeneralPreferences.cs:43
+#: UI/GeneralPreferences.cs:45
 msgid "Save settings on close"
 msgstr ""
 
+#. Translators: Tick box on the General settings page: keep the player out of the system's media controls entirely.
+#: UI/GeneralPreferences.cs:47
+msgid "Disable system media controls"
+msgstr ""
+
+#. Translators: Tick box on the General settings page: show the playing track in the window title.
+#: UI/GeneralPreferences.cs:49
+msgid "Show the playing track in the window title"
+msgstr ""
+
 #. Translators: Label of the list that chooses how much detail the player speaks.
-#: UI/GeneralPreferences.cs:45
+#: UI/GeneralPreferences.cs:51
 msgid "Verbosity"
 msgstr ""
 
 #. Translators: One of the two amounts of spoken detail: whole, clearly worded messages.
-#: UI/GeneralPreferences.cs:48
+#: UI/GeneralPreferences.cs:54
 msgid "Beginner"
 msgstr ""
 
 #. Translators: One of the two amounts of spoken detail: short messages for users who know the player well.
-#: UI/GeneralPreferences.cs:50
+#: UI/GeneralPreferences.cs:56
 msgid "Advanced"
 msgstr ""
 
 #. Translators: Label of the list that chooses how much of a folder is loaded when one file is opened.
-#: UI/GeneralPreferences.cs:52
+#: UI/GeneralPreferences.cs:58
 msgid "What would you like to open with files?"
 msgstr ""
 
 #. Translators: One way of opening a file: load nothing but that one file.
-#: UI/GeneralPreferences.cs:56
+#: UI/GeneralPreferences.cs:62
 msgid "Open the file only"
 msgstr ""
 
 #. Translators: One way of opening a file: load every media file sitting in the same folder as well.
-#: UI/GeneralPreferences.cs:58
+#: UI/GeneralPreferences.cs:64
 msgid "Open the file and the main folder files"
 msgstr ""
 
 #. Translators: One way of opening a file: load the media files in its folder and in the folders inside it too.
-#: UI/GeneralPreferences.cs:60
+#: UI/GeneralPreferences.cs:66
 msgid "Open the file with the main and subfolder files"
 msgstr ""
 
 #. Translators: Button on the General settings page that tells Windows this player can open media files.
-#: UI/GeneralPreferences.cs:63
+#: UI/GeneralPreferences.cs:69
 msgid "Register file extensions"
 msgstr ""
 
 #. Translators: Button on the General settings page that undoes telling Windows this player can open media files.
-#: UI/GeneralPreferences.cs:65
+#: UI/GeneralPreferences.cs:71
 msgid "Unregister file extensions"
 msgstr ""
 
 #. Translators: Title of the message shown once Windows has been told this player can open media files.
-#: UI/GeneralPreferences.cs:68
+#: UI/GeneralPreferences.cs:74
 msgid "Registration"
 msgstr ""
 
 #. Translators: Message shown once Windows has been told this player can open media files.
-#: UI/GeneralPreferences.cs:70
+#: UI/GeneralPreferences.cs:76
 msgid "File extensions registered successfully."
 msgstr ""
 
 #. Translators: Title of the message shown when Windows could not be told this player can open media files.
-#: UI/GeneralPreferences.cs:72
+#: UI/GeneralPreferences.cs:78
 msgid "Registration Error"
 msgstr ""
 
 #. Translators: Message shown when Windows could not be told this player can open media files.
-#: UI/GeneralPreferences.cs:74
+#: UI/GeneralPreferences.cs:80
 msgid "Could not register file extensions."
 msgstr ""
 
 #. Translators: Title of the message shown once this player has stopped being offered for media files.
-#: UI/GeneralPreferences.cs:77
+#: UI/GeneralPreferences.cs:83
 msgid "Unregister"
 msgstr ""
 
 #. Translators: Message shown once this player has stopped being offered for media files.
-#: UI/GeneralPreferences.cs:79
+#: UI/GeneralPreferences.cs:85
 msgid "File extensions unregistered successfully."
 msgstr ""
 
 #. Translators: Title of the message shown when this player could not stop being offered for media files.
-#: UI/GeneralPreferences.cs:81
+#: UI/GeneralPreferences.cs:87
 msgid "Unregister Error"
 msgstr ""
 
 #. Translators: Message shown when this player could not stop being offered for media files.
-#: UI/GeneralPreferences.cs:83
+#: UI/GeneralPreferences.cs:89
 msgid "Could not unregister file extensions."
 msgstr ""
 
 #. Translators: Help text for the language list, spoken when the user asks for help on it.
-#: UI/GeneralPreferences.cs:102
+#: UI/GeneralPreferences.cs:110
 msgid ""
 "Choose System default to follow the Windows display language, or select a "
 "language included with Luna. A different choice takes effect after Luna "
@@ -2908,7 +3037,7 @@ msgid ""
 msgstr ""
 
 #. Translators: Help text for the tick box that starts again where playing stopped last time.
-#: UI/GeneralPreferences.cs:106
+#: UI/GeneralPreferences.cs:114
 msgid ""
 "Saves the active item and its playback time when Luna exits, then resumes "
 "there on the next launch. Clear this option to start without restoring the "
@@ -2916,36 +3045,50 @@ msgid ""
 msgstr ""
 
 #. Translators: Help text for the tick box that says the name of each file as the user moves through the list.
-#: UI/GeneralPreferences.cs:110
+#: UI/GeneralPreferences.cs:118
 msgid ""
 "Announces each newly selected item when you use Previous or Next, so you do "
 "not need to request its name separately."
 msgstr ""
 
 #. Translators: Help text for the tick box that looks for a newer version of the player when it starts.
-#: UI/GeneralPreferences.cs:113
+#: UI/GeneralPreferences.cs:121
 msgid ""
 "Checks for a newer Luna release in the background after startup. A prompt "
 "appears only when a newer package is ready to download."
 msgstr ""
 
 #. Translators: Help text for the tick box that keeps changes such as volume and speed when the player closes.
-#: UI/GeneralPreferences.cs:116
+#: UI/GeneralPreferences.cs:124
 msgid ""
 "Writes changes made during the session when Luna exits, including volume and "
 "speed. Clear this option if those changes should last only until the window "
 "closes."
 msgstr ""
 
+#. Translators: Help text for the tick box that keeps the player out of the system's media controls.
+#: UI/GeneralPreferences.cs:128
+msgid ""
+"Keeps Luna out of the system media controls and the play, pause and track "
+"keys on a keyboard or headset. Enable this if those keys misbehave with your "
+"headphones."
+msgstr ""
+
+#. Translators: Help text for the tick box that shows the playing track in the window title.
+#: UI/GeneralPreferences.cs:132
+msgid ""
+"Shows the playing track in the window title, marked as paused when it is."
+msgstr ""
+
 #. Translators: Help text for the list that chooses how much detail the player speaks.
-#: UI/GeneralPreferences.cs:120
+#: UI/GeneralPreferences.cs:135
 msgid ""
 "Beginner uses complete, explanatory announcements. Advanced keeps "
 "confirmations brief for experienced users."
 msgstr ""
 
 #. Translators: Help text for the list that chooses how much of a folder is loaded when one file is opened.
-#: UI/GeneralPreferences.cs:123
+#: UI/GeneralPreferences.cs:138
 msgid ""
 "Chooses the playlist Luna builds when Windows opens one media file: only the "
 "selected file, all supported media in its folder, or supported media in that "
@@ -2953,7 +3096,7 @@ msgid ""
 msgstr ""
 
 #. Translators: Help text for the button that tells Windows this player can open media files.
-#: UI/GeneralPreferences.cs:127
+#: UI/GeneralPreferences.cs:142
 msgid ""
 "Adds Luna to the Windows list of applications that can open supported media "
 "files. Windows may still ask you to choose Luna in Default apps before it "
@@ -2961,7 +3104,7 @@ msgid ""
 msgstr ""
 
 #. Translators: Help text for the button that undoes telling Windows this player can open media files.
-#: UI/GeneralPreferences.cs:131
+#: UI/GeneralPreferences.cs:146
 msgid ""
 "Removes the media-file associations registered by Luna. It does not delete "
 "any media or change default-app choices managed separately by Windows."
@@ -2993,29 +3136,218 @@ msgid "The selected time exceeds the file duration."
 msgstr ""
 
 #. Translators: Player menu item that plays the file before the current one.
-#: UI/MainFrame.cs:99 UI/MenuBuilder.cs:165
+#: UI/MainFrame.cs:102 UI/MenuBuilder.cs:165
 msgid "Previous"
 msgstr ""
 
 #. Translators: Player menu item that moves back in the file by one seek step.
-#: UI/MainFrame.cs:100 UI/MenuBuilder.cs:206
+#: UI/MainFrame.cs:103 UI/MenuBuilder.cs:206
 msgid "Rewind"
 msgstr ""
 
 #. Translators: Player menu item that moves forward in the file by one seek step.
-#: UI/MainFrame.cs:102 UI/MenuBuilder.cs:208
+#: UI/MainFrame.cs:105 UI/MenuBuilder.cs:208
 msgid "Forward"
 msgstr ""
 
 #. Translators: Player menu item that plays the file after the current one.
-#: UI/MainFrame.cs:103 UI/MenuBuilder.cs:167
+#: UI/MainFrame.cs:106 UI/MenuBuilder.cs:167
 msgid "Next"
 msgstr ""
 
 #. Translators: Recording menu item that starts a paused recording again.
 #. Translators: Button that starts a paused recording again.
-#: UI/MainFrame.cs:271 UI/Recording/RecordingDialog.cs:623
+#: UI/MainFrame.cs:281 UI/Recording/RecordingDialog.cs:623
 msgid "Resume"
+msgstr ""
+
+#. Translators: Title of the window where files are converted to another audio format.
+#. Translators: Title of the messages the media converter shows.
+#: UI/MediaConverterDialog.cs:94 UI/MediaConverterDialog.cs:513
+msgid "Media converter"
+msgstr ""
+
+#. Translators: Title of the group holding the list of files to be converted and its buttons.
+#. Translators: Title of the group of the recording window holding what to record from.
+#: UI/MediaConverterDialog.cs:102 UI/Recording/RecordingDialog.cs:88
+msgid "Sources"
+msgstr ""
+
+#. Translators: Button on the media converter that adds one or more files to the list to convert.
+#: UI/MediaConverterDialog.cs:108
+msgid "Add file..."
+msgstr ""
+
+#. Translators: Button on the media converter that adds every supported file in a folder to the list.
+#: UI/MediaConverterDialog.cs:110
+msgid "Add folder..."
+msgstr ""
+
+#. Translators: Button on the media converter that takes the selected files back out of the list.
+#: UI/MediaConverterDialog.cs:112
+msgid "Remove"
+msgstr ""
+
+#. Translators: Title of the group holding the format the files are converted to and its options.
+#: UI/MediaConverterDialog.cs:115
+msgid "Output"
+msgstr ""
+
+#. Translators: Label of the list that chooses the format the files are converted to.
+#: UI/MediaConverterDialog.cs:117
+msgid "Convert to"
+msgstr ""
+
+#. Translators: Label of the list that chooses the sample rate the converted files are written at.
+#. Translators: Label of the list that chooses how many times a second a recording is sampled.
+#: UI/MediaConverterDialog.cs:122 UI/Recording/RecordingDialog.cs:132
+#: UI/RecordingPreferences.cs:55
+msgid "Sample rate"
+msgstr ""
+
+#. Translators: First item in a converter list, meaning the file's own value is kept unchanged.
+#: UI/MediaConverterDialog.cs:125 UI/MediaConverterDialog.cs:132
+#: UI/MediaConverterDialog.cs:140
+msgid "Preserve original"
+msgstr ""
+
+#. Translators: One sample rate in the converter's sample-rate list. {rate} is a number in hertz.
+#: UI/MediaConverterDialog.cs:128
+msgid "{rate} Hz"
+msgstr ""
+
+#. Translators: Label of the list that chooses how many channels the converted files have.
+#. Translators: Label of the list that chooses whether a recording is mono or stereo.
+#: UI/MediaConverterDialog.cs:130 UI/Recording/RecordingDialog.cs:135
+#: UI/RecordingPreferences.cs:58
+msgid "Channels"
+msgstr ""
+
+#. Translators: The one-channel choice in the converter's channels list.
+#. Translators: One of the channel counts a recording can be made in: one channel.
+#: UI/MediaConverterDialog.cs:134 UI/Recording/RecordingDialog.cs:138
+#: UI/Recording/RecordingDialog.cs:402 UI/RecordingPreferences.cs:61
+#: UI/RecordingPreferences.cs:195
+msgid "Mono"
+msgstr ""
+
+#. Translators: The two-channel choice in the converter's channels list.
+#. Translators: One of the channel counts a recording can be made in: two channels.
+#: UI/MediaConverterDialog.cs:136 UI/Recording/RecordingDialog.cs:140
+#: UI/Recording/RecordingDialog.cs:404 UI/RecordingPreferences.cs:63
+#: UI/RecordingPreferences.cs:197
+msgid "Stereo"
+msgstr ""
+
+#. Translators: Label of the list that chooses the audio quality (bitrate) of the converted files.
+#: UI/MediaConverterDialog.cs:138
+msgid "Quality"
+msgstr ""
+
+#. Translators: One bitrate in the converter's quality list. {rate} is a number in kilobits per second.
+#: UI/MediaConverterDialog.cs:143
+msgid "{rate} kbps"
+msgstr ""
+
+#. Translators: Label of the list that chooses whether Opus uses a constant or variable bitrate.
+#: UI/MediaConverterDialog.cs:145
+msgid "Bitrate mode"
+msgstr ""
+
+#. Translators: The Opus bitrate mode that holds one steady rate. Written in full rather than as "CBR".
+#: UI/MediaConverterDialog.cs:148
+msgid "Constant bitrate"
+msgstr ""
+
+#. Translators: The Opus bitrate mode that varies the rate with the sound. Written in full rather than as "VBR".
+#: UI/MediaConverterDialog.cs:150
+msgid "Variable bitrate"
+msgstr ""
+
+#. Translators: Label of the list that chooses what Opus tunes its variable bitrate for.
+#: UI/MediaConverterDialog.cs:152
+msgid "Optimize for"
+msgstr ""
+
+#. Translators: The Opus profile for music and general audio.
+#: UI/MediaConverterDialog.cs:155
+msgid "Music"
+msgstr ""
+
+#. Translators: The Opus profile for speech.
+#: UI/MediaConverterDialog.cs:157
+msgid "Speech"
+msgstr ""
+
+#. Translators: The Opus profile that keeps the delay as short as possible.
+#: UI/MediaConverterDialog.cs:159
+msgid "Low delay"
+msgstr ""
+
+#. Translators: Label of the box that chooses how many files are converted at the same time.
+#: UI/MediaConverterDialog.cs:161
+msgid "Maximum simultaneous conversions"
+msgstr ""
+
+#. Translators: Title of the group holding where the converted files are written and what happens to
+#. the originals.
+#: UI/MediaConverterDialog.cs:166
+msgid "Location"
+msgstr ""
+
+#. Translators: Tick box on the converter. When on, each converted file is written beside the file it
+#. came from; when off, they all go to one chosen folder instead.
+#: UI/MediaConverterDialog.cs:169
+msgid "Preserve original file locations"
+msgstr ""
+
+#. Translators: Label of the box holding the folder the converted files are written to.
+#: UI/MediaConverterDialog.cs:172
+msgid "Destination folder"
+msgstr ""
+
+#. Translators: Button on the converter that opens a folder picker for the destination folder.
+#. Translators: Button that opens a window for choosing the folder recordings are saved into.
+#: UI/MediaConverterDialog.cs:175 UI/Recording/RecordingDialog.cs:148
+#: UI/RecordingPreferences.cs:71
+msgid "Browse..."
+msgstr ""
+
+#. Translators: Tick box on the converter that removes each source file once it has been converted.
+#: UI/MediaConverterDialog.cs:177
+msgid "Delete original files after conversion"
+msgstr ""
+
+#. Translators: Button that starts the conversion and closes the window.
+#: UI/MediaConverterDialog.cs:214
+msgid "Convert"
+msgstr ""
+
+#. Translators: Title of the picker the converter's "Add file" button opens.
+#: UI/MediaConverterDialog.cs:298
+msgid "Add files to convert"
+msgstr ""
+
+#. Translators: Title of the picker the converter's "Add folder" button opens.
+#: UI/MediaConverterDialog.cs:313
+msgid "Add a folder of files to convert"
+msgstr ""
+
+#. Translators: Title of the picker the converter's "Browse" button opens for the destination folder.
+#: UI/MediaConverterDialog.cs:416
+msgid "Choose where converted files are written"
+msgstr ""
+
+#. Translators: Shown when Convert is pressed with no destination folder chosen and files
+#. are not being written beside their sources.
+#: UI/MediaConverterDialog.cs:441
+msgid ""
+"Choose a folder to write the converted files to, or turn on \"Preserve "
+"original file locations\"."
+msgstr ""
+
+#: UI/MediaConverterDialog.cs:454
+msgid "The destination folder could not be created."
 msgstr ""
 
 #. Translators: File menu item that opens one or more media files. The three dots mean it opens a window to choose them.
@@ -3333,41 +3665,51 @@ msgstr ""
 msgid "Updates"
 msgstr ""
 
+#. Translators: Tools menu item that opens the window for converting files to another audio format.
+#: UI/MenuBuilder.cs:279
+msgid "Media converter..."
+msgstr ""
+
 #. Translators: Name of the File menu in the menu bar.
-#: UI/MenuBuilder.cs:276
+#: UI/MenuBuilder.cs:283
 msgid "File"
 msgstr ""
 
 #. Translators: Name of the menu bar menu holding the things that can be done to the marked files at once.
-#: UI/MenuBuilder.cs:283
+#: UI/MenuBuilder.cs:290
 msgid "Actions for marked files"
 msgstr ""
 
 #. Translators: Name of the Player menu in the menu bar, holding the playing, seeking and volume items.
-#: UI/MenuBuilder.cs:285
+#: UI/MenuBuilder.cs:292
 msgid "Player"
 msgstr ""
 
 #. Translators: Name of the menu bar menu holding what can be done with the YouTube video being played.
-#: UI/MenuBuilder.cs:290
+#: UI/MenuBuilder.cs:297
 msgid "Video options"
 msgstr ""
 
+#. Translators: Name of the Tools menu in the menu bar, holding the media converter.
+#: UI/MenuBuilder.cs:304
+msgid "Tools"
+msgstr ""
+
 #. Translators: Name of the Help menu in the menu bar.
-#: UI/MenuBuilder.cs:296
+#: UI/MenuBuilder.cs:306
 msgid "Help"
 msgstr ""
 
 #. Translators: Item in the Equalizer submenu that leaves the sound unequalized. It is ticked while no preset is in use.
-#: UI/MenuBuilder.cs:327
+#: UI/MenuBuilder.cs:337
 msgid "Off"
 msgstr ""
 
-#: UI/MenuBuilder.cs:333
+#: UI/MenuBuilder.cs:343
 msgid "Edit current preset..."
 msgstr ""
 
-#: UI/MenuBuilder.cs:336
+#: UI/MenuBuilder.cs:346
 msgid "Manage presets..."
 msgstr ""
 
@@ -3428,11 +3770,6 @@ msgstr ""
 msgid "No detailed help is available for this control."
 msgstr ""
 
-#. Translators: Title of the group of the recording window holding what to record from.
-#: UI/Recording/RecordingDialog.cs:88
-msgid "Sources"
-msgstr ""
-
 #. Translators: Button that adds a recording source. It opens a menu of the kinds that can be added.
 #: UI/Recording/RecordingDialog.cs:91
 msgid "Add"
@@ -3459,28 +3796,6 @@ msgstr ""
 msgid "Format"
 msgstr ""
 
-#. Translators: Label of the list that chooses how many times a second a recording is sampled.
-#: UI/Recording/RecordingDialog.cs:132 UI/RecordingPreferences.cs:55
-msgid "Sample rate"
-msgstr ""
-
-#. Translators: Label of the list that chooses whether a recording is mono or stereo.
-#: UI/Recording/RecordingDialog.cs:135 UI/RecordingPreferences.cs:58
-msgid "Channels"
-msgstr ""
-
-#. Translators: One of the channel counts a recording can be made in: one channel.
-#: UI/Recording/RecordingDialog.cs:138 UI/Recording/RecordingDialog.cs:402
-#: UI/RecordingPreferences.cs:61 UI/RecordingPreferences.cs:195
-msgid "Mono"
-msgstr ""
-
-#. Translators: One of the channel counts a recording can be made in: two channels.
-#: UI/Recording/RecordingDialog.cs:140 UI/Recording/RecordingDialog.cs:404
-#: UI/RecordingPreferences.cs:63 UI/RecordingPreferences.cs:197
-msgid "Stereo"
-msgstr ""
-
 #. Translators: Label of the list that chooses how much room a second of compressed audio may take.
 #: UI/Recording/RecordingDialog.cs:142
 msgid "Bitrate"
@@ -3489,11 +3804,6 @@ msgstr ""
 #. Translators: Label of the box holding the folder recordings are saved into.
 #: UI/Recording/RecordingDialog.cs:145
 msgid "Folder"
-msgstr ""
-
-#. Translators: Button that opens a window for choosing the folder recordings are saved into.
-#: UI/Recording/RecordingDialog.cs:148 UI/RecordingPreferences.cs:71
-msgid "Browse..."
 msgstr ""
 
 #. Translators: Button that begins recording, and ends it when pressed a second time.

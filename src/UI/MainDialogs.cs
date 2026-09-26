@@ -58,6 +58,8 @@ internal sealed partial class MainFrame
     public ConversionOutcome? RunConversion(
         Func<Action<ConversionProgress>, CancellationToken, ConversionOutcome> work)
     { using var dialog = new ConversionProgressDialog(DialogParent, _dispatcher, work); return dialog.Show(); }
+    public void ShowConversionReport(string title, string message, string details)
+    { using var dialog = new ConversionReportDialog(DialogParent, title, message, details); dialog.Show(); }
     public PlayerSettings? EditPreferences(PlayerSettings settings, PrefsOps operations, Action<string> speakHelp)
     { var editable = settings.Copy(); using var dialog = new PreferencesDialog(DialogParent, editable, operations, speakHelp, _dispatcher, _catalog, _globalShortcuts); return dialog.Show() ? editable : null; }
 }
