@@ -1,6 +1,10 @@
 {
-  "version": "0.4.0",
+  "version": "0.5.0",
   "changes": [
-    "Add a 15-band Equalizer support with 17 default presets, the ability to edit default ones or create your own."
+    "Added a media converter tool to convert one or more audio or video files into another audio format. It only supports converting to audio for now meaning that you can convert from video to audio but you cannot convert from audio to video.",
+    "Luna Player now registers the media converter in the Windows 'Send To' context menu under 'Convert with Luna'. You can select one or more files/folders in the file explorer and send them to Luna directly.",
+    "The media converter supports concurrent conversions and advanced customization such as OPUS-related options and hiding controls when not supported by codecs. for example if you choose to convert to WAV, the audio quality ComboBox will be hidden.",
+    "Added a new option in the preferences to disable media controls.",
+    "Added a new option in the preferences to show track status in the window title. It is disabled by default because screen-readers always speak window title on change and this could be annoying for some users."
   ]
 }
