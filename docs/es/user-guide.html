@@ -1,0 +1,1490 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Guía del usuario de Luna Player</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --background: #0e1117;
+      --surface: #161b22;
+      --text: #e6edf3;
+      --link: #58a6ff;
+      --border: #30363d;
+      --code: #11161d;
+    }
+    @media (prefers-color-scheme: light) {
+      :root {
+        --background: #f6f8fa;
+        --surface: #ffffff;
+        --text: #1f2328;
+        --link: #0969da;
+        --border: #d0d7de;
+        --code: #f6f8fa;
+      }
+    }
+    body {
+      margin: 0;
+      background: var(--background);
+      color: var(--text);
+      font: 16px/1.55 "Segoe UI", Tahoma, sans-serif;
+    }
+    main {
+      box-sizing: border-box;
+      max-width: 960px;
+      margin: 24px auto;
+      padding: 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow-wrap: anywhere;
+    }
+    h1, h2, h3, h4 { line-height: 1.25; }
+    h1 { margin-top: 0; }
+    a { color: var(--link); }
+    code, pre { font-family: Consolas, "Cascadia Mono", monospace; background: var(--code); }
+    code { border: 1px solid var(--border); border-radius: 5px; padding: 0.1em 0.3em; }
+    pre { border: 1px solid var(--border); border-radius: 8px; padding: 12px; overflow: auto; }
+    pre code { border: 0; padding: 0; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; }
+</style>
+</head>
+<body>
+  <main>
+<h1 id="luna-player-user-guide">Guía del usuario de Luna Player</h1>
+<p>Luna Player es un reproductor de audio y vídeo accesible mediante teclado para Windows. Combina reproducción de medios locales, transmisiones en red, reproducción y descarga de YouTube, grabación de audio, gestión de archivos, marcadores, anuncios por voz y atajos personalizables locales y del sistema.</p>
+<p>Esta guía describe la versión actual de Luna Player. Los nombres de los menús y los atajos siguientes corresponden a la interfaz en inglés y a la configuración predeterminada de atajos.</p>
+<div class="toc">
+<ul>
+<li><a href="#1-before-you-begin">1. Antes de empezar</a></li>
+<li><a href="#2-interface-and-accessibility">2. Interfaz y accesibilidad</a></li>
+<li><a href="#3-quick-start">3. Inicio rápido</a></li>
+<li><a href="#4-opening-media">4. Abrir contenido multimedia</a></li>
+<li><a href="#5-playback-controls">5. Controles de reproducción</a></li>
+<li><a href="#6-working-with-several-files">6. Trabajo con varios archivos</a></li>
+<li><a href="#7-a-b-loops">7. Bucles A-B</a></li>
+<li><a href="#8-silence-removal-and-audio-processing">8. Eliminación de silencios y procesamiento de audio</a></li>
+<li><a href="#9-local-file-management">9. Gestión de archivos locales</a></li>
+<li><a href="#10-marked-files-and-batch-operations">10. Archivos marcados y operaciones en lote</a></li>
+<li><a href="#11-bookmarks">11. Marcadores</a></li>
+<li><a href="#12-youtube">12. YouTube</a></li>
+<li><a href="#13-recording-audio">13. Grabación de audio</a></li>
+<li><a href="#14-preferences-reference">14. Referencia de preferencias</a></li>
+<li><a href="#15-application-updates">15. Actualizaciones de la aplicación</a></li>
+<li><a href="#16-help-and-release-information">16. Ayuda e información de la versión</a></li>
+<li><a href="#17-settings-and-user-data">17. Configuración y datos del usuario</a></li>
+<li><a href="#18-complete-default-shortcut-reference">18. Referencia completa de atajos predeterminados</a></li>
+<li><a href="#19-supported-formats">19. Formatos compatibles</a></li>
+<li><a href="#20-troubleshooting">20. Solución de problemas</a></li>
+<li><a href="#21-publisher-and-licensing">21. Editor y licencias</a></li>
+<li><a href="#22-contact-and-support">22. Contacto y soporte</a></li>
+</ul>
+</div>
+<h2 id="1-before-you-begin">1. Antes de empezar</h2>
+<h3 id="system-requirements">Requisitos del sistema</h3>
+<p>Luna Player requiere Windows 10 de 64 bits versión 1809 o posterior. La captura del sonido de un programa específico requiere Windows 10 versión 2004 o posterior. Otras funciones de reproducción y grabación permanecen disponibles en versiones anteriores compatibles.</p>
+<h3 id="installed-and-portable-editions">Ediciones instalable y portable</h3>
+<p>Las versiones de Luna Player están disponibles como un instalador y como un archivo ZIP portable.</p>
+<ul>
+<li>Para instalar Luna Player, ejecute el instalador de la versión y siga los pasos. El instalador puede crear accesos directos en el menú Inicio y en el escritorio, y puede registrar tipos de medios compatibles.</li>
+<li>Para usar la edición portable, extraiga todo el archivo ZIP en una carpeta y ejecute <code>LunaPlayer.exe</code>. Mantenga juntos todos los archivos y carpetas extraídos.</li>
+</ul>
+<p>Ambas ediciones utilizan la misma carpeta de configuración de usuario. El actualizador integrado reconoce qué edición se está ejecutando y descarga el instalador o archivo portable correspondiente.</p>
+<h3 id="starting-luna-player">Iniciar Luna Player</h3>
+<p>Puede iniciar Luna Player directamente, abrir un archivo compatible desde Windows o pasarle archivos y carpetas mediante la línea de comandos. Luna se ejecuta como una sola instancia: abrir más contenido multimedia mientras ya se está ejecutando envía ese contenido a la ventana existente.</p>
+<p>Si la opción <strong>Remember last file position</strong> está habilitada, iniciar Luna sin otro archivo restaura el último archivo local y su última posición de reproducción si dicho archivo sigue disponible.</p>
+<h2 id="2-interface-and-accessibility">2. Interfaz y accesibilidad</h2>
+<h3 id="main-window">Ventana principal</h3>
+<p>La ventana principal contiene una barra de menú y cinco botones:</p>
+<ul>
+<li><strong>Previous</strong>: pasa al elemento anterior.</li>
+<li><strong>Rewind</strong>: retrocede la cantidad de salto seleccionada.</li>
+<li><strong>Play</strong> o <strong>Pause</strong>: cambia el estado de reproducción.</li>
+<li><strong>Forward</strong>: avanza la cantidad de salto seleccionada.</li>
+<li><strong>Next</strong>: pasa al elemento siguiente.</li>
+</ul>
+<p>Todas las órdenes también están disponibles desde un menú o atajo. Los elementos que no se pueden aplicar al contenido actual están desactivados. Por ejemplo, las propiedades del archivo están disponibles para un archivo local pero no para una transmisión web, y el menú <strong>Video options</strong> se habilita solo para un vídeo de YouTube activo.</p>
+<h3 id="keyboard-navigation">Navegación por teclado</h3>
+<p>Utilice la navegación estándar de Windows en toda la aplicación:</p>
+<ul>
+<li>Presione <kbd>Alt</kbd> para acceder a la barra de menú, luego use las teclas de dirección y <kbd>Enter</kbd>.</li>
+<li>Presione <kbd>Tab</kbd> y <kbd>Shift</kbd>+<kbd>Tab</kbd> para desplazarse entre los controles de los cuadros de diálogo.</li>
+<li>Use las teclas de dirección para desplazarse por listas y opciones.</li>
+<li>Presione <kbd>Enter</kbd> para activar el elemento seleccionado cuando el diálogo lo permita.</li>
+<li>Presione <kbd>Escape</kbd> para cerrar la mayoría de los diálogos sin aplicar cambios.</li>
+<li>Presione <kbd>F1</kbd> en la ventana principal para abrir esta guía.</li>
+</ul>
+<p>En un control de Preferences, <kbd>F1</kbd> tiene un propósito diferente: Luna verbaliza ayuda contextual para ese control. Si el árbol de categorías tiene el foco, explica cómo desplazarse entre las páginas de configuración.</p>
+<h3 id="speech-announcements">Anuncios por voz</h3>
+<p>Luna informa del estado de reproducción, tiempo, volumen, navegación, operaciones de archivos y otros cambios a través de un lector de pantalla compatible. Hay dos niveles de detalle disponibles:</p>
+<ul>
+<li><strong>Beginner</strong>: utiliza mensajes completos y explicativos.</li>
+<li><strong>Advanced</strong>: utiliza confirmaciones más breves.</li>
+</ul>
+<p>Presione <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> para cambiar el nivel inmediatamente, o elíjalo en la página de preferencias <strong>General</strong>. Habilite <strong>Speak file name when navigating (Previous/Next)</strong> si desea que Luna anuncie cada elemento al que se llega con Anterior o Siguiente.</p>
+<h3 id="windows-media-controls">Controles multimedia de Windows</h3>
+<p>Luna se integra con la superposición de medios de Windows y teclas multimedia de hardware compatibles. La superposición puede mostrar el título actual y la línea de tiempo. Los botones de reproducción, pausa, anterior, siguiente, retroceso y avance rápido invocan las órdenes correspondientes de Luna.</p>
+<h2 id="3-quick-start">3. Inicio rápido</h2>
+<p>Para reproducir un archivo local:</p>
+<ol>
+<li>Presione <kbd>Ctrl</kbd>+<kbd>O</kbd>.</li>
+<li>Elija un archivo multimedia o una lista de reproducción M3U/M3U8.</li>
+<li>Presione <kbd>Espacio</kbd> para pausar o reanudar.</li>
+<li>Presione <kbd>Izquierda</kbd> o <kbd>Derecha</kbd> para saltar.</li>
+<li>Presione <kbd>Arriba</kbd> o <kbd>Abajo</kbd> para cambiar el volumen.</li>
+</ol>
+<p>Para reproducir todos los archivos compatibles de una carpeta, presione <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd> y elija la carpeta. Use <kbd>Tab</kbd> y <kbd>Shift</kbd>+<kbd>Tab</kbd> para moverse entre los elementos cargados.</p>
+<p>Para reproducir un vídeo de YouTube, presione <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Y</kbd> e introduzca su dirección. Para buscar en su lugar, presione <kbd>Ctrl</kbd>+<kbd>Y</kbd>.</p>
+<h2 id="4-opening-media">4. Abrir contenido multimedia</h2>
+<h3 id="opening-a-file">Abrir un archivo</h3>
+<p>Elija <strong>File &gt; Open File...</strong> o presione <kbd>Ctrl</kbd>+<kbd>O</kbd>. El diálogo acepta archivos de audio, vídeo, M3U y M3U8 compatibles.</p>
+<p>La opción <strong>What would you like to open with files?</strong> controla lo que sucede cuando se abre un archivo multimedia desde Windows o desde el diálogo de archivos:</p>
+<ul>
+<li><strong>Open the file only</strong>: carga únicamente el archivo seleccionado.</li>
+<li><strong>Open the file and the main folder files</strong>: carga los archivos compatibles de la misma carpeta y selecciona el archivo solicitado.</li>
+<li><strong>Open the file with the main and subfolder files</strong>: escanea la carpeta y todas sus subcarpetas, carga cada archivo multimedia compatible encontrado y selecciona el archivo solicitado.</li>
+</ul>
+<p>Un escaneo recursivo muestra un cuadro de diálogo de progreso que se puede cancelar e informa cuántos archivos ha encontrado. Los archivos se ordenan según el orden natural de Windows.</p>
+<p>Cuando se envían varios archivos a Luna juntos y está seleccionado <strong>Open the file only</strong>, Luna carga todos los archivos seleccionados explícitamente en lugar de descartar todos menos uno.</p>
+<h3 id="opening-a-folder">Abrir una carpeta</h3>
+<p>Elija <strong>File &gt; Open Folder...</strong> o presione <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd>.</p>
+<p>Con cualquiera de los dos primeros modos de apertura de archivos, Luna carga los medios compatibles directamente desde la carpeta elegida. Con el modo de subcarpetas, escanea de forma recursiva. Las carpetas inaccesibles y del sistema se omiten durante el escaneo recursivo.</p>
+<h3 id="opening-a-network-stream">Abrir una transmisión de red</h3>
+<p>Elija <strong>File &gt; Open Link...</strong> o presione <kbd>Ctrl</kbd>+<kbd>L</kbd>. Introduzca una dirección <code>http</code> o <code>https</code>.</p>
+<p>Use esta orden para transmisiones directas de medios y listas de reproducción M3U o M3U8 remotas. Use <strong>Open YouTube Link...</strong> para direcciones de vídeos y listas de reproducción de YouTube.</p>
+<h3 id="opening-playlists">Abrir listas de reproducción</h3>
+<p>Luna admite listas de reproducción M3U y M3U8 locales y remotas. Las entradas relativas en una lista local se resuelven desde la carpeta de la lista; las entradas relativas en una lista de red se resuelven desde su dirección URL.</p>
+<p>Un manifiesto HLS M3U8 se trata como un único flujo de datos y se pasa al motor de reproducción; no se expande en una lista de segmentos individuales. Otras listas de reproducción se convierten en una lista de archivos abiertos que contiene sus rutas locales y enlaces web reproducibles.</p>
+<h3 id="opening-media-from-the-clipboard">Abrir medios desde el portapapeles</h3>
+<p>Copie un archivo o carpeta en el Explorador de archivos, vuelva a Luna y presione <kbd>Ctrl</kbd>+<kbd>V</kbd>. Luna abrirá la primera ruta válida existente en el portapapeles según el modo de apertura configurado.</p>
+<h3 id="file-associations">Asociaciones de archivos</h3>
+<p>El instalador puede registrar Luna para tipos de archivo compatibles. También puede usar <strong>Preferences &gt; General &gt; Register file extensions</strong> o <strong>Unregister file extensions</strong>.</p>
+<p>El registro añade Luna a la lista de aplicaciones de Windows para formatos compatibles. Es posible que Windows aún requiera que seleccione Luna en <strong>Configuración &gt; Aplicaciones &gt; Aplicaciones predeterminadas</strong> antes de que se convierta en el reproductor predeterminado.</p>
+<h2 id="5-playback-controls">5. Controles de reproducción</h2>
+<h3 id="play-and-pause">Reproducir y pausar</h3>
+<p>Presione <kbd>Espacio</kbd> o <kbd>Enter</kbd>, elija <strong>Player &gt; Play/Pause</strong>, o utilice el botón principal Reproducir/Pausar.</p>
+<p>Si se puede volver a abrir un elemento finalizado o descargado, Reproducir/Pausar lo recarga. En el nivel Beginner, Luna anuncia "Reproducir" o "Pausar"; el nivel Advanced evita estos mensajes de estado más largos.</p>
+<h3 id="seeking">Salto de tiempo (desplazamiento)</h3>
+<p>Presione <kbd>Izquierda</kbd> o <kbd>Derecha</kbd> para avanzar o retroceder un paso. Se pueden realizar movimientos más grandes sin cambiar el paso seleccionado:</p>
+<ul>
+<li><kbd>Shift</kbd>+<kbd>Izquierda</kbd> o <kbd>Shift</kbd>+<kbd>Derecha</kbd>: se mueve dos pasos.</li>
+<li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Izquierda</kbd> o <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Derecha</kbd>: se mueve cuatro pasos.</li>
+<li><kbd>Inicio</kbd>: va al principio.</li>
+<li><kbd>Fin</kbd>: va al final.</li>
+</ul>
+<p>La cantidad de salto predeterminada es de 5 segundos. Elija otro valor desde <strong>Player &gt; Seek amount</strong>, o presione <kbd>Shift</kbd> más un número:</p>
+<table>
+<thead>
+<tr>
+<th>Atajo</th>
+<th>Cantidad de salto</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><kbd>Shift</kbd>+<kbd>1</kbd></td>
+<td>1 segundo</td>
+</tr>
+<tr>
+<td><kbd>Shift</kbd>+<kbd>2</kbd></td>
+<td>5 segundos</td>
+</tr>
+<tr>
+<td><kbd>Shift</kbd>+<kbd>3</kbd></td>
+<td>10 segundos</td>
+</tr>
+<tr>
+<td><kbd>Shift</kbd>+<kbd>4</kbd></td>
+<td>20 segundos</td>
+</tr>
+<tr>
+<td><kbd>Shift</kbd>+<kbd>5</kbd></td>
+<td>30 segundos</td>
+</tr>
+<tr>
+<td><kbd>Shift</kbd>+<kbd>6</kbd></td>
+<td>1 minuto</td>
+</tr>
+<tr>
+<td><kbd>Shift</kbd>+<kbd>7</kbd></td>
+<td>2 minutos</td>
+</tr>
+<tr>
+<td><kbd>Shift</kbd>+<kbd>8</kbd></td>
+<td>3 minutos</td>
+</tr>
+<tr>
+<td><kbd>Shift</kbd>+<kbd>9</kbd></td>
+<td>5 minutos</td>
+</tr>
+<tr>
+<td><kbd>Shift</kbd>+<kbd>0</kbd></td>
+<td>10 minutos</td>
+</tr>
+<tr>
+<td><kbd>Shift</kbd>+<kbd>-</kbd></td>
+<td>Valor personalizado de Preferencias de Audio</td>
+</tr>
+</tbody>
+</table>
+<p>El valor seleccionado se guarda inmediatamente. Cambiar <strong>Custom seek value (seconds)</strong> no selecciona el valor personalizado automáticamente; selecciónelo en el menú o con <kbd>Shift</kbd>+<kbd>-</kbd> cuando desee usarlo.</p>
+<h3 id="going-to-a-time">Ir a un punto temporal</h3>
+<p>Elija <strong>Player &gt; Go to time...</strong> o presione <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd>. Introduzca las horas, minutos y segundos relevantes para la duración actual. Luna evita que la posición seleccionada supere el final del archivo.</p>
+<h3 id="jumping-by-percentage">Saltar por porcentaje</h3>
+<p>Elija <strong>Player &gt; Jump to Percentage</strong> o use los atajos de porcentaje predeterminados:</p>
+<ul>
+<li><kbd>Ctrl</kbd>+<kbd>1</kbd> a <kbd>Ctrl</kbd>+<kbd>9</kbd>: saltan del 10% al 90%.</li>
+<li><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>1</kbd> a <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>9</kbd>: saltan del 15% al 95%.</li>
+<li><kbd>Ctrl</kbd>+<kbd>0</kbd> o <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>0</kbd>: salta al 100%.</li>
+</ul>
+<p>Los saltos por porcentaje requieren una duración conocida y, por lo tanto, no están disponibles en algunas emisiones en directo.</p>
+<h3 id="getting-playback-information">Obtener información de reproducción</h3>
+<p>Luna puede verbalizar la información de reproducción sin mover el foco:</p>
+<ul>
+<li><kbd>E</kbd>: anuncia el tiempo transcurrido.</li>
+<li><kbd>R</kbd>: anuncia el tiempo restante.</li>
+<li><kbd>T</kbd>: anuncia la duración total.</li>
+<li><kbd>P</kbd>: anuncia el porcentaje actual.</li>
+<li><kbd>V</kbd>: anuncia el volumen actual.</li>
+<li><kbd>S</kbd>: anuncia la velocidad actual.</li>
+<li><kbd>Shift</kbd>+<kbd>P</kbd>: anuncia el ajuste de tono (pitch).</li>
+<li><kbd>B</kbd>: anuncia el valor de balance estéreo (panorámica).</li>
+</ul>
+<h3 id="file-name-path-and-media-title">Nombre de archivo, ruta y título del medio</h3>
+<p>Presione <kbd>F</kbd> repetidamente para obtener información progresivamente más detallada sobre el elemento actual:</p>
+<ol>
+<li>La primera pulsación anuncia el nombre del archivo, el nombre de la transmisión o el título del vídeo de YouTube.</li>
+<li>Una segunda pulsación rápida anuncia la ruta local completa o la dirección de la transmisión.</li>
+<li>Una tercera pulsación rápida copia esa ruta o dirección al portapapeles.</li>
+</ol>
+<p>Si hace una pausa superior a un breve instante, la secuencia comenzará de nuevo con el nombre en pantalla.</p>
+<p>Presione <kbd>I</kbd> para que se anuncie el título guardado en los metadatos del medio. Esto es independiente del nombre del archivo; un archivo local puede no tener ningún título integrado o tener uno diferente al nombre del archivo.</p>
+<h3 id="volume">Volumen</h3>
+<p>Presione <kbd>Arriba</kbd> o <kbd>Abajo</kbd> para cambiar el volumen según el paso configurado. El paso predeterminado es de 5 puntos porcentuales.</p>
+<ul>
+<li><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Arriba</kbd>: ajusta el volumen al máximo de Luna.</li>
+<li><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Abajo</kbd>: ajusta el volumen al 5%.</li>
+<li><kbd>V</kbd>: anuncia el volumen actual.</li>
+</ul>
+<p>Luna permite una amplificación por encima del 100%, hasta un máximo de 2000%. Una amplificación elevada puede aumentar el ruido de fondo y la distorsión del audio original. La normalización dinámica y el limitador pueden ayudar a contener los picos, pero comience con un nivel moderado para proteger su audición y sus equipos.</p>
+<h3 id="playback-speed">Velocidad de reproducción</h3>
+<p>Presione <kbd>Ctrl</kbd>+<kbd>Arriba</kbd> o <kbd>Ctrl</kbd>+<kbd>Abajo</kbd> para cambiar la velocidad de reproducción. Presione <kbd>Alt</kbd>+<kbd>Y</kbd> para volver a 1x. La velocidad está limitada entre 0.5x y 4x, y el paso se puede configurar en la página de Preferencias de Audio.</p>
+<h3 id="pitch">Tono (Pitch)</h3>
+<p>Los cambios de tono no alteran la velocidad de reproducción.</p>
+<ul>
+<li><kbd>Shift</kbd>+<kbd>Arriba</kbd>: sube el tono.</li>
+<li><kbd>Shift</kbd>+<kbd>Abajo</kbd>: baja el tono.</li>
+<li><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd>: restaura el tono original.</li>
+<li><kbd>Shift</kbd>+<kbd>P</kbd>: anuncia el ajuste actual en semitonos.</li>
+</ul>
+<p>El tono está limitado a 12 semitonos por encima o por debajo del original. El paso se puede configurar entre 0.001 y 12 semitonos.</p>
+<h3 id="stereo-pan">Balance estéreo (Panorámica)</h3>
+<ul>
+<li><kbd>Ctrl</kbd>+<kbd>Izquierda</kbd>: desplaza el sonido hacia la izquierda.</li>
+<li><kbd>Ctrl</kbd>+<kbd>Derecha</kbd>: desplaza el sonido hacia la derecha.</li>
+<li><kbd>B</kbd>: anuncia el porcentaje de balance actual.</li>
+</ul>
+<p>Cero es centrado, los valores negativos representan la izquierda y los positivos la derecha. El paso de balance es configurable entre 1 y 100 puntos porcentuales.</p>
+<h3 id="choosing-an-output-device">Elegir un dispositivo de salida</h3>
+<p>Elija <strong>Player &gt; Sound Cards...</strong> o presione <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd>. Seleccione un dispositivo de salida de audio de Windows y presione Aceptar. El dispositivo elegido se guarda de inmediato.</p>
+<h2 id="6-working-with-several-files">6. Trabajo con varios archivos</h2>
+<h3 id="previous-next-first-and-last">Anterior, siguiente, primero y último</h3>
+<ul>
+<li><kbd>Shift</kbd>+<kbd>Tab</kbd> o <kbd>Re Pág</kbd>: reproduce el elemento anterior.</li>
+<li><kbd>Tab</kbd> o <kbd>Av Pág</kbd>: reproduce el elemento siguiente.</li>
+<li><kbd>Ctrl</kbd>+<kbd>Inicio</kbd>: reproduce el primer elemento.</li>
+<li><kbd>Ctrl</kbd>+<kbd>Fin</kbd>: reproduce el último elemento.</li>
+</ul>
+<p>Si la opción <strong>Wrap to top for multiple files</strong> está activada, al pulsar Siguiente en el último elemento se vuelve al primero, y al pulsar Anterior en el primero se va al último. El avance automático sigue esta misma regla.</p>
+<h3 id="going-to-a-file-number">Ir a un número de archivo</h3>
+<p>Elija <strong>Player &gt; Go to file...</strong> o presione <kbd>Ctrl</kbd>+<kbd>G</kbd>. Introduzca un número del 1 al total de elementos cargados.</p>
+<h3 id="opened-files-dialog">Diálogo de Archivos Abiertos</h3>
+<p>Elija <strong>File &gt; Opened Files...</strong> o presione <kbd>F2</kbd>. El elemento actual estará seleccionado en la lista.</p>
+<ul>
+<li>Elija un elemento y active <strong>Jump to selected</strong>, o presione <kbd>Enter</kbd> sobre él para reproducirlo.</li>
+<li>Active <strong>Playlist info</strong> para calcular el número de archivos, el tamaño total, la duración total, el tiempo transcurrido en la lista y el tiempo restante. El análisis se puede cancelar y el resultado se abre en una ventana de texto de solo lectura.</li>
+</ul>
+<p>La lista está diseñada para mantener su fluidez incluso con un número muy elevado de archivos cargados.</p>
+<h3 id="shuffle">Reproducción aleatoria</h3>
+<p>Elija <strong>Player &gt; Shuffle</strong> o presione <kbd>Ctrl</kbd>+<kbd>Z</kbd>. Activar la reproducción aleatoria crea un orden aleatorio manteniendo seleccionado el elemento actual.</p>
+<p>Mientras está activa, las funciones Anterior, Siguiente, Primer archivo, Último archivo, Ir a archivo y el cuadro de diálogo de Archivos abiertos operarán según el orden aleatorio. Desactivar la función restaura el orden normal de la lista manteniendo el elemento actual.</p>
+<h3 id="repeat-and-end-of-file-behavior">Repetición y comportamiento al final del archivo</h3>
+<p>Elija <strong>Player &gt; Repeat File</strong> o presione <kbd>Ctrl</kbd>+<kbd>R</kbd> para repetir el archivo actual. Esta opción de reproducción tiene prioridad mientras está activada.</p>
+<p>La página de Preferencias de Audio también controla la acción normal al finalizar un archivo:</p>
+<ul>
+<li><strong>Advance to the next file</strong>: inicia el siguiente elemento.</li>
+<li><strong>Loop the file</strong>: inicia de nuevo el mismo elemento.</li>
+<li><strong>Do nothing</strong>: detiene la reproducción al final.</li>
+</ul>
+<h3 id="remembering-positions">Recordar posiciones</h3>
+<p>Dos ajustes sirven para propósitos diferentes:</p>
+<ul>
+<li><strong>Remember last file position</strong>: restaura el archivo local activo y el punto de reproducción la próxima vez que se inicie Luna.</li>
+<li><strong>Save current position for each file</strong>: recuerda una posición independiente para cada elemento local y vuelve a ella cuando se vuelve a visitar.</li>
+</ul>
+<p>Si ambas están desactivadas, los archivos comenzarán normalmente desde el principio.</p>
+<h2 id="7-a-b-loops">7. Bucles A-B</h2>
+<p>Un bucle A-B repite una sección del elemento actual.</p>
+<ol>
+<li>Desplácese hasta el inicio deseado y presione <kbd>[</kbd>. Esto establece el punto A.</li>
+<li>Desplácese hasta una posición posterior y presione <kbd>]</kbd>. Esto establece el punto B e inicia la repetición del bucle entre A y B.</li>
+<li>Presione <kbd>Retroceso</kbd> para borrar el bucle y continuar desde el punto B.</li>
+</ol>
+<p>Mientras un bucle está activo, los saltos normales se limitan al rango seleccionado. <kbd>Inicio</kbd> va al punto A y <kbd>Fin</kbd> va al punto B. El punto B debe ser posterior al punto A.</p>
+<p>La selección se aplica solo al elemento actual y se borra al pasar a otro elemento.</p>
+<h2 id="8-silence-removal-and-audio-processing">8. Eliminación de silencios y procesamiento de audio</h2>
+<h3 id="turning-silence-removal-on-or-off">Activar o desactivar la eliminación de silencios</h3>
+<p>Elija <strong>Player &gt; Enable silence removal filter</strong> o presione <kbd>Ctrl</kbd>+<kbd>M</kbd>. Luna guarda el estado inmediatamente.</p>
+<p>La eliminación de silencios acorta las secciones silenciosas mientras se reproduce el contenido. No modifica el archivo original. Los resultados dependen del archivo original: un umbral muy agresivo puede tratar el habla o la música suaves como silencio.</p>
+<h3 id="basic-silence-settings">Ajustes básicos de silencio</h3>
+<p>Abra <strong>Preferences &gt; Silence removal</strong>.</p>
+<ul>
+<li><strong>Minimum silence duration (seconds)</strong>: controla cuánto debe durar una sección silenciosa para poder ser recortada. Aumentar este valor preserva más pausas cortas.</li>
+<li><strong>Silence threshold</strong>: es el nivel, en decibelios, por debajo del cual el audio se considera silencio. Un valor menos negativo, como -20, trata audios más altos como silencio; un valor más negativo, como -50, limita la eliminación al audio más silencioso.</li>
+</ul>
+<p>Los valores predeterminados son 0.5 segundos y -30 dB.</p>
+<h3 id="advanced-silence-settings">Ajustes avanzados de silencio</h3>
+<p>Habilite <strong>Show advanced settings</strong> para configurar el filtro subyacente con mayor precisión:</p>
+<ul>
+<li><strong>Leading silent parts to trim</strong>: 0 conserva el principio; 1 elimina el silencio inicial hasta encontrar sonido sostenido. Valores más altos continúan a través de más secciones de sonido.</li>
+<li><strong>Sound required before leading trim stops</strong>: cuánto tiempo debe permanecer el audio por encima del umbral antes de que Luna lo conserve.</li>
+<li><strong>Silent parts to trim after audio starts</strong>: -1 acorta cada pausa posterior que cumpla los requisitos, 0 conserva el silencio posterior y un valor positivo limita la cantidad de pausas recortadas.</li>
+<li><strong>Minimum inner silence length</strong>: la duración mínima de pausa válida una vez comenzado el sonido.</li>
+<li><strong>Pause to keep after trimmed silence</strong>: conserva una parte de cada pausa para que las palabras no se solapen.</li>
+<li><strong>Detection window size</strong>: la ventana de tiempo utilizada para medir el nivel de volumen. Ventanas más grandes son más estables; ventanas más pequeñas reaccionan más rápido.</li>
+<li><strong>Detection mode</strong>: Peak reacciona a la muestra más alta y sonidos breves; RMS utiliza la energía promedio para una detección más suave.</li>
+</ul>
+<p>Haga pequeños cambios y pruébelos con material representativo. El filtro afecta a la reproducción inmediatamente tras aceptar las Preferencias.</p>
+<h3 id="normalization-limiting-and-mono">Normalización, limitador y mono</h3>
+<p>La página de Preferencias de Audio contiene dos filtros adicionales:</p>
+<ul>
+<li><strong>Enable dynamic normalize and limiter</strong>: nivela los cambios de volumen y frena los picos para reducir la distorsión (clipping).</li>
+<li><strong>Play audio as Mono</strong>: combina los canales izquierdo y derecho en una sola salida mono.</li>
+</ul>
+<p>Ninguna de las dos opciones modifica el archivo de origen.</p>
+<h3 id="equalizer">Ecualizador</h3>
+<p>El ecualizador sube y baja rangos de frecuencia individuales. Elija <strong>Player &gt; Equalizer</strong> y seleccione un elemento de la lista. El cambio surte efecto al instante y se recuerda entre sesiones.</p>
+<p>La lista comienza con <strong>Off</strong>, seguida de seis ajustes predeterminados para problemas comunes de escucha:</p>
+<ul>
+<li><strong>Bass Boost</strong> y <strong>Bass Reduce</strong>: aumentan o reducen los graves. El efecto es más fuerte por debajo de los 100 Hz, sigue siendo sustancial a 170 Hz y desaparece hacia los 600 Hz, cubriendo el rango de un bombo y un bajo sin engrosar las voces.</li>
+<li><strong>Treble Boost</strong>: eleva todo desde aproximadamente 4 kHz hacia arriba.</li>
+<li><strong>Headphones</strong>: añade cuerpo en los graves, suaviza el rango de 3.5 kHz donde los auriculares pueden sonar estidentes y abre los agudos.</li>
+<li><strong>Voice</strong>: elimina el retumbo y el sonido acartonado y realza la presencia, que es lo que hace inteligibles las consonantes. Es adecuado para audiolibros, podcasts y conferencias en lugar de música.</li>
+<li><strong>Loudness</strong>: eleva ambos extremos y deja intacto el medio, para escuchar a volumen bajo cuando el oído es menos sensible a los extremos.</li>
+</ul>
+<p>A continuación vienen los ajustes por géneros: Classical, Club, Dance, Live, Pop, Reggae, Rock, Ska, Soft, Soft Rock y Techno. <strong>Custom</strong> está en último lugar; no cambia nada hasta que se edita y es el punto de partida para sus propios ajustes.</p>
+<p>Un ajuste que aumenta un rango hace que el sonido sea más fuerte en lugar de solo diferente, y no se atenúa ningún rango para hacer que el cambio parezca mayor. Por lo tanto, el material ya masterizado al límite puede saturar. La opción <strong>Enable dynamic normalize and limiter</strong> en la página de Preferencias de Audio evita esto y está activada por defecto; si la desactiva, reduzca el volumen en su lugar.</p>
+<p><strong>Off</strong> aplana todas las bandas en lugar de quitar el ecualizador. El último ajuste utilizado se recuerda mientras el ecualizador está apagado, por lo que seleccionarlo de nuevo vuelve a aplicarlo.</p>
+<h3 id="editing-a-preset">Editar un ajuste predeterminado</h3>
+<p>Elija <strong>Player &gt; Equalizer &gt; Edit current preset</strong> para abrir el ajuste en uso. Todos los ajustes se pueden editar, incluidos los que incluye Luna.</p>
+<p>El diálogo contiene un grupo por banda: un filtro tipo "shelf" bajo, quince bandas de 25 Hz a 16 kHz y un filtro tipo "shelf" alto. Cada grupo contiene tres campos.</p>
+<ul>
+<li><strong>Frequency</strong>: es el centro de la banda o el punto donde gira el filtro shelf.</li>
+<li><strong>Gain</strong>: indica cuánto se sube o baja la banda, en decibelios, de -20 a 20.</li>
+<li><strong>Q</strong>: es el ancho de la banda, de 0.1 a 10. Los valores más grandes son más estrechos.</li>
+</ul>
+<p>Mientras el ajuste editado sea el que se está usando, cada cambio se aplica a medida que escribe, para que pueda juzgarlo de oído antes de guardarlo. <strong>Save</strong> conserva el resultado; <strong>Cancel</strong> restaura el ajuste como estaba.</p>
+<p><strong>Base preset</strong> rellena cada banda desde otro ajuste. Úselo para empezar desde algo cercano a lo que busca. <strong>Reset to defaults</strong> devuelve las bandas al estado de fábrica del ajuste elegido.</p>
+<p>Editar un ajuste predeterminado de Luna guarda solo los valores modificados, por lo que las bandas no alteradas seguirán las futuras mejoras que reciba Luna. Restablecer descarta dichos cambios. El nombre de un ajuste integrado de fábrica no se puede cambiar.</p>
+<h3 id="managing-presets">Gestionar ajustes predeterminados</h3>
+<p>Elija <strong>Player &gt; Equalizer &gt; Manage presets</strong> para ver la lista completa.</p>
+<ul>
+<li><strong>New</strong>: crea un ajuste, comenzando desde el ajuste base que elija en el editor.</li>
+<li><strong>Edit</strong>: abre el ajuste seleccionado.</li>
+<li><strong>Delete</strong>: lo elimina tras confirmarlo.</li>
+<li><strong>Close</strong>: sale de la lista.</li>
+</ul>
+<p>Las opciones de editar y eliminar se aplican a sus propios ajustes y están ocultas cuando hay seleccionado un ajuste original de Luna; use <strong>Edit current preset</strong> para esos casos. Para copiar un ajuste, cree uno nuevo y elija el original como base.</p>
+<p>Los ajustes que cree aparecerán en el menú Equalizer junto con el resto y se guardarán en <code>equalizer.json</code>, junto al archivo de configuración.</p>
+<h2 id="9-local-file-management">9. Gestión de archivos locales</h2>
+<p>Las órdenes de renombrar, eliminar, abrir carpeta contenedora y propiedades de Windows funcionan únicamente con archivos locales. No están disponibles para transmisiones de red ni medios de YouTube.</p>
+<h3 id="showing-the-file-in-windows">Mostrar el archivo en Windows</h3>
+<ul>
+<li>Presione <kbd>Ctrl</kbd>+<kbd>F</kbd> o elija <strong>File &gt; Open Containing Folder</strong> para abrir el Explorador de archivos con el elemento actual seleccionado.</li>
+<li>Presione <kbd>Alt</kbd>+<kbd>Enter</kbd> o elija <strong>File &gt; File properties...</strong> para abrir las propiedades de Windows del archivo.</li>
+</ul>
+<h3 id="renaming-a-file">Renombrar un archivo</h3>
+<p>Elija <strong>Edit &gt; Rename...</strong> o presione <kbd>Shift</kbd>+<kbd>F2</kbd>. Escriba el nuevo nombre de archivo. Si omite la extensión, Luna mantendrá la extensión actual. Luna rechazará un nombre vacío o uno que ya exista en esa carpeta.</p>
+<h3 id="deleting-a-file">Eliminar un archivo</h3>
+<p>Elija <strong>Edit &gt; Delete</strong> o presione <kbd>Shift</kbd>+<kbd>Delete</kbd>. Confirme la acción para eliminar permanentemente el archivo del disco y quitarlo de la lista cargada. Luna no mueve el archivo a la papelera de reciclaje.</p>
+<p>Eliminar no es lo mismo que <strong>Close File</strong>. Cerrar elimina el elemento solo de la lista de Luna; eliminar borra el archivo del disco.</p>
+<h3 id="copying-a-file">Copiar un archivo</h3>
+<p>Presione <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd> para copiar el archivo actual al portapapeles de Windows. Péguelo en el Explorador de archivos o en otro programa que admita la opción de pegar archivos.</p>
+<h3 id="closing-files">Cerrar archivos</h3>
+<ul>
+<li>Presione <kbd>Ctrl</kbd>+<kbd>W</kbd> para quitar el elemento actual de Luna sin eliminarlo del disco.</li>
+<li>Presione <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>W</kbd> para quitar todos los elementos cargados.</li>
+</ul>
+<h2 id="10-marked-files-and-batch-operations">10. Archivos marcados y operaciones en lote</h2>
+<p>Las marcas le permiten seleccionar varios archivos locales mientras navega para operar con ellos conjuntamente.</p>
+<ul>
+<li>Presione <kbd>Ctrl</kbd>+<kbd>K</kbd> para marcar o desmarcar el archivo actual.</li>
+<li>Presione <kbd>Ctrl</kbd>+<kbd>A</kbd> para marcar todos los archivos o desmarcarlos todos si ya lo estaban.</li>
+<li>Presione <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd> para limpiar todas las marcas.</li>
+<li>Presione <kbd>K</kbd> para escuchar el número de archivos marcados.</li>
+</ul>
+<p>Cuando haya al menos un archivo marcado, se habilitará el menú <strong>Actions for marked files</strong>:</p>
+<ul>
+<li><strong>Copy to folder...</strong>: copia los archivos marcados a una carpeta seleccionada.</li>
+<li><strong>Move to folder...</strong>: los mueve a otra carpeta y elimina de Luna las entradas movidas con éxito.</li>
+<li><strong>Copy to clipboard</strong>: coloca los archivos en el portapapeles de Windows.</li>
+<li><strong>Delete</strong>: solicita confirmación y elimina permanentemente los archivos del disco sin pasar por la papelera de reciclaje, quitándolos de la lista de Luna.</li>
+</ul>
+<p>Copiar y mover muestran un cuadro de progreso que se puede cancelar. Luna informará si la operación ha sido un éxito total, parcial, si se canceló o si falló. Si algún archivo falla, los procesados correctamente mantendrán su nuevo estado.</p>
+<h2 id="11-bookmarks">11. Marcadores</h2>
+<p>Los marcadores guardan posiciones de reproducción con nombre para archivos locales. Se guardan por cada archivo y no están disponibles para transmisiones o vídeos de YouTube.</p>
+<h3 id="adding-a-bookmark">Añadir un marcador</h3>
+<ol>
+<li>Reproduzca o avance hasta la posición deseada.</li>
+<li>Elija <strong>Bookmarks &gt; Add a new bookmark</strong> o presione <kbd>Shift</kbd>+<kbd>M</kbd>.</li>
+<li>Acepte el nombre generado basado en el tiempo o escriba un nombre descriptivo.</li>
+</ol>
+<p>Los marcadores se ordenan según su punto de reproducción. Los diez primeros en ese orden ocuparán las ranuras asignadas a los atajos directos.</p>
+<h3 id="jumping-to-a-numbered-bookmark">Ir a un marcador numerado</h3>
+<p>Presione <kbd>Alt</kbd>+<kbd>1</kbd> a <kbd>Alt</kbd>+<kbd>9</kbd> para las ranuras 1 a 9. Presione <kbd>Alt</kbd>+<kbd>0</kbd> para la ranura 10. Luna anunciará si la ranura solicitada está vacía.</p>
+<h3 id="managing-bookmarks">Gestionar marcadores</h3>
+<p>Elija <strong>Bookmarks &gt; Manage bookmarks</strong> o presione <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>. El diálogo lista los nombres de los marcadores y sus posiciones para el archivo actual.</p>
+<ul>
+<li><strong>Jump</strong>: traslada la reproducción al marcador seleccionado.</li>
+<li><strong>Edit</strong>: cambia su nombre.</li>
+<li><strong>Delete</strong>: lo elimina tras confirmarlo.</li>
+<li>Activar un marcador de la lista salta directamente a él.</li>
+</ul>
+<p>Utilice la página de Copia de seguridad y restauración de Preferencias para exportar o importar toda la colección de marcadores.</p>
+<h2 id="12-youtube">12. YouTube</h2>
+<p>Las funciones de YouTube requieren conexión a Internet. La disponibilidad puede variar si YouTube realiza cambios en su servicio. Luna incluye un resolvedor integrado y opcionalmente puede utilizar yt-dlp.</p>
+<h3 id="opening-a-youtube-link">Abrir un enlace de YouTube</h3>
+<p>Elija <strong>File &gt; Open YouTube Link...</strong> o presione <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Y</kbd>. Introduzca la dirección de un vídeo o lista de reproducción. Las direcciones de canales no son aceptadas por esta orden.</p>
+<p>Algunas direcciones de YouTube identifican tanto un vídeo como una lista de reproducción. Luna puede preguntar si desea reproducir el vídeo o abrir la lista, o bien seguir el comportamiento predeterminado seleccionado en las Preferencias de YouTube.</p>
+<h3 id="searching-youtube">Buscar en YouTube</h3>
+<p>Elija <strong>File &gt; Search YouTube...</strong> o presione <kbd>Ctrl</kbd>+<kbd>Y</kbd>. Introduzca el texto de búsqueda y desplácese por la lista de resultados.</p>
+<ul>
+<li>Presione <kbd>Enter</kbd> en el resultado seleccionado o active <strong>Play</strong> para reproducirlo.</li>
+<li>Active <strong>Download</strong> para guardarlo.</li>
+<li>Presione <kbd>Ctrl</kbd>+<kbd>C</kbd> para copiar el enlace del resultado seleccionado.</li>
+<li>Presione <kbd>Ctrl</kbd>+<kbd>B</kbd> para abrirlo en el navegador predeterminado.</li>
+<li>Presione <kbd>Ctrl</kbd>+<kbd>N</kbd> para navegar a los resultados del canal del creador.</li>
+<li>Abra el menú contextual para acceder a estas mismas opciones.</li>
+</ul>
+<p>Cuando la selección llega al final de la página actual, Luna solicita automáticamente más resultados hasta que YouTube no devuelva más.</p>
+<p>Las ventanas de resultados de listas de reproducción y canales funcionan de la misma manera. Siguiente avanza a través de la sesión de resultados activa de YouTube, buscando el próximo vídeo cuando sea necesario. Al presionar <kbd>Escape</kbd> en la ventana principal después de iniciar la reproducción, se puede volver a la lista de resultados relacionada si la sesión todavía está disponible.</p>
+<h3 id="audio-only-playback-and-quality">Reproducción de solo audio y calidad</h3>
+<p>Abra <strong>Preferences &gt; YouTube</strong>.</p>
+<ul>
+<li><strong>Play videos as audio only</strong>: solicita únicamente el sonido, reduciendo el consumo de datos y acelerando el inicio.</li>
+<li><strong>Video quality</strong>: permite elegir entre Baja (Low), Media (Medium) o la Mejor (Best) cuando el vídeo está habilitado.</li>
+</ul>
+<p>Las mismas opciones se utilizan al descargar un vídeo. El modo de solo audio guarda el sonido sin imagen; de lo contrario, Luna descargará la calidad de vídeo seleccionada.</p>
+<h3 id="video-options">Opciones de vídeo</h3>
+<p>Mientras un vídeo de YouTube está activo, el menú <strong>Video options</strong> ofrece:</p>
+<ul>
+<li><strong>Download...</strong> o <kbd>Ctrl</kbd>+<kbd>D</kbd>: permite elegir una carpeta y guardar el vídeo actual mostrando el progreso y la opción de cancelación.</li>
+<li><strong>Video description...</strong> o <kbd>Alt</kbd>+<kbd>D</kbd>: obtiene el título y la descripción del canal y los muestra en una ventana de texto de solo lectura.</li>
+<li><strong>Copy video link</strong>: copia la dirección permanente del vídeo en lugar de la dirección temporal de la transmisión.</li>
+</ul>
+<p>Una descarga repetida no sobrescribe un archivo existente con el mismo nombre; Luna elegirá un nombre numerado disponible.</p>
+<h3 id="favorite-videos-and-streams">Vídeos y transmisiones favoritos</h3>
+<p>Los favoritos guardan enlaces, mientras que los marcadores guardan posiciones dentro de archivos locales. Abra los favoritos mediante <strong>File &gt; Favorite videos...</strong> o <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd>.</p>
+<p>El diálogo de Favoritos permite abrir, añadir, editar o eliminar entradas. Cada entrada consta de un nombre, enlace y tipo:</p>
+<ul>
+<li><strong>Video</strong>: requiere un enlace de vídeo de YouTube.</li>
+<li><strong>Playlist</strong>: requiere un enlace de lista de reproducción de YouTube.</li>
+<li><strong>Combined link</strong>: requiere una dirección que contenga identificadores de vídeo y de lista, abriendo el vídeo.</li>
+<li><strong>Generic stream</strong>: acepta cualquier dirección de transmisión <code>http</code> o <code>https</code>.</li>
+</ul>
+<p>Luna valida el formato de la dirección al guardar una entrada. Solo comprueba si el contenido remoto sigue disponible cuando se intenta abrir.</p>
+<h3 id="built-in-resolver-and-yt-dlp">Resolvedor integrado y yt-dlp</h3>
+<p>Por defecto, Luna utiliza su propio resolvedor de YouTube. Si no se puede abrir un vídeo, habilite <strong>Use yt-dlp to resolve streams</strong> en las Preferencias de YouTube. Luna ofrecerá descargar el componente requerido si este no se encuentra.</p>
+<p>yt-dlp es siempre necesario para la opción de resolución por yt-dlp, pero el resolvedor integrado y otras funciones de YouTube pueden operar sin él. La página de componentes ofrece tres canales de actualización:</p>
+<ul>
+<li><strong>Stable</strong>: cambia con menos frecuencia y es la recomendada para un uso normal.</li>
+<li><strong>Nightly</strong>: sigue las compilaciones nocturnas de yt-dlp.</li>
+<li><strong>Master</strong>: sigue el código fuente más reciente y puede ser menos estable.</li>
+</ul>
+<p>Utilice <strong>Download YouTube components</strong> en Preferencias para instalar yt-dlp y los ejecutables de Deno faltantes. Utilice <strong>Help &gt; Updates &gt; Update YouTube components</strong> para actualizar una versión instalada de yt-dlp. Habilite <strong>Check for yt-dlp updates on startup</strong> para una comprobación en segundo plano que solo le avisará cuando haya una actualización disponible.</p>
+<h2 id="13-recording-audio">13. Grabación de audio</h2>
+<p>Luna puede grabar micrófonos y otras entradas, todo lo que se reproduce a través de un dispositivo de salida, o el audio de un programa en particular. Se pueden mezclar múltiples fuentes en una sola grabación con niveles de volumen independientes.</p>
+<h3 id="fast-recording-with-the-default-microphone">Grabación rápida con el micrófono predeterminado</h3>
+<p>Si no se ha creado ninguna fuente en la sesión actual, presione <kbd>F9</kbd> para grabar desde el dispositivo de entrada predeterminado de Windows utilizando la configuración de Grabación guardada. Presione <kbd>F7</kbd> para pausar o reanudar, y <kbd>F8</kbd> para detener la grabación.</p>
+<p>Un tono ascendente confirma el inicio de la grabación. Un tono descendente confirma su finalización. El inicio y fin no añaden mensajes hablados sobre estos tonos.</p>
+<h3 id="opening-the-recording-interface">Abrir la interfaz de grabación</h3>
+<p>Elija <strong>Recording &gt; Open the recording interface...</strong> o presione <kbd>Alt</kbd>+<kbd>R</kbd>. La ventana dispone de una lista de fuentes, controles de fuente, ajustes de salida y controles de Inicio/Pausa.</p>
+<p>Cerrar esta ventana no detiene una grabación activa. La grabación pertenece a la aplicación y continuará hasta que utilice Detener, presione <kbd>F8</kbd> o salga de Luna.</p>
+<h3 id="adding-sources">Añadir fuentes</h3>
+<p>Active <strong>Add</strong> y elija:</p>
+<ul>
+<li><strong>Input device...</strong>: para un micrófono, entrada de línea u otro dispositivo de captura de Windows.</li>
+<li><strong>System output...</strong>: para todo lo que se reproduzca a través de un altavoz o auriculares seleccionados.</li>
+<li><strong>Program...</strong>: para el audio de un programa específico. Requiere Windows 10 versión 2004 o posterior.</li>
+</ul>
+<p>Asigne un nombre descriptivo a la fuente, elija el dispositivo o programa y establezca su volumen. Una fuente de dispositivo puede seguir al dispositivo predeterminado de Windows actual en lugar de a uno con nombre fijo.</p>
+<p>Para una fuente de programa, la opción <strong>Capture everything except this application</strong> invierte la selección y captura el audio de las demás aplicaciones. Solo los programas con una sesión de audio activa en Windows aparecerán en la lista; inicie la reproducción de audio en el programa correspondiente si no aparece.</p>
+<p>Utilice <strong>Edit...</strong> para cambiar la fuente seleccionada y <strong>Remove...</strong> para borrarla de la sesión. El deslizador de volumen de la fuente cambia su nivel en la mezcla final.</p>
+<p>Las fuentes son solo para la sesión actual. Se conservan al cerrar y reabrir la ventana de grabación durante la misma sesión de Luna, pero no se restauran tras salir de la aplicación, ya que los dispositivos e identificadores de procesos pueden cambiar.</p>
+<h3 id="recording-format-and-destination">Formato de grabación y destino</h3>
+<p>Elija el formato, la frecuencia de muestreo, el número de canales, la calidad (si procede) y la carpeta de destino:</p>
+<ul>
+<li><strong>WAV</strong>: no tiene compresión y suele generar el archivo de mayor tamaño.</li>
+<li><strong>FLAC</strong>: es sin pérdidas y generalmente ocupa menos que WAV.</li>
+<li><strong>MP3</strong> y <strong>AAC</strong>: tienen pérdida y usan la tasa de bits seleccionada para equilibrar el tamaño y la calidad.</li>
+<li><strong>Mono</strong>: suele ser suficiente para un micrófono o voz hablada.</li>
+<li><strong>Stereo</strong>: conserva los canales izquierdo y derecho por separado para música y salida del sistema.</li>
+</ul>
+<p>Las frecuencias de muestreo, los canales y las tasas de bits disponibles se obtienen de los codificadores instalados en Windows. Por lo tanto, las opciones varían según el formato seleccionado y el sistema. Luna asigna a cada grabación un nombre con marca de tiempo para evitar sobrescribir archivos anteriores.</p>
+<p>Los cambios realizados dentro de la interfaz de grabación se aplican a su sesión. Para cambiar los valores predeterminados utilizados en futuros inicios o por los atajos directos, utilice <strong>Preferences &gt; Recording</strong>.</p>
+<h3 id="starting-pausing-and-stopping">Iniciar, pausar y detener</h3>
+<p>La ventana de grabación requiere al menos una fuente configurada antes de que la opción <strong>Start</strong> esté disponible. Una vez iniciada la grabación, los controles de fuente y salida se bloquean para que el formato de grabación y la mezcla permanezcan constantes.</p>
+<ul>
+<li>El botón <strong>Start</strong> se convierte en <strong>Stop</strong> durante la grabación.</li>
+<li>El botón <strong>Pause</strong> se convierte en <strong>Resume</strong> durante la pausa.</li>
+<li><kbd>F9</kbd>, <kbd>F7</kbd> y <kbd>F8</kbd> funcionan desde la ventana principal de Luna.</li>
+<li>Los atajos globales correspondientes funcionan incluso cuando otra aplicación tiene el foco.</li>
+</ul>
+<p>Si solo se pueden abrir algunas fuentes, Luna se iniciará con las fuentes disponibles e informará de las que hayan fallado. Si no se puede abrir ninguna, la grabación no se iniciará.</p>
+<p>Elija <strong>Recording &gt; Open recordings folder</strong> para abrir la carpeta de destino activa. La carpeta predeterminada es <code>Documentos\Luna Player\Recordings</code>.</p>
+<h2 id="14-preferences-reference">14. Referencia de preferencias</h2>
+<p>Abra Preferencias desde <strong>File &gt; Preferences...</strong> o presione <kbd>Ctrl</kbd>+<kbd>P</kbd>. Seleccione una página en el árbol de categorías. Presione Aceptar para validar y aplicar todas las páginas, o Cancelar para descartar los cambios no aceptados.</p>
+<p>Presione <kbd>F1</kbd> mientras un ajuste tiene el foco para escuchar una explicación detallada de esa opción.</p>
+<h3 id="general">General</h3>
+<table>
+<thead>
+<tr>
+<th>Ajuste</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Language</td>
+<td>Utiliza el idioma de visualización de Windows o una traducción incluida. Reinicie Luna después de cambiarlo.</td>
+</tr>
+<tr>
+<td>Remember last file position</td>
+<td>Restaura el último archivo local activo y su posición en el siguiente inicio.</td>
+</tr>
+<tr>
+<td>Speak file name when navigating</td>
+<td>Anuncia el elemento alcanzado mediante Anterior o Siguiente.</td>
+</tr>
+<tr>
+<td>Check for app updates on startup</td>
+<td>Busca actualizaciones en segundo plano al iniciar y solo avisa si hay una versión nueva lista.</td>
+</tr>
+<tr>
+<td>Save settings on close</td>
+<td>Guarda los cambios de la sesión (como volumen y velocidad) al salir de Luna. Los cambios aceptados explícitamente en Preferencias se guardan al instante.</td>
+</tr>
+<tr>
+<td>Verbosity</td>
+<td>Permite elegir entre anuncios completos (Beginner) o anuncios breves (Advanced).</td>
+</tr>
+<tr>
+<td>What would you like to open with files?</td>
+<td>Controla si al abrir un archivo se cargan solo él mismo, su carpeta o su carpeta y subcarpetas.</td>
+</tr>
+<tr>
+<td>Register/Unregister file extensions</td>
+<td>Añade o elimina el registro de formatos compatibles de Luna para el usuario actual de Windows.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="backup-and-restore">Copia de seguridad y restauración</h3>
+<table>
+<thead>
+<tr>
+<th>Orden</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Export settings</td>
+<td>Guarda las preferencias aplicadas en un archivo JSON sin mover la copia de trabajo.</td>
+</tr>
+<tr>
+<td>Import settings</td>
+<td>Carga un archivo JSON de configuración válido y reemplaza los valores de Preferencias.</td>
+</tr>
+<tr>
+<td>Export bookmarks</td>
+<td>Guarda todos los marcadores en un archivo JSON.</td>
+</tr>
+<tr>
+<td>Import bookmarks</td>
+<td>Reemplaza la colección de marcadores actual por una válida exportada previamente.</td>
+</tr>
+<tr>
+<td>Reset settings</td>
+<td>Restaura cada preferencia y atajo a su valor predeterminado tras confirmarlo.</td>
+</tr>
+<tr>
+<td>Open user settings folder</td>
+<td>Abre el directorio de configuración de Luna en el Explorador de archivos.</td>
+</tr>
+</tbody>
+</table>
+<p>Importar reemplaza la colección correspondiente; no combina entradas. Conserve los archivos exportados en un lugar separado de la carpeta de configuración de Luna si se usan como copias de seguridad.</p>
+<h3 id="audio">Audio</h3>
+<table>
+<thead>
+<tr>
+<th>Ajuste</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Custom seek value</td>
+<td>Número de segundos utilizado para el salto personalizado; admite decimales positivos como 2.5.</td>
+</tr>
+<tr>
+<td>Speed step</td>
+<td>Cantidad que se suma o resta en cada orden de velocidad.</td>
+</tr>
+<tr>
+<td>Pitch step</td>
+<td>Cambio de tono por pulsación, de 0.001 a 12 semitonos.</td>
+</tr>
+<tr>
+<td>Volume step</td>
+<td>Cambio de volumen por pulsación, de 1 a 20 puntos porcentuales.</td>
+</tr>
+<tr>
+<td>Pan step</td>
+<td>Movimiento del balance por pulsación, de 1 a 100 puntos porcentuales.</td>
+</tr>
+<tr>
+<td>What happens after a file ends?</td>
+<td>Avanza, repite en bucle o se detiene al llegar al final.</td>
+</tr>
+<tr>
+<td>Wrap to top for multiple files</td>
+<td>Conecta el final y el principio de una lista de varios elementos.</td>
+</tr>
+<tr>
+<td>Save current position for each file</td>
+<td>Mantiene una posición de reanudación independiente para cada archivo local.</td>
+</tr>
+<tr>
+<td>Enable dynamic normalize and limiter</td>
+<td>Nivela el volumen y controla los picos.</td>
+</tr>
+<tr>
+<td>Play audio as Mono</td>
+<td>Mezcla los canales izquierdo y derecho en mono.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="silence-removal">Eliminación de silencios</h3>
+<p>Consulte <a href="#8-silence-removal-and-audio-processing">Eliminación de silencios y procesamiento de audio</a> para los controles básicos y avanzados.</p>
+<h3 id="youtube">YouTube</h3>
+<table>
+<thead>
+<tr>
+<th>Ajuste</th>
+<th>Propósito</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Play videos as audio only</td>
+<td>Solicita únicamente sonido sin imagen.</td>
+</tr>
+<tr>
+<td>Video quality</td>
+<td>Selecciona Baja, Media o la Mejor para la reproducción de vídeos y descargas.</td>
+</tr>
+<tr>
+<td>Number of search results</td>
+<td>Establece el objetivo inicial de 5 a 100; se cargarán más al llegar al final.</td>
+</tr>
+<tr>
+<td>Video+playlist link behavior</td>
+<td>Pregunta cada vez, reproduce siempre el vídeo o abre siempre la lista.</td>
+</tr>
+<tr>
+<td>Use yt-dlp to resolve streams</td>
+<td>Utiliza el componente descargado yt-dlp en lugar del resolvedor propio de Luna.</td>
+</tr>
+<tr>
+<td>yt-dlp update channel</td>
+<td>Elige entre Estable (Stable), Nocturno (Nightly) o Principal (Master).</td>
+</tr>
+<tr>
+<td>Check for yt-dlp updates on startup</td>
+<td>Realiza una comprobación silenciosa del componente tras iniciar.</td>
+</tr>
+<tr>
+<td>Download YouTube components</td>
+<td>Instala o actualiza yt-dlp y herramientas de soporte.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="recording">Grabación</h3>
+<p>Esta página establece los valores predeterminados utilizados por los atajos directos de grabación y configura la interfaz de grabación al comienzo de cada sesión de Luna. Contiene el formato de audio, la frecuencia de muestreo, los canales, la calidad de audio para formatos comprimidos y la carpeta de grabaciones.</p>
+<h3 id="keyboard-shortcuts">Atajos de teclado</h3>
+<p>Esta página enumera cada acción que se puede ejecutar mientras la ventana principal de Luna tiene el foco. Cada acción puede tener un atajo primario; algunas acciones también disponen de un espacio secundario predefinido.</p>
+<ol>
+<li>Seleccione una acción.</li>
+<li>Active <strong>Edit Primary Shortcut</strong> o, si está disponible, <strong>Edit Secondary Shortcut</strong>.</li>
+<li>Presione la combinación deseada. Presione <kbd>Escape</kbd> para cancelar la captura.</li>
+<li>Presione Aceptar en Preferencias para aplicar los cambios.</li>
+</ol>
+<p>Luna rechazará una combinación que ya esté asignada a otra acción en el mismo conjunto de atajos. Los atajos locales pueden usar teclas imprimibles, teclas de navegación, teclas de función F1 a F24 y los modificadores Ctrl, Shift o Alt. Utilice <strong>Reset to Defaults</strong> para restaurar la página completa de atajos locales tras su confirmación.</p>
+<h3 id="global-shortcuts">Atajos globales</h3>
+<p>Los atajos globales funcionan mientras otra aplicación tiene el foco. Están limitados intencionadamente a órdenes de reproducción, navegación, volumen y grabación que resultan útiles fuera de Luna.</p>
+<p>Seleccione una acción, active <strong>Edit Shortcut</strong> y presione la combinación deseada. Los atajos globales también pueden utilizar la tecla Windows. Es posible que Windows rechace un atajo reservado por el sistema operativo u otra aplicación; Luna informará de los atajos que no haya podido registrar.</p>
+<p>Los atajos globales son independientes de los atajos locales. Cambiar uno no modifica el otro.</p>
+<h2 id="15-application-updates">15. Actualizaciones de la aplicación</h2>
+<h3 id="checking-manually">Comprobación manual</h3>
+<p>Elija <strong>Help &gt; Updates &gt; Check for app updates</strong>. Aparecerá un cuadro de diálogo de progreso que se puede cancelar mientras Luna comprueba la información sobre la nueva versión.</p>
+<p>Si hay una versión nueva disponible, Luna mostrará la versión instalada, la disponible y una lista desplazable de cambios. Elija <strong>Update</strong> para descargarla o <strong>Later</strong> para mantener la versión actual sin cambios.</p>
+<p>Luna verifica que el instalador real o el archivo portable existan antes de ofrecer la actualización. Si la información de lanzamiento se publicó antes de terminar de subir el paquete, una comprobación manual le pedirá que lo intente de nuevo más tarde en lugar de ofrecer una descarga fallida.</p>
+<h3 id="startup-checks">Comprobación al inicio</h3>
+<p>Habilite <strong>Check for app updates on startup</strong> para una comprobación en segundo plano. No mostrará ventanas de progreso ni mensajes en caso de no haber novedades; solo aparecerá un aviso cuando exista un paquete compatible más reciente.</p>
+<h3 id="installing-a-downloaded-update">Instalar una actualización descargada</h3>
+<p>La ventana de descarga muestra el tamaño total, el descargado, el porcentaje y un botón Cancelar. Tras una descarga correcta, Luna iniciará su asistente de actualización y se cerrará:</p>
+<ul>
+<li>En una copia instalada, iniciará el instalador de la actualización. El progreso del proceso permanecerá visible y Luna se abrirá al finalizar.</li>
+<li>En una copia portable, reemplazará los archivos de la aplicación extraídos y abrirá el reproductor actualizado.</li>
+</ul>
+<p>No inicie otro proceso de Luna mientras se esté aplicando la actualización.</p>
+<h2 id="16-help-and-release-information">16. Ayuda e información de la versión</h2>
+<ul>
+<li><strong>Help &gt; User guide</strong> o <kbd>F1</kbd>: abre la guía instalada que coincida con el idioma de la interfaz de Luna. Si no hay instalada ninguna guía en el idioma regional o base, Luna abrirá la guía en inglés.</li>
+<li><strong>Help &gt; About</strong>: muestra una descripción, versión, información de derechos de autor y un enlace al sitio web del proyecto.</li>
+<li><strong>Help &gt; Release notes</strong>: abre la página de notas de la versión en GitHub en su navegador predeterminado.</li>
+</ul>
+<p>La guía del usuario está instalada como HTML local y no requiere conexión a Internet. Las notas de la versión y el sitio web del proyecto sí requieren conexión.</p>
+<h2 id="17-settings-and-user-data">17. Configuración y datos del usuario</h2>
+<p>Luna almacena los datos de usuario en <code>%APPDATA%\Luna Player</code>:</p>
+<table>
+<thead>
+<tr>
+<th>Archivo</th>
+<th>Contenido</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>settings.json</code></td>
+<td>Preferencias y atajos personalizados</td>
+</tr>
+<tr>
+<td><code>bookmarks.json</code></td>
+<td>Marcadores guardados con nombre para archivos locales</td>
+</tr>
+<tr>
+<td><code>positions.json</code></td>
+<td>Posiciones de reproducción por archivo</td>
+</tr>
+<tr>
+<td><code>favorites.json</code></td>
+<td>Enlaces favoritos de YouTube y transmisiones</td>
+</tr>
+</tbody>
+</table>
+<p>Utilice <strong>Preferences &gt; Backup and restore &gt; Open user settings folder</strong> para abrir la carpeta exacta sin tener que escribir la ruta.</p>
+<p>No edite estos archivos mientras Luna esté en ejecución. Utilice las funciones de exportación e importación de la configuración y marcadores siempre que sea posible.</p>
+<p>Si <code>settings.json</code> no se puede leer o contiene valores no válidos, Luna se iniciará con los valores predeterminados, mostrará el motivo y protegerá el archivo existente para que no sea sobrescrito. Importe una copia de seguridad válida o use <strong>Reset settings</strong> para reemplazarlo deliberadamente. Los archivos de marcadores y favoritos no válidos también se notificarán en lugar de reemplazarse en silencio.</p>
+<h2 id="18-complete-default-shortcut-reference">18. Referencia completa de atajos predeterminados</h2>
+<p>Estos son los valores predeterminados de fábrica. Sus atajos actuales pueden variar según los haya personalizado. La lista oficial para su instalación se encuentra en <strong>Preferences &gt; Keyboard Shortcuts</strong> y <strong>Global Shortcuts</strong>.</p>
+<h3 id="files-information-and-preferences">Archivos, información y Preferencias</h3>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Atajo primario</th>
+<th>Atajo secundario</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Abrir archivos</td>
+<td><kbd>Ctrl</kbd>+<kbd>O</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Abrir un enlace de transmisión en red</td>
+<td><kbd>Ctrl</kbd>+<kbd>L</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Abrir todos los archivos de una carpeta</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Mostrar archivo actual en Explorador de archivos</td>
+<td><kbd>Ctrl</kbd>+<kbd>F</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Propiedades de archivo de Windows</td>
+<td><kbd>Alt</kbd>+<kbd>Enter</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Diálogo de Archivos Abiertos</td>
+<td><kbd>F2</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Cerrar archivo actual</td>
+<td><kbd>Ctrl</kbd>+<kbd>W</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Cerrar todos los archivos</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>W</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Preferencias</td>
+<td><kbd>Ctrl</kbd>+<kbd>P</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Anunciar información del archivo actual</td>
+<td><kbd>F</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Anunciar título del medio actual</td>
+<td><kbd>I</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Salir de Luna</td>
+<td>Ninguno</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="playlist-navigation-and-modes">Navegación por lista y modos</h3>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Atajo primario</th>
+<th>Atajo secundario</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Archivo anterior</td>
+<td><kbd>Shift</kbd>+<kbd>Tab</kbd></td>
+<td><kbd>Re Pág</kbd></td>
+</tr>
+<tr>
+<td>Archivo siguiente</td>
+<td><kbd>Tab</kbd></td>
+<td><kbd>Av Pág</kbd></td>
+</tr>
+<tr>
+<td>Primer archivo</td>
+<td><kbd>Ctrl</kbd>+<kbd>Inicio</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Ir al número de archivo</td>
+<td><kbd>Ctrl</kbd>+<kbd>G</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Último archivo</td>
+<td><kbd>Ctrl</kbd>+<kbd>Fin</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Activar/Desactivar reproducción aleatoria</td>
+<td><kbd>Ctrl</kbd>+<kbd>Z</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Activar/Desactivar repetición de archivo</td>
+<td><kbd>Ctrl</kbd>+<kbd>R</kbd></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="playback-and-seeking">Reproducción y saltos de tiempo</h3>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Atajo primario</th>
+<th>Atajo secundario</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reproducir o pausar</td>
+<td><kbd>Espacio</kbd></td>
+<td><kbd>Enter</kbd></td>
+</tr>
+<tr>
+<td>Retroceder un paso</td>
+<td><kbd>Izquierda</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Avanzar un paso</td>
+<td><kbd>Derecha</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Retroceder dos pasos</td>
+<td><kbd>Shift</kbd>+<kbd>Izquierda</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Avanzar dos pasos</td>
+<td><kbd>Shift</kbd>+<kbd>Derecha</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Retroceder cuatro pasos</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Izquierda</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Avanzar cuatro pasos</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Derecha</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Principio</td>
+<td><kbd>Inicio</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Final</td>
+<td><kbd>Fin</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Ir a un punto temporal</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd></td>
+<td>—</td>
+</tr>
+<tr>
+<td>Seleccionar tarjeta de sonido</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="seek-amount-selection">Selección del paso de salto</h3>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Atajo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Seleccionar paso de 1 segundo</td>
+<td><kbd>Shift</kbd>+<kbd>1</kbd></td>
+</tr>
+<tr>
+<td>Seleccionar paso de 5 segundos</td>
+<td><kbd>Shift</kbd>+<kbd>2</kbd></td>
+</tr>
+<tr>
+<td>Seleccionar paso de 10 segundos</td>
+<td><kbd>Shift</kbd>+<kbd>3</kbd></td>
+</tr>
+<tr>
+<td>Seleccionar paso de 20 segundos</td>
+<td><kbd>Shift</kbd>+<kbd>4</kbd></td>
+</tr>
+<tr>
+<td>Seleccionar paso de 30 segundos</td>
+<td><kbd>Shift</kbd>+<kbd>5</kbd></td>
+</tr>
+<tr>
+<td>Seleccionar paso de 1 minuto</td>
+<td><kbd>Shift</kbd>+<kbd>6</kbd></td>
+</tr>
+<tr>
+<td>Seleccionar paso de 2 minutos</td>
+<td><kbd>Shift</kbd>+<kbd>7</kbd></td>
+</tr>
+<tr>
+<td>Seleccionar paso de 3 minutos</td>
+<td><kbd>Shift</kbd>+<kbd>8</kbd></td>
+</tr>
+<tr>
+<td>Seleccionar paso de 5 minutos</td>
+<td><kbd>Shift</kbd>+<kbd>9</kbd></td>
+</tr>
+<tr>
+<td>Seleccionar paso de 10 minutos</td>
+<td><kbd>Shift</kbd>+<kbd>0</kbd></td>
+</tr>
+<tr>
+<td>Seleccionar paso personalizado</td>
+<td><kbd>Shift</kbd>+<kbd>-</kbd></td>
+</tr>
+</tbody>
+</table>
+<h3 id="percentage-jumps">Saltos por porcentaje</h3>
+<table>
+<thead>
+<tr>
+<th>Posición</th>
+<th>Atajo</th>
+<th>Posición</th>
+<th>Atajo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>10%</td>
+<td><kbd>Ctrl</kbd>+<kbd>1</kbd></td>
+<td>15%</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>1</kbd></td>
+</tr>
+<tr>
+<td>20%</td>
+<td><kbd>Ctrl</kbd>+<kbd>2</kbd></td>
+<td>25%</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>2</kbd></td>
+</tr>
+<tr>
+<td>30%</td>
+<td><kbd>Ctrl</kbd>+<kbd>3</kbd></td>
+<td>35%</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>3</kbd></td>
+</tr>
+<tr>
+<td>40%</td>
+<td><kbd>Ctrl</kbd>+<kbd>4</kbd></td>
+<td>45%</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>4</kbd></td>
+</tr>
+<tr>
+<td>50%</td>
+<td><kbd>Ctrl</kbd>+<kbd>5</kbd></td>
+<td>55%</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>5</kbd></td>
+</tr>
+<tr>
+<td>60%</td>
+<td><kbd>Ctrl</kbd>+<kbd>6</kbd></td>
+<td>65%</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>6</kbd></td>
+</tr>
+<tr>
+<td>70%</td>
+<td><kbd>Ctrl</kbd>+<kbd>7</kbd></td>
+<td>75%</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>7</kbd></td>
+</tr>
+<tr>
+<td>80%</td>
+<td><kbd>Ctrl</kbd>+<kbd>8</kbd></td>
+<td>85%</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>8</kbd></td>
+</tr>
+<tr>
+<td>90%</td>
+<td><kbd>Ctrl</kbd>+<kbd>9</kbd></td>
+<td>95%</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>9</kbd></td>
+</tr>
+<tr>
+<td>100%</td>
+<td><kbd>Ctrl</kbd>+<kbd>0</kbd></td>
+<td>100% alternativa</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>0</kbd></td>
+</tr>
+</tbody>
+</table>
+<h3 id="volume-and-spoken-status">Volumen y estado verbalizado</h3>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Atajo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Aumentar volumen</td>
+<td><kbd>Arriba</kbd></td>
+</tr>
+<tr>
+<td>Disminuir volumen</td>
+<td><kbd>Abajo</kbd></td>
+</tr>
+<tr>
+<td>Ajustar volumen al máximo</td>
+<td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Arriba</kbd></td>
+</tr>
+<tr>
+<td>Ajustar volumen al mínimo</td>
+<td><kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>Abajo</kbd></td>
+</tr>
+<tr>
+<td>Anunciar volumen</td>
+<td><kbd>V</kbd></td>
+</tr>
+<tr>
+<td>Anunciar tiempo transcurrido</td>
+<td><kbd>E</kbd></td>
+</tr>
+<tr>
+<td>Anunciar tiempo restante</td>
+<td><kbd>R</kbd></td>
+</tr>
+<tr>
+<td>Anunciar duración total</td>
+<td><kbd>T</kbd></td>
+</tr>
+<tr>
+<td>Anunciar porcentaje de posición</td>
+<td><kbd>P</kbd></td>
+</tr>
+<tr>
+<td>Anunciar velocidad de reproducción</td>
+<td><kbd>S</kbd></td>
+</tr>
+<tr>
+<td>Cambiar nivel de detalle Beginner/Advanced</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd></td>
+</tr>
+</tbody>
+</table>
+<h3 id="speed-pitch-pan-loops-and-filters">Velocidad, tono, balance, bucles y filtros</h3>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Atajo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Aumentar velocidad de reproducción</td>
+<td><kbd>Ctrl</kbd>+<kbd>Arriba</kbd></td>
+</tr>
+<tr>
+<td>Disminuir velocidad de reproducción</td>
+<td><kbd>Ctrl</kbd>+<kbd>Abajo</kbd></td>
+</tr>
+<tr>
+<td>Restablecer velocidad de reproducción</td>
+<td><kbd>Alt</kbd>+<kbd>Y</kbd></td>
+</tr>
+<tr>
+<td>Aumentar tono</td>
+<td><kbd>Shift</kbd>+<kbd>Arriba</kbd></td>
+</tr>
+<tr>
+<td>Disminuir tono</td>
+<td><kbd>Shift</kbd>+<kbd>Abajo</kbd></td>
+</tr>
+<tr>
+<td>Restablecer tono</td>
+<td><kbd>Alt</kbd>+<kbd>Shift</kbd>+<kbd>P</kbd></td>
+</tr>
+<tr>
+<td>Anunciar tono</td>
+<td><kbd>Shift</kbd>+<kbd>P</kbd></td>
+</tr>
+<tr>
+<td>Balance hacia la izquierda</td>
+<td><kbd>Ctrl</kbd>+<kbd>Izquierda</kbd></td>
+</tr>
+<tr>
+<td>Balance hacia la derecha</td>
+<td><kbd>Ctrl</kbd>+<kbd>Derecha</kbd></td>
+</tr>
+<tr>
+<td>Anunciar balance</td>
+<td><kbd>B</kbd></td>
+</tr>
+<tr>
+<td>Activar/Desactivar eliminación de silencios</td>
+<td><kbd>Ctrl</kbd>+<kbd>M</kbd></td>
+</tr>
+<tr>
+<td>Establecer inicio de bucle A-B</td>
+<td><kbd>[</kbd></td>
+</tr>
+<tr>
+<td>Establecer fin de bucle A-B</td>
+<td><kbd>]</kbd></td>
+</tr>
+<tr>
+<td>Borrar bucle A-B</td>
+<td><kbd>Retroceso</kbd></td>
+</tr>
+</tbody>
+</table>
+<h3 id="editing-and-marked-files">Edición y archivos marcados</h3>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Atajo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Renombrar archivo actual</td>
+<td><kbd>Shift</kbd>+<kbd>F2</kbd></td>
+</tr>
+<tr>
+<td>Eliminar archivo actual</td>
+<td><kbd>Shift</kbd>+<kbd>Supr</kbd></td>
+</tr>
+<tr>
+<td>Copiar archivo actual al portapapeles</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd></td>
+</tr>
+<tr>
+<td>Pegar/abrir archivo o carpeta desde el portapapeles</td>
+<td><kbd>Ctrl</kbd>+<kbd>V</kbd></td>
+</tr>
+<tr>
+<td>Marcar o desmarcar archivo actual</td>
+<td><kbd>Ctrl</kbd>+<kbd>K</kbd></td>
+</tr>
+<tr>
+<td>Marcar o desmarcar todos los archivos</td>
+<td><kbd>Ctrl</kbd>+<kbd>A</kbd></td>
+</tr>
+<tr>
+<td>Limpiar todas las marcas</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>K</kbd></td>
+</tr>
+<tr>
+<td>Anunciar recuento de archivos marcados</td>
+<td><kbd>K</kbd></td>
+</tr>
+<tr>
+<td>Copiar archivos marcados a una carpeta</td>
+<td>Ninguno</td>
+</tr>
+<tr>
+<td>Mover archivos marcados a una carpeta</td>
+<td>Ninguno</td>
+</tr>
+<tr>
+<td>Copiar archivos marcados al portapapeles</td>
+<td>Ninguno</td>
+</tr>
+<tr>
+<td>Eliminar archivos marcados</td>
+<td>Ninguno</td>
+</tr>
+</tbody>
+</table>
+<h3 id="bookmarks">Marcadores</h3>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Atajo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Añadir marcador</td>
+<td><kbd>Shift</kbd>+<kbd>M</kbd></td>
+</tr>
+<tr>
+<td>Gestionar marcadores</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd></td>
+</tr>
+<tr>
+<td>Ir a los marcadores 1 a 9</td>
+<td><kbd>Alt</kbd>+<kbd>1</kbd> a <kbd>Alt</kbd>+<kbd>9</kbd></td>
+</tr>
+<tr>
+<td>Ir al marcador 10</td>
+<td><kbd>Alt</kbd>+<kbd>0</kbd></td>
+</tr>
+</tbody>
+</table>
+<h3 id="youtube-recording-updates-and-help">YouTube, grabación, actualizaciones y ayuda</h3>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Atajo</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Abrir enlace de YouTube</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Y</kbd></td>
+</tr>
+<tr>
+<td>Buscar en YouTube</td>
+<td><kbd>Ctrl</kbd>+<kbd>Y</kbd></td>
+</tr>
+<tr>
+<td>Vídeos favoritos</td>
+<td><kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd></td>
+</tr>
+<tr>
+<td>Descargar vídeo de YouTube actual</td>
+<td><kbd>Ctrl</kbd>+<kbd>D</kbd></td>
+</tr>
+<tr>
+<td>Mostrar descripción del vídeo actual</td>
+<td><kbd>Alt</kbd>+<kbd>D</kbd></td>
+</tr>
+<tr>
+<td>Copiar enlace del vídeo actual</td>
+<td>Ninguno</td>
+</tr>
+<tr>
+<td>Abrir interfaz de grabación</td>
+<td><kbd>Alt</kbd>+<kbd>R</kbd></td>
+</tr>
+<tr>
+<td>Iniciar grabación</td>
+<td><kbd>F9</kbd></td>
+</tr>
+<tr>
+<td>Pausar o reanudar grabación</td>
+<td><kbd>F7</kbd></td>
+</tr>
+<tr>
+<td>Detener grabación</td>
+<td><kbd>F8</kbd></td>
+</tr>
+<tr>
+<td>Abrir carpeta de grabaciones</td>
+<td>Ninguno</td>
+</tr>
+<tr>
+<td>Abrir guía del usuario</td>
+<td><kbd>F1</kbd></td>
+</tr>
+<tr>
+<td>Acerca de Luna</td>
+<td>Ninguno</td>
+</tr>
+<tr>
+<td>Abrir notas de la versión</td>
+<td>Ninguno</td>
+</tr>
+<tr>
+<td>Comprobar actualizaciones de la aplicación</td>
+<td>Ninguno</td>
+</tr>
+<tr>
+<td>Actualizar componentes de YouTube</td>
+<td>Ninguno</td>
+</tr>
+</tbody>
+</table>
+<h3 id="default-global-shortcuts">Atajos globales predeterminados</h3>
+<p>Estas órdenes funcionan en todo el sistema mientras Luna está en ejecución, incluso si otro programa tiene el foco.</p>
+<table>
+<thead>
+<tr>
+<th>Acción</th>
+<th>Atajo global</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Reproducir o pausar</td>
+<td><kbd>Win</kbd>+<kbd>Alt</kbd>+<kbd>Espacio</kbd></td>
+</tr>
+<tr>
+<td>Retroceder un paso</td>
+<td><kbd>Win</kbd>+<kbd>Alt</kbd>+<kbd>Izquierda</kbd></td>
+</tr>
+<tr>
+<td>Avanzar un paso</td>
+<td><kbd>Win</kbd>+<kbd>Alt</kbd>+<kbd>Derecha</kbd></td>
+</tr>
+<tr>
+<td>Aumentar volumen</td>
+<td><kbd>Win</kbd>+<kbd>Alt</kbd>+<kbd>Arriba</kbd></td>
+</tr>
+<tr>
+<td>Disminuir volumen</td>
+<td><kbd>Win</kbd>+<kbd>Alt</kbd>+<kbd>Abajo</kbd></td>
+</tr>
+<tr>
+<td>Archivo anterior</td>
+<td><kbd>Win</kbd>+<kbd>Alt</kbd>+<kbd>Re Pág</kbd></td>
+</tr>
+<tr>
+<td>Archivo siguiente</td>
+<td><kbd>Win</kbd>+<kbd>Alt</kbd>+<kbd>Av Pág</kbd></td>
+</tr>
+<tr>
+<td>Iniciar grabación</td>
+<td><kbd>Win</kbd>+<kbd>Alt</kbd>+<kbd>F9</kbd></td>
+</tr>
+<tr>
+<td>Pausar o reanudar grabación</td>
+<td><kbd>Win</kbd>+<kbd>Alt</kbd>+<kbd>F7</kbd></td>
+</tr>
+<tr>
+<td>Detener grabación</td>
+<td><kbd>Win</kbd>+<kbd>Alt</kbd>+<kbd>F8</kbd></td>
+</tr>
+</tbody>
+</table>
+<h2 id="19-supported-formats">19. Formatos compatibles</h2>
+<p>Luna filtra la selección de archivos y carpetas utilizando las siguientes extensiones. La reproducción es gestionada por mpv, por lo que otros formatos admitidos por dicho motor también podrían reproducirse al abrirse directamente.</p>
+<p><strong>Audio:</strong> AAC, AC-3, AIFF, ALAC, APE, AU, DTS, E-AC-3, FLAC, M4A, MKA, MP1, MP2, MP3, MPC, OGA, OGG, OGM, Opus, TAK, TrueHD (<code>.thd</code>), TTA, WAV, WMA y WavPack.</p>
+<p><strong>Vídeo:</strong> 3G2, 3GP, AVI, FLV, IVF, M2TS, M4V, MJ2, MKV, MOV, MP4, MPEG, MPG, MXF, OGV, RMVB, TS, WebM, WMV y Y4M.</p>
+<p><strong>Listas de reproducción:</strong> M3U y M3U8, incluyendo emisiones HLS.</p>
+<h2 id="20-troubleshooting">20. Solución de problemas</h2>
+<h3 id="a-file-or-folder-opens-fewer-items-than-expected">Un archivo o carpeta abre menos elementos de los esperados</h3>
+<p>Compruebe <strong>Preferences &gt; General &gt; What would you like to open with files?</strong>. Por defecto, solo se abre el archivo seleccionado. Las órdenes para carpetas solo incluyen extensiones reconocidas como medios multimedia. Las carpetas inaccesibles y del sistema se omiten en los escaneos recursivos.</p>
+<h3 id="a-live-stream-has-no-duration-or-percentage">Una emisión en directo no muestra duración ni porcentaje</h3>
+<p>Las transmisiones en directo a menudo no publican una duración fija. Las funciones ir a tiempo, saltos por porcentaje, tiempo restante y saltar al final requieren una duración conocida y pueden no estar disponibles.</p>
+<h3 id="a-youtube-video-does-not-open">Un vídeo de YouTube no se abre</h3>
+<p>Pruebe estos pasos en orden:</p>
+<ol>
+<li>Confirme que la dirección se abre en un navegador y que corresponde a un vídeo o lista de reproducción, y no a un canal.</li>
+<li>Elija <strong>Help &gt; Updates &gt; Update YouTube components</strong>.</li>
+<li>Habilite la opción <strong>Use yt-dlp to resolve streams</strong> dentro de las Preferencias de YouTube.</li>
+<li>Pruebe primero el canal Estable (Stable); use Nocturno (Nightly) o Principal (Master) solo si el canal Estable no puede gestionar un cambio reciente del servicio.</li>
+</ol>
+<h3 id="recording-cannot-find-a-program">La grabación no encuentra un programa</h3>
+<p>La captura de programas requiere Windows 10 versión 2004 o posterior. Además, el programa debe tener una sesión de audio activa en Windows. Inicie la reproducción en ese programa, vuelva a abrir el diálogo de fuentes y selecciónelo en la lista actualizada.</p>
+<h3 id="recording-starts-without-one-of-its-sources">La grabación se inicia sin alguna de sus fuentes</h3>
+<p>Luna puede continuar cuando al menos una fuente consigue abrirse. Lea el aviso que enumera las fuentes fallidas y compruebe si sus dispositivos están conectados, habilitados y disponibles. Detenga la grabación antes de editar la lista de fuentes.</p>
+<h3 id="a-global-shortcut-does-not-work">Un atajo global no funciona</h3>
+<p>Abra <strong>Preferences &gt; Global Shortcuts</strong> y aplique la combinación de nuevo. Windows no permite que dos aplicaciones registren el mismo atajo global. Elija otra combinación si Luna informa que uno o más atajos no se pudieron registrar.</p>
+<h3 id="settings-will-not-save-after-a-startup-error">La configuración no se guarda tras un error de inicio</h3>
+<p>Luna protege los archivos <code>settings.json</code> no válidos o ilegibles en lugar de sobrescribirlos. Abra Preferencias e importe una copia de seguridad válida o elija <strong>Backup and restore &gt; Reset settings</strong>. Si necesita el original para un diagnóstico, cópielo primero desde la carpeta de configuración de usuario.</p>
+<h3 id="bookmarks-or-favorites-report-invalid-data">Los marcadores o favoritos notifican datos no válidos</h3>
+<p>Los archivos de almacenamiento corruptos se conservan en lugar de reemplazarse en silencio. Abra la carpeta de configuración de usuario, haga una copia del archivo JSON afectado y restaure una copia de seguridad válida. Los marcadores se pueden restaurar a través de Preferencias. Los favoritos actualmente requieren restaurar el propio archivo <code>favorites.json</code> mientras Luna está cerrado.</p>
+<h3 id="the-user-guide-does-not-open">La guía del usuario no se abre</h3>
+<p>La guía instalada debe estar ubicada en <code>docs\&lt;código-de-idioma&gt;\user-guide.html</code> junto al ejecutable. Vuelva a extraer el archivo portable completo o repare/reinstale la aplicación si falta la carpeta <code>docs</code>. Luna intentará buscar primero el idioma regional, luego el idioma base y finalmente el inglés.</p>
+<h2 id="21-publisher-and-licensing">21. Editor y licencias</h2>
+<p>Luna Player es publicado por <strong>Diamond Star</strong>.</p>
+<p>Copyright © 2026 Diamond Star.</p>
+<p>El código fuente original de Luna Player está bajo la licencia Apache License, Versión 2.0. El enlace traducido de mpv en <code>src/Mpv.cs</code> se distribuye bajo la licencia GNU Lesser General Public License, versión 2.1 o posterior.</p>
+<p>Luna Player también utiliza componentes de terceros bajo licencias independientes, incluyendo mpv, FFmpeg, wxWidgets, Prism, NAudio y YoutubeExplode. Cada componente permanece bajo su propia licencia. Consulte <code>NOTICE.txt</code>, instalado junto a Luna Player, para ver las declaraciones de derechos de autor, versiones de componentes, nombres de licencias y ubicaciones del código fuente. Los textos completos de las licencias están en la carpeta <code>licenses</code>.</p>
+<p>El resumen de licencias de esta guía se facilita por conveniencia. <code>LICENSE.txt</code>, <code>NOTICE.txt</code> y los archivos de la carpeta <code>licenses</code> contienen los términos y atribuciones oficiales. En el repositorio de origen, los archivos principales equivalentes se llaman <code>LICENSE</code> y <code>NOTICE</code>.</p>
+<h2 id="22-contact-and-support">22. Contacto y soporte</h2>
+<p>Luna Player es desarrollado y publicado por Diamond Star. Puede utilizar los siguientes canales de contacto:</p>
+<ul>
+<li><strong>Correo electrónico:</strong> <a href="mailto:ramymaherali55@gmail.com">ramymaherali55@gmail.com</a></li>
+<li><strong>Telegram:</strong> <a href="https://t.me/diamondStar35">Contactar con Diamond Star en Telegram</a></li>
+<li><strong>Informe de fallos:</strong> <a href="https://github.com/diamondStar35/luna_player/issues">Incidencias de Luna Player en GitHub</a></li>
+<li><strong>Código fuente y publicaciones:</strong> <a href="https://github.com/diamondStar35/luna_player">Luna Player en GitHub</a></li>
+</ul>
+<p>Para enviar un informe de fallo, incluya la versión de Luna mostrada en <strong>Help &gt; About</strong>, su versión de Windows, qué esperaba que sucediera, qué ocurrió y los pasos breves para reproducir el problema. Incluya el texto exacto de cualquier mensaje de error. Elimine nombres de archivos privados, direcciones web, datos de cuentas y otra información personal de registros o capturas de pantalla antes de compartirlos públicamente.</p>
+  </main>
+</body>
+</html>
