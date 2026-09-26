@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-09-26 13:19+0300\n"
+"POT-Creation-Date: 2026-09-26 22:25+0700\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -630,8 +631,7 @@ msgstr ""
 
 #. Translators: Stands in for a file size the download server did not state.
 #. Translators: Stands in for a file size the download did not state.
-#: Application/ActionHandlers/AppUpdateActions.cs:218
-#: YouTube/Components.cs:317
+#: Application/ActionHandlers/AppUpdateActions.cs:218 YouTube/Components.cs:317
 msgid "Unknown"
 msgstr ""
 
@@ -1681,6 +1681,8 @@ msgstr ""
 msgid "Paused."
 msgstr ""
 
+#. Translators: Shown when the folder recordings are saved into could not be opened.
+#. {reason} is what went wrong, in the language of the system rather than the player.
 #: Application/ActionHandlers/RecordingActions.cs:185
 msgid "Could not open the recordings folder."
 msgstr ""
@@ -1801,8 +1803,8 @@ msgstr ""
 #: Application/ActionHandlers/SettingsActions.cs:41
 #: Application/ActionHandlers/SettingsActions.cs:47
 #: Application/ActionHandlers/SettingsActions.cs:123
-#: Application/ActionHandlers/SettingsActions.cs:130
-#: UI/PreferencesDialog.cs:28 UI/PreferencesDialog.cs:188
+#: Application/ActionHandlers/SettingsActions.cs:130 UI/PreferencesDialog.cs:28
+#: UI/PreferencesDialog.cs:188
 msgid "Preferences"
 msgstr ""
 
@@ -2200,6 +2202,16 @@ msgstr ""
 msgid "There is not enough free disk space."
 msgstr ""
 
+#: Media/MediaLibrary.cs:37
+msgid "All Files"
+msgstr ""
+
+#. Translators: The two names in the Open dialog's file-type list. The patterns beside them are
+#. literal and must not be translated.
+#: Media/MediaLibrary.cs:37
+msgid "Media Files"
+msgstr ""
+
 #. Translators: Shown when recording was asked for with nothing to record from.
 #: Recording/RecordingSources.cs:65
 msgid "There is nothing to record from."
@@ -2285,11 +2297,12 @@ msgstr ""
 #: UI/AboutDialog.cs:30
 msgid ""
 "Luna includes mpv, copyright © the mpv developers and contributors to "
-"MPlayer and mplayer2, and a C# translation of python-mpv, copyright © 2017-"
-"2024 Sebastian Götte. These components are licensed under the GNU Lesser "
-"General Public License, version 2.1 or later. FFmpeg is licensed under the "
-"GNU Lesser General Public License, version 3 or later. See NOTICE.txt and "
-"the licenses folder for complete third-party notices and terms."
+"MPlayer and mplayer2, and a C# translation of python-mpv, copyright © "
+"2017-2024 Sebastian Götte. These components are licensed under the GNU "
+"Lesser General Public License, version 2.1 or later. FFmpeg is licensed "
+"under the GNU Lesser General Public License, version 3 or later. See "
+"NOTICE.txt and the licenses folder for complete third-party notices and "
+"terms."
 msgstr ""
 
 #. Translators: Final two lines in the About window. {publisher} is the developer's name and
@@ -3346,6 +3359,8 @@ msgid ""
 "original file locations\"."
 msgstr ""
 
+#. Translators: Shown when the chosen destination folder could not be created. {reason} is
+#. what went wrong, in the language of the system rather than the player.
 #: UI/MediaConverterDialog.cs:454
 msgid "The destination folder could not be created."
 msgstr ""
@@ -4577,6 +4592,21 @@ msgstr ""
 #. Translators: Context menu item in the results list that saves the chosen video to this computer.
 #: UI/YouTube/ResultsDialog.cs:44 UI/YouTube/ResultsDialog.cs:157
 msgid "Download"
+msgstr ""
+
+#. Translators: Context menu item in the results list that copies the address of the chosen video.
+#: UI/YouTube/ResultsDialog.cs:150
+msgid "Copy link"
+msgstr ""
+
+#. Translators: Context menu item in the results list that shows the chosen video in the web browser.
+#: UI/YouTube/ResultsDialog.cs:152
+msgid "Open in browser"
+msgstr ""
+
+#. Translators: Context menu item in the results list that shows the channel that published the video.
+#: UI/YouTube/ResultsDialog.cs:154
+msgid "Navigate to channel"
 msgstr ""
 
 #. Translators: Shown when something needs the extra programs for yt-dlp and they are not installed.

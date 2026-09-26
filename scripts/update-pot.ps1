@@ -38,7 +38,8 @@ function Get-GettextTool {
     foreach ($directory in @(
         "${env:ProgramFiles(x86)}\GnuWin32\bin",
         "${env:ProgramFiles}\GnuWin32\bin",
-        "${env:ProgramFiles}\gettext-iconv\bin")) {
+        "${env:ProgramFiles}\gettext-iconv\bin",
+        "${env:ProgramFiles}\Poedit\GettextTools\bin")) {
         $candidate = Join-Path $directory "$Name.exe"
         if (Test-Path -LiteralPath $candidate) { return $candidate }
     }
@@ -118,6 +119,7 @@ if ($Language) {
             'ar' = 'nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5);'
             'ja' = 'nplurals=1; plural=0;'
             'zh' = 'nplurals=1; plural=0;'
+            'vi' = 'nplurals=1; plural=0;'
             'ru' = 'nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);'
             'pl' = 'nplurals=3; plural=(n==1 ? 0 : n%10>=2 && n%10<=4 && (n%100<12 || n%100>14) ? 1 : 2);'
             'fr' = 'nplurals=2; plural=(n > 1);'

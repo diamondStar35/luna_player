@@ -1,4 +1,4 @@
-﻿# Hướng dẫn sử dụng Luna Player
+# Hướng dẫn sử dụng Luna Player
 
 Luna Player là trình phát âm thanh và video thân thiện với bàn phím dành cho Windows. Ứng dụng kết hợp phát phương tiện cục bộ, luồng mạng, phát và tải xuống YouTube, ghi âm âm thanh, quản lý tệp, dấu trang, thông báo giọng nói cùng các phím tắt cục bộ và toàn hệ thống có thể tùy cấu hình.
 
@@ -336,6 +336,53 @@ Trang Tùy chọn Âm thanh chứa hai bộ lọc bổ sung:
 - **Phát âm thanh dạng Mono** kết hợp kênh trái và kênh phải thành một đầu ra mono duy nhất.
 
 Cả hai tùy chọn đều không làm thay đổi tệp nguồn.
+
+### Bộ cân bằng âm thanh (Equalizer)
+
+Bộ cân bằng âm thanh cho phép tăng hoặc giảm từng dải tần số riêng biệt. Chọn **Trình phát > Bộ cân bằng âm thanh** và chọn một cấu hình từ danh sách. Thay đổi sẽ có hiệu lực ngay lập tức và được ghi nhớ giữa các phiên làm việc.
+
+Danh sách bắt đầu bằng **Tắt**, tiếp theo là sáu cấu hình cho các nhu cầu nghe phổ biến:
+
+- **Tăng cường âm trầm (Bass Boost)** và **Giảm âm trầm (Bass Reduce)**: Tăng hoặc giảm dải trầm. Hiệu ứng mạnh nhất ở dưới 100 Hz, vẫn rõ rệt ở 170 Hz và giảm dần tới 600 Hz, bao phủ trọn vẹn dải âm của trống kick và guitar bass mà không làm đục giọng nói.
+- **Tăng cường âm cao (Treble Boost)**: Tăng toàn bộ dải tần từ khoảng 4 kHz trở lên.
+- **Tai nghe (Headphones)**: Bổ sung độ dày cho dải trầm, làm dịu dải tần 3.5 kHz (nơi tai nghe thường gây chói tai) và mở rộng âm trường dải cao.
+- **Giọng nói (Voice)**: Loại bỏ tiếng ồn ù rền và vang hộp, đồng thời nâng cao dải hiện diện (presence) giúp nghe rõ các phụ âm. Thích hợp cho sách nói, podcast và bài giảng hơn là nghe nhạc.
+- **Âm lượng bù (Loudness)**: Tăng cả dải trầm lẫn dải cao và giữ nguyên dải trung, phù hợp khi nghe ở âm lượng nhỏ - thời điểm tai người kém nhạy cảm nhất với hai đầu dải tần này.
+
+Tiếp theo là các cấu hình theo thể loại âm nhạc: Cổ điển (Classical), Câu lạc bộ (Club), Nhạc khiêu vũ (Dance), Trực tiếp (Live), Nhạc Pop, Nhạc Reggae, Nhạc Rock, Nhạc Ska, Nhẹ nhàng (Soft), Nhạc Soft Rock, và Nhạc Techno. Cuối cùng là **Tùy chỉnh (Custom)**; cấu hình này giữ nguyên âm thanh cho đến khi bạn chỉnh sửa, và là điểm khởi đầu lý tưởng để bạn tự tạo các cấu hình riêng.
+
+Một cấu hình tăng dải tần sẽ làm âm thanh lớn hơn chứ không chỉ làm thay đổi chất âm, và không có dải tần nào bị giảm đi để tạo cảm giác chênh lệch. Do đó, các bản thu âm đã được master ở mức âm lượng tối đa có thể bị hiện tượng vỡ tiếng (clipping). Tùy chọn **Bật bộ giới hạn và chuẩn hóa động** trong trang Tùy chọn Âm thanh sẽ giúp ngăn chặn điều này và được bật theo mặc định; nếu tắt tùy chọn đó, bạn nên giảm bớt âm lượng.
+
+Tùy chọn **Tắt** sẽ đặt phẳng tất cả các dải tần thay vì gỡ bỏ bộ cân bằng âm thanh. Cấu hình bạn sử dụng gần nhất vẫn được ghi nhớ khi bộ cân bằng đang tắt, do đó việc chọn lại sẽ khôi phục cấu hình đó.
+
+### Chỉnh sửa cấu hình
+
+Chọn **Trình phát > Bộ cân bằng âm thanh > Chỉnh sửa cấu hình hiện tại...** để mở cấu hình đang được áp dụng. Tất cả các cấu hình đều có thể chỉnh sửa, bao gồm cả những cấu hình mặc định do Luna cung cấp.
+
+Hộp thoại bao gồm một nhóm cho mỗi dải tần: bộ lọc low shelf (dải trầm), mười lăm dải tần từ 25 Hz đến 16 kHz, và bộ lọc high shelf (dải cao). Mỗi nhóm gồm ba trường dữ liệu:
+
+- **Tần số**: Điểm trung tâm của dải tần, hoặc điểm uốn của bộ lọc shelf.
+- **Độ lợi**: Mức tăng hoặc giảm của dải tần tính bằng decibel (dB), từ -20 đến 20.
+- **Hệ số Q**: Độ rộng của dải tần, từ 0.1 đến 10. Giá trị càng lớn thì dải tần càng hẹp.
+
+Khi cấu hình đang được chỉnh sửa cũng chính là cấu hình đang được áp dụng, mọi thay đổi sẽ có hiệu lực ngay trong khi bạn nhập, giúp bạn có thể nghe thử và đánh giá bằng tai trước khi lưu lại. Nhấn **Lưu** để áp dụng thay đổi; nhấn **Hủy** để khôi phục cấu hình về trạng thái trước đó.
+
+**Cấu hình gốc** cho phép sao chép thông số tất cả các dải tần từ một cấu hình khác. Hãy sử dụng tùy chọn này để bắt đầu từ một cấu hình gần giống với mong muốn của bạn nhất. **Đặt lại về mặc định** sẽ đưa các dải tần trở về giá trị gốc của cấu hình được chọn.
+
+Khi bạn chỉnh sửa cấu hình mặc định đi kèm Luna, ứng dụng chỉ ghi nhận những giá trị bạn đã thay đổi, các dải tần bạn không đụng đến vẫn sẽ theo dõi cấu hình gốc của Luna và đón nhận các cải tiến trong các bản cập nhật sau. Thao tác đặt lại sẽ hủy bỏ các thay đổi này. Bạn không thể đổi tên của các cấu hình mặc định có sẵn.
+
+### Quản lý các cấu hình
+
+Chọn **Trình phát > Bộ cân bằng âm thanh > Quản lý các cấu hình...** để xem danh sách đầy đủ.
+
+- **Tạo mới...**: Tạo một cấu hình mới, bắt đầu từ cấu hình gốc mà bạn chọn trong trình chỉnh sửa.
+- **Chỉnh sửa**: Mở cấu hình đang chọn.
+- **Xóa**: Xóa cấu hình sau khi bạn xác nhận.
+- **Đóng**: Đóng danh sách.
+
+Các nút Chỉnh sửa và Xóa chỉ áp dụng cho cấu hình do bạn tự tạo và sẽ bị ẩn khi bạn chọn cấu hình mặc định của Luna; với cấu hình mặc định, hãy dùng lệnh **Chỉnh sửa cấu hình hiện tại...**. Để sao chép một cấu hình, hãy tạo một cấu hình mới và chọn cấu hình ban đầu làm cấu hình gốc.
+
+Các cấu hình do bạn tạo sẽ xuất hiện trong menu Bộ cân bằng âm thanh cùng với các cấu hình có sẵn và được lưu trong tệp `equalizer.json` nằm cạnh tệp cấu hình cài đặt.
 
 ## 9. Quản lý tệp cục bộ
 

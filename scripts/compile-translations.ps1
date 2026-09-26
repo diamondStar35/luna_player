@@ -25,7 +25,8 @@ function Get-Msgfmt {
     foreach ($directory in @(
         "${env:ProgramFiles(x86)}\GnuWin32\bin",
         "${env:ProgramFiles}\GnuWin32\bin",
-        "${env:ProgramFiles}\gettext-iconv\bin")) {
+        "${env:ProgramFiles}\gettext-iconv\bin",
+        "${env:ProgramFiles}\Poedit\GettextTools\bin")) {
         $candidate = Join-Path $directory 'msgfmt.exe'
         if (Test-Path -LiteralPath $candidate) { return $candidate }
     }
