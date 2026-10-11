@@ -3,7 +3,7 @@ namespace LunaPlayer.Actions;
 internal readonly record struct SeekStepAction(ActionId Id, string Key, string Label, double Seconds);
 internal readonly record struct PercentJumpAction(ActionId Id, int Percent);
 
-internal static class PlaybackActionDefinitions
+internal static class PlaybackActions
 {
     internal static IReadOnlyList<SeekStepAction> SeekSteps { get; } =
     [

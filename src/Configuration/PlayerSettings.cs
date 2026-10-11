@@ -221,7 +221,7 @@ internal sealed class PlayerSettings
         Shortcuts.Primary = shortcutManager.PrimaryOverrides();
         Shortcuts.Secondary = shortcutManager.SecondaryOverrides();
         Shortcuts.Global ??= [];
-        var globalManager = new ShortcutManager(GlobalActionDefinitions.All);
+        var globalManager = new ShortcutManager(GlobalActions.All);
         globalManager.Apply(Shortcuts.Global, ReadOnlyDictionary<ActionId, Shortcut>.Empty);
         Shortcuts.Global = globalManager.PrimaryOverrides();
     }

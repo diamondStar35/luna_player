@@ -42,7 +42,7 @@ internal sealed class ShortcutPreferences : Preferences
         _settings = settings;
         _scope = scope;
         _globals = globals;
-        _actions = [.. scope == ShortcutScope.Local ? ActionRegistry.All : GlobalActionDefinitions.All];
+        _actions = [.. scope == ShortcutScope.Local ? ActionRegistry.All : GlobalActions.All];
         _editable = [.. _actions.Select(action => action.Id)];
         var panel = (Panel)Window;
         var heading = new StaticText(panel, label: scope == ShortcutScope.Local

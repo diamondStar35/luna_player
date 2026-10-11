@@ -7,7 +7,7 @@ namespace LunaPlayer.Actions;
 /// a whole, and because none of these depend on anything being played: recording works with the player
 /// idle, which is most of what it is for.
 /// </remarks>
-internal static class RecordingActionDefinitions
+internal static class RecordingActions
 {
     internal static IReadOnlyList<ActionDefinition> All { get; } =
     [

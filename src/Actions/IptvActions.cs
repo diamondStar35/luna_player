@@ -4,12 +4,12 @@ namespace LunaPlayer.Actions;
 ///
 /// <remarks>
 /// Kept apart from the other definitions for the same reason the YouTube commands are (see
-/// <see cref="YouTubeActionDefinitions"/>): IPTV is a feature that stands on its own and can grow, change or
+/// <see cref="YouTubeActions"/>): IPTV is a feature that stands on its own and can grow, change or
 /// be taken away as a whole. The two commands are the two doors into it - the source manager, where sources
 /// are added and edited, and the channel browser, which opens the currently chosen source. Browsing carries
 /// no default shortcut because it is reached through the manager; only the manager takes a global key.
 /// </remarks>
-internal static class IptvActionDefinitions
+internal static class IptvActions
 {
     internal static IReadOnlyList<ActionDefinition> All { get; } =
     [

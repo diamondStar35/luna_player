@@ -1,7 +1,7 @@
 namespace LunaPlayer.Actions;
 
 /// <summary>The commands in Help that update the player and its optional components.</summary>
-internal static class UpdateActionDefinitions
+internal static class UpdateActions
 {
     internal static IReadOnlyList<ActionDefinition> All { get; } =
     [

@@ -125,7 +125,7 @@ internal static class MainMenuBuilder
         // Translators: Bookmarks menu item that opens the window for renaming and deleting bookmarks.
         Add(bookmarksMenu, bookmarkItems, commandIds, shortcuts, ActionId.ManageBookmarks, Tr("Manage bookmarks"));
         var bookmarkJumps = new Menu();
-        foreach (var slot in BookmarkActionDefinitions.Slots)
+        foreach (var slot in BookmarkActions.Slots)
             // Translators: Item in the "Jump to bookmark" submenu, one for each of the ten bookmark slots.
             // {slot} is the slot number, 1 to 10.
             Add(bookmarkJumps, bookmarkItems, commandIds, shortcuts, slot.Id, TrFormat("Bookmark {slot}", slot.Slot));
@@ -246,13 +246,13 @@ internal static class MainMenuBuilder
         playerMenu.AppendSeparator();
 
         var jumpMenu = new Menu();
-        foreach (var jump in PlaybackActionDefinitions.PercentJumps)
+        foreach (var jump in PlaybackActions.PercentJumps)
             Add(jumpMenu, playbackItems, commandIds, shortcuts, jump.Id, $"{jump.Percent}%");
         // Translators: Player submenu holding items that jump to a position given as a percentage, from 10% to 100%.
         playerMenu.AppendSubMenu(jumpMenu, Tr("Jump to Percentage"));
 
         var movementMenu = new Menu();
-        foreach (var step in PlaybackActionDefinitions.SeekSteps)
+        foreach (var step in PlaybackActions.SeekSteps)
             Add(movementMenu, playbackItems, commandIds, shortcuts, step.Id, step.Label);
         // Translators: Player submenu for choosing how far one press of the seek keys moves.
         playerMenu.AppendSubMenu(movementMenu, Tr("Seek amount"));

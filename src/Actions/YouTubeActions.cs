@@ -3,11 +3,11 @@ namespace LunaPlayer.Actions;
 /// <summary>The commands for playing videos from YouTube.</summary>
 ///
 /// <remarks>
-/// Kept apart from <see cref="MediaActionDefinitions"/> because they are a feature that can be finished,
+/// Kept apart from <see cref="MediaActions"/> because they are a feature that can be finished,
 /// changed or taken away as a whole, and because the three video commands share a condition none of the
 /// others have: they apply only while what is playing came from YouTube.
 /// </remarks>
-internal static class YouTubeActionDefinitions
+internal static class YouTubeActions
 {
     internal static IReadOnlyList<ActionDefinition> All { get; } =
     [

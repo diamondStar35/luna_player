@@ -4,11 +4,11 @@ namespace LunaPlayer.Actions;
 ///
 /// <remarks>
 /// Kept apart from the other definitions like the IPTV and YouTube commands are (see
-/// <see cref="IptvActionDefinitions"/>): the sleep timer is a self-contained feature. Setting the timer
+/// <see cref="IptvActions"/>): the sleep timer is a self-contained feature. Setting the timer
 /// and hearing the time left carry default shortcuts because they are the two things reached mid-listening;
 /// cancelling is reached from the submenu and carries no default key, so nothing is spent on it.
 /// </remarks>
-internal static class SleepTimerActionDefinitions
+internal static class SleepTimerActions
 {
     internal static IReadOnlyList<ActionDefinition> All { get; } =
     [

@@ -2,7 +2,7 @@ namespace LunaPlayer.Actions;
 
 internal readonly record struct BookmarkSlotAction(ActionId Id, int Slot);
 
-internal static class MediaActionDefinitions
+internal static class MediaActions
 {
     internal static IReadOnlyList<BookmarkSlotAction> BookmarkSlots { get; } =
     [
@@ -93,7 +93,7 @@ internal static class MediaActionDefinitions
     }
 }
 
-internal static class BookmarkActionDefinitions
+internal static class BookmarkActions
 {
-    internal static IReadOnlyList<BookmarkSlotAction> Slots => MediaActionDefinitions.BookmarkSlots;
+    internal static IReadOnlyList<BookmarkSlotAction> Slots => MediaActions.BookmarkSlots;
 }

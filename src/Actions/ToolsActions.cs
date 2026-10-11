@@ -8,7 +8,7 @@ namespace LunaPlayer.Actions;
 /// what it is for - a folder is sent to it from Windows Explorer and turned into audio while nothing is
 /// open at all.
 /// </remarks>
-internal static class ToolsActionDefinitions
+internal static class ToolsActions
 {
     internal static IReadOnlyList<ActionDefinition> All { get; } =
     [

@@ -3,7 +3,7 @@ namespace LunaPlayer.Actions;
 /// <summary>The actions that can be driven by a system-wide hot key, with the combinations they answer to by
 /// default. A deliberately small set: every one of them is something a user wants while another application
 /// has the focus, which is the only reason to take a combination away from the rest of the system.</summary>
-internal static class GlobalActionDefinitions
+internal static class GlobalActions
 {
     private const ShortcutModifiers WinAlt = ShortcutModifiers.Win | ShortcutModifiers.Alt;
 

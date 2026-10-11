@@ -1,7 +1,7 @@
 namespace LunaPlayer.Actions;
 
 /// <summary>The documentation and application information commands in the Help menu.</summary>
-internal static class HelpActionDefinitions
+internal static class HelpActions
 {
     internal static IReadOnlyList<ActionDefinition> All { get; } =
     [
