@@ -64,11 +64,11 @@ try {
     # can find, which means the file list has to be relative too and xgettext has to run there.
     Push-Location $source
     try {
-        Get-ChildItem -Recurse -Filter '*.cs' |
+        $sourceFiles = Get-ChildItem -Recurse -Filter '*.cs' |
             Where-Object { $_.FullName -notmatch '\\(obj|bin)\\' } |
-            ForEach-Object { [System.IO.Path]::GetRelativePath($source, $_.FullName).Replace('\', '/') } |
-            Sort-Object |
-            Set-Content -LiteralPath $list -Encoding UTF8
+            ForEach-Object { $_.FullName.Substring($source.Length).TrimStart('\').Replace('\', '/') } |
+            Sort-Object
+        [System.IO.File]::WriteAllLines($list, [string[]]$sourceFiles, (New-Object System.Text.UTF8Encoding($false)))
         # No --package-name here: the gettext build commonly installed on Windows is old enough to
         # reject it. The header is edited by hand instead.
         Invoke-Tool $xgettext @(

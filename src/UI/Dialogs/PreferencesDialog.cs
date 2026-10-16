@@ -29,7 +29,7 @@ internal sealed class PreferencesDialog : IDisposable
     /// accept and must not do that on the thread drawing this window.</param>
     internal PreferencesDialog(Window parent, Settings settings, PrefsOps operations, Action<string> speakHelp,
         LunaPlayer.Application.IApplicationDispatcher dispatcher, LunaPlayer.Recording.AudioCatalog catalog,
-        GlobalShortcuts? globalShortcuts = null)
+        GlobalShortcuts? globalShortcuts = null, bool openSpotifyCredentials = false)
     {
         _settings = settings;
         _operations = operations;
@@ -52,6 +52,7 @@ internal sealed class PreferencesDialog : IDisposable
             Tr("Silence removal"),
             // Translators: Name of the settings category for playing videos from YouTube.
             Tr("YouTube"),
+            Tr("Spotify"),
             // Translators: Name of the settings category for recording sound.
             Tr("Recording"),
             // Translators: Name of the settings category for the key combinations that work while the player is the program in front.
@@ -64,9 +65,10 @@ internal sealed class PreferencesDialog : IDisposable
         var audioItem = _tree.Add(root, categories[2]);
         var silenceItem = _tree.Add(root, categories[3]);
         var youTubeItem = _tree.Add(root, categories[4]);
-        var recordingItem = _tree.Add(root, categories[5]);
-        var shortcutsItem = _tree.Add(root, categories[6]);
-        var globalsItem = _tree.Add(root, categories[7]);
+        var spotifyItem = _tree.Add(root, categories[5]);
+        var recordingItem = _tree.Add(root, categories[6]);
+        var shortcutsItem = _tree.Add(root, categories[7]);
+        var globalsItem = _tree.Add(root, categories[8]);
         SizeTreeToLabels(categories);
 
         // How to build each page, not the page itself. The parent is _book; a page adds itself to its sizer
@@ -76,6 +78,7 @@ internal sealed class PreferencesDialog : IDisposable
         _factories[audioItem] = () => new AudioPreferences(_book, settings.Audio);
         _factories[silenceItem] = () => new SilencePreferences(_book, settings.Silence);
         _factories[youTubeItem] = () => new YouTube.YouTubePreferences(_book, settings.YouTube, operations);
+        _factories[spotifyItem] = () => new Spotify.CredentialsPreferences(_book, settings.Spotify);
         _factories[recordingItem] = () => new RecordingPreferences(_book, settings.Recording, dispatcher, catalog);
         _factories[shortcutsItem] = () => new ShortcutPreferences(_book, settings.Shortcuts, ShortcutScope.Local, globalShortcuts);
         _factories[globalsItem] = () => new ShortcutPreferences(_book, settings.Shortcuts, ShortcutScope.Global, globalShortcuts);
@@ -84,8 +87,9 @@ internal sealed class PreferencesDialog : IDisposable
         _dialog.Bind(WxEvents.CharHook, OnCharHook);
 
         // Only the first page is built now; the rest build the first time their category is chosen.
-        DoCategoryChange(generalItem);
-        _tree.Selection = generalItem;
+        var initialItem = openSpotifyCredentials ? spotifyItem : generalItem;
+        DoCategoryChange(initialItem);
+        _tree.Selection = initialItem;
 
         var body = new BoxSizer(Orientation.Horizontal);
         body.Add(_tree, flags: SizerFlags.All | SizerFlags.Expand, border: 8);

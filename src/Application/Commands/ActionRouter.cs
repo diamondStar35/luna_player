@@ -1,12 +1,12 @@
 using LunaPlayer.Actions;
 using LunaPlayer.Application;
+using LunaPlayer.Accessibility;
 
 namespace LunaPlayer.Application.Commands;
 
 internal sealed class ActionRouter
 {
     private readonly Dictionary<ActionId, Action> _handlers = [];
-
     internal void Register(ActionId id, Action handler)
     {
         ArgumentNullException.ThrowIfNull(handler);

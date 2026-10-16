@@ -21,13 +21,16 @@ internal sealed class WindowTitlePresenter
     private readonly MediaPlayer _player;
     private readonly Settings _settings;
     private readonly MediaTagsCache _tags;
+    private readonly LunaPlayer.Spotify.SpotifyPlaybackHost _spotify;
 
-    internal WindowTitlePresenter(IMainView view, MediaPlayer player, Settings settings, MediaTagsCache tags)
+    internal WindowTitlePresenter(IMainView view, MediaPlayer player, Settings settings, MediaTagsCache tags,
+        LunaPlayer.Spotify.SpotifyPlaybackHost spotify)
     {
         _view = view;
         _player = player;
         _settings = settings;
         _tags = tags;
+        _spotify = spotify;
     }
 
     internal void Update()
@@ -37,6 +40,11 @@ internal sealed class WindowTitlePresenter
     /// track's title otherwise, marked as paused when it is.</summary>
     private string Compose()
     {
+        // The Spotify track name is more useful than mpv's internal stream address.
+        if (_spotify.IsActive && _spotify.CurrentTitle is { Length: > 0 } spotifyTitle)
+            return _spotify.IsPlaying
+                ? TrFormat("{title} - {app}", spotifyTitle, AppInfo.Name)
+                : TrFormat("[Paused]: {title} - {app}", spotifyTitle, AppInfo.Name);
         var path = _player.CurrentPath;
         if (string.IsNullOrEmpty(path))
             return AppInfo.Name;

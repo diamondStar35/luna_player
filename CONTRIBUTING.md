@@ -16,19 +16,24 @@ fix, open an issue first to discuss the approach before writing code.
 ## Building
 
 ```
-git clone --recurse-submodules https://github.com/diamondStar35/luna_player
+git clone https://github.com/diamondStar35/luna_player
 cd luna_player
+git submodule update --init third-party/WxSharp
 python -m pip install --requirement docs/requirements.txt
 dotnet build src/LunaPlayer.csproj
 ```
 
 The build output is written to `src/bin/<Configuration>/net10.0-windows10.0.19041.0/win-x64/`.
 
-If the repository was cloned without submodules, run:
+The Rust engine source is optional. To build it explicitly, run:
 
 ```
-git submodule update --init --recursive
+git submodule update --init spotify-engine/vendor/librespot
+cd spotify-engine
+cargo build --release --locked
 ```
+
+The normal .NET build does not initialize or compile the Rust submodule.
 
 Enable the repository's version-consistency check once per clone:
 

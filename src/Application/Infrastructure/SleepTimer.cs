@@ -3,6 +3,7 @@ using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
 using LunaPlayer.Playback;
 using LunaPlayer.UI;
+using LunaPlayer.Spotify;
 
 namespace LunaPlayer.Application;
 
@@ -26,6 +27,7 @@ internal sealed class SleepTimer : IDisposable
     private readonly IApplicationDispatcher _dispatcher;
     private readonly MediaPlayer _player;
     private readonly ISpeechOutput _speech;
+    private readonly SpotifyPlaybackHost? _spotify;
 
     private bool _armed;
     private SleepTimerMode _mode;
@@ -37,11 +39,13 @@ internal sealed class SleepTimer : IDisposable
     private double? _originalVolume;
     private bool _warned;
 
-    internal SleepTimer(IApplicationDispatcher dispatcher, MediaPlayer player, ISpeechOutput speech)
+    internal SleepTimer(IApplicationDispatcher dispatcher, MediaPlayer player, ISpeechOutput speech,
+        SpotifyPlaybackHost? spotify = null)
     {
         _dispatcher = dispatcher;
         _player = player;
         _speech = speech;
+        _spotify = spotify;
     }
 
     internal bool IsArmed => _armed;
@@ -135,7 +139,11 @@ internal sealed class SleepTimer : IDisposable
         // On pause there is nothing to do: mpv's keep-open already holds the finished file paused, and the
         // controller syncs the view. On stop the file is unloaded.
         if (_action == SleepTimerAction.Stop)
-            _player.Stop();
+        {
+            if (_spotify?.IsActive == true) _spotify.Stop();
+            else _player.Stop();
+        }
+        else if (_spotify?.IsActive == true) _spotify.Pause();
         _armed = false;
         AnnounceFired();
         return true;
@@ -194,9 +202,12 @@ internal sealed class SleepTimer : IDisposable
         StopTick();
         RestoreVolume();
         if (_action == SleepTimerAction.Stop)
-            _player.Stop();
-        else if (_player.IsPlaying)
-            _player.TogglePause();
+        {
+            if (_spotify?.IsActive == true) _spotify.Stop();
+            else _player.Stop();
+        }
+        else if (_spotify?.IsActive == true) _spotify.Pause();
+        else if (_player.IsPlaying) _player.TogglePause();
         _armed = false;
         AnnounceFired();
     }

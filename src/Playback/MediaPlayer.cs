@@ -119,6 +119,16 @@ internal sealed class MediaPlayer : IDisposable
         return true;
     }
 
+    /// <summary>Refreshes the label of a live stream when its provider moves to another track.</summary>
+    internal void UpdateStreamDescription(string title, string? source)
+    {
+        if (CurrentPath is not string path || !_running) return;
+        _playlist.SetTitle(path, title);
+        _playlist.SetSource(path, source, null);
+        CurrentChanged?.Invoke();
+        StateChanged?.Invoke();
+    }
+
     /// <summary>The playlist a session was opened in front of, and the point playback had reached in it.
     /// </summary>
     /// <param name="Running">Whether a file was open at all, so an empty player is not sent to reload
@@ -226,6 +236,20 @@ internal sealed class MediaPlayer : IDisposable
         return LoadCurrent();
     }
 
+    /// <summary>Opens a decrypted Spotify file through the same mpv audio chain as local music.</summary>
+    internal bool OpenSpotifyAudio(LunaPlayer.Spotify.AudioDecryptStream audio, string title,
+        string source, double? startPosition = null)
+    {
+        if (_engine is not MpvPlaybackEngine mpv) { audio.Dispose(); return false; }
+        var url = mpv.RegisterSpotifyAudio(audio);
+        EnterSession();
+        if (!_playlist.Append(url, jump: true)) { mpv.ReleaseSpotifyAudio(url); return false; }
+        Describe(url, title, source, null, audioOnly: true);
+        if (LoadCurrent(startPosition, paused: false)) return true;
+        mpv.ReleaseSpotifyAudio(url);
+        return false;
+    }
+
     /// <summary>The address whatever is playing was resolved from, or null when its path is its address.
     /// </summary>
     internal string? CurrentSource => _playlist.CurrentSource;
@@ -308,6 +332,7 @@ internal sealed class MediaPlayer : IDisposable
     // otherwise have no way of hearing about it.
     internal bool TogglePause() => Changed(_engine.TogglePause());
     internal void Play() { _engine.Play(); StateChanged?.Invoke(); }
+    internal void Pause() { _engine.Pause(); StateChanged?.Invoke(); }
     internal void Seek(double seconds) => _engine.SeekRelative(seconds);
     internal void SeekAbsolute(double seconds) => _engine.SeekAbsolute(seconds);
     internal bool SeekToEnd()

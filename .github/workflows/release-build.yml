@@ -22,7 +22,11 @@ jobs:
       - uses: actions/checkout@v7
         with:
           fetch-depth: 0
-          submodules: recursive
+          submodules: false
+
+      - name: Initialize windowing submodule
+        shell: pwsh
+        run: git submodule update --init third-party/WxSharp
 
       - uses: actions/setup-dotnet@v6
         with:

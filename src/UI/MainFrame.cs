@@ -170,8 +170,8 @@ internal sealed class MainFrame : IMainView
 
     public bool IsFullScreen => _frame.IsFullScreen;
 
-    /// <summary>Dialogs, built lazily and parented to this window.</summary>
-    public IDialogService Dialogs => _dialogs ??= new DialogService(_frame, _dispatcher, _catalog, _input.GlobalShortcuts);
+    /// <summary>The dialogs, built lazily and owned here so the window outlives them and parents them.</summary>
+    public IDialogService Dialogs => _dialogs ??= new DialogService(_frame, _dispatcher, _catalog, _input.GlobalShortcuts, _input.Request);
 
     public bool ApplyGlobalShortcuts(ShortcutManager shortcuts) => _input.ApplyGlobalShortcuts(shortcuts);
 
