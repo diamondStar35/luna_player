@@ -72,9 +72,10 @@ internal static class BackgroundProgress
         IApplicationDispatcher dispatcher,
         ProgressPrompt prompt,
         Func<Action<ProgressUpdate>, CancellationToken, TResult> work,
-        Action<TResult> completed)
+        Action<TResult> completed,
+        Action? canceled = null)
     {
-        var job = new Job<TResult>(view, dispatcher, prompt, work, completed);
+        var job = new Job<TResult>(view, dispatcher, prompt, work, completed, canceled);
         Running.Add(job);
         job.Start();
     }
@@ -88,6 +89,7 @@ internal static class BackgroundProgress
         private readonly IProgressView _progress;
         private readonly Task<TResult> _task;
         private readonly Action<TResult> _completed;
+        private readonly Action? _canceled;
         private IDisposable? _ticker;
         private bool _finished;
         private int _percent;
@@ -100,11 +102,13 @@ internal static class BackgroundProgress
             IApplicationDispatcher dispatcher,
             ProgressPrompt prompt,
             Func<Action<ProgressUpdate>, CancellationToken, TResult> work,
-            Action<TResult> completed)
+            Action<TResult> completed,
+            Action? canceled)
         {
             _dispatcher = dispatcher;
             _prompt = prompt;
             _completed = completed;
+            _canceled = canceled;
             _progress = view.Dialogs.BeginProgress(prompt.Title, prompt.Starting, prompt.Proportional, prompt.Detailed);
             // The token is given to Task.Run as well as to the job. Without it a job that aborts by throwing
             // OperationCanceledException leaves the task Faulted rather than Canceled - the exception's token
@@ -172,8 +176,14 @@ internal static class BackgroundProgress
                 // Closed before the result is used, so the job's own window or message box does not open
                 // behind a progress dialog that has finished with.
                 _progress.Dispose();
+                var wasCanceled = _cancellation.IsCancellationRequested;
                 _cancellation.Dispose();
                 Running.Remove(this);
+                if (wasCanceled)
+                {
+                    _canceled?.Invoke();
+                    return;
+                }
                 if (_task.IsCompletedSuccessfully)
                 {
                     _completed(_task.Result);

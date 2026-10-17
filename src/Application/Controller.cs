@@ -30,6 +30,7 @@ internal sealed class ApplicationController : IDisposable
     private readonly ViewStatePresenter _viewState;
     private readonly WindowTitlePresenter _title;
     private readonly MediaOverlayPresenter _overlay;
+    private readonly LunaPlayer.Spotify.SpotifyPlaybackHost _spotify;
     private bool _shutDown;
 
     internal ApplicationController(
@@ -43,7 +44,8 @@ internal sealed class ApplicationController : IDisposable
         PlaybackSelection selection,
         YouTube.Playback.Sessions sessions,
         SleepTimer sleepTimer,
-        ISpeechOutput speech)
+        ISpeechOutput speech,
+        LunaPlayer.Spotify.SpotifyPlaybackHost spotify)
     {
         _view = view;
         _player = player;
@@ -55,8 +57,9 @@ internal sealed class ApplicationController : IDisposable
         _selection = selection;
         _sessions = sessions;
         _sleepTimer = sleepTimer;
-        _viewState = new ViewStatePresenter(view, player, speech);
-        _title = new WindowTitlePresenter(view, player, settings, _tags);
+        _spotify = spotify;
+        _viewState = new ViewStatePresenter(view, player, speech, spotify);
+        _title = new WindowTitlePresenter(view, player, settings, _tags, spotify);
         _overlay = new MediaOverlayPresenter(player, settings, dispatcher, _tags, HandleAction);
         _view.ActionRequested += HandleAction;
         _view.CloseRequested += Shutdown;
@@ -110,13 +113,31 @@ internal sealed class ApplicationController : IDisposable
         _settings.Audio.Speed = _player.Speed;
         _settings.Audio.Pitch = _player.Pitch;
         _settings.Audio.Pan = _player.Pan;
-        _player.SavePosition();
-        if (_settings.General.RememberLastPosition && _player.CurrentPath is string path && File.Exists(path))
+        if (!_spotify.IsActive) _player.SavePosition();
+        if (_settings.General.RememberLastPosition && _spotify.IsActive
+            && _spotify.CurrentTrack is { } spotifyTrack)
+        {
+            _settings.Playback.LastFile = string.Empty;
+            _settings.Playback.LastSpotifyUri = spotifyTrack.Uri;
+            _settings.Playback.LastSpotifyName = spotifyTrack.Name;
+            _settings.Playback.LastSpotifyArtists = spotifyTrack.Artists;
+            _settings.Playback.LastSpotifyDurationMs = spotifyTrack.DurationMs;
+            _settings.Playback.LastSpotifyPosition = _spotify.ResumePosition;
+        }
+        else if (_settings.General.RememberLastPosition && _player.CurrentPath is string path && File.Exists(path))
         {
             _settings.Playback.LastFile = path;
             _settings.Playback.LastPosition = Math.Max(0, _player.Elapsed ?? 0);
+            _settings.Playback.LastSpotifyUri = string.Empty;
+        }
+        else if (_settings.General.RememberLastPosition && _player.CurrentPath is not null)
+        {
+            _settings.Playback.LastFile = string.Empty;
+            _settings.Playback.LastSpotifyUri = string.Empty;
         }
         _settingsStore.SaveSession(_settings);
+        // Close Spotify while the window is still alive, even if mpv takes time to shut down.
+        _spotify.Stop();
         // Tear the player down here, while the frame still exists, rather than leaving it for the host's
         // disposal after the window is gone. mpv renders into the frame's window handle; if that handle is
         // destroyed first, terminating mpv afterwards can block on its dead video output and hang the whole
@@ -165,6 +186,9 @@ internal sealed class ApplicationController : IDisposable
         _overlay.UpdateClock();
     }
 
+    /// <summary>Refreshes the window when Spotify navigation selects a track before mpv loads its audio.</summary>
+    internal void RefreshView() => SyncViewState();
+
     private void OnVideoAvailabilityChanged()
         => _dispatcher.Post(SyncViewState);
 
@@ -172,7 +196,14 @@ internal sealed class ApplicationController : IDisposable
         => _dispatcher.Post(SyncViewState);
 
     private void OnPlaybackEnded(PlaybackEndReason reason)
-        => _dispatcher.Post(() => HandlePlaybackEnded(reason));
+    {
+        var spotifyEnd = _spotify.IsActive;
+        _dispatcher.Post(() =>
+        {
+            if (spotifyEnd) { SyncViewState(); return; }
+            HandlePlaybackEnded(reason);
+        });
+    }
 
     private void HandlePlaybackEnded(PlaybackEndReason reason)
     {
@@ -180,6 +211,7 @@ internal sealed class ApplicationController : IDisposable
             return;
         if (_player.CurrentPath is null)
             return;
+        if (_spotify.IsActive) return;
         // An end-of-track sleep timer fires here, ahead of the repeat and advance logic, and takes over the
         // end of the track: SyncViewState reflects the pause it may have left, and returning stops the player
         // advancing or looping past the point the user meant it to stop.

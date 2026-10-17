@@ -4,12 +4,15 @@ using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
 using LunaPlayer.Media;
 using MpvNet;
+using System.Collections.Concurrent;
+using LunaPlayer.Spotify;
 
 namespace LunaPlayer.Playback;
 
 internal sealed class MpvPlaybackEngine : IPlaybackEngine
 {
     private readonly MPV _mpv;
+    private readonly ConcurrentDictionary<string, AudioDecryptStream> _spotifyAudio = new(StringComparer.Ordinal);
     private readonly IDisposable _endRegistration;
     private readonly IDisposable _sampleRateRegistration;
     private readonly IDisposable _videoParamsRegistration;
@@ -50,6 +53,7 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
             options["wid"] = windowHandle.ToString(CultureInfo.InvariantCulture);
 
         _mpv = new MPV(options: options);
+        _mpv.RegisterStreamProtocol("luna-spotify", OpenSpotifyStream);
         SetPropertySafely("network-timeout", 10);
         ApplyMediaControls(mediaControls);
         _endRegistration = _mpv.OnEvent(HandleEndFile, MpvEventId.EndFile);
@@ -111,6 +115,40 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
             mpv.SetPropertyAsync(0, "audio-files", audioFile is null ? Array.Empty<string>() : new[] { audioFile });
             mpv.LoadFileAsync(path, "replace", options);
         });
+    }
+
+    internal string RegisterSpotifyAudio(AudioDecryptStream audio)
+    {
+        var id = Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture);
+        foreach (var pending in _spotifyAudio)
+            if (_spotifyAudio.TryRemove(pending.Key, out var unused)) unused.Dispose();
+        _spotifyAudio[id] = audio;
+        return "luna-spotify://" + id;
+    }
+
+    internal void ReleaseSpotifyAudio(string url)
+    {
+        const string prefix = "luna-spotify://";
+        if (url.StartsWith(prefix, StringComparison.Ordinal)
+            && _spotifyAudio.TryRemove(url[prefix.Length..], out var pending)) pending.Dispose();
+    }
+
+    private IMpvStream OpenSpotifyStream(string uri)
+    {
+        const string prefix = "luna-spotify://";
+        if (!uri.StartsWith(prefix, StringComparison.Ordinal)
+            || !_spotifyAudio.TryRemove(uri[prefix.Length..], out var audio))
+            throw new InvalidDataException();
+        return new SpotifyMpvStream(audio);
+    }
+
+    private sealed class SpotifyMpvStream(AudioDecryptStream audio) : IMpvStream
+    {
+        public long? Size => audio.Length;
+        public int Read(byte[] buffer, int offset, int count) => audio.Read(buffer, offset, count);
+        public long Seek(long offset) => audio.Seek(offset, SeekOrigin.Begin);
+        public void Cancel() => audio.Cancel();
+        public void Dispose() => audio.Dispose();
     }
 
     public void Stop() => TryDo(static mpv => mpv.Command("stop"));
@@ -513,6 +551,8 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
         _videoParamsRegistration.Dispose();
         _trackListRegistration.Dispose();
         _subTextRegistration.Dispose();
+        foreach (var pending in _spotifyAudio)
+            if (_spotifyAudio.TryRemove(pending.Key, out var unused)) unused.Dispose();
         _mpv.Dispose();
     }
 

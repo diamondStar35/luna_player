@@ -24,7 +24,8 @@ internal sealed class Preferences
         ShortcutManager globalShortcuts,
         ISpeechOutput speech,
         Backend youTube,
-        LunaPlayer.YouTube.Components.Service youTubeComponents)
+        LunaPlayer.YouTube.Components.Service youTubeComponents,
+        Action spotifyQualityChanged)
     {
         void ApplyRuntime(Settings source)
         {
@@ -104,12 +105,15 @@ internal sealed class Preferences
                 store.SaveExplicit(settings);
             });
 
-        router.Register(ActionId.OpenPreferences, () =>
+        void OpenPreferences(bool spotifyCredentials)
         {
             var language = settings.General.Language;
-            var result = view.Dialogs.EditPreferences(settings, operations, text => speech.SpeakText(text));
+            var spotifyQuality = settings.Spotify.AudioQuality;
+            var result = view.Dialogs.EditPreferences(settings, operations, text => speech.SpeakText(text), spotifyCredentials);
             if (result is null) return;
             ApplyRuntime(result);
+            if (spotifyQuality != settings.Spotify.AudioQuality)
+                spotifyQualityChanged();
             if (!store.SaveExplicit(settings))
                 view.Dialogs.ShowError(
                     // Translators: Shown when the settings the user accepted could not be written to disk.
@@ -121,6 +125,8 @@ internal sealed class Preferences
                 view.Dialogs.ShowInfo(
                     // Translators: Shown after the user picks a different language, because the player only reads it when it starts.
                     Tr("Please restart the app for language changes to take effect."), Tr("Preferences"));
-        });
+        }
+        router.Register(ActionId.OpenPreferences, () => OpenPreferences(false));
+        router.Register(ActionId.OpenSpotifyCredentials, () => OpenPreferences(true));
     }
 }

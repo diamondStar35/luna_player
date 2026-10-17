@@ -64,6 +64,7 @@
     <Compile Include="Playback\**\*.cs" />
     <Compile Include="Playlist\**\*.cs" />
     <Compile Include="Recording\**\*.cs" />
+    <Compile Include="Spotify\**\*.cs" />
     <Compile Include="Update\**\*.cs" />
     <Compile Include="UI\**\*.cs" />
     <Compile Include="YouTube\**\*.cs" />
@@ -93,22 +94,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="$(RepositoryRoot)third-party\*.dll"
-             Link="lib\%(Filename)%(Extension)"
-             CopyToOutputDirectory="PreserveNewest"
-             CopyToPublishDirectory="PreserveNewest" />
-    <Content Include="$(RepositoryRoot)third-party\ffmpeg.exe"
-             Link="lib\ffmpeg.exe"
-             CopyToOutputDirectory="PreserveNewest"
-             CopyToPublishDirectory="PreserveNewest" />
-    <Content Include="$(RepositoryRoot)third-party\WxSharp\third-party\Windows\lib\vc_x64_dll\wxbase333u_vc_x64.dll"
-             Link="lib\wxbase333u_vc_x64.dll"
-             CopyToOutputDirectory="PreserveNewest"
-             CopyToPublishDirectory="PreserveNewest" />
-    <Content Include="$(RepositoryRoot)third-party\WxSharp\third-party\Windows\lib\vc_x64_dll\wxmsw333u_core_vc_x64.dll"
-             Link="lib\wxmsw333u_core_vc_x64.dll"
-             CopyToOutputDirectory="PreserveNewest"
-             CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="$(RepositoryRoot)third-party\*.dll" Link="lib\%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="$(RepositoryRoot)third-party\ffmpeg.exe" Link="lib\ffmpeg.exe" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="$(RepositoryRoot)third-party\WxSharp\third-party\Windows\lib\vc_x64_dll\wxbase333u_vc_x64.dll" Link="lib\wxbase333u_vc_x64.dll" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="$(RepositoryRoot)third-party\WxSharp\third-party\Windows\lib\vc_x64_dll\wxmsw333u_core_vc_x64.dll" Link="lib\wxmsw333u_core_vc_x64.dll" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <!-- The licence the player is published under, and the notices for the libraries it ships with.
          Two of those licences require their text to travel with the binaries they cover. -->
     <Content Include="$(RepositoryRoot)LICENSE"
@@ -134,109 +123,69 @@
              CopyToPublishDirectory="PreserveNewest" />
   </ItemGroup>
 
-  <Target Name="GenerateVersionedWin32Manifest"
-          BeforeTargets="SetWin32ManifestProperties"
-          DependsOnTargets="PrepareForBuild;GetAssemblyVersion">
-    <Copy SourceFiles="$(ApplicationManifestTemplate)"
-          DestinationFiles="$(ApplicationManifest)" />
-    <XmlPoke XmlInputPath="$(ApplicationManifest)"
-             Query="/*[local-name()='assembly']/*[local-name()='assemblyIdentity']/@version"
-             Value="$(AssemblyVersion)" />
+  <ItemGroup>
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.0" />
+  </ItemGroup>
+
+  <Target Name="GenerateVersionedWin32Manifest" BeforeTargets="SetWin32ManifestProperties" DependsOnTargets="PrepareForBuild;GetAssemblyVersion">
+    <Copy SourceFiles="$(ApplicationManifestTemplate)" DestinationFiles="$(ApplicationManifest)" />
+    <XmlPoke XmlInputPath="$(ApplicationManifest)" Query="/*[local-name()='assembly']/*[local-name()='assemblyIdentity']/@version" Value="$(AssemblyVersion)" />
     <ItemGroup>
       <FileWrites Include="$(ApplicationManifest)" />
     </ItemGroup>
   </Target>
 
-  <Target Name="PublishNativeAotAfterBuild"
-          AfterTargets="Build"
-          Condition="'$(DesignTimeBuild)' != 'true' and '$(_IsPublishing)' != 'true' and '$(NativeAotBuildInvocation)' != 'true'">
-    <MSBuild Projects="$(MSBuildProjectFullPath)"
-             Targets="Publish"
-             Properties="Configuration=$(Configuration);NativeAotBuildInvocation=true" />
+  <Target Name="PublishNativeAotAfterBuild" AfterTargets="Build" Condition="'$(DesignTimeBuild)' != 'true' and '$(_IsPublishing)' != 'true' and '$(NativeAotBuildInvocation)' != 'true'">
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Targets="Publish" Properties="Configuration=$(Configuration);NativeAotBuildInvocation=true" />
   </Target>
 
-  <Target Name="RenderDocumentation"
-          BeforeTargets="Build;Publish"
-          Condition="'$(DesignTimeBuild)' != 'true'">
+  <Target Name="RenderDocumentation" BeforeTargets="Build;Publish" Condition="'$(DesignTimeBuild)' != 'true'">
     <Exec Command="python &quot;$(RepositoryRoot)docs\render_docs.py&quot;" />
   </Target>
 
-  <Target Name="CompileTranslations"
-          BeforeTargets="Build;Publish"
-          Condition="'$(DesignTimeBuild)' != 'true' and '@(TranslationPo)' != '' and '$(SkipTranslationCompilation)' != 'true'"
-          Inputs="@(TranslationPo)"
-          Outputs="@(TranslationPo->'%(RootDir)%(Directory)%(Filename).mo')">
-    <Message Importance="high" Text="Compiling translations (.po -> .mo)." />
+  <Target Name="CompileTranslations" BeforeTargets="Build;Publish" Condition="'$(DesignTimeBuild)' != 'true' and '@(TranslationPo)' != '' and '$(SkipTranslationCompilation)' != 'true'" Inputs="@(TranslationPo)" Outputs="@(TranslationPo->'%(RootDir)%(Directory)%(Filename).mo')">
+    <Message Importance="high" Text="Compiling translations (.po -&gt; .mo)." />
     <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(RepositoryRoot)scripts\compile-translations.ps1&quot;" />
   </Target>
 
   <!-- The dynamic globs are required on a clean checkout because compiled catalogues do not exist when
        MSBuild evaluates the project. Catalogue binaries are generated output and remain untracked. -->
-  <Target Name="CopyTranslationsToOutput"
-          AfterTargets="Build"
-          DependsOnTargets="CompileTranslations"
-          Condition="'$(DesignTimeBuild)' != 'true' and '$(SkipTranslationCompilation)' != 'true'">
+  <Target Name="CopyTranslationsToOutput" AfterTargets="Build" DependsOnTargets="CompileTranslations" Condition="'$(DesignTimeBuild)' != 'true' and '$(SkipTranslationCompilation)' != 'true'">
     <ItemGroup>
       <_CompiledTranslation Include="$(RepositoryRoot)locale\**\LunaPlayer.mo" />
     </ItemGroup>
-    <Copy SourceFiles="@(_CompiledTranslation)"
-          DestinationFiles="@(_CompiledTranslation->'$(OutDir)locale\%(RecursiveDir)%(Filename)%(Extension)')"
-          SkipUnchangedFiles="true"
-          Condition="'@(_CompiledTranslation)' != ''" />
+    <Copy SourceFiles="@(_CompiledTranslation)" DestinationFiles="@(_CompiledTranslation->'$(OutDir)locale\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" Condition="'@(_CompiledTranslation)' != ''" />
   </Target>
 
-  <Target Name="CopyTranslationsToPublish"
-          AfterTargets="Publish"
-          DependsOnTargets="CompileTranslations"
-          Condition="'$(DesignTimeBuild)' != 'true' and '$(SkipTranslationCompilation)' != 'true' and '$(PublishDir)' != ''">
+  <Target Name="CopyTranslationsToPublish" AfterTargets="Publish" DependsOnTargets="CompileTranslations" Condition="'$(DesignTimeBuild)' != 'true' and '$(SkipTranslationCompilation)' != 'true' and '$(PublishDir)' != ''">
     <ItemGroup>
       <_PublishedTranslation Include="$(RepositoryRoot)locale\**\LunaPlayer.mo" />
     </ItemGroup>
-    <Copy SourceFiles="@(_PublishedTranslation)"
-          DestinationFiles="@(_PublishedTranslation->'$(PublishDir)locale\%(RecursiveDir)%(Filename)%(Extension)')"
-          SkipUnchangedFiles="true"
-          Condition="'@(_PublishedTranslation)' != ''" />
+    <Copy SourceFiles="@(_PublishedTranslation)" DestinationFiles="@(_PublishedTranslation->'$(PublishDir)locale\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" Condition="'@(_PublishedTranslation)' != ''" />
   </Target>
 
   <!-- These dynamic globs matter on a clean checkout: generated HTML does not exist when MSBuild first
        evaluates the Content items above. Only the rendered files are copied; Markdown remains source-only. -->
-  <Target Name="CopyDocumentationToOutput"
-          AfterTargets="Build"
-          DependsOnTargets="RenderDocumentation"
-          Condition="'$(DesignTimeBuild)' != 'true'">
+  <Target Name="CopyDocumentationToOutput" AfterTargets="Build" DependsOnTargets="RenderDocumentation" Condition="'$(DesignTimeBuild)' != 'true'">
     <ItemGroup>
       <_RenderedDocumentation Include="$(RepositoryRoot)docs\**\*.html" />
     </ItemGroup>
-    <Copy SourceFiles="@(_RenderedDocumentation)"
-          DestinationFiles="@(_RenderedDocumentation->'$(OutDir)docs\%(RecursiveDir)%(Filename)%(Extension)')"
-          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(_RenderedDocumentation)" DestinationFiles="@(_RenderedDocumentation->'$(OutDir)docs\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>
 
-  <Target Name="CopyDocumentationToPublish"
-          AfterTargets="Publish"
-          DependsOnTargets="RenderDocumentation"
-          Condition="'$(DesignTimeBuild)' != 'true' and '$(PublishDir)' != ''">
+  <Target Name="CopyDocumentationToPublish" AfterTargets="Publish" DependsOnTargets="RenderDocumentation" Condition="'$(DesignTimeBuild)' != 'true' and '$(PublishDir)' != ''">
     <ItemGroup>
       <_PublishedDocumentation Include="$(RepositoryRoot)docs\**\*.html" />
     </ItemGroup>
-    <Copy SourceFiles="@(_PublishedDocumentation)"
-          DestinationFiles="@(_PublishedDocumentation->'$(PublishDir)docs\%(RecursiveDir)%(Filename)%(Extension)')"
-          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(_PublishedDocumentation)" DestinationFiles="@(_PublishedDocumentation->'$(PublishDir)docs\%(RecursiveDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>
 
-  <Target Name="PublishUpdater"
-          AfterTargets="Publish"
-          Condition="'$(DesignTimeBuild)' != 'true'">
+  <Target Name="PublishUpdater" AfterTargets="Publish" Condition="'$(DesignTimeBuild)' != 'true'">
     <!-- MSBuild's Publish target does not restore a project first. The updater is invoked directly rather
          than referenced by this project, so a clean release runner has no assets file until we do it here. -->
-    <MSBuild Projects="$(RepositoryRoot)updater\Updater.csproj"
-             Targets="Restore"
-             Properties="Configuration=$(Configuration);RuntimeIdentifier=$(RuntimeIdentifier)" />
-    <MSBuild Projects="$(RepositoryRoot)updater\Updater.csproj"
-             Targets="Publish"
-             Properties="Configuration=$(Configuration);RuntimeIdentifier=$(RuntimeIdentifier);PublishDir=$(UpdaterPublishDirectory)" />
+    <MSBuild Projects="$(RepositoryRoot)updater\Updater.csproj" Targets="Restore" Properties="Configuration=$(Configuration);RuntimeIdentifier=$(RuntimeIdentifier)" />
+    <MSBuild Projects="$(RepositoryRoot)updater\Updater.csproj" Targets="Publish" Properties="Configuration=$(Configuration);RuntimeIdentifier=$(RuntimeIdentifier);PublishDir=$(UpdaterPublishDirectory)" />
     <Delete Files="$(NativeAotOutputDirectory)Updater.dll;$(NativeAotOutputDirectory)Updater.pdb;$(NativeAotOutputDirectory)Updater.runtimeconfig.json" />
-    <Copy SourceFiles="$(UpdaterPublishDirectory)Updater.exe"
-          DestinationFolder="$(NativeAotOutputDirectory)" />
+    <Copy SourceFiles="$(UpdaterPublishDirectory)Updater.exe" DestinationFolder="$(NativeAotOutputDirectory)" />
   </Target>
 </Project>

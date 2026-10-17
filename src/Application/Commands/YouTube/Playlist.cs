@@ -17,6 +17,7 @@ internal sealed class Playlist
     private readonly ISpeechOutput _speech;
     private readonly MediaGuard _guard;
     private readonly Sessions _sessions;
+    private readonly LunaPlayer.Spotify.SpotifyPlaybackHost _spotify;
 
     internal Playlist(
         ActionRouter router,
@@ -24,7 +25,8 @@ internal sealed class Playlist
         MediaPlayer player,
         Settings settings,
         ISpeechOutput speech,
-        Sessions sessions)
+        Sessions sessions,
+        LunaPlayer.Spotify.SpotifyPlaybackHost spotify)
     {
         _view = view;
         _player = player;
@@ -32,6 +34,7 @@ internal sealed class Playlist
         _speech = speech;
         _guard = new MediaGuard(player, speech);
         _sessions = sessions;
+        _spotify = spotify;
         router.Register(ActionId.PreviousTrack, MovePrevious);
         router.Register(ActionId.NextTrack, MoveNext);
         router.Register(ActionId.FirstTrack, MoveFirst);
@@ -43,6 +46,12 @@ internal sealed class Playlist
 
     private void MovePrevious()
     {
+        if (_spotify.IsActive)
+        {
+            var before = _spotify.CurrentTrack;
+            AnnounceSpotifyNavigation(_spotify.Previous() && _spotify.CurrentTrack != before);
+            return;
+        }
         if (!_player.Previous(_settings.Audio.WrapPlaylist))
             return;
         // Landing on a session video this way skips TryNext, which is what usually keeps the session's
@@ -58,6 +67,12 @@ internal sealed class Playlist
     /// </remarks>
     private void MoveNext()
     {
+        if (_spotify.IsActive)
+        {
+            var before = _spotify.CurrentTrack;
+            AnnounceSpotifyNavigation(_spotify.Next() && _spotify.CurrentTrack != before);
+            return;
+        }
         switch (_sessions.TryNext())
         {
             case NextOutcome.Advanced:
@@ -74,12 +89,21 @@ internal sealed class Playlist
         _sessions.SyncSelection();
         SetSwitched(true, announce: true);
     }
-    private void MoveFirst() => SetSwitched(_player.First(), announce: false);
-    private void MoveLast() => SetSwitched(_player.Last(), announce: false);
+    private void MoveFirst()
+    {
+        if (_spotify.IsActive) { _spotify.GoToIndex(0); return; }
+        SetSwitched(_player.First(), announce: false);
+    }
+    private void MoveLast()
+    {
+        if (_spotify.IsActive) { _spotify.GoToIndex(_spotify.CurrentQueue.Count - 1); return; }
+        SetSwitched(_player.Last(), announce: false);
+    }
 
     private void GoToFile()
     {
-        if (_player.Count <= 1)
+        var count = _spotify.IsActive ? _spotify.CurrentQueue.Count : _player.Count;
+        if (count <= 1)
         {
             _speech.Speak(
                 // Translators: Spoken when the user asks to jump to another file but only one is loaded.
@@ -90,9 +114,9 @@ internal sealed class Playlist
         }
         var value = _view.Dialogs.PromptText(
             // Translators: Asks the user which file in the playlist to move to. {count} is how many files are loaded.
-            TrFormat("Enter file number (1-{count})", _player.Count),
+            TrFormat("Enter file number (1-{count})", count),
             // Translators: Title of the window that asks which file in the playlist to move to.
-            Tr("Go To File"), (_player.CurrentIndex + 1).ToString());
+            Tr("Go To File"), ((_spotify.IsActive ? _spotify.CurrentIndex : _player.CurrentIndex) + 1).ToString());
         if (value is null)
             return;
         if (!int.TryParse(value, out var number))
@@ -104,7 +128,7 @@ internal sealed class Playlist
                 Tr("Invalid number."));
             return;
         }
-        if (number < 1 || number > _player.Count)
+        if (number < 1 || number > count)
         {
             _speech.Speak(
                 // Translators: Spoken when the file number the user typed is higher or lower than the playlist holds.
@@ -113,14 +137,15 @@ internal sealed class Playlist
                 Tr("Out of range."));
             return;
         }
-        SetSwitched(_player.GoToIndex(number - 1), announce: false);
+        if (_spotify.IsActive) _spotify.GoToIndex(number - 1);
+        else SetSwitched(_player.GoToIndex(number - 1), announce: false);
     }
 
     private void ToggleShuffle()
     {
-        if (!_guard.RequireFile(out _))
+        if (!_spotify.IsActive && !_guard.RequireFile(out _))
             return;
-        var enabled = _player.ToggleShuffle();
+        var enabled = _spotify.IsActive ? _spotify.ToggleShuffle() : _player.ToggleShuffle();
         _view.SetShuffleChecked(enabled);
         _speech.Speak(enabled
                 // Translators: Spoken once the player has started playing the files in a random order.
@@ -132,9 +157,9 @@ internal sealed class Playlist
 
     private void ToggleRepeatFile()
     {
-        if (!_guard.RequireFile(out _))
+        if (!_spotify.IsActive && !_guard.RequireFile(out _))
             return;
-        var enabled = _player.ToggleRepeatFile();
+        var enabled = _spotify.IsActive ? _spotify.ToggleRepeatCurrent() : _player.ToggleRepeatFile();
         _view.SetRepeatFileChecked(enabled);
         _speech.Speak(enabled
                 // Translators: Spoken once the player has started playing the same file over and over.
@@ -151,5 +176,11 @@ internal sealed class Playlist
         _view.SetPlaying(true);
         if (announce && _settings.General.SpeakFileOnNavigation && _player.CurrentDisplayName is string name)
             _speech.Speak(name, name);
+    }
+
+    private void AnnounceSpotifyNavigation(bool moved)
+    {
+        if (moved && _settings.General.SpeakFileOnNavigation && _spotify.CurrentTitle is { } title)
+            _speech.Speak(title, title);
     }
 }
