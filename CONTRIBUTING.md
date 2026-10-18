@@ -102,8 +102,11 @@ State in the pull request what you tested and what you were unable to test.
 ## Code standards
 
 - Follow the conventions of the surrounding code: naming, formatting, and file organisation.
-- Comments should explain why the code is written that way, not restate what it does. Platform
-  behaviour, ordering requirements and non-obvious constraints are worth documenting.
+- Preserve useful existing comments and keep them accurate when changing the code they describe.
+  Write clear comments for platform behaviour, ordering requirements and non-obvious constraints.
+  Comments should explain why the code is written that way, not merely restate what it does.
+- Do not prefix file or type names with context already supplied by their folder and namespace. For
+  example, prefer `DownloadQueue` inside `YouTube.Download` to `YouTubeDownloadQueue`.
 - User-facing strings are part of the interface. Match the style of existing messages, and provide
   both a full and a short form where the surrounding code does.
 - Handle errors or report them. An empty catch block requires a comment explaining why.
@@ -121,7 +124,8 @@ Changes to the user interface should meet the following:
 
 ## Translations
 
-Every string the user can read or hear goes through `Tr`, and every call carries a
+Every string the user can read or hear must be wrapped in `Tr(...)` or the matching translation
+helper already used by the surrounding code, such as `TrFormat(...)`. Every call carries a
 `// Translators:` comment on the line above it saying what the string is and where it appears.
 That comment is the only context a translator gets, so write it for someone who cannot see the
 code: name the kind of control, the page it sits on, and explain any word that must be left
@@ -148,8 +152,23 @@ catalogue.
 Normal builds run `scripts/compile-translations.ps1` to compile every catalogue and fail if a
 translation changes the named placeholders in its source message. The build copies the resulting
 `.mo` files into the matching locale directories in the application output. Run that script directly
-when you only want to compile translations. The `.po` and `.pot` files are committed; the `.mo` files
-are generated build output and are not.
+when you only want to compile translations. Commit the editable `.po` and `.pot` sources. Never commit
+compiled binary translation files such as `.mo` files; they are generated build output.
+
+## Pull request requirements
+
+Before submitting a new pull request:
+
+- Follow the code, comment, naming, accessibility and translation rules in this guide.
+- Keep comments clear and update nearby comments when their assumptions or behaviour change.
+- Do not commit generated files, build output or compiled translation files.
+- Avoid committing binary files directly. If a binary change is necessary and cannot be generated
+  during the build, explain why the binary belongs in the repository and how it was produced in the
+  pull request description.
+- Confirm that every new user-visible or spoken string uses `Tr(...)`, `TrFormat(...)` or the
+  equivalent translation helper used by the surrounding code.
+- Describe what changed, why it changed, how it was tested, and any limitations or work that could
+  not be tested.
 
 ## Submodules
 
@@ -160,7 +179,7 @@ output.
 ## Commits and pull requests
 
 Write commit messages that describe the change and the reason for it. In the pull request
-description, include what changed, how it was tested, and any known limitations.
+description, satisfy all requirements above.
 
 ## Bug reports
 
