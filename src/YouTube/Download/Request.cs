@@ -67,3 +67,6 @@ internal sealed record Request
     internal string SaveFolder()
         => SplitByType ? Path.Combine(Folder, Kind == DownloadKind.Audio ? "audios" : "videos") : Folder;
 }
+
+/// <summary>The choices returned by the download dialog and whether to run them now or queue them.</summary>
+internal readonly record struct OptionsResult(Request Request, bool AddToQueue);

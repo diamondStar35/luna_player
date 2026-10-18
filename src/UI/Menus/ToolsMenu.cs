@@ -13,6 +13,8 @@ internal static partial class MainMenuBuilder
         var toolsMenu = new Menu();
         // Translators: Tools menu item that opens the window for converting files to another audio format.
         toolsMenu.Append(commandIds[ActionId.OpenMediaConverter], Label(Tr("Media converter..."), ActionId.OpenMediaConverter, shortcuts));
+        // Translators: Tools menu item that opens the YouTube download queue.
+        toolsMenu.Append(commandIds[ActionId.OpenDownloadQueue], Label(Tr("Download queue..."), ActionId.OpenDownloadQueue, shortcuts));
 
         // IPTV is a submenu of Tools rather than a top-level menu: two items do not earn a place on the menu
         // bar, and the source manager and channel browser are tools like the converter above them.

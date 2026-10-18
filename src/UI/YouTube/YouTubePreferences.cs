@@ -35,6 +35,7 @@ internal sealed class YouTubePreferences : UI.PreferencesPage
     private readonly StaticText _downloadAudioFormatLabel;
     private readonly StaticText _downloadAudioQualityLabel;
     private readonly SpinCtrl _concurrentFragments;
+    private readonly SpinCtrl _simultaneousDownloads;
     private readonly CheckBox _embedMetadata;
     private readonly CheckBox _embedThumbnail;
     private readonly CheckBox _embedChapters;
@@ -165,6 +166,9 @@ internal sealed class YouTubePreferences : UI.PreferencesPage
         // these fragments.
         var fragmentsLabel = new StaticText(panel, label: Tr("Concurrent fragments"));
         _concurrentFragments = new SpinCtrl(panel, downloadDefaults.ConcurrentFragments, 1, 16);
+        // Translators: Label of the box holding how many videos the download queue may fetch at once.
+        var simultaneousDownloadsLabel = new StaticText(panel, label: Tr("Simultaneous downloads"));
+        _simultaneousDownloads = new SpinCtrl(panel, downloadDefaults.SimultaneousDownloads, 1, 16);
         // Translators: Tick box: write the title, uploader and other tags into the downloaded file.
         _embedMetadata = new CheckBox(panel, label: Tr("Embed metadata")) { Checked = downloadDefaults.EmbedMetadata };
         // Translators: Tick box: embed the video's thumbnail as cover art in the downloaded file.
@@ -177,6 +181,7 @@ internal sealed class YouTubePreferences : UI.PreferencesPage
         // "SponsorBlock" is a service name and is not translated.
         _sponsorBlock = new CheckBox(panel, label: Tr("Remove SponsorBlock segments")) { Checked = downloadDefaults.SponsorBlockRemove };
         AddBoxField(advancedBox, fragmentsLabel, _concurrentFragments);
+        AddBoxField(advancedBox, simultaneousDownloadsLabel, _simultaneousDownloads);
         foreach (var tick in new[] { _embedMetadata, _embedThumbnail, _embedChapters, _embedSubtitles, _sponsorBlock })
             advancedBox.Add(tick, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
 
@@ -315,6 +320,9 @@ internal sealed class YouTubePreferences : UI.PreferencesPage
         Help(_concurrentFragments,
             // Translators: Help text for the box holding how many file pieces are fetched at once.
             Tr("How many pieces of a file yt-dlp fetches at once, from 1 through 16. More can be faster on a fast connection; one is gentlest."));
+        Help(_simultaneousDownloads,
+            // Translators: Help text for the box holding how many videos the download queue may fetch at once.
+            Tr("How many videos the download queue may download at the same time, from 1 through 16."));
         Help(_embedMetadata,
             // Translators: Help text for the tick box that writes tags into the downloaded file.
             Tr("When checked, the title, uploader and other details are written into the downloaded file."));
@@ -432,6 +440,7 @@ internal sealed class YouTubePreferences : UI.PreferencesPage
         download.AudioFormat = AudioFormats[Math.Clamp(_downloadAudioFormat.SelectedIndex, 0, AudioFormats.Length - 1)];
         download.AudioQuality = AudioQualities[Math.Clamp(_downloadAudioQuality.SelectedIndex, 0, AudioQualities.Length - 1)];
         download.ConcurrentFragments = _concurrentFragments.Value;
+        download.SimultaneousDownloads = _simultaneousDownloads.Value;
         download.EmbedMetadata = _embedMetadata.Checked;
         download.EmbedThumbnail = _embedThumbnail.Checked;
         download.EmbedChapters = _embedChapters.Checked;
@@ -461,6 +470,7 @@ internal sealed class YouTubePreferences : UI.PreferencesPage
         _downloadAudioFormat.SelectedIndex = Math.Max(0, Array.IndexOf(AudioFormats, download.AudioFormat));
         _downloadAudioQuality.SelectedIndex = Math.Max(0, Array.IndexOf(AudioQualities, download.AudioQuality));
         _concurrentFragments.Value = download.ConcurrentFragments;
+        _simultaneousDownloads.Value = download.SimultaneousDownloads;
         _embedMetadata.Checked = download.EmbedMetadata;
         _embedThumbnail.Checked = download.EmbedThumbnail;
         _embedChapters.Checked = download.EmbedChapters;

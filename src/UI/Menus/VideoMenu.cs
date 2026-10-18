@@ -16,6 +16,8 @@ internal static partial class MainMenuBuilder
         Add(videoMenu, videoItems, commandIds, shortcuts, ActionId.VideoDownload, Tr("Download..."));
         // Translators: Item in the Video options menu that saves the video being played straight to disk with the saved download settings.
         Add(videoMenu, videoItems, commandIds, shortcuts, ActionId.VideoDirectDownload, Tr("Direct download"));
+        // Translators: Item in the Video options menu that adds the video being played to the download queue.
+        Add(videoMenu, videoItems, commandIds, shortcuts, ActionId.AddToDownloadQueue, Tr("Add to download queue"));
         // Translators: Item in the Video options menu that shows the text the uploader wrote under the video.
         Add(videoMenu, videoItems, commandIds, shortcuts, ActionId.VideoDescription, Tr("Video description..."));
         // Translators: Item in the Video options menu that copies the address of the video being played.

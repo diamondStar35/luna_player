@@ -23,6 +23,8 @@ internal sealed class DialogService : IDialogService, IDisposable
     private readonly IApplicationDispatcher _dispatcher;
     private readonly LunaPlayer.Recording.AudioCatalog _catalog;
     private readonly GlobalShortcuts _globalShortcuts;
+    private readonly HashSet<YouTube.DownloadProgressDialog> _downloadProgressDialogs = [];
+    private bool? _toastNotificationsAvailable;
 
     /// <summary>The single-list YouTube results window, built once and reused: a search, a playlist and the
     /// return from the player all show the same plain list, so the window is kept and its contents refreshed
@@ -72,9 +74,25 @@ internal sealed class DialogService : IDialogService, IDisposable
     public string? PromptText(string message, string caption, string value = "")
     { using var dialog = new TextEntryDialog(DialogParent, message, caption, value); return dialog.ShowModal() == StandardId.Ok ? dialog.Value : null; }
     public bool Confirm(string message, string caption) => Wx.MessageBox(message, caption, MessageBoxStyle.YesNo | MessageBoxStyle.IconWarning, DialogParent) == MessageBoxStyle.Yes;
+    public bool ConfirmCloseWithDownloads()
+    { using var dialog = new YouTube.DownloadExitDialog(DialogParent); return dialog.Show(); }
     public void ShowInfo(string message, string caption) => Wx.MessageBox(message, caption, MessageBoxStyle.Ok | MessageBoxStyle.IconInformation, DialogParent);
+    public void ShowMainInfo(string message, string caption) => Wx.MessageBox(message, caption, MessageBoxStyle.Ok | MessageBoxStyle.IconInformation, _frame);
     public void ShowWarning(string message, string caption) => Wx.MessageBox(message, caption, MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, DialogParent);
     public void ShowError(string message, string caption) => Wx.MessageBox(message, caption, MessageBoxStyle.Ok | MessageBoxStyle.IconError, DialogParent);
+    public void ShowMainError(string message, string caption) => Wx.MessageBox(message, caption, MessageBoxStyle.Ok | MessageBoxStyle.IconError, _frame);
+    public void ShowNotification(string title, string message)
+    {
+        // wxWidgets falls back to a notification-area icon for balloon messages. Luna never owns a tray
+        // icon, so use the Windows toast implementation only and fall back to an ordinary accessible box.
+        _toastNotificationsAvailable ??= NotificationMessage.UseToasts(
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Programs),
+                AppInfo.Name, $"{AppInfo.Name}.lnk"),
+            AppInfo.AppUserModelId);
+        if (!_toastNotificationsAvailable.Value
+            || !new NotificationMessage(title, message).Show())
+            ShowInfo(message, title);
+    }
     public void ShowAbout() { using var dialog = new AboutDialog(DialogParent); dialog.Show(); }
     public bool OfferAppUpdate(AppUpdatePrompt prompt) { using var dialog = new AppUpdateDialog(DialogParent, prompt); return dialog.Show(); }
     public double? ChooseTime(double duration, double elapsed) { using var dialog = new GoToTimeDialog(DialogParent, duration, elapsed); return dialog.Show(); }
@@ -124,12 +142,36 @@ internal sealed class DialogService : IDialogService, IDisposable
     }
     public bool OfferYouTubeComponents() { using var dialog = new YouTube.ComponentsDialog(DialogParent); return dialog.Show(); }
 
-    public Downloads.Request? ShowDownloadOptions(Downloads.Request defaults)
+    public Downloads.OptionsResult? ShowDownloadOptions(Downloads.Request defaults)
     { using var dialog = new YouTube.DownloadDialog(DialogParent, defaults); return dialog.Show(); }
 
-    public Downloads.Outcome? RunDownload(
-        Func<Action<Downloads.Progress>, CancellationToken, Downloads.Outcome> work)
-    { using var dialog = new YouTube.DownloadProgressDialog(DialogParent, _dispatcher, work); return dialog.Show(); }
+    public void ShowDownloadQueue(
+        Downloads.DownloadQueue queue,
+        Func<IReadOnlyList<string>, string?> addLinks,
+        Action start)
+    { using var dialog = new YouTube.DownloadQueueDialog(DialogParent, _dispatcher, queue, addLinks, start); dialog.Show(); }
+
+    public void ShowDownloadProgress(
+        Downloads.DownloadQueue queue,
+        Guid itemId,
+        Action<Downloads.Outcome?> completed)
+    {
+        var dialog = new YouTube.DownloadProgressDialog(_dispatcher, queue, itemId);
+        dialog.Closed += (closed, outcome) =>
+        {
+            _downloadProgressDialogs.Remove(closed);
+            completed(outcome);
+        };
+        _downloadProgressDialogs.Add(dialog);
+        dialog.Show();
+    }
+
+    internal void CloseDownloadProgressWindows()
+    {
+        foreach (var dialog in _downloadProgressDialogs.ToArray())
+            dialog.Dispose();
+        _downloadProgressDialogs.Clear();
+    }
     public void ShowTextInfo(string title, string text) { using var dialog = new TextInfoDialog(DialogParent, title, text); dialog.Show(); }
     public void ShowVideoDescription(string title, string description) { using var dialog = new YouTube.DescriptionDialog(DialogParent, title, description); dialog.Show(); }
     public void ShowRecording(
@@ -147,5 +189,9 @@ internal sealed class DialogService : IDialogService, IDisposable
 
     /// <summary>Tears down the reused results window. Called before the frame is destroyed, since that window
     /// is a child of it.</summary>
-    public void Dispose() => _youTubeResults?.Dispose();
+    public void Dispose()
+    {
+        _youTubeResults?.Dispose();
+        CloseDownloadProgressWindows();
+    }
 }

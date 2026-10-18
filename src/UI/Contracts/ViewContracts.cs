@@ -128,6 +128,9 @@ internal interface IYouTubeResultsFeed
     /// <summary>Opens the download window on a row, to choose how it is saved before downloading.</summary>
     void Download(int index);
 
+    /// <summary>Adds the row to the download queue with the saved default settings.</summary>
+    void AddToDownloadQueue(int index);
+
     /// <summary>Whether the row is already in the favourites, so the window can offer to remove rather than
     /// add it.</summary>
     bool IsFavorite(int index);

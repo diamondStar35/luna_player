@@ -4,7 +4,7 @@ using Downloads = LunaPlayer.YouTube.Download;
 
 namespace LunaPlayer.UI.YouTube;
 
-/// <summary>The download options dialog. OK returns a filled-in Request; Cancel returns null.</summary>
+/// <summary>The download options dialog. Download or Add to queue returns the filled-in choices.</summary>
 internal sealed class DownloadDialog : IDisposable
 {
     private static readonly VideoQuality[] VideoQualities =
@@ -45,7 +45,7 @@ internal sealed class DownloadDialog : IDisposable
     private readonly CheckBox _embedChapters;
     private readonly CheckBox _embedSubtitles;
     private readonly CheckBox _sponsorBlock;
-    private Downloads.Request? _result;
+    private Downloads.OptionsResult? _result;
 
     internal DownloadDialog(Window parent, Downloads.Request defaults)
     {
@@ -116,16 +116,20 @@ internal sealed class DownloadDialog : IDisposable
         foreach (var tick in new[] { _embedMetadata, _embedThumbnail, _embedChapters, _embedSubtitles, _sponsorBlock })
             _form.Add(tick, flags: SizerFlags.BorderTop, border: 4);
 
-        // Translators: The button that confirms a choice.
-        var ok = new Button(_dialog, StandardId.Ok, Tr("OK"));
-        ok.SetDefault();
-        ok.Click += OnAccept;
+        // Translators: The button that starts this download immediately.
+        var download = new Button(_dialog, StandardId.Ok, Tr("Download"));
+        download.SetDefault();
+        download.Click += (_, _) => Accept(addToQueue: false);
+        // Translators: The button that saves these choices as an item in the download queue.
+        var addToQueue = new Button(_dialog, label: Tr("Add to queue"));
+        addToQueue.Click += (_, _) => Accept(addToQueue: true);
         // Translators: The button that closes a window and leaves everything as it was.
         var cancel = new Button(_dialog, StandardId.Cancel, Tr("Cancel"));
         _dialog.SetEscapeId(StandardId.Cancel);
         var buttons = new BoxSizer(Orientation.Horizontal);
         buttons.AddStretchSpacer();
-        buttons.Add(ok, flags: SizerFlags.BorderRight, border: 6);
+        buttons.Add(download, flags: SizerFlags.BorderRight, border: 6);
+        buttons.Add(addToQueue, flags: SizerFlags.BorderRight, border: 6);
         buttons.Add(cancel);
 
         var sizer = new BoxSizer(Orientation.Vertical);
@@ -139,8 +143,8 @@ internal sealed class DownloadDialog : IDisposable
         SyncOptions();
     }
 
-    /// <summary>The request the user filled in, or null when they cancelled.</summary>
-    internal Downloads.Request? Show()
+    /// <summary>The request and whether it should be queued, or null when the user cancelled.</summary>
+    internal Downloads.OptionsResult? Show()
     {
         _result = null;
         _dialog.ShowModal();
@@ -149,7 +153,7 @@ internal sealed class DownloadDialog : IDisposable
 
     public void Dispose() => _dialog.Dispose();
 
-    private void OnAccept(object? sender, CommandEventArgs args)
+    private void Accept(bool addToQueue)
     {
         var folder = _folder.Value.Trim();
         if (folder.Length == 0)
@@ -162,7 +166,7 @@ internal sealed class DownloadDialog : IDisposable
             _folder.Focus();
             return;
         }
-        _result = new Downloads.Request
+        var request = new Downloads.Request
         {
             Url = _url,
             Kind = (DownloadKind)Math.Max(0, _type.SelectedIndex),
@@ -180,6 +184,7 @@ internal sealed class DownloadDialog : IDisposable
             EmbedSubtitles = _embedSubtitles.Checked,
             SponsorBlockRemove = _sponsorBlock.Checked,
         };
+        _result = new Downloads.OptionsResult(request, addToQueue);
         _dialog.EndModal(StandardId.Ok);
     }
 

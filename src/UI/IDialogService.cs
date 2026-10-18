@@ -34,9 +34,17 @@ internal interface IDialogService
     string? ChooseFolder(string initialDirectory, string message = "");
     string? PromptText(string message, string caption, string value = "");
     bool Confirm(string message, string caption);
+    /// <summary>Warns that closing will cancel unfinished queue jobs.</summary>
+    bool ConfirmCloseWithDownloads();
     void ShowInfo(string message, string caption);
+    /// <summary>Shows an information box owned by the main window, even if another modeless window is active.</summary>
+    void ShowMainInfo(string message, string caption);
     void ShowWarning(string message, string caption);
     void ShowError(string message, string caption);
+    /// <summary>Shows an error box owned by the main window, even if another modeless window is active.</summary>
+    void ShowMainError(string message, string caption);
+    /// <summary>Shows a non-modal operating-system notification associated with the main window.</summary>
+    void ShowNotification(string title, string message);
     void ShowAbout();
 
     /// <summary>Offers a newer Luna Player release and shows its change list. True means update now.</summary>
@@ -102,12 +110,20 @@ internal interface IDialogService
     /// <summary>Offers to fetch the programs a YouTube download needs. True when the user accepted.</summary>
     bool OfferYouTubeComponents();
 
-    /// <summary>Opens the download dialog prefilled from <paramref name="defaults"/>; null if closed without starting.</summary>
-    Downloads.Request? ShowDownloadOptions(Downloads.Request defaults);
+    /// <summary>Opens the download dialog prefilled from <paramref name="defaults"/>; null if cancelled.</summary>
+    Downloads.OptionsResult? ShowDownloadOptions(Downloads.Request defaults);
 
-    /// <summary>Runs a download behind its progress window; null if the user stopped it.</summary>
-    Downloads.Outcome? RunDownload(
-        Func<Action<Downloads.Progress>, CancellationToken, Downloads.Outcome> work);
+    /// <summary>Opens the download queue until the user closes it. Downloads continue after it closes.</summary>
+    void ShowDownloadQueue(
+        Downloads.DownloadQueue queue,
+        Func<IReadOnlyList<string>, string?> addLinks,
+        Action start);
+
+    /// <summary>Shows a modeless progress window for a download already owned by the queue.</summary>
+    void ShowDownloadProgress(
+        Downloads.DownloadQueue queue,
+        Guid itemId,
+        Action<Downloads.Outcome?> completed);
 
     /// <summary>Opens the window where recording is set up and run. It is modal, but closing it does not
     /// end a recording: the sources and the recorder outlive it.</summary>

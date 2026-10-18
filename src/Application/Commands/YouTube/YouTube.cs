@@ -34,6 +34,7 @@ internal sealed partial class YouTube
     private readonly LunaPlayer.YouTube.Components.Service _components;
     private readonly IApplicationDispatcher _dispatcher;
     private readonly MediaGuard _guard;
+    private readonly LunaPlayer.YouTube.Download.DownloadQueue _downloadQueue;
 
     internal YouTube(
         ActionRouter router,
@@ -45,7 +46,8 @@ internal sealed partial class YouTube
         Backend backend,
         Sessions sessions,
         LunaPlayer.YouTube.Components.Service components,
-        IApplicationDispatcher dispatcher)
+        IApplicationDispatcher dispatcher,
+        LunaPlayer.YouTube.Download.DownloadQueue downloadQueue)
     {
         _view = view;
         _player = player;
@@ -57,10 +59,13 @@ internal sealed partial class YouTube
         _components = components;
         _dispatcher = dispatcher;
         _guard = new MediaGuard(player, speech);
+        _downloadQueue = downloadQueue;
         router.Register(ActionId.OpenYouTubeLink, OpenLink);
         router.Register(ActionId.SearchYouTube, Search);
         router.Register(ActionId.VideoDirectDownload, DirectDownload);
         router.Register(ActionId.VideoDownload, Download);
+        router.Register(ActionId.AddToDownloadQueue, AddCurrentToDownloadQueue);
+        router.Register(ActionId.OpenDownloadQueue, OpenDownloadQueue);
         router.Register(ActionId.VideoDescription, ShowDescription);
         router.Register(ActionId.VideoCopyLink, CopyLink);
         router.Register(ActionId.VideoOpenInBrowser, OpenCurrentInBrowser);

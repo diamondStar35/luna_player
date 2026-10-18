@@ -131,6 +131,7 @@ internal sealed class MainFrame : IMainView
         add => _input.EscapePressed += value;
         remove => _input.EscapePressed -= value;
     }
+    public event Func<bool>? CloseConfirmationRequested;
     public event Action? CloseRequested;
 
     public nint NativeHandle => _frame.NativeHandle;
@@ -258,12 +259,31 @@ internal sealed class MainFrame : IMainView
             return;
         }
 
+        if (!_closing && args.CanVeto && !CanClose())
+        {
+            args.Veto();
+            return;
+        }
+
         _closing = true;
         // Stop system-wide shortcuts before the close handlers save state and stop playback, so no action can
         // arrive while shutdown is in progress.
         _input.StopGlobalShortcuts();
         CloseRequested?.Invoke();
+        // Parentless modeless progress windows would otherwise keep wxWidgets' event loop alive after the
+        // main frame disappears. They are views only; their jobs remain owned by the queue until host disposal.
+        _dialogs?.CloseDownloadProgressWindows();
         args.Skip();
+    }
+
+    private bool CanClose()
+    {
+        if (CloseConfirmationRequested is null)
+            return true;
+        foreach (Func<bool> confirm in CloseConfirmationRequested.GetInvocationList())
+            if (!confirm())
+                return false;
+        return true;
     }
 
     private async Task CloseAfterKeysAreReleasedAsync()

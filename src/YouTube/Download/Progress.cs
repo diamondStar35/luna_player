@@ -7,7 +7,11 @@ internal readonly record struct Progress(
     long TotalBytes,
     double Percent,
     double Speed,
-    double Eta);
+    double Eta,
+    string PostProcessor = "")
+{
+    internal bool IsPostProcessing => PostProcessor.Length > 0;
+}
 
 /// <summary>A finished download: the saved file on success, or why it failed.</summary>
 internal readonly record struct Outcome(bool Success, string FilePath, string Error)

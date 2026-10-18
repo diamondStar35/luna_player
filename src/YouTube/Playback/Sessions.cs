@@ -53,8 +53,9 @@ internal sealed partial class Sessions : IDisposable
     private readonly Metadata.Client _client;
     private readonly Backend _backend;
     private readonly ResolveCache _cache;
-    private readonly Action<string> _directDownload;
+    private readonly Action<string, string> _directDownload;
     private readonly Action<string, string> _download;
+    private readonly Action<string, string> _queueDownload;
     private readonly Action<string> _copy;
     private readonly Action<string> _browse;
     private readonly FavoriteStore _favorites;
@@ -76,8 +77,9 @@ internal sealed partial class Sessions : IDisposable
         Metadata.Client client,
         Backend backend,
         ResolveCache cache,
-        Action<string> directDownload,
+        Action<string, string> directDownload,
         Action<string, string> download,
+        Action<string, string> queueDownload,
         Action<string> copy,
         Action<string> browse,
         FavoriteStore favorites,
@@ -93,6 +95,7 @@ internal sealed partial class Sessions : IDisposable
         _cache = cache;
         _directDownload = directDownload;
         _download = download;
+        _queueDownload = queueDownload;
         _copy = copy;
         _browse = browse;
         _favorites = favorites;

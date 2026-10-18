@@ -4,7 +4,7 @@ namespace LunaPlayer.Actions;
 ///
 /// <remarks>
 /// Kept apart from <see cref="MediaActions"/> because they are a feature that can be finished,
-/// changed or taken away as a whole, and because the three video commands share a condition none of the
+/// changed or taken away as a whole, and because the video-specific commands share a condition none of the
 /// others have: they apply only while what is playing came from YouTube.
 /// </remarks>
 internal static class YouTubeActions
@@ -19,6 +19,12 @@ internal static class YouTubeActions
         // Translators: Name of the command that opens the window listing the links the user has saved.
         new(ActionId.OpenFavorites, Tr("Favorite videos dialog"),
             new("f", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
+        // Translators: Name of the command that opens the YouTube download queue window.
+        new(ActionId.OpenDownloadQueue, Tr("Download queue..."),
+            new("q", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
+        // Translators: Name of the command that adds the active YouTube video to the download queue.
+        new(ActionId.AddToDownloadQueue, Tr("Add the current video to the download queue"),
+            new("q", ShortcutModifiers.Control)),
         // Translators: Name of the command that saves the video being played straight to disk with the saved
         // download settings, without asking.
         new(ActionId.VideoDirectDownload, Tr("Direct download of the current video"), new("d", ShortcutModifiers.Control)),

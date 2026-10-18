@@ -9,6 +9,9 @@ internal static class Arguments
     /// <summary>The prefix a progress line carries.</summary>
     internal const string ProgressSentinel = "LUNA";
 
+    /// <summary>The prefix a post-processing update carries.</summary>
+    internal const string PostProcessSentinel = "LUNAPOST";
+
     /// <summary>The prefix the final-path line carries.</summary>
     internal const string FileSentinel = "LUNAFILE";
 
@@ -21,8 +24,11 @@ internal static class Arguments
             "--newline",
             "--progress",
             "--force-overwrites",
+            "--remote-components", "ejs:github",
             "--progress-template",
             $"download:{ProgressSentinel}|%(progress.status)s|%(progress.downloaded_bytes)s|%(progress.total_bytes)s|%(progress.total_bytes_estimate)s|%(progress.speed)s|%(progress.eta)s",
+            "--progress-template",
+            $"postprocess:{PostProcessSentinel}|%(progress.status)s|%(progress.postprocessor)s",
             "--print",
             $"after_move:{FileSentinel}|%(filepath)s",
             "-P", request.SaveFolder(),

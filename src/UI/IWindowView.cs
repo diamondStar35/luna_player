@@ -7,6 +7,8 @@ namespace LunaPlayer.UI;
 internal interface IWindowView
 {
     event Action<ActionId>? ActionRequested;
+    /// <summary>Asked before a close that can still be cancelled. Every subscriber must agree.</summary>
+    event Func<bool>? CloseConfirmationRequested;
     event Action? CloseRequested;
 
     /// <summary>Asked when Escape is pressed on the main window with no modifier. Returning true means it

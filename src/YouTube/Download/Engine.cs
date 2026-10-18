@@ -7,6 +7,7 @@ namespace LunaPlayer.YouTube.Download;
 /// <summary>Runs one yt-dlp download on a worker thread, reporting progress and returning the saved file or an error.</summary>
 internal sealed class Engine
 {
+    private const int DownloadAttempts = 3;
     private const int ErrorTailLines = 12;
 
     private readonly Settings _settings;
@@ -27,7 +28,27 @@ internal sealed class Engine
             return Outcome.Failed(exception.Message);
         }
 
+        Outcome outcome = default;
+        for (var attempt = 0; attempt < DownloadAttempts; attempt++)
+        {
+            token.ThrowIfCancellationRequested();
+            outcome = RunOnce(request, report, token);
+            if (outcome.Success)
+                return outcome;
+        }
+        return outcome;
+    }
+
+    private Outcome RunOnce(Request request, Action<Progress> report, CancellationToken token)
+    {
         var arguments = Arguments.Build(request);
+        var hasCookies = _settings.YouTube.CookiesFromFirefox
+            || (!string.IsNullOrEmpty(_settings.YouTube.CookiesPath)
+                && File.Exists(_settings.YouTube.CookiesPath));
+        // The Android client currently avoids YouTube's SABR-only URLs, which can fail with HTTP 403.
+        // Authenticated downloads retain yt-dlp's default client because Android is not cookie-compatible.
+        if (!hasCookies)
+            arguments.AddRange(["--extractor-args", "youtube:player_client=android;js_variant=main"]);
         Utils.AddCookies(arguments, _settings.YouTube);
         arguments.Add(request.Url);
 
@@ -97,6 +118,16 @@ internal sealed class Engine
     private static bool TryParseProgress(string line, out Progress progress)
     {
         progress = default;
+        if (line.StartsWith(Arguments.PostProcessSentinel + "|", StringComparison.Ordinal))
+        {
+            var postProcess = line.Split('|', 3);
+            if (postProcess.Length < 3)
+                return false;
+            progress = new Progress(
+                postProcess[1], 0, 0, 100, 0, 0,
+                postProcess[2].Trim());
+            return true;
+        }
         if (!line.StartsWith(Arguments.ProgressSentinel + "|", StringComparison.Ordinal))
             return false;
         // Sentinel, status, downloaded, total, total-estimate, speed, eta.

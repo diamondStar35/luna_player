@@ -57,9 +57,23 @@ internal sealed partial class Sessions
                 Tr("No channel link."));
         }
 
-        public void DirectDownload(int index) => On(index, item => _owner._directDownload(item.Url));
+        public void DirectDownload(int index) => On(index, item => _owner._directDownload(item.Url, item.Title));
 
         public void Download(int index) => On(index, item => _owner._download(item.Url, item.Title));
+
+        public void AddToDownloadQueue(int index) => On(index, item =>
+        {
+            if (item.ItemType is YouTubeItemType.Video)
+            {
+                _owner._queueDownload(item.Url, item.Title);
+                return;
+            }
+            _owner._speech.Speak(
+                // Translators: Spoken when a playlist or channel row is used with a video-only queue command.
+                Tr("Only videos can be added to the download queue."),
+                // Translators: Short wording for a non-video row used with the download queue.
+                Tr("Not a video."));
+        });
 
         public bool IsFavorite(int index) =>
             Peek(index) is YouTubeResult item && _owner._favorites.FindByLink(item.Url) is not null;

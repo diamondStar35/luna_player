@@ -26,8 +26,10 @@ internal sealed class ResultsDialog : IDisposable
     private readonly int _favoriteId = IdManager.NewId();
     private readonly int _directDownloadId = IdManager.NewId();
     private readonly int _downloadId = IdManager.NewId();
+    private readonly int _queueId = IdManager.NewId();
     private readonly Menu _menu;
     private MenuItem _favoriteItem = null!;
+    private MenuItem _queueItem = null!;
     private TabPage _active;
     private ResultChoice? _chosen;
 
@@ -126,6 +128,7 @@ internal sealed class ResultsDialog : IDisposable
         _dialog.Bind(WxEvents.MenuCommand, (_, _) => WithSelection(_feed.ToggleFavorite), _favoriteId);
         _dialog.Bind(WxEvents.MenuCommand, (_, _) => WithSelection(_feed.Download), _downloadId);
         _dialog.Bind(WxEvents.MenuCommand, (_, _) => WithSelection(_feed.DirectDownload), _directDownloadId);
+        _dialog.Bind(WxEvents.MenuCommand, (_, _) => WithSelection(_feed.AddToDownloadQueue), _queueId);
         _dialog.Bind(WxEvents.CharHook, OnCharHook);
         // Bound after the opening tab is chosen above, so selecting it fires no switch of its own.
         if (_notebook is not null)
@@ -395,6 +398,8 @@ internal sealed class ResultsDialog : IDisposable
         menu.Append(_downloadId, $"{Tr("Download...")}\tCtrl+Shift+D");
         // Translators: Context menu item in the results list that saves the chosen video straight to disk with the saved download settings.
         menu.Append(_directDownloadId, $"{Tr("Direct download")}\tCtrl+D");
+        // Translators: Context menu item that adds the selected video to the download queue.
+        _queueItem = menu.Append(_queueId, $"{Tr("Add to download queue")}\tCtrl+Q");
         return menu;
     }
 
@@ -409,6 +414,7 @@ internal sealed class ResultsDialog : IDisposable
             ? $"{Tr("Remove from favorites")}\tCtrl+Space"
             // Translators: Context menu item in the results list that saves the chosen video to the favourites.
             : $"{Tr("Add to favorites")}\tCtrl+Space";
+        _queueItem.Enabled = _active.Results[_active.List.SelectedIndex].ItemType is YouTubeItemType.Video;
         _dialog.PopupMenu(_menu);
     }
 
@@ -446,6 +452,10 @@ internal sealed class ResultsDialog : IDisposable
                 case 'B': _feed.OpenInBrowser(_active.List.SelectedIndex); return;
                 case 'N': _feed.OpenChannelInBrowser(_active.List.SelectedIndex); return;
                 case 'G': ChooseChannel(); return;
+                case 'Q':
+                    if (!args.Shift)
+                        _feed.AddToDownloadQueue(_active.List.SelectedIndex);
+                    return;
                 case 'D':
                     // Ctrl+D saves straight away with the settings; Ctrl+Shift+D opens the download window.
                     if (args.Shift)

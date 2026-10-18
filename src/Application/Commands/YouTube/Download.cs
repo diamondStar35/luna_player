@@ -1,4 +1,5 @@
 using LunaPlayer.Configuration;
+using LunaPlayer.Media;
 using LunaPlayer.YouTube;
 using Downloads = LunaPlayer.YouTube.Download;
 
@@ -10,7 +11,7 @@ internal sealed partial class YouTube
     private void DirectDownload()
     {
         if (RequireVideo(out var watchUrl))
-            DirectDownloadTo(watchUrl);
+            DirectDownloadTo(watchUrl, _player.CurrentTitle ?? _player.CurrentDisplayName ?? string.Empty);
     }
 
     /// <summary>Opens the download dialog for the current video.</summary>
@@ -20,40 +21,95 @@ internal sealed partial class YouTube
             DownloadTo(watchUrl, _player.CurrentTitle ?? string.Empty);
     }
 
-    /// <summary>Downloads a video with the saved settings.</summary>
-    internal void DirectDownloadTo(string url)
+    /// <summary>Adds the active YouTube video with the saved defaults.</summary>
+    private void AddCurrentToDownloadQueue()
     {
-        if (!EnsureComponents(() => DirectDownloadTo(url)))
+        if (RequireVideo(out var watchUrl))
+            AddToDownloadQueue(watchUrl, _player.CurrentTitle ?? _player.CurrentDisplayName ?? string.Empty);
+    }
+
+    /// <summary>Downloads a video with the saved settings.</summary>
+    internal void DirectDownloadTo(string url, string title = "")
+    {
+        if (!EnsureComponents(() => DirectDownloadTo(url, title)))
             return;
-        Run(Downloads.Request.FromSettings(_settings.YouTube.Download, url));
+        Run(Downloads.Request.FromSettings(_settings.YouTube.Download, url), title);
     }
 
     /// <summary>Opens the download dialog for a video, then downloads what was chosen.</summary>
     internal void DownloadTo(string url, string title)
     {
-        if (!EnsureComponents(() => DownloadTo(url, title)))
-            return;
         var stem = string.IsNullOrWhiteSpace(title) ? string.Empty : Paths.SafeFileName(title);
         var defaults = Downloads.Request.FromSettings(_settings.YouTube.Download, url, stem);
-        if (_view.Dialogs.ShowDownloadOptions(defaults) is { } request)
-            Run(request);
+        if (_view.Dialogs.ShowDownloadOptions(defaults) is not { } choice)
+            return;
+        if (choice.AddToQueue)
+            AddToDownloadQueue(choice.Request, title);
+        else if (EnsureComponents(() => Run(choice.Request, title)))
+            Run(choice.Request, title);
     }
-    /// <summary>Runs a download behind the progress window and shows the result with a Success or Error
-    /// title. A download the user stopped says nothing.</summary>
-    private void Run(Downloads.Request request)
+
+    /// <summary>Adds a search result or other known video with the saved default settings.</summary>
+    internal void AddToDownloadQueue(string url, string title)
+        => AddToDownloadQueue(Downloads.Request.FromSettings(_settings.YouTube.Download, url), title);
+
+    private void AddToDownloadQueue(Downloads.Request request, string title)
     {
-        var engine = new Downloads.Engine(_settings);
-        var outcome = _view.Dialogs.RunDownload((report, token) => engine.Run(request, report, token));
+        _downloadQueue.Add(title, request);
+        _speech.Speak(
+            // Translators: Spoken after a video has been put in the download queue.
+            Tr("Added to download queue"),
+            Tr("Added to download queue"));
+    }
+
+    internal void OpenDownloadQueue()
+        => _view.Dialogs.ShowDownloadQueue(_downloadQueue, AddManualLinks, StartDownloadQueue);
+
+    /// <summary>Validates all manually entered links before adding any of them. Null means success.</summary>
+    private string? AddManualLinks(IReadOnlyList<string> links)
+    {
+        foreach (var link in links)
+        {
+            var info = LinkValidator.Parse(link);
+            if (!info.IsHttp || !info.IsYouTube || !info.HasVideo)
+                // Translators: Shown when the queue's multi-link box contains a non-video YouTube address.
+                return TrFormat("This is not a valid YouTube video link: {link}", link);
+        }
+        foreach (var link in links)
+        {
+            var trimmed = link.Trim();
+            _downloadQueue.Add(trimmed,
+                Downloads.Request.FromSettings(_settings.YouTube.Download, trimmed));
+        }
+        return null;
+    }
+
+    private void StartDownloadQueue()
+    {
+        if (EnsureComponents(StartDownloadQueue))
+            _downloadQueue.Start();
+    }
+
+    /// <summary>Starts a download owned by the queue and opens a modeless progress window for it. The
+    /// completion message is always owned by the main frame; stopping or minimizing says nothing.</summary>
+    private void Run(Downloads.Request request, string title)
+    {
+        var itemId = _downloadQueue.StartSingle(title, request);
+        _view.Dialogs.ShowDownloadProgress(_downloadQueue, itemId, ShowDownloadOutcome);
+    }
+
+    private void ShowDownloadOutcome(Downloads.Outcome? outcome)
+    {
         if (outcome is not { } result)
             return;
         if (result.Success)
-            _view.Dialogs.ShowInfo(
+            _view.Dialogs.ShowMainInfo(
                 // Translators: Shown when a download finished.
                 Tr("The download finished. The file was saved to your downloads folder."),
                 // Translators: Title of the message shown when a download has finished.
                 Tr("Success"));
         else
-            _view.Dialogs.ShowError(
+            _view.Dialogs.ShowMainError(
                 result.Error.Length > 0
                     // Translators: Shown when a download failed. {details} is the technical reason from yt-dlp,
                     // which is not translated.

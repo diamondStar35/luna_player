@@ -43,6 +43,9 @@ internal sealed class DownloadSettings
     /// <summary>How many fragments yt-dlp fetches at once.</summary>
     public int ConcurrentFragments { get; set; } = 4;
 
+    /// <summary>How many videos the download queue may download at the same time.</summary>
+    public int SimultaneousDownloads { get; set; } = 2;
+
     /// <summary>Write the title and other tags into the file.</summary>
     public bool EmbedMetadata { get; set; } = true;
 
@@ -70,6 +73,7 @@ internal sealed class DownloadSettings
         AudioFormat = source.AudioFormat;
         AudioQuality = source.AudioQuality;
         ConcurrentFragments = source.ConcurrentFragments;
+        SimultaneousDownloads = source.SimultaneousDownloads;
         EmbedMetadata = source.EmbedMetadata;
         EmbedThumbnail = source.EmbedThumbnail;
         EmbedChapters = source.EmbedChapters;

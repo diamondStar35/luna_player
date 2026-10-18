@@ -41,6 +41,7 @@ internal sealed class ApplicationHost : IDisposable
     private readonly LunaPlayer.Recording.RecordingSources _recordingSources;
     private readonly LunaPlayer.Recording.RecordingEngine _recorder;
     private readonly LunaPlayer.YouTube.Playback.Sessions _sessions;
+    private readonly LunaPlayer.YouTube.Download.DownloadQueue _downloadQueue;
     private readonly Tools _tools;
     private bool _disposed;
 
@@ -98,21 +99,29 @@ internal sealed class ApplicationHost : IDisposable
         var youTube = new LunaPlayer.YouTube.Backend(metadata, channels);
         _resolveCache = new LunaPlayer.YouTube.Playback.ResolveCache(resolver);
         _components = new LunaPlayer.YouTube.Components.Service(_view, _settings, _speech, _dispatcher, updater);
+        _downloadQueue = new LunaPlayer.YouTube.Download.DownloadQueue(_settings);
+        _view.CloseConfirmationRequested += ConfirmClose;
+        _downloadQueue.AllCompleted += () => _dispatcher.Post(() =>
+            _view.Dialogs.ShowNotification(
+                Tr("Downloads completed"),
+                Tr("All items in the download queue have completed.")));
         // Shared by the favourites actions and the results window's Ctrl+Space add, so both write the same store.
         var favorites = new FavoriteStore(Paths.FavoritesFile);
-        // Sessions need three YouTube actions. Callbacks avoid giving either object access to the other's
+        // Sessions need the related YouTube actions. Callbacks avoid giving either object access to the other's
         // unrelated responsibilities.
         Commands.YouTube.YouTube? youTubeActions = null;
         _sessions = new LunaPlayer.YouTube.Playback.Sessions(
             _view, _player, _settings, _speech, _dispatcher, metadata, youTube, _resolveCache,
-            url => youTubeActions!.DirectDownloadTo(url),
+            (url, title) => youTubeActions!.DirectDownloadTo(url, title),
             (url, title) => youTubeActions!.DownloadTo(url, title),
+            (url, title) => youTubeActions!.AddToDownloadQueue(url, title),
             url => youTubeActions!.CopyToClipboard(url),
             url => youTubeActions!.OpenInBrowser(url),
             favorites,
             _components);
         youTubeActions = new Commands.YouTube.YouTube(
-            router, _view, _player, _settings, _speech, clipboard, youTube, _sessions, _components, _dispatcher);
+            router, _view, _player, _settings, _speech, clipboard, youTube, _sessions, _components, _dispatcher,
+            _downloadQueue);
         _ = new Commands.YouTube.Favorites(router, _view, _player, _speech, favorites, _sessions);
         _ = new Commands.YouTube.Playlist(router, _view, _player, _settings, _speech, _sessions);
         _ = new Commands.App.Preferences(router, _view, _settings, _settingsStore,
@@ -171,6 +180,7 @@ internal sealed class ApplicationHost : IDisposable
         if (_disposed)
             return;
         _disposed = true;
+        _view.CloseConfirmationRequested -= ConfirmClose;
         _singleInstance.Dispose();
         _pathQueue.Dispose();
         _controller.Dispose();
@@ -181,6 +191,7 @@ internal sealed class ApplicationHost : IDisposable
         _recorder.Dispose();
         _sessions.Dispose();
         _resolveCache.Dispose();
+        _downloadQueue.Dispose();
         _appUpdates.Dispose();
         _player.Dispose();
         // Closing a screen-reader backend sends a global stop command. Focus has already moved to the next
@@ -188,6 +199,9 @@ internal sealed class ApplicationHost : IDisposable
         // the remaining speech resources without sending that command.
         _view.Dispose();
     }
+
+    private bool ConfirmClose()
+        => !_downloadQueue.HasUnfinishedItems || _view.Dialogs.ConfirmCloseWithDownloads();
 
     private void HandleExternalPaths(IReadOnlyList<string> paths)
     {
