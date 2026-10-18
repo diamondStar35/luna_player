@@ -1,9 +1,10 @@
 # Luna Player
 
-A fast audio and video player for Windows with speech announcements and configurable keyboard shortcuts.
+A fast audio and video player for Windows, built to be used entirely by ear and keyboard.
 
-Playback state, file information and setting changes are announced through speech. Actions are
-driven by keyboard shortcuts, and each one can be reassigned.
+Playback state, file information and setting changes are announced through speech, and every action
+is a keyboard shortcut that can be reassigned. It plays local files, network streams, YouTube and
+IPTV, and can record, convert and process audio along the way.
 
 ## Status
 
@@ -18,22 +19,50 @@ Bug reports are welcome.
 
 - Play, pause and seek, with a seek step selectable from eleven presets or a custom value
 - Playback speed from 0.5x to 6x, with a configurable step
+- Pitch shifting, from -12 to +12 semitones
+- Left/right pan control
 - Volume up to 1000%, with a limiter to prevent clipping
 - A–B loop for repeating a section
 - Shuffle and repeat-file
 - Configurable end-of-file behaviour: advance to the next file, loop, or stop and hold position
+- Sleep timer that stops playback after a set time
 
 **Audio processing**
 
+- A 15-band equalizer with named presets and a custom preset of your own
 - Dynamic normalization with a limiter, for recordings with inconsistent levels
 - Mono downmix
 - Silence removal, with threshold and duration settings and a full set of advanced parameters
+
+**Video**
+
+- Audio track and subtitle track selection
+- Works the same as audio playback, driven entirely by keyboard and speech
+
+**Online media**
+
+- Open any network stream by link
+- Search YouTube, play results, and download them as video or audio, one at a time or through a queue
+- Save YouTube videos, channels and playlists as favorites
+- IPTV from M3U/M3U8 playlists, Xtream Codes portals and Stalker portals, with a channel browser and
+  an electronic programme guide where the source provides one
+
+**Recording**
+
+- Record from a microphone or line in, from an output device as it plays, or from a single program's
+  sound without touching other audio
+- Write to WAV, MP3, AAC or FLAC
+
+**Converting**
+
+- Convert files between formats with the built-in media converter
 
 **Navigation**
 
 - Named bookmarks, with ten directly addressable slots
 - Per-file position memory, and optional restore of the last session on startup
 - Go to a specific time, or jump to a percentage of the file
+- Recent files, folders and playlists
 - Opened files list, and a playlist summary reporting file count, total size, duration, elapsed and
   remaining time
 
@@ -57,11 +86,14 @@ Bug reports are welcome.
 - System Media Transport Controls: title and playback position appear in the Windows media overlay
 - Hardware media key support
 - Output device selection
+- Built-in updater for the application and for its YouTube components
 
 
 ## Requirements
 
 - Windows 10 version 1809 (build 17763) or later, 64-bit
+- A screen reader is optional. Luna speaks through NVDA, JAWS and other supported readers when one is
+  running, and falls back to SAPI otherwise
 
 ## Installation
 
@@ -100,6 +132,11 @@ OGV, RMVB, TS, WebM, WMV, Y4M
 Playlists: M3U, M3U8 (including HLS)
 
 Playback is handled by [mpv](https://mpv.io/), so most formats it supports will play.
+
+## Languages
+
+The interface and spoken messages are available in English, Spanish and Vietnamese. Translations to
+other languages are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Building from source
 
