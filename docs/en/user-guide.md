@@ -1,6 +1,6 @@
 # Luna Player User Guide
 
-Luna Player is a keyboard-friendly audio and video player for Windows. It combines local media playback, network streams, YouTube playback and downloading, audio recording, file management, bookmarks, speech announcements, and configurable local and system-wide shortcuts.
+Luna Player is a keyboard-friendly audio and video player for Windows. It plays local media, network streams, YouTube and IPTV; reads subtitles aloud; downloads and converts media; records audio; and provides file management, bookmarks, speech announcements, and configurable local and system-wide shortcuts.
 
 This guide describes the current version of Luna Player. Menu names and shortcuts below use the English interface and the default shortcut configuration.
 
@@ -67,6 +67,8 @@ Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> to switch verbosity immediat
 
 Luna integrates with the Windows media overlay and compatible hardware media keys. The overlay can show the current title and timeline. Play, pause, previous, next, rewind, and fast-forward buttons invoke the corresponding Luna commands.
 
+If a keyboard, headset, or another program sends media commands to the wrong application or sends them twice, enable **Disable system media controls** on the General Preferences page. This removes Luna from the Windows media overlay and stops it from handling hardware media keys.
+
 ## 3. Quick start
 
 To play a local file:
@@ -118,6 +120,12 @@ An HLS M3U8 manifest is treated as one stream and passed to the playback engine.
 ### Opening media from the clipboard
 
 Copy a file or folder in File Explorer, return to Luna, and press <kbd>Ctrl</kbd>+<kbd>V</kbd>. Luna opens the first existing path on the clipboard according to the configured file-opening mode.
+
+### Reopening recent media
+
+The **File > Recents** submenu keeps separate lists of recently opened files, folders, and playlists. Choose an entry to open it again. Each list has its own **Clear** command, and an empty list displays a disabled message instead of a command.
+
+The history is stored in Luna's user settings folder. Clearing a recent list removes only its history; it does not delete any media.
 
 ### File associations
 
@@ -235,6 +243,33 @@ Zero is centered, negative values are left, and positive values are right. The p
 ### Choosing an output device
 
 Choose **Player > Sound Cards...** or press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd>. Select a Windows audio output device and press OK. The selected device is saved immediately.
+
+### Full-screen video
+
+Choose **Player > Full screen** or press <kbd>F11</kbd> to enter or leave full-screen mode. This command is available only while the current item has video. Pressing <kbd>Escape</kbd> also leaves full-screen mode.
+
+### Choosing an audio track
+
+Files can contain several audio tracks, such as different languages or commentary. Use **Player > Audio track**:
+
+- Press <kbd>Shift</kbd>+<kbd>Page Down</kbd> for the next track.
+- Press <kbd>Shift</kbd>+<kbd>Page Up</kbd> for the previous track.
+- Choose **Track list...** or press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd> to select from a list.
+
+Luna describes each track using its title, channel layout, and language when that information is available. Moving past the first or last audio track does not wrap around.
+
+### Reading subtitles aloud
+
+The **Player > Subtitles** submenu lists the subtitle tracks in the current file. Choose a track to have each subtitle line spoken as it appears, or choose **Off** to stop reading subtitles. Press <kbd>Ctrl</kbd>+<kbd>U</kbd> to switch the last selected track on or off.
+
+You can also load subtitles that are not embedded in the video:
+
+- Choose **Load from file...** or press <kbd>Ctrl</kbd>+<kbd>J</kbd> for a subtitle file on this computer.
+- Choose **Load from URL...** or press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd> for an `http` or `https` address.
+
+Enable **Remember subtitle for this session**, or press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>U</kbd>, to carry the selected subtitle language across the current playlist. This choice lasts only until Luna closes. If the next file has no subtitle in that language, Luna leaves its subtitle selection unchanged.
+
+By default, Luna finishes speaking a subtitle line before reading the next one. Enable **Interrupt the current line when a new subtitle appears** on the General Preferences page if keeping pace with the picture is more important than hearing every line in full.
 
 ## 6. Working with several files
 
@@ -459,7 +494,7 @@ Use the Backup and restore Preferences page to export or import the entire bookm
 
 ## 12. YouTube
 
-YouTube features require an internet connection. Availability can change when YouTube changes its service. Luna includes a built-in resolver and can optionally use yt-dlp.
+YouTube features require an internet connection. Playback, channel browsing, and downloads also require the YouTube components available from the YouTube Preferences page. Availability can change when YouTube changes its service.
 
 ### Opening a YouTube link
 
@@ -469,37 +504,81 @@ Some YouTube addresses identify both a video and a playlist. Luna can ask whethe
 
 ### Searching YouTube
 
-Choose **File > Search YouTube...** or press <kbd>Ctrl</kbd>+<kbd>Y</kbd>. Enter search text, then move through the results list.
+Choose **File > Search YouTube...** or press <kbd>Ctrl</kbd>+<kbd>Y</kbd>. Enter search text, then move through the results list. By default, Luna offers search suggestions while you type. You can turn these off in YouTube Preferences if you do not want background requests while entering a query.
 
-- Press <kbd>Enter</kbd> on a selected result or activate **Play** to play it.
-- Activate **Download** to save it.
+- Press <kbd>Enter</kbd> on a selected result or activate **Play** to play it with video.
+- Press <kbd>Ctrl</kbd>+<kbd>Enter</kbd> or activate **Play as audio** to play only its sound.
+- Activate **Download** or press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> to choose how to save it.
+- Press <kbd>Ctrl</kbd>+<kbd>D</kbd> to download it immediately with the saved defaults.
+- Press <kbd>Ctrl</kbd>+<kbd>Q</kbd> to add it to the download queue.
+- Press <kbd>Ctrl</kbd>+<kbd>Space</kbd> to add it to or remove it from Favorites.
 - Press <kbd>Ctrl</kbd>+<kbd>C</kbd> to copy the selected result's link.
 - Press <kbd>Ctrl</kbd>+<kbd>B</kbd> to open it in the default browser.
-- Press <kbd>Ctrl</kbd>+<kbd>N</kbd> to navigate to the uploader's channel results.
-- Open the context menu for the same copy, browser, channel, and download actions.
+- Press <kbd>Ctrl</kbd>+<kbd>N</kbd> to open the uploader's channel in the default browser.
+- Press <kbd>Ctrl</kbd>+<kbd>G</kbd> to browse that channel inside Luna.
+- Open the context menu for the same favorite, copy, browser, channel, download, and queue actions.
 
 When selection reaches the end of the current result page, Luna requests more results automatically until YouTube has no more to return.
 
 Playlist and channel result windows work in the same way. Next moves forward through the active YouTube result session, fetching the next video when necessary. Pressing <kbd>Escape</kbd> in the main window after playback begins can return to the related result list when that session is still available.
 
-### Audio-only playback and quality
+Channel results are organized into tabs. A tab is loaded when you first open it and is then kept available while the channel window remains open.
+
+### Playback quality
 
 Open **Preferences > YouTube**.
 
-- **Play videos as audio only** requests only sound, reducing bandwidth and often starting faster.
-- **Video quality** chooses Low, Medium, or Best when video is enabled.
+- **Video quality** selects a preferred picture height for playback started with <kbd>Enter</kbd>.
+- **Audio quality** selects a preferred bitrate for audio-only playback started with <kbd>Ctrl</kbd>+<kbd>Enter</kbd>.
 
-The same choices are used when downloading a video. Audio-only mode saves sound without picture; otherwise Luna downloads at the selected video quality.
+These are playback settings. Download quality and format have their own defaults on the same Preferences page.
 
 ### Video options
 
 While a YouTube video is active, the **Video options** menu provides:
 
-- **Download...** or <kbd>Ctrl</kbd>+<kbd>D</kbd>: choose a folder and save the current video with progress and cancellation.
+- **Download...** or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd>: choose the name, destination, format, quality, and additional processing options.
+- **Direct download** or <kbd>Ctrl</kbd>+<kbd>D</kbd>: start immediately with the defaults from YouTube Preferences.
+- **Add to download queue** or <kbd>Ctrl</kbd>+<kbd>Q</kbd>: add the current video with those defaults without starting the queue.
 - **Video description...** or <kbd>Alt</kbd>+<kbd>D</kbd>: fetch the title and uploader description and show them in a read-only text window.
 - **Copy video link**: copy the stable YouTube watch address rather than the temporary media stream address.
+- **Open video in browser** and **Open channel in browser**: open the corresponding YouTube page in the default browser.
+- **Go to channel**: browse the uploader's channel inside Luna.
 
 A repeated download does not overwrite an existing file with the same name; Luna chooses an unused numbered name.
+
+### Choosing download options
+
+The Download dialog starts with the defaults from YouTube Preferences and lets you change them for one item. You can choose:
+
+- A file name and destination folder.
+- Video or audio-only output.
+- Video quality and MP4 or MKV for video.
+- MP3, M4A, Opus, FLAC, or WAV and an audio bitrate for audio-only output.
+- How many fragments yt-dlp downloads at once.
+- Whether to embed metadata, a thumbnail, chapters, or subtitles.
+- Whether SponsorBlock sections should be removed.
+
+Choose **Download** to start immediately. Its modeless progress window reports downloaded size, percentage, speed, estimated time, and finishing work such as merging, converting, or embedding information. You can continue using Luna while this window is open. Choose **Minimize to queue** to hide the individual progress window and continue the download in the queue.
+
+Choose **Add to queue** instead to retain every choice made in the dialog as settings for that queue item.
+
+### Download queue
+
+Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd> or choose **Tools > Download queue...** to open the queue. The list shows each video's title and its current state. A link entered manually is shown as the title when Luna has not looked up its metadata.
+
+- **Add...** accepts one YouTube video link per line.
+- **Start** begins every queued item and retries failed items.
+- **Stop** cancels the selected active download and returns it to the queue for a later start.
+- **Stop all** cancels every active download and leaves unfinished items in the queue.
+- Press <kbd>Delete</kbd> to remove the selected item after confirmation. Removing an active item also cancels it.
+- **Close** hides the queue window without stopping active downloads.
+
+The status box and total progress bar appear only while the queue contains items. During a running batch, they report the current item, total percentage, combined speed, and estimated time left. A downloaded item can remain in a finishing state while yt-dlp converts, merges, embeds, or moves its output.
+
+The queue runs up to the **Simultaneous downloads** limit from YouTube Preferences. Finished rows remain available for review until the queue window is closed, then they are cleared. Luna sends a desktop notification when all visible queue items finish successfully.
+
+If you close Luna while the queue still has unfinished items, Luna asks whether to exit and cancel them or return to the application.
 
 ### Favorite videos and streams
 
@@ -514,17 +593,19 @@ The Favorites dialog can open, add, edit, or remove entries. Each entry has a na
 
 Luna validates the address format when an entry is saved. It checks whether the remote content is still available only when you open it.
 
-### Built-in resolver and yt-dlp
+### YouTube components and cookies
 
-Luna normally uses its built-in YouTube resolver. If that cannot open a video, enable **Use yt-dlp to resolve streams** on the YouTube Preferences page. Luna offers to download the required component if it is missing.
+Luna uses yt-dlp and a JavaScript runtime for YouTube playback, channel browsing, and downloads. Search, playlist listings, descriptions, and search suggestions use Luna's metadata client, but a result cannot be played until the components are installed. Use **Download YouTube components** in Preferences to install or refresh them.
 
-yt-dlp is always needed for the yt-dlp resolver path, but the built-in resolver and other YouTube features can work without it. The component page offers three update channels:
+The component page offers three update channels:
 
 - **Stable** changes least often and is recommended for normal use.
 - **Nightly** follows nightly yt-dlp builds.
 - **Master** follows the newest source and can be less reliable.
 
-Use **Download YouTube components** in Preferences to install missing yt-dlp and Deno executables. Use **Help > Updates > Update YouTube components** to update an installed yt-dlp. Enable **Check for yt-dlp updates on startup** for a silent background check that prompts only when an update is available.
+Use **Help > Updates > Update YouTube components** to update an installed yt-dlp. Enable **Check for yt-dlp updates on startup** for a background check that prompts only when an update is available.
+
+Some age-restricted, members-only, or verification-protected videos require browser cookies. You can choose a Netscape-format cookie file or use **Import from Firefox** so Luna reads the current Firefox cookies for each request. These choices are mutually exclusive, and the read-only cookie status reports which source is active. Treat exported cookie files as private account data.
 
 ## 13. Recording audio
 
@@ -585,7 +666,51 @@ If only some sources can be opened, Luna starts with the available sources and l
 
 Choose **Recording > Open recordings folder** to open the active destination. The default folder is `Documents\Luna Player\Recordings`.
 
-## 14. Preferences reference
+## 14. IPTV
+
+IPTV sources and channels are under **Tools > IPTV**. Luna supports extended M3U or M3U8 playlists from a file or web address, Xtream Codes accounts, and Stalker portals.
+
+### Managing sources
+
+Choose **Tools > IPTV > Manage IPTV sources...** or press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd>. The source list provides **Open**, **Add...**, **Edit...**, and **Remove...** commands.
+
+Each source has a name and type. Depending on that type, Luna asks for a playlist path or address, an Xtream server with username and password, or a Stalker portal with MAC address and optional serial. You can also supply an optional XMLTV programme-guide address. Xtream live channels can be opened as HLS instead of transport streams when **Open live channels as HLS** is enabled.
+
+Saved IPTV credentials are protected for the current Windows user. Do not share the IPTV source data file because it still belongs to your account and computer.
+
+### Browsing channels
+
+Open a source from the manager, or choose **Tools > IPTV > Browse channels...** to reopen the current source. The channel browser can filter by live TV, movies, or series, by category, and by text typed into the Search box.
+
+Press <kbd>Enter</kbd> on a selected row or activate **Play** to open it. When programme-guide information is available, press <kbd>Ctrl</kbd>+<kbd>I</kbd> to hear what is showing now and what follows. Press <kbd>F1</kbd> in the channel browser for a spoken summary of its controls.
+
+## 15. Media converter
+
+Choose **Tools > Media converter...** to convert one or more media files to an audio format. Add individual files or add a folder; adding a folder includes supported media in its subfolders. Duplicate paths are ignored.
+
+The converter writes AAC, AC-3, AIFF, FLAC, M4A, MKA, MP3, OGA, OGG, Opus, WAV, and WMA. It chooses a sensible initial format from the first source file, but you can change it. Depending on the output format, you can also choose a sample rate, mono or stereo channels, bitrate, and Opus bitrate mode and profile.
+
+Set **Maximum simultaneous conversions** to control how many files run at once. By default, converted files are written beside their sources. Clear **Preserve original file locations** to send all results to one destination folder.
+
+**Delete original files after conversion** removes each source only after that file converts successfully. Use this option carefully; deleted originals are not sent to the Recycle Bin.
+
+The progress window reports the current file, its percentage, the number of remaining files, total percentage, and estimated time. You can cancel the remaining work. When conversion ends, Luna reports complete success or lists the files that failed and why.
+
+## 16. Sleep timer
+
+Choose **Tools > Sleep timer > Set timer...** or press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>. A timer can fire after a chosen duration or at the end of the current track. Choose whether it pauses playback or stops and unloads the current item.
+
+For a duration, choose 15, 30, 45, 60, 90, or 120 minutes, or enter custom hours and minutes. An end-of-track timer requires an open item and prevents normal automatic advance when that item finishes.
+
+Enable **Fade the volume out before firing** to lower the volume during the final 1 through 120 seconds. Luna restores the original volume after the timer fires or is cancelled; the faded value is not saved as your preferred volume.
+
+- Press <kbd>Ctrl</kbd>+<kbd>T</kbd> or choose **Time remaining** to hear the remaining time or that the timer is waiting for the end of the track.
+- Choose **Cancel timer** to turn it off. Opening the timer window while one is active also provides **Turn off timer**.
+- Luna announces a one-minute warning for duration timers.
+
+The last timer choices are remembered, but an active countdown does not survive closing Luna.
+
+## 17. Preferences reference
 
 Open Preferences with **File > Preferences...** or <kbd>Ctrl</kbd>+<kbd>P</kbd>. Select a page in the category tree. Press OK to validate and apply all pages, or Cancel to discard unaccepted changes.
 
@@ -596,10 +721,14 @@ Press <kbd>F1</kbd> while a setting has focus to hear a detailed explanation of 
 | Setting | Purpose |
 | --- | --- |
 | Language | Uses the Windows display language or an included translation. Restart Luna after changing it. |
+| Theme | Follows Windows or forces a light or dark appearance. High contrast always follows Windows. Restart Luna after changing it. |
 | Remember last file position | Restores the last active local file and its position on the next launch. |
 | Speak file name when navigating | Announces the item reached with Previous or Next. |
 | Check for app updates on startup | Checks quietly after startup and prompts only for a ready, newer release. |
 | Save settings on close | Saves session changes such as volume and speed when Luna exits. Explicitly accepted Preferences changes are still saved immediately. |
+| Disable system media controls | Removes Luna from the Windows media overlay and ignores hardware media keys. |
+| Show the playing track in the window title | Shows the current item and whether it is paused in Luna's title bar. This is off by default to avoid repeated screen-reader announcements. |
+| Interrupt the current line when a new subtitle appears | Lets a new spoken subtitle cut off the preceding one to keep pace with the picture. |
 | Verbosity | Chooses full Beginner announcements or shorter Advanced announcements. |
 | What would you like to open with files? | Controls whether one opened file brings in no neighbors, its folder, or its folder and subfolders. |
 | Register/Unregister file extensions | Adds or removes Luna's supported media registrations for the current Windows user. |
@@ -640,11 +769,21 @@ See [Silence removal and audio processing](#8-silence-removal-and-audio-processi
 
 | Setting | Purpose |
 | --- | --- |
-| Play videos as audio only | Requests sound without picture. |
-| Video quality | Chooses Low, Medium, or Best for video playback and downloads. |
+| Video quality | Chooses the preferred picture height for video playback. |
+| Audio quality | Chooses the preferred bitrate for audio-only playback. |
 | Number of search results | Sets the initial target from 5 through 100; more results load at the end. |
+| Show search suggestions while typing | Fetches and displays possible completions for a YouTube query. |
 | Video+playlist link behavior | Asks each time, always plays the video, or always opens the playlist. |
-| Use yt-dlp to resolve streams | Uses the downloaded yt-dlp component instead of Luna's built-in resolver. |
+| Download folder | Sets the base destination, or uses `Downloads\Luna Player` when left empty. |
+| Sort downloads by type | Places files in `videos` and `audios` subfolders. |
+| Default download type | Chooses video or audio for direct downloads and the initial Download dialog selection. |
+| Download video quality and format | Sets the height cap and MP4 or MKV container used by default. |
+| Download audio quality and format | Sets the bitrate and MP3, M4A, Opus, FLAC, or WAV format used by default. |
+| Concurrent fragments | Sets how many pieces of one file yt-dlp fetches at once, from 1 through 16. |
+| Simultaneous downloads | Sets how many queue items may run at once, from 1 through 16. |
+| Embed metadata, thumbnail, chapters, or subtitles | Adds the selected information to downloaded files where the output format supports it. |
+| Remove SponsorBlock segments | Cuts supported sponsor, intro, and similar sections from downloads. |
+| Cookie file / Import from Firefox | Supplies account cookies for videos that require them. Only one cookie source can be active. |
 | yt-dlp update channel | Chooses Stable, Nightly, or Master. |
 | Check for yt-dlp updates on startup | Performs a quiet component check after launch. |
 | Download YouTube components | Installs or refreshes yt-dlp and supporting tools. |
@@ -672,7 +811,7 @@ Select an action, activate **Edit Shortcut**, and press the desired combination.
 
 Global shortcuts are separate from local shortcuts. Changing one does not change the other.
 
-## 15. Application updates
+## 18. Application updates
 
 ### Checking manually
 
@@ -695,7 +834,7 @@ The download window shows total size, downloaded size, percentage, and a Cancel 
 
 Do not start another Luna process while the update is being applied.
 
-## 16. Help and release information
+## 19. Help and release information
 
 - **Help > User guide** or <kbd>F1</kbd> opens the installed guide that matches Luna's interface language. If no matching regional or base-language guide is installed, Luna opens the English guide.
 - **Help > About** shows a description, version, copyright information, and a link to the project website.
@@ -703,7 +842,7 @@ Do not start another Luna process while the update is being applied.
 
 The user guide is installed as local HTML and does not require an internet connection. Release notes and the project website do require one.
 
-## 17. Settings and user data
+## 20. Settings and user data
 
 Luna stores user data under `%APPDATA%\Luna Player`:
 
@@ -712,15 +851,18 @@ Luna stores user data under `%APPDATA%\Luna Player`:
 | `settings.json` | Preferences and shortcut overrides |
 | `bookmarks.json` | Named bookmarks for local files |
 | `positions.json` | Per-file playback positions |
+| `equalizer.json` | User-created presets and changes to supplied equalizer presets |
 | `favorites.json` | Favorite YouTube and stream links |
+| `iptv-sources.json` | Saved IPTV sources, with account fields protected for the current Windows user |
+| `recents.json` | Recently opened files, folders, and playlists |
 
 Use **Preferences > Backup and restore > Open user settings folder** to open the exact folder rather than typing the path.
 
 Do not edit these files while Luna is running. Use the export and import controls for settings and bookmarks whenever possible.
 
-If `settings.json` cannot be read or contains invalid values, Luna starts with defaults, shows the reason, and protects the existing file from being overwritten. Import a valid settings backup or use **Reset settings** to replace it deliberately. Invalid bookmark and favorites files are also reported instead of being silently replaced.
+If `settings.json` cannot be read or contains invalid values, Luna starts with defaults, shows the reason, and protects the existing file from being overwritten. Import a valid settings backup or use **Reset settings** to replace it deliberately. Invalid bookmarks, favorites, equalizer presets, IPTV sources, and recents are also reported instead of being silently replaced.
 
-## 18. Complete default shortcut reference
+## 21. Complete default shortcut reference
 
 These are the factory defaults. Your current bindings may differ after customization. The authoritative list for your installation is under **Preferences > Keyboard Shortcuts** and **Global Shortcuts**.
 
@@ -768,6 +910,14 @@ These are the factory defaults. Your current bindings may differ after customiza
 | End | <kbd>End</kbd> | — |
 | Go to time | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd> | — |
 | Choose sound card | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> | — |
+| Enter or leave full screen | <kbd>F11</kbd> | — |
+| Open audio track list | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd> | — |
+| Previous audio track | <kbd>Shift</kbd>+<kbd>Page Up</kbd> | — |
+| Next audio track | <kbd>Shift</kbd>+<kbd>Page Down</kbd> | — |
+| Turn subtitle reading on or off | <kbd>Ctrl</kbd>+<kbd>U</kbd> | — |
+| Load subtitle from file | <kbd>Ctrl</kbd>+<kbd>J</kbd> | — |
+| Load subtitle from a web address | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>J</kbd> | — |
+| Remember subtitle for this session | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>U</kbd> | — |
 
 ### Seek amount selection
 
@@ -861,16 +1011,28 @@ These are the factory defaults. Your current bindings may differ after customiza
 | Jump to bookmark slots 1–9 | <kbd>Alt</kbd>+<kbd>1</kbd> through <kbd>Alt</kbd>+<kbd>9</kbd> |
 | Jump to bookmark slot 10 | <kbd>Alt</kbd>+<kbd>0</kbd> |
 
-### YouTube, recording, updates, and help
+### YouTube, tools, recording, updates, and help
 
 | Action | Shortcut |
 | --- | --- |
 | Open YouTube link | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Y</kbd> |
 | Search YouTube | <kbd>Ctrl</kbd>+<kbd>Y</kbd> |
 | Favorite videos | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> |
-| Download current YouTube video | <kbd>Ctrl</kbd>+<kbd>D</kbd> |
+| Open the download queue | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd> |
+| Add the current YouTube video to the queue | <kbd>Ctrl</kbd>+<kbd>Q</kbd> |
+| Direct-download current YouTube video | <kbd>Ctrl</kbd>+<kbd>D</kbd> |
+| Choose options for current YouTube video download | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> |
 | Show current video description | <kbd>Alt</kbd>+<kbd>D</kbd> |
-| Copy current video link | None |
+| Copy current video link | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd> |
+| Open current video in browser | None |
+| Open current video's channel in browser | None |
+| Browse current video's channel in Luna | None |
+| Open media converter | None |
+| Manage IPTV sources | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> |
+| Browse IPTV channels | None |
+| Set sleep timer | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd> |
+| Cancel sleep timer | None |
+| Speak sleep timer remaining | <kbd>Ctrl</kbd>+<kbd>T</kbd> |
 | Open recording interface | <kbd>Alt</kbd>+<kbd>R</kbd> |
 | Start recording | <kbd>F9</kbd> |
 | Pause or resume recording | <kbd>F7</kbd> |
@@ -899,7 +1061,7 @@ These commands work system-wide when Luna is running, even if another program ha
 | Pause or resume recording | <kbd>Win</kbd>+<kbd>Alt</kbd>+<kbd>F7</kbd> |
 | Stop recording | <kbd>Win</kbd>+<kbd>Alt</kbd>+<kbd>F8</kbd> |
 
-## 19. Supported formats
+## 22. Supported formats
 
 Luna filters file and folder selection using the following extensions. Playback is handled by mpv, so other formats supported by that engine may also play when opened directly.
 
@@ -909,7 +1071,7 @@ Luna filters file and folder selection using the following extensions. Playback 
 
 **Playlists:** M3U and M3U8, including HLS streams.
 
-## 20. Troubleshooting
+## 23. Troubleshooting
 
 ### A file or folder opens fewer items than expected
 
@@ -925,8 +1087,21 @@ Try these steps in order:
 
 1. Confirm that the address opens in a browser and names a video or playlist rather than a channel.
 2. Choose **Help > Updates > Update YouTube components**.
-3. Enable **Use yt-dlp to resolve streams** under YouTube Preferences.
-4. Try the Stable channel first; use Nightly or Master only if Stable cannot handle a recent service change.
+3. If the components have not been installed, choose **Preferences > YouTube > Download YouTube components**.
+4. Try the Stable update channel first; use Nightly or Master only if Stable cannot handle a recent service change.
+5. For an age-restricted, members-only, or verification-protected video, configure a cookie file or Firefox cookies in YouTube Preferences.
+
+### A YouTube download finishes downloading but continues working
+
+After yt-dlp receives all media data, it may still need to merge video and audio, convert the result, embed information, process chapters, or move the finished file. The progress window title and text name this work. Do not cancel merely because the percentage has reached 100%.
+
+### A download continues after its progress window closes
+
+Choosing **Minimize to queue** deliberately transfers the visible progress to **Tools > Download queue...**. Closing the queue window also leaves active work running. Stop the item from the queue if you no longer want it, or close Luna and confirm that unfinished downloads should be cancelled.
+
+### IPTV has no programme information
+
+Programme information appears only when the provider supplies it or the source has a matching XMLTV EPG address. Channel identifiers in the guide must match the source's identifiers. Playback can still work when no programme guide is available.
 
 ### Recording cannot find a program
 
@@ -952,7 +1127,7 @@ An invalid storage file is preserved rather than silently replaced. Open the use
 
 The installed guide should be at `docs\<language-code>\user-guide.html` beside the executable. Re-extract the complete portable archive or repair/reinstall the application if the `docs` folder is missing. Luna falls back from a regional language to its base language and then to English.
 
-## 21. Publisher and licensing
+## 24. Publisher and licensing
 
 Luna Player is published by **Diamond Star**.
 
@@ -964,7 +1139,7 @@ Luna Player also uses separately licensed third-party components, including mpv,
 
 The license summary in this guide is provided for convenience. `LICENSE.txt`, `NOTICE.txt`, and the files in the `licenses` folder contain the authoritative terms and attributions. In the source repository, the corresponding top-level files are named `LICENSE` and `NOTICE`.
 
-## 22. Contact and support
+## 25. Contact and support
 
 Luna Player is developed and published by Diamond Star. You can use the following channels:
 
