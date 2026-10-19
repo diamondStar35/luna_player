@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-10-19 13:21+0300\n"
+"POT-Creation-Date: 2026-10-19 15:37+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -743,7 +743,7 @@ msgstr ""
 #: Application/Commands/App/Preferences.cs:48
 #: Application/Commands/App/Preferences.cs:116
 #: Application/Commands/App/Preferences.cs:123
-#: UI/Dialogs/PreferencesDialog.cs:38 UI/Dialogs/PreferencesDialog.cs:200
+#: UI/Dialogs/PreferencesDialog.cs:38 UI/Dialogs/PreferencesDialog.cs:218
 msgid "Preferences"
 msgstr ""
 
@@ -2418,7 +2418,7 @@ msgstr ""
 #. Translators: Title of the window where recording is set up and started.
 #. Translators: Title of the messages shown about recording.
 #: Application/Commands/Recording/Recording.cs:214
-#: UI/Dialogs/PreferencesDialog.cs:56 UI/MenuBuilder.cs:88
+#: UI/Dialogs/PreferencesDialog.cs:59 UI/MenuBuilder.cs:88
 #: UI/Recording/RecordingDialog.cs:83 UI/Recording/RecordingDialog.cs:720
 msgid "Recording"
 msgstr ""
@@ -2433,10 +2433,10 @@ msgstr ""
 msgid "Loading video details..."
 msgstr ""
 
-#. Translators: Name of the settings category for playing videos from YouTube.
+#. Translators: Name of the expandable settings category containing the general and download pages for YouTube.
 #. Translators: Title of the messages the player shows about YouTube.
 #: Application/Commands/YouTube/CurrentVideo.cs:39
-#: UI/Dialogs/PreferencesDialog.cs:54 YouTube/Playback/Jobs.cs:61
+#: UI/Dialogs/PreferencesDialog.cs:53 YouTube/Playback/Jobs.cs:61
 msgid "YouTube"
 msgstr ""
 
@@ -2683,7 +2683,7 @@ msgstr ""
 #. Translators: Name of the settings category for the key combinations that work while another program is in front.
 #. Translators: Heading above the list of shortcuts that work while another program is in front.
 #: Application/Infrastructure/GlobalShortcutBinder.cs:32
-#: UI/Dialogs/PreferencesDialog.cs:60 UI/Preferences/ShortcutPreferences.cs:53
+#: UI/Dialogs/PreferencesDialog.cs:63 UI/Preferences/ShortcutPreferences.cs:53
 msgid "Global Shortcuts"
 msgstr ""
 
@@ -2900,10 +2900,10 @@ msgstr ""
 
 #. Translators: The kind of a saved favourite: a single YouTube video.
 #. Translators: One of the download types: save the picture, with its sound, as a video file.
+#. Translators: One of the YouTube download types: save the picture and sound as a video file.
 #. Translators: First column in the download queue, holding a video title or a manually entered link.
-#. Translators: One of the download types: save the picture, with its sound, as a video file.
 #: Favorites/FavoriteStore.cs:174 UI/YouTube/DownloadDialog.cs:63
-#: UI/YouTube/DownloadQueueDialog.cs:48 UI/YouTube/YouTubePreferences.cs:127
+#: UI/YouTube/DownloadPreferences.cs:73 UI/YouTube/DownloadQueueDialog.cs:48
 msgid "Video"
 msgstr ""
 
@@ -3651,13 +3651,13 @@ msgstr ""
 #. Translators: Button beside the file box that opens a dialog to choose a playlist file.
 #. Translators: Button that opens a window for choosing the folder recordings are saved into.
 #. Translators: Button that opens a folder picker to choose where the download is saved.
-#. Translators: Button that opens a folder picker to choose where downloads are saved.
+#. Translators: Button on the YouTube download settings page that opens a folder picker.
 #. Translators: Button that opens a file picker to choose a cookie file by hand.
 #: UI/Dialogs/MediaConverterDialog.cs:175
 #: UI/Dialogs/SaveSelectionsDialog.cs:54 UI/Iptv/IptvSourceEditDialog.cs:71
 #: UI/Preferences/RecordingPreferences.cs:72
 #: UI/Recording/RecordingDialog.cs:148 UI/YouTube/DownloadDialog.cs:90
-#: UI/YouTube/YouTubePreferences.cs:120 UI/YouTube/YouTubePreferences.cs:197
+#: UI/YouTube/DownloadPreferences.cs:66 UI/YouTube/GeneralPreferences.cs:90
 msgid "Browse..."
 msgstr ""
 
@@ -3727,41 +3727,53 @@ msgid "Select file to jump to."
 msgstr ""
 
 #. Translators: Name of the settings category holding the language, speech and file-opening settings.
-#: UI/Dialogs/PreferencesDialog.cs:46
+#. Translators: Name of the general settings page inside the YouTube category.
+#: UI/Dialogs/PreferencesDialog.cs:45 UI/Dialogs/PreferencesDialog.cs:55
 msgid "General"
 msgstr ""
 
 #. Translators: Name of the settings category for saving a copy of the settings and bookmarks and putting them back.
-#: UI/Dialogs/PreferencesDialog.cs:48
+#: UI/Dialogs/PreferencesDialog.cs:47
 msgid "Backup and restore"
 msgstr ""
 
 #. Translators: Name of the settings category holding the loudness, speed and seeking settings.
 #. Translators: One of the download types: save the sound alone as an audio file.
-#: UI/Dialogs/PreferencesDialog.cs:50 UI/YouTube/DownloadDialog.cs:65
-#: UI/YouTube/YouTubePreferences.cs:129
+#. Translators: One of the YouTube download types: save the sound alone as an audio file.
+#: UI/Dialogs/PreferencesDialog.cs:49 UI/YouTube/DownloadDialog.cs:65
+#: UI/YouTube/DownloadPreferences.cs:75
 msgid "Audio"
 msgstr ""
 
 #. Translators: Name of the settings category for trimming the silent parts out of what is played.
-#: UI/Dialogs/PreferencesDialog.cs:52
+#: UI/Dialogs/PreferencesDialog.cs:51
 msgid "Silence removal"
 msgstr ""
 
+#. Translators: Name of the download settings page inside the YouTube category.
+#. Translators: Title of the window where a download's name, type, format and quality are chosen.
+#. Translators: The button that starts this download immediately.
+#. Translators: Button that saves the video chosen in the list of results to a folder on this computer.
+#: UI/Dialogs/PreferencesDialog.cs:57 UI/YouTube/DownloadDialog.cs:55
+#: UI/YouTube/DownloadDialog.cs:120 UI/YouTube/ResultsDialog.cs:202
+msgid "Download"
+msgstr ""
+
 #. Translators: Name of the settings category for the key combinations that work while the player is the program in front.
-#: UI/Dialogs/PreferencesDialog.cs:58
+#: UI/Dialogs/PreferencesDialog.cs:61
 msgid "Keyboard Shortcuts"
 msgstr ""
 
-#. Translators: Help text for the list of settings categories down the left of the Preferences window.
-#: UI/Dialogs/PreferencesDialog.cs:180
+#. Translators: Help text for the settings tree down the left of the Preferences window.
+#: UI/Dialogs/PreferencesDialog.cs:198
 msgid ""
-"Use the Up and Down Arrow keys to select a category. Its controls appear on "
-"the right side of the window."
+"Use the Arrow keys to move through settings pages. Press the Right Arrow key "
+"on a category to show its pages and the Left Arrow key to hide them. The "
+"selected page's controls appear on the right side of the window."
 msgstr ""
 
 #. Translators: Spoken when the user asks for help on a control that has none.
-#: UI/Dialogs/PreferencesDialog.cs:187
+#: UI/Dialogs/PreferencesDialog.cs:205
 msgid "No detailed help is available for this control."
 msgstr ""
 
@@ -4742,11 +4754,12 @@ msgstr ""
 #. Translators: Spoken description of the Audio settings page, read when the page is opened.
 #. Translators: Spoken description of the General settings page, read when the page is opened.
 #. Translators: Spoken description of the Recording settings page, read when the page is opened.
-#. Translators: Spoken description of the YouTube settings page, read when the page is opened.
+#. Translators: Spoken description of the YouTube download settings page, read when the page is open.
+#. Translators: Spoken description of the general YouTube settings page, read when the page is open.
 #: UI/Preferences/AudioPreferences.cs:24
 #: UI/Preferences/GeneralPreferences.cs:25
 #: UI/Preferences/RecordingPreferences.cs:44
-#: UI/YouTube/YouTubePreferences.cs:79
+#: UI/YouTube/DownloadPreferences.cs:56 UI/YouTube/GeneralPreferences.cs:48
 msgid ""
 "Move through this page with Tab or Shift+Tab. Press F1 while a control is "
 "focused to hear what it changes."
@@ -5330,17 +5343,18 @@ msgstr ""
 
 #. Translators: Label of the list that chooses what a recording is saved as.
 #. Translators: Label of the list that chooses the file type a downloaded audio track is saved as.
+#. Translators: Label of the list that chooses the file type for downloaded YouTube audio.
 #: UI/Preferences/RecordingPreferences.cs:53 UI/YouTube/DownloadDialog.cs:77
-#: UI/YouTube/YouTubePreferences.cs:143
+#: UI/YouTube/DownloadPreferences.cs:93
 msgid "Audio format"
 msgstr ""
 
 #. Translators: Label of the list that chooses how much room a second of compressed audio may take.
 #. Translators: Label of the list that chooses the bitrate a downloaded audio track is saved at.
+#. Translators: Label of the list that chooses the bitrate for downloaded YouTube audio.
 #. Translators: Label of the list that chooses the sound quality a video's audio is played at.
-#. Translators: Label of the list that chooses the bitrate a downloaded audio track is saved at.
 #: UI/Preferences/RecordingPreferences.cs:66 UI/YouTube/DownloadDialog.cs:82
-#: UI/YouTube/YouTubePreferences.cs:92 UI/YouTube/YouTubePreferences.cs:148
+#: UI/YouTube/DownloadPreferences.cs:107 UI/YouTube/GeneralPreferences.cs:61
 msgid "Audio quality"
 msgstr ""
 
@@ -5971,14 +5985,6 @@ msgstr ""
 msgid "Save description"
 msgstr ""
 
-#. Translators: Title of the window where a download's name, type, format and quality are chosen.
-#. Translators: The button that starts this download immediately.
-#. Translators: Button that saves the video chosen in the list of results to a folder on this computer.
-#: UI/YouTube/DownloadDialog.cs:55 UI/YouTube/DownloadDialog.cs:120
-#: UI/YouTube/ResultsDialog.cs:202
-msgid "Download"
-msgstr ""
-
 #. Translators: Label of the box holding the name a download is saved under, without an extension.
 #: UI/YouTube/DownloadDialog.cs:58
 msgid "File name"
@@ -5990,64 +5996,69 @@ msgid "Download type"
 msgstr ""
 
 #. Translators: Label of the list that chooses the picture quality a downloaded video is saved at.
+#. Translators: Label of the list that chooses the picture quality for downloaded YouTube videos.
 #. Translators: Label of the list that chooses the picture quality a video is played at.
-#. Translators: Label of the list that chooses the picture quality a downloaded video is saved at.
-#: UI/YouTube/DownloadDialog.cs:68 UI/YouTube/YouTubePreferences.cs:86
-#: UI/YouTube/YouTubePreferences.cs:132
+#: UI/YouTube/DownloadDialog.cs:68 UI/YouTube/DownloadPreferences.cs:79
+#: UI/YouTube/GeneralPreferences.cs:55
 msgid "Video quality"
 msgstr ""
 
 #. Translators: Label of the list that chooses the file type a downloaded video is saved as.
-#: UI/YouTube/DownloadDialog.cs:73 UI/YouTube/YouTubePreferences.cs:138
+#. Translators: Label of the list that chooses the file type for downloaded YouTube videos.
+#: UI/YouTube/DownloadDialog.cs:73 UI/YouTube/DownloadPreferences.cs:85
 msgid "Video format"
 msgstr ""
 
-#: UI/YouTube/DownloadDialog.cs:75 UI/YouTube/YouTubePreferences.cs:140
+#. Translators: Video format offered on the YouTube download settings page. "MKV" is a format name.
+#: UI/YouTube/DownloadDialog.cs:75 UI/YouTube/DownloadPreferences.cs:90
 msgid "MKV"
 msgstr ""
 
 #. Translators: The two video container formats. "MP4" and "MKV" are format names and are not translated.
-#: UI/YouTube/DownloadDialog.cs:75 UI/YouTube/YouTubePreferences.cs:140
+#. Translators: Video format offered on the YouTube download settings page. "MP4" is a format name.
+#: UI/YouTube/DownloadDialog.cs:75 UI/YouTube/DownloadPreferences.cs:88
 msgid "MP4"
 msgstr ""
 
 #. Translators: Label of the box holding the folder a download is saved into.
-#. Translators: Label of the box holding the folder downloads are saved into.
-#: UI/YouTube/DownloadDialog.cs:87 UI/YouTube/YouTubePreferences.cs:117
+#. Translators: Label of the box holding the folder YouTube downloads are saved into.
+#: UI/YouTube/DownloadDialog.cs:87 UI/YouTube/DownloadPreferences.cs:63
 msgid "Download folder"
 msgstr ""
 
 #. Translators: Label of the box holding how many pieces of the file are fetched at once.
-#. Translators: Label of the box holding how many pieces of a file are fetched at once. "yt-dlp" calls
-#. these fragments.
-#: UI/YouTube/DownloadDialog.cs:93 UI/YouTube/YouTubePreferences.cs:167
+#. Translators: Label of the box holding how many pieces of a YouTube file are fetched at once. "yt-dlp" calls these fragments.
+#: UI/YouTube/DownloadDialog.cs:93 UI/YouTube/DownloadPreferences.cs:117
 msgid "Concurrent fragments"
 msgstr ""
 
 #. Translators: Tick box: write the title, uploader and other tags into the downloaded file.
-#: UI/YouTube/DownloadDialog.cs:96 UI/YouTube/YouTubePreferences.cs:173
+#. Translators: Tick box on the YouTube download settings page: write details into the downloaded file.
+#: UI/YouTube/DownloadDialog.cs:96 UI/YouTube/DownloadPreferences.cs:123
 msgid "Embed metadata"
 msgstr ""
 
 #. Translators: Tick box: embed the video's thumbnail as cover art in the downloaded file.
-#: UI/YouTube/DownloadDialog.cs:98 UI/YouTube/YouTubePreferences.cs:175
+#. Translators: Tick box on the YouTube download settings page: embed the thumbnail as cover art.
+#: UI/YouTube/DownloadDialog.cs:98 UI/YouTube/DownloadPreferences.cs:125
 msgid "Embed thumbnail"
 msgstr ""
 
 #. Translators: Tick box: write the video's chapter marks into the downloaded file.
-#: UI/YouTube/DownloadDialog.cs:100 UI/YouTube/YouTubePreferences.cs:177
+#. Translators: Tick box on the YouTube download settings page: write chapter marks into the downloaded file.
+#: UI/YouTube/DownloadDialog.cs:100 UI/YouTube/DownloadPreferences.cs:127
 msgid "Embed chapters"
 msgstr ""
 
 #. Translators: Tick box: embed available subtitles into the downloaded file.
-#: UI/YouTube/DownloadDialog.cs:102 UI/YouTube/YouTubePreferences.cs:179
+#. Translators: Tick box on the YouTube download settings page: embed available subtitles.
+#: UI/YouTube/DownloadDialog.cs:102 UI/YouTube/DownloadPreferences.cs:129
 msgid "Embed subtitles"
 msgstr ""
 
 #. Translators: Tick box: cut out SponsorBlock segments. "SponsorBlock" is a service name and is not translated.
-#. Translators: Tick box: cut out SponsorBlock segments (sponsor reads, intros) from the download.
-#. "SponsorBlock" is a service name and is not translated.
-#: UI/YouTube/DownloadDialog.cs:104 UI/YouTube/YouTubePreferences.cs:182
+#. Translators: Tick box on the YouTube download settings page: remove segments identified by SponsorBlock. "SponsorBlock" is a service name.
+#: UI/YouTube/DownloadDialog.cs:104 UI/YouTube/DownloadPreferences.cs:131
 msgid "Remove SponsorBlock segments"
 msgstr ""
 
@@ -6062,8 +6073,8 @@ msgid "Choose a folder to download into."
 msgstr ""
 
 #. Translators: Title of the window that picks the folder a download is saved into.
-#. Translators: Title of the window that picks the folder downloads are saved into.
-#: UI/YouTube/DownloadDialog.cs:196 UI/YouTube/YouTubePreferences.cs:371
+#. Translators: Title of the window that picks the folder YouTube downloads are saved into.
+#: UI/YouTube/DownloadDialog.cs:196 UI/YouTube/DownloadPreferences.cs:214
 msgid "Select the download folder"
 msgstr ""
 
@@ -6081,6 +6092,154 @@ msgstr ""
 #. Translators: Confirms closing Luna even though download queue work remains unfinished.
 #: UI/YouTube/DownloadExitDialog.cs:20
 msgid "Close anyway"
+msgstr ""
+
+#. Translators: Tick box on the YouTube download settings page: sort files into video and audio subfolders.
+#: UI/YouTube/DownloadPreferences.cs:69
+msgid "Sort downloads by type"
+msgstr ""
+
+#. Translators: Heading of the radio group that chooses whether a YouTube download saves video or audio by default.
+#: UI/YouTube/DownloadPreferences.cs:71
+msgid "Default download type"
+msgstr ""
+
+#. Translators: Audio format offered on the YouTube download settings page. "MP3" is a format name.
+#: UI/YouTube/DownloadPreferences.cs:96
+msgid "MP3"
+msgstr ""
+
+#. Translators: Audio format offered on the YouTube download settings page. "M4A" is a format name.
+#: UI/YouTube/DownloadPreferences.cs:98
+msgid "M4A"
+msgstr ""
+
+#. Translators: Audio format offered on the YouTube download settings page. "Opus" is a format name.
+#: UI/YouTube/DownloadPreferences.cs:100
+msgid "Opus"
+msgstr ""
+
+#. Translators: Audio format offered on the YouTube download settings page. "FLAC" is a format name.
+#: UI/YouTube/DownloadPreferences.cs:102
+msgid "FLAC"
+msgstr ""
+
+#. Translators: Audio format offered on the YouTube download settings page. "WAV" is a format name.
+#: UI/YouTube/DownloadPreferences.cs:104
+msgid "WAV"
+msgstr ""
+
+#. Translators: Heading of the group of less-used YouTube download options.
+#: UI/YouTube/DownloadPreferences.cs:115
+msgid "Advanced options"
+msgstr ""
+
+#. Translators: Label of the box holding how many YouTube videos the download queue may fetch at once.
+#: UI/YouTube/DownloadPreferences.cs:120
+msgid "Simultaneous downloads"
+msgstr ""
+
+#. Translators: Help text for the box holding the folder YouTube downloads are saved into.
+#: UI/YouTube/DownloadPreferences.cs:162
+msgid ""
+"The base folder downloads are saved into. When empty, a Luna Player folder "
+"in your Downloads is used."
+msgstr ""
+
+#. Translators: Help text for the button that picks the YouTube download folder.
+#: UI/YouTube/DownloadPreferences.cs:165
+msgid "Opens a folder picker to choose where downloads are saved."
+msgstr ""
+
+#. Translators: Help text for the tick box that sorts YouTube downloads into video and audio subfolders.
+#: UI/YouTube/DownloadPreferences.cs:168
+msgid ""
+"When checked, downloads are sorted into 'videos' and 'audios' subfolders. "
+"When unchecked, they are saved straight into the download folder."
+msgstr ""
+
+#. Translators: Help text for the control that chooses whether a YouTube download saves video or audio.
+#: UI/YouTube/DownloadPreferences.cs:171
+msgid ""
+"Whether a direct download saves the video or its sound alone. The normal "
+"download dialog opens on this choice and lets you change it per download."
+msgstr ""
+
+#. Translators: Help text for the list that chooses the picture quality of downloaded YouTube videos.
+#: UI/YouTube/DownloadPreferences.cs:174
+msgid ""
+"The picture height a video download is capped at. yt-dlp saves the best "
+"quality at or below it."
+msgstr ""
+
+#. Translators: Help text for the list that chooses a downloaded YouTube video's file type. "MP4" and "MKV" are format names.
+#: UI/YouTube/DownloadPreferences.cs:177
+msgid ""
+"The file type a downloaded video is saved as. MP4 plays almost everywhere; "
+"MKV holds more but is less widely supported."
+msgstr ""
+
+#. Translators: Help text for the list that chooses a downloaded YouTube audio track's file type.
+#: UI/YouTube/DownloadPreferences.cs:180
+msgid ""
+"The file type a downloaded audio track is converted to. MP3 plays almost "
+"everywhere; FLAC and WAV are lossless and larger."
+msgstr ""
+
+#. Translators: Help text for the list that chooses a downloaded YouTube audio track's bitrate.
+#: UI/YouTube/DownloadPreferences.cs:183
+msgid ""
+"The bitrate a downloaded audio track is converted at. It has no effect on "
+"the lossless formats."
+msgstr ""
+
+#. Translators: Help text for the box holding how many pieces of a YouTube file are fetched at once.
+#: UI/YouTube/DownloadPreferences.cs:186
+msgid ""
+"How many pieces of a file yt-dlp fetches at once, from 1 through 16. More "
+"can be faster on a fast connection; one is gentlest."
+msgstr ""
+
+#. Translators: Help text for the box holding how many YouTube videos the download queue may fetch at once.
+#: UI/YouTube/DownloadPreferences.cs:189
+msgid ""
+"How many videos the download queue may download at the same time, from 1 "
+"through 16."
+msgstr ""
+
+#. Translators: Help text for the tick box that writes details into a downloaded YouTube file.
+#: UI/YouTube/DownloadPreferences.cs:192
+msgid ""
+"When checked, the title, uploader and other details are written into the "
+"downloaded file."
+msgstr ""
+
+#. Translators: Help text for the tick box that embeds a YouTube thumbnail as cover art.
+#: UI/YouTube/DownloadPreferences.cs:195
+msgid ""
+"When checked, the video's thumbnail is embedded as cover art in the "
+"downloaded file."
+msgstr ""
+
+#. Translators: Help text for the tick box that writes chapter marks into a downloaded YouTube file.
+#: UI/YouTube/DownloadPreferences.cs:198
+msgid ""
+"When checked, the video's chapter marks are written into the downloaded "
+"file, where the format supports them."
+msgstr ""
+
+#. Translators: Help text for the tick box that embeds subtitles into a downloaded YouTube file.
+#: UI/YouTube/DownloadPreferences.cs:201
+msgid ""
+"When checked, the video's available subtitles are embedded into the "
+"downloaded file."
+msgstr ""
+
+#. Translators: Help text for the tick box that removes SponsorBlock segments from a YouTube download. "SponsorBlock" is a service name.
+#: UI/YouTube/DownloadPreferences.cs:204
+msgid ""
+"When checked, SponsorBlock data is used to cut sponsor reads, intros and "
+"similar segments out of the download."
 msgstr ""
 
 #: UI/YouTube/DownloadProgressDialog.cs:37
@@ -6239,24 +6398,215 @@ msgstr ""
 msgid "Link"
 msgstr ""
 
+#. Translators: Label of the box holding how many videos a search should look for.
+#: UI/YouTube/GeneralPreferences.cs:67
+msgid "Number of search results"
+msgstr ""
+
+#. Translators: Tick box on the YouTube settings page: offer search suggestions as the user types.
+#: UI/YouTube/GeneralPreferences.cs:70
+msgid "Show search suggestions while typing"
+msgstr ""
+
+#. Translators: Label of the list that chooses what to do with a link naming a video and a playlist at once.
+#: UI/YouTube/GeneralPreferences.cs:72
+msgid "Video+playlist link behavior"
+msgstr ""
+
+#. Translators: One of the choices for a link naming both: ask which was meant, every time.
+#: UI/YouTube/GeneralPreferences.cs:75
+msgid "Ask every time"
+msgstr ""
+
+#. Translators: One of the choices for a link naming both: always play the single video.
+#. Translators: Button that plays the one video a link names, rather than the playlist it also names.
+#: UI/YouTube/GeneralPreferences.cs:77 UI/YouTube/LinkKindDialog.cs:28
+msgid "Play the video"
+msgstr ""
+
+#. Translators: One of the choices for a link naming both: always open the whole playlist.
+#. Translators: Button that lists every video in the playlist a link names, rather than the one video.
+#: UI/YouTube/GeneralPreferences.cs:79 UI/YouTube/LinkKindDialog.cs:31
+msgid "Open the playlist"
+msgstr ""
+
+#. Translators: Heading of the group of settings that give YouTube the browser cookies it may need.
+#: UI/YouTube/GeneralPreferences.cs:85
+msgid "Cookies"
+msgstr ""
+
+#. Translators: Label of the box showing the cookie file yt-dlp will use, if one was chosen.
+#: UI/YouTube/GeneralPreferences.cs:87
+msgid "Cookie file"
+msgstr ""
+
+#. Translators: Button that switches Luna to reading cookies straight from Firefox each time, with no file.
+#. "Firefox" is a program name and is not translated.
+#: UI/YouTube/GeneralPreferences.cs:94
+msgid "Import from Firefox"
+msgstr ""
+
+#. Translators: Label of the read-only box that says which cookie source is in use.
+#: UI/YouTube/GeneralPreferences.cs:99
+msgid "Cookie status"
+msgstr ""
+
+#. Translators: Label of the list that chooses which line of yt-dlp releases to follow. "yt-dlp" is a
+#. program name and is not translated.
+#: UI/YouTube/GeneralPreferences.cs:120
+msgid "yt-dlp update channel"
+msgstr ""
+
+#. Translators: One of the yt-dlp release lines: the tested one.
+#: UI/YouTube/GeneralPreferences.cs:123
+msgid "Stable"
+msgstr ""
+
+#. Translators: One of the yt-dlp release lines: rebuilt every night.
+#: UI/YouTube/GeneralPreferences.cs:125
+msgid "Nightly"
+msgstr ""
+
+#. Translators: One of the yt-dlp release lines: rebuilt from the latest source.
+#: UI/YouTube/GeneralPreferences.cs:127
+msgid "Master"
+msgstr ""
+
+#. Translators: Tick box on the YouTube settings page: look for a newer yt-dlp each time the player starts.
+#. "yt-dlp" is a program name and is not translated.
+#: UI/YouTube/GeneralPreferences.cs:130
+msgid "Check for yt-dlp updates on startup"
+msgstr ""
+
+#. Translators: Button on the YouTube settings page that fetches the extra programs YouTube downloads need.
+#: UI/YouTube/GeneralPreferences.cs:132
+msgid "Download YouTube components"
+msgstr ""
+
+#. Translators: Help text for the list that chooses the picture quality a video is played at.
+#: UI/YouTube/GeneralPreferences.cs:149
+msgid ""
+"Sets the picture height Luna asks for when you play a video with Enter. A "
+"lower height starts sooner and uses less network; Luna falls back to the "
+"closest the video offers."
+msgstr ""
+
+#. Translators: Help text for the list that chooses the sound quality a video's audio is played at.
+#: UI/YouTube/GeneralPreferences.cs:152
+msgid ""
+"Sets the bitrate Luna asks for when you play a video's sound alone with Ctrl"
+"+Enter. Luna falls back to the closest the video offers."
+msgstr ""
+
+#. Translators: Help text for the box holding how many videos a search should look for. The two numbers are
+#. the smallest and largest it accepts.
+#: UI/YouTube/GeneralPreferences.cs:156
+msgid ""
+"Sets the size of the first result page, from 5 through 100 videos. Larger "
+"pages take longer to fetch; reaching the end still loads more results."
+msgstr ""
+
+#. Translators: Help text for the tick box that offers search suggestions while typing.
+#: UI/YouTube/GeneralPreferences.cs:159
+msgid ""
+"When checked, a list of completions is offered as you type, fetched from "
+"YouTube. When unchecked, no completions are fetched and typing makes no "
+"background network requests."
+msgstr ""
+
+#. Translators: Help text for the list that chooses what to do with a link naming a video and a playlist at once.
+#: UI/YouTube/GeneralPreferences.cs:162
+msgid ""
+"For an address containing both a video and a playlist, Luna can ask each "
+"time, open only that video, or list the complete playlist."
+msgstr ""
+
+#. Translators: Help text for the list that chooses which line of yt-dlp releases to follow. "yt-dlp" is a program name and is not translated.
+#: UI/YouTube/GeneralPreferences.cs:165
+msgid ""
+"Stable changes least often and is intended for normal use. Nightly is "
+"rebuilt each night. Master follows the newest source and may be unreliable."
+msgstr ""
+
+#. Translators: Help text for the tick box that looks for a newer yt-dlp at startup. "yt-dlp" is a program
+#. name and is not translated.
+#: UI/YouTube/GeneralPreferences.cs:169
+msgid ""
+"When checked, Luna looks for a newer yt-dlp when it starts and offers to "
+"download it. When unchecked, no update check runs at startup."
+msgstr ""
+
+#. Translators: Help text for the button that fetches the extra programs YouTube downloads need. "yt-dlp" is
+#. a program name and is not translated.
+#: UI/YouTube/GeneralPreferences.cs:173
+msgid ""
+"Fetches yt-dlp and the JavaScript runtime it needs. YouTube playback and "
+"downloads do not work until these are installed."
+msgstr ""
+
+#. Translators: Help text for the box holding the cookie file yt-dlp will use.
+#: UI/YouTube/GeneralPreferences.cs:176
+msgid ""
+"The cookie file, in Netscape format, that YouTube requests are sent with. "
+"Use it for age-restricted or members-only videos. Choosing a file turns off "
+"reading cookies from Firefox."
+msgstr ""
+
+#. Translators: Help text for the button that picks a cookie file by hand.
+#: UI/YouTube/GeneralPreferences.cs:179
+msgid ""
+"Opens a file picker to choose a cookie file saved from your browser. This "
+"turns off reading cookies from Firefox."
+msgstr ""
+
+#. Translators: Help text for the button that switches to reading cookies from Firefox. "Firefox" is a
+#. program name and is not translated.
+#: UI/YouTube/GeneralPreferences.cs:183
+msgid ""
+"Reads cookies straight from Firefox each time, always up to date, with no "
+"file to keep. This clears any cookie file you chose. Firefox must be "
+"installed and signed in to YouTube."
+msgstr ""
+
+#. Translators: Help text for the read-only box that reports which cookie source is in use.
+#: UI/YouTube/GeneralPreferences.cs:186
+msgid ""
+"Reports whether YouTube requests currently use Firefox cookies, a cookie "
+"file, or no cookies at all."
+msgstr ""
+
+#. Translators: File type name in the cookie-file picker on the general YouTube settings page.
+#: UI/YouTube/GeneralPreferences.cs:194
+msgid "Cookie files"
+msgstr ""
+
+#. Translators: File type name for showing every file in the cookie-file picker on the general YouTube settings page.
+#: UI/YouTube/GeneralPreferences.cs:196
+msgid "All Files"
+msgstr ""
+
+#. Translators: Cookie status: Luna is reading cookies straight from Firefox. "Firefox" is a program
+#. name and is not translated.
+#: UI/YouTube/GeneralPreferences.cs:226
+msgid "Using Firefox cookies"
+msgstr ""
+
+#. Translators: Cookie status naming the file in use. {path} is a file path.
+#: UI/YouTube/GeneralPreferences.cs:229
+msgid "Using cookie file: {path}"
+msgstr ""
+
+#. Translators: Cookie status: no cookies are sent with YouTube requests.
+#: UI/YouTube/GeneralPreferences.cs:231
+msgid "No cookies"
+msgstr ""
+
 #. Translators: Message shown when a YouTube address names a video and a playlist at the same time,
 #. asking which of the two the user wants.
 #: UI/YouTube/LinkKindDialog.cs:25
 msgid ""
 "This address points to one video and also includes a playlist. Choose which "
 "content Luna should open."
-msgstr ""
-
-#. Translators: Button that plays the one video a link names, rather than the playlist it also names.
-#. Translators: One of the choices for a link naming both: always play the single video.
-#: UI/YouTube/LinkKindDialog.cs:28 UI/YouTube/YouTubePreferences.cs:108
-msgid "Play the video"
-msgstr ""
-
-#. Translators: Button that lists every video in the playlist a link names, rather than the one video.
-#. Translators: One of the choices for a link naming both: always open the whole playlist.
-#: UI/YouTube/LinkKindDialog.cs:31 UI/YouTube/YouTubePreferences.cs:110
-msgid "Open the playlist"
 msgstr ""
 
 #. Translators: Quality choice that takes the best the video offers, with no cap.
@@ -6363,315 +6713,6 @@ msgstr ""
 #. Translators: Search filter: order results by how many times they have been viewed.
 #: UI/YouTube/SearchDialog.cs:72
 msgid "View count"
-msgstr ""
-
-#. Translators: Label of the box holding how many videos a search should look for.
-#: UI/YouTube/YouTubePreferences.cs:98
-msgid "Number of search results"
-msgstr ""
-
-#. Translators: Tick box on the YouTube settings page: offer search suggestions as the user types.
-#: UI/YouTube/YouTubePreferences.cs:101
-msgid "Show search suggestions while typing"
-msgstr ""
-
-#. Translators: Label of the list that chooses what to do with a link naming a video and a playlist at once.
-#: UI/YouTube/YouTubePreferences.cs:103
-msgid "Video+playlist link behavior"
-msgstr ""
-
-#. Translators: One of the choices for a link naming both: ask which was meant, every time.
-#: UI/YouTube/YouTubePreferences.cs:106
-msgid "Ask every time"
-msgstr ""
-
-#. Translators: Heading of the group of settings that control how YouTube videos are downloaded.
-#: UI/YouTube/YouTubePreferences.cs:115
-msgid "Download settings"
-msgstr ""
-
-#. Translators: Tick box: sort downloads into 'videos' and 'audios' subfolders of the download folder.
-#: UI/YouTube/YouTubePreferences.cs:123
-msgid "Sort downloads by type"
-msgstr ""
-
-#. Translators: Heading of the radio group that chooses whether a download saves the video or its sound alone by default.
-#: UI/YouTube/YouTubePreferences.cs:125
-msgid "Default download type"
-msgstr ""
-
-#. Translators: Heading of the group of less-used download options (embedding, fragments, SponsorBlock).
-#: UI/YouTube/YouTubePreferences.cs:164
-msgid "Advanced options"
-msgstr ""
-
-#. Translators: Label of the box holding how many videos the download queue may fetch at once.
-#: UI/YouTube/YouTubePreferences.cs:170
-msgid "Simultaneous downloads"
-msgstr ""
-
-#. Translators: Heading of the group of settings that give YouTube the browser cookies it may need.
-#: UI/YouTube/YouTubePreferences.cs:192
-msgid "Cookies"
-msgstr ""
-
-#. Translators: Label of the box showing the cookie file yt-dlp will use, if one was chosen.
-#: UI/YouTube/YouTubePreferences.cs:194
-msgid "Cookie file"
-msgstr ""
-
-#. Translators: Button that switches Luna to reading cookies straight from Firefox each time, with no file.
-#. "Firefox" is a program name and is not translated.
-#: UI/YouTube/YouTubePreferences.cs:201
-msgid "Import from Firefox"
-msgstr ""
-
-#. Translators: Label of the read-only box that says which cookie source is in use.
-#: UI/YouTube/YouTubePreferences.cs:206
-msgid "Cookie status"
-msgstr ""
-
-#. Translators: Label of the list that chooses which line of yt-dlp releases to follow. "yt-dlp" is a
-#. program name and is not translated.
-#: UI/YouTube/YouTubePreferences.cs:227
-msgid "yt-dlp update channel"
-msgstr ""
-
-#. Translators: One of the yt-dlp release lines: the tested one.
-#: UI/YouTube/YouTubePreferences.cs:230
-msgid "Stable"
-msgstr ""
-
-#. Translators: One of the yt-dlp release lines: rebuilt every night.
-#: UI/YouTube/YouTubePreferences.cs:232
-msgid "Nightly"
-msgstr ""
-
-#. Translators: One of the yt-dlp release lines: rebuilt from the latest source.
-#: UI/YouTube/YouTubePreferences.cs:234
-msgid "Master"
-msgstr ""
-
-#. Translators: Tick box on the YouTube settings page: look for a newer yt-dlp each time the player starts.
-#. "yt-dlp" is a program name and is not translated.
-#: UI/YouTube/YouTubePreferences.cs:237
-msgid "Check for yt-dlp updates on startup"
-msgstr ""
-
-#. Translators: Button on the YouTube settings page that fetches the extra programs YouTube downloads need.
-#: UI/YouTube/YouTubePreferences.cs:239
-msgid "Download YouTube components"
-msgstr ""
-
-#. Translators: Help text for the list that chooses the picture quality a video is played at.
-#: UI/YouTube/YouTubePreferences.cs:258
-msgid ""
-"Sets the picture height Luna asks for when you play a video with Enter. A "
-"lower height starts sooner and uses less network; Luna falls back to the "
-"closest the video offers."
-msgstr ""
-
-#. Translators: Help text for the list that chooses the sound quality a video's audio is played at.
-#: UI/YouTube/YouTubePreferences.cs:261
-msgid ""
-"Sets the bitrate Luna asks for when you play a video's sound alone with Ctrl"
-"+Enter. Luna falls back to the closest the video offers."
-msgstr ""
-
-#. Translators: Help text for the box holding how many videos a search should look for. The two numbers are
-#. the smallest and largest it accepts.
-#: UI/YouTube/YouTubePreferences.cs:265
-msgid ""
-"Sets the size of the first result page, from 5 through 100 videos. Larger "
-"pages take longer to fetch; reaching the end still loads more results."
-msgstr ""
-
-#. Translators: Help text for the tick box that offers search suggestions while typing.
-#: UI/YouTube/YouTubePreferences.cs:268
-msgid ""
-"When checked, a list of completions is offered as you type, fetched from "
-"YouTube. When unchecked, no completions are fetched and typing makes no "
-"background network requests."
-msgstr ""
-
-#. Translators: Help text for the list that chooses what to do with a link naming a video and a playlist at once.
-#: UI/YouTube/YouTubePreferences.cs:271
-msgid ""
-"For an address containing both a video and a playlist, Luna can ask each "
-"time, open only that video, or list the complete playlist."
-msgstr ""
-
-#. Translators: Help text for the list that chooses which line of yt-dlp releases to follow. "yt-dlp" is a program name and is not translated.
-#: UI/YouTube/YouTubePreferences.cs:274
-msgid ""
-"Stable changes least often and is intended for normal use. Nightly is "
-"rebuilt each night. Master follows the newest source and may be unreliable."
-msgstr ""
-
-#. Translators: Help text for the tick box that looks for a newer yt-dlp at startup. "yt-dlp" is a program
-#. name and is not translated.
-#: UI/YouTube/YouTubePreferences.cs:278
-msgid ""
-"When checked, Luna looks for a newer yt-dlp when it starts and offers to "
-"download it. When unchecked, no update check runs at startup."
-msgstr ""
-
-#. Translators: Help text for the button that fetches the extra programs YouTube downloads need. "yt-dlp" is
-#. a program name and is not translated.
-#: UI/YouTube/YouTubePreferences.cs:282
-msgid ""
-"Fetches yt-dlp and the JavaScript runtime it needs. YouTube playback and "
-"downloads do not work until these are installed."
-msgstr ""
-
-#. Translators: Help text for the box holding the cookie file yt-dlp will use.
-#: UI/YouTube/YouTubePreferences.cs:285
-msgid ""
-"The cookie file, in Netscape format, that YouTube requests are sent with. "
-"Use it for age-restricted or members-only videos. Choosing a file turns off "
-"reading cookies from Firefox."
-msgstr ""
-
-#. Translators: Help text for the button that picks a cookie file by hand.
-#: UI/YouTube/YouTubePreferences.cs:288
-msgid ""
-"Opens a file picker to choose a cookie file saved from your browser. This "
-"turns off reading cookies from Firefox."
-msgstr ""
-
-#. Translators: Help text for the button that switches to reading cookies from Firefox. "Firefox" is a
-#. program name and is not translated.
-#: UI/YouTube/YouTubePreferences.cs:292
-msgid ""
-"Reads cookies straight from Firefox each time, always up to date, with no "
-"file to keep. This clears any cookie file you chose. Firefox must be "
-"installed and signed in to YouTube."
-msgstr ""
-
-#. Translators: Help text for the read-only box that reports which cookie source is in use.
-#: UI/YouTube/YouTubePreferences.cs:295
-msgid ""
-"Reports whether YouTube requests currently use Firefox cookies, a cookie "
-"file, or no cookies at all."
-msgstr ""
-
-#. Translators: Help text for the box holding the folder downloads are saved into.
-#: UI/YouTube/YouTubePreferences.cs:298
-msgid ""
-"The base folder downloads are saved into. When empty, a Luna Player folder "
-"in your Downloads is used."
-msgstr ""
-
-#. Translators: Help text for the tick box that sorts downloads into video and audio subfolders.
-#: UI/YouTube/YouTubePreferences.cs:301
-msgid ""
-"When checked, downloads are sorted into 'videos' and 'audios' subfolders. "
-"When unchecked, they are saved straight into the download folder."
-msgstr ""
-
-#. Translators: Help text for the button that picks the download folder.
-#: UI/YouTube/YouTubePreferences.cs:304
-msgid "Opens a folder picker to choose where downloads are saved."
-msgstr ""
-
-#. Translators: Help text for the list that chooses whether a download saves video or audio.
-#: UI/YouTube/YouTubePreferences.cs:307
-msgid ""
-"Whether a direct download saves the video or its sound alone. The normal "
-"download dialog opens on this choice and lets you change it per download."
-msgstr ""
-
-#. Translators: Help text for the list that chooses the picture quality a downloaded video is saved at.
-#: UI/YouTube/YouTubePreferences.cs:310
-msgid ""
-"The picture height a video download is capped at. yt-dlp saves the best "
-"quality at or below it."
-msgstr ""
-
-#. Translators: Help text for the list that chooses a downloaded video's file type. "MP4"/"MKV" are not translated.
-#: UI/YouTube/YouTubePreferences.cs:313
-msgid ""
-"The file type a downloaded video is saved as. MP4 plays almost everywhere; "
-"MKV holds more but is less widely supported."
-msgstr ""
-
-#. Translators: Help text for the list that chooses a downloaded audio track's file type.
-#: UI/YouTube/YouTubePreferences.cs:316
-msgid ""
-"The file type a downloaded audio track is converted to. MP3 plays almost "
-"everywhere; FLAC and WAV are lossless and larger."
-msgstr ""
-
-#. Translators: Help text for the list that chooses a downloaded audio track's bitrate.
-#: UI/YouTube/YouTubePreferences.cs:319
-msgid ""
-"The bitrate a downloaded audio track is converted at. It has no effect on "
-"the lossless formats."
-msgstr ""
-
-#. Translators: Help text for the box holding how many file pieces are fetched at once.
-#: UI/YouTube/YouTubePreferences.cs:322
-msgid ""
-"How many pieces of a file yt-dlp fetches at once, from 1 through 16. More "
-"can be faster on a fast connection; one is gentlest."
-msgstr ""
-
-#. Translators: Help text for the box holding how many videos the download queue may fetch at once.
-#: UI/YouTube/YouTubePreferences.cs:325
-msgid ""
-"How many videos the download queue may download at the same time, from 1 "
-"through 16."
-msgstr ""
-
-#. Translators: Help text for the tick box that writes tags into the downloaded file.
-#: UI/YouTube/YouTubePreferences.cs:328
-msgid ""
-"When checked, the title, uploader and other details are written into the "
-"downloaded file."
-msgstr ""
-
-#. Translators: Help text for the tick box that embeds the thumbnail as cover art.
-#: UI/YouTube/YouTubePreferences.cs:331
-msgid ""
-"When checked, the video's thumbnail is embedded as cover art in the "
-"downloaded file."
-msgstr ""
-
-#. Translators: Help text for the tick box that writes chapter marks into the downloaded file.
-#: UI/YouTube/YouTubePreferences.cs:334
-msgid ""
-"When checked, the video's chapter marks are written into the downloaded "
-"file, where the format supports them."
-msgstr ""
-
-#. Translators: Help text for the tick box that embeds subtitles into the downloaded file.
-#: UI/YouTube/YouTubePreferences.cs:337
-msgid ""
-"When checked, the video's available subtitles are embedded into the "
-"downloaded file."
-msgstr ""
-
-#. Translators: Help text for the tick box that removes SponsorBlock segments. "SponsorBlock" is a service name and is not translated.
-#: UI/YouTube/YouTubePreferences.cs:340
-msgid ""
-"When checked, SponsorBlock data is used to cut sponsor reads, intros and "
-"similar segments out of the download."
-msgstr ""
-
-#. Translators: Cookie status: Luna is reading cookies straight from Firefox. "Firefox" is a program
-#. name and is not translated.
-#: UI/YouTube/YouTubePreferences.cs:409
-msgid "Using Firefox cookies"
-msgstr ""
-
-#. Translators: Cookie status naming the file in use. {path} is a file path.
-#: UI/YouTube/YouTubePreferences.cs:412
-msgid "Using cookie file: {path}"
-msgstr ""
-
-#. Translators: Cookie status: no cookies are sent with YouTube requests.
-#: UI/YouTube/YouTubePreferences.cs:414
-msgid "No cookies"
 msgstr ""
 
 #. Translators: A channel browser tab: the channel's front page.

@@ -10,9 +10,9 @@ internal sealed class PreferencesDialog : IDisposable
     private readonly TreeCtrl _tree;
     private readonly Panel _book;
     private readonly BoxSizer _bookSizer;
-    // A page is built the first time its category is chosen, then kept. The factory map holds how to build
-    // each page; the page map holds the ones built so far. Opening the window builds only the first page,
-    // which is what keeps it quick however many categories there are - the rest cost nothing until opened.
+    // A page is built the first time its tree item is chosen, then kept. The factory map deliberately has no
+    // entry for branch items: they organize their child pages without owning a page. Opening the window
+    // builds only the first page, so every other page costs nothing until it is opened.
     private readonly Dictionary<TreeItemId, Func<IPreferencesPage>> _factories = [];
     private readonly Dictionary<TreeItemId, IPreferencesPage> _pages = [];
     private readonly Action<string> _speakHelp;
@@ -41,50 +41,60 @@ internal sealed class PreferencesDialog : IDisposable
         _bookSizer = new BoxSizer(Orientation.Vertical);
         _book.SetSizer(_bookSizer);
 
-        string[] categories = [
-            // Translators: Name of the settings category holding the language, speech and file-opening settings.
-            Tr("General"),
-            // Translators: Name of the settings category for saving a copy of the settings and bookmarks and putting them back.
-            Tr("Backup and restore"),
-            // Translators: Name of the settings category holding the loudness, speed and seeking settings.
-            Tr("Audio"),
-            // Translators: Name of the settings category for trimming the silent parts out of what is played.
-            Tr("Silence removal"),
-            // Translators: Name of the settings category for playing videos from YouTube.
-            Tr("YouTube"),
-            // Translators: Name of the settings category for recording sound.
-            Tr("Recording"),
-            // Translators: Name of the settings category for the key combinations that work while the player is the program in front.
-            Tr("Keyboard Shortcuts"),
-            // Translators: Name of the settings category for the key combinations that work while another program is in front.
-            Tr("Global Shortcuts")];
-        var root = _tree.AddRoot("root");
-        var generalItem = _tree.Add(root, categories[0]);
-        var backupItem = _tree.Add(root, categories[1]);
-        var audioItem = _tree.Add(root, categories[2]);
-        var silenceItem = _tree.Add(root, categories[3]);
-        var youTubeItem = _tree.Add(root, categories[4]);
-        var recordingItem = _tree.Add(root, categories[5]);
-        var shortcutsItem = _tree.Add(root, categories[6]);
-        var globalsItem = _tree.Add(root, categories[7]);
-        SizeTreeToLabels(categories);
+        // Translators: Name of the settings category holding the language, speech and file-opening settings.
+        var generalLabel = Tr("General");
+        // Translators: Name of the settings category for saving a copy of the settings and bookmarks and putting them back.
+        var backupLabel = Tr("Backup and restore");
+        // Translators: Name of the settings category holding the loudness, speed and seeking settings.
+        var audioLabel = Tr("Audio");
+        // Translators: Name of the settings category for trimming the silent parts out of what is played.
+        var silenceLabel = Tr("Silence removal");
+        // Translators: Name of the expandable settings category containing the general and download pages for YouTube.
+        var youTubeLabel = Tr("YouTube");
+        // Translators: Name of the general settings page inside the YouTube category.
+        var youTubeGeneralLabel = Tr("General");
+        // Translators: Name of the download settings page inside the YouTube category.
+        var youTubeDownloadLabel = Tr("Download");
+        // Translators: Name of the settings category for recording sound.
+        var recordingLabel = Tr("Recording");
+        // Translators: Name of the settings category for the key combinations that work while the player is the program in front.
+        var shortcutsLabel = Tr("Keyboard Shortcuts");
+        // Translators: Name of the settings category for the key combinations that work while another program is in front.
+        var globalsLabel = Tr("Global Shortcuts");
 
-        // How to build each page, not the page itself. The parent is _book; a page adds itself to its sizer
-        // when GetOrBuildPage first makes it.
-        _factories[generalItem] = () => new GeneralPreferences(_book, settings.General, operations);
-        _factories[backupItem] = () => new BackupPreferences(_book, operations, ReplaceSettings);
-        _factories[audioItem] = () => new AudioPreferences(_book, settings.Audio);
-        _factories[silenceItem] = () => new SilencePreferences(_book, settings.Silence);
-        _factories[youTubeItem] = () => new YouTube.YouTubePreferences(_book, settings.YouTube, operations);
-        _factories[recordingItem] = () => new RecordingPreferences(_book, settings.Recording, dispatcher, catalog);
-        _factories[shortcutsItem] = () => new ShortcutPreferences(_book, settings.Shortcuts, ShortcutScope.Local, globalShortcuts);
-        _factories[globalsItem] = () => new ShortcutPreferences(_book, settings.Shortcuts, ShortcutScope.Global, globalShortcuts);
+        var root = _tree.AddRoot("root");
+        // AddPage binds a tree item to its lazy page factory. Branches such as YouTube use the same tree
+        // structure without a factory of their own, so more nested groups can be added without changing the
+        // page-switching code.
+        var generalItem = AddPage(root, generalLabel,
+            () => new GeneralPreferences(_book, settings.General, operations));
+        AddPage(root, backupLabel, () => new BackupPreferences(_book, operations, ReplaceSettings));
+        AddPage(root, audioLabel, () => new AudioPreferences(_book, settings.Audio));
+        AddPage(root, silenceLabel, () => new SilencePreferences(_book, settings.Silence));
+        var youTubeItem = _tree.Add(root, youTubeLabel);
+        AddPage(youTubeItem, youTubeGeneralLabel,
+            () => new YouTube.GeneralPreferences(_book, settings.YouTube, operations));
+        AddPage(youTubeItem, youTubeDownloadLabel,
+            () => new YouTube.DownloadPreferences(_book, settings.YouTube.Download));
+        AddPage(root, recordingLabel,
+            () => new RecordingPreferences(_book, settings.Recording, dispatcher, catalog));
+        AddPage(root, shortcutsLabel,
+            () => new ShortcutPreferences(_book, settings.Shortcuts, ShortcutScope.Local, globalShortcuts));
+        AddPage(root, globalsLabel,
+            () => new ShortcutPreferences(_book, settings.Shortcuts, ShortcutScope.Global, globalShortcuts));
+
+        // A parent with children can otherwise retain expansion state assigned by the native control while
+        // items are inserted. Preferences always opens with every optional branch closed.
+        _tree.Expand(youTubeItem, expand: false);
+        SizeTreeToLabels([
+            generalLabel, backupLabel, audioLabel, silenceLabel, youTubeLabel,
+            youTubeGeneralLabel, youTubeDownloadLabel, recordingLabel, shortcutsLabel, globalsLabel]);
 
         _tree.SelectionChanged += OnTreeChanged;
         _dialog.Bind(WxEvents.CharHook, OnCharHook);
 
         // Only the first page is built now; the rest build the first time their category is chosen.
-        DoCategoryChange(generalItem);
+        ShowPage(generalItem);
         _tree.Selection = generalItem;
 
         var body = new BoxSizer(Orientation.Horizontal);
@@ -112,8 +122,8 @@ internal sealed class PreferencesDialog : IDisposable
     internal bool Show() => _dialog.ShowModal() == StandardId.Ok;
     public void Dispose() => _dialog.Dispose();
 
-    // A wxTreeCtrl's best size is a fixed default rather than a measurement of its items, so the category
-    // names would be truncated behind a horizontal scrollbar. Widen it to the longest label.
+    // A wxTreeCtrl's best size is a fixed default rather than a measurement of its items, so tree labels
+    // would be truncated behind a horizontal scrollbar. Widen it to the longest label.
     private void SizeTreeToLabels(IEnumerable<string> labels)
     {
         var widest = 0;
@@ -126,8 +136,16 @@ internal sealed class PreferencesDialog : IDisposable
     // Room for the tree's expand button, item indent and a vertical scrollbar.
     private const int Indent = 48;
 
+    /// <summary>Adds a selectable leaf and records how to create its page on the first visit.</summary>
+    private TreeItemId AddPage(TreeItemId parent, string label, Func<IPreferencesPage> factory)
+    {
+        var item = _tree.Add(parent, label);
+        _factories[item] = factory;
+        return item;
+    }
+
     /// <summary>Returns the page for a category, building it the first time and keeping it thereafter. A new
-    /// page is added to the book hidden; the switch in <see cref="DoCategoryChange"/> shows it.</summary>
+    /// page is added to the book hidden; the switch in <see cref="ShowPage"/> shows it.</summary>
     private IPreferencesPage GetOrBuildPage(TreeItemId item)
     {
         if (_pages.TryGetValue(item, out var existing))
@@ -139,9 +157,9 @@ internal sealed class PreferencesDialog : IDisposable
         return page;
     }
 
-    /// <summary>Shows the chosen category's page, building it on first visit. Hidden behind Freeze/Thaw so a
-    /// page being built for the first time is not seen half-assembled.</summary>
-    private void DoCategoryChange(TreeItemId item)
+    /// <summary>Shows a chosen leaf's page, building it on first visit. Branches have no factory and leave
+    /// the visible page alone. Hidden behind Freeze/Thaw so a new page is not seen half-assembled.</summary>
+    private void ShowPage(TreeItemId item)
     {
         if (!_factories.ContainsKey(item))
             return;
@@ -161,7 +179,7 @@ internal sealed class PreferencesDialog : IDisposable
 
     private void OnTreeChanged(object? sender, TreeEventArgs args)
     {
-        DoCategoryChange(args.Item);
+        ShowPage(args.Item);
         args.Skip();
     }
 
@@ -176,8 +194,8 @@ internal sealed class PreferencesDialog : IDisposable
         var focused = Window.FindFocus();
         if (ReferenceEquals(focused, _tree))
         {
-            // Translators: Help text for the list of settings categories down the left of the Preferences window.
-            _speakHelp(Tr("Use the Up and Down Arrow keys to select a category. Its controls appear on the right side of the window."));
+            // Translators: Help text for the settings tree down the left of the Preferences window.
+            _speakHelp(Tr("Use the Arrow keys to move through settings pages. Press the Right Arrow key on a category to show its pages and the Left Arrow key to hide them. The selected page's controls appear on the right side of the window."));
             return;
         }
 
