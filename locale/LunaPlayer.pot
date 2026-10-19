@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-10-19 10:32+0300\n"
+"POT-Creation-Date: 2026-10-19 13:01+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1742,7 +1742,7 @@ msgstr ""
 #. Translators: Shown when the player cannot offer exact time fields for the current item.
 #: Application/Commands/Playback/Bookmarks.cs:187
 #: Application/Commands/Playback/Playback.cs:193
-#: Application/Commands/Playback/SelectionPoints.cs:267
+#: Application/Commands/Playback/SelectionPoints.cs:274
 msgid "Time is not available for the current file."
 msgstr ""
 
@@ -1988,7 +1988,7 @@ msgstr ""
 #. Translators: The short wording spoken when the beginning of a repeating stretch has not been marked yet.
 #. Translators: Brief announcement when an end marker is requested before a start marker.
 #: Application/Commands/Playback/Selection.cs:35
-#: Application/Commands/Playback/SelectionPoints.cs:295
+#: Application/Commands/Playback/SelectionPoints.cs:302
 msgid "No start."
 msgstr ""
 
@@ -2031,7 +2031,7 @@ msgstr ""
 #. Translators: Spoken once the repeating stretch of the file has been dropped, so playing carries on normally.
 #. Translators: Spoken after the current selection slot is removed.
 #: Application/Commands/Playback/Selection.cs:78
-#: Application/Commands/Playback/SelectionPoints.cs:150
+#: Application/Commands/Playback/SelectionPoints.cs:155
 msgid "Selection cleared"
 msgstr ""
 
@@ -2062,28 +2062,28 @@ msgstr ""
 
 #. Translators: Spoken when the current selection slot contains nothing to remove.
 #. Translators: Brief announcement when the current selection slot contains nothing to remove.
-#: Application/Commands/Playback/SelectionPoints.cs:142
 #: Application/Commands/Playback/SelectionPoints.cs:144
+#: Application/Commands/Playback/SelectionPoints.cs:146
 msgid "No selection here."
 msgstr ""
 
 #. Translators: Spoken after every selection belonging to the current file is removed.
-#: Application/Commands/Playback/SelectionPoints.cs:163
+#: Application/Commands/Playback/SelectionPoints.cs:170
 msgid "All selections cleared"
 msgstr ""
 
 #. Translators: Spoken when selections begin repeating.
-#: Application/Commands/Playback/SelectionPoints.cs:187
+#: Application/Commands/Playback/SelectionPoints.cs:194
 msgid "Repeat selections on"
 msgstr ""
 
 #. Translators: Spoken when selections stop repeating.
-#: Application/Commands/Playback/SelectionPoints.cs:189
+#: Application/Commands/Playback/SelectionPoints.cs:196
 msgid "Repeat selections off"
 msgstr ""
 
 #. Translators: Shown when a file has several selections but the user has not moved to the one to save.
-#: Application/Commands/Playback/SelectionPoints.cs:206
+#: Application/Commands/Playback/SelectionPoints.cs:213
 msgid ""
 "There are multiple selection points in the current file. Save all selections "
 "to a file, or move to the selection point you want to save."
@@ -2093,50 +2093,50 @@ msgstr ""
 #. Translators: Title of a warning that a selection cannot be saved.
 #. Translators: Title of the error shown when a selected part could not be saved.
 #. Translators: Title of the file picker used to save the currently selected part of a file.
-#: Application/Commands/Playback/SelectionPoints.cs:208
-#: Application/Commands/Playback/SelectionPoints.cs:217
-#: Application/Commands/Playback/SelectionPoints.cs:255
+#: Application/Commands/Playback/SelectionPoints.cs:215
+#: Application/Commands/Playback/SelectionPoints.cs:224
+#: Application/Commands/Playback/SelectionPoints.cs:262
 #: UI/DialogService.cs:152
 msgid "Save selection"
 msgstr ""
 
 #. Translators: Shown when saving a selection is attempted from a web stream rather than a local file.
-#: Application/Commands/Playback/SelectionPoints.cs:215
+#: Application/Commands/Playback/SelectionPoints.cs:222
 msgid "Only selections from files on this computer can be saved."
 msgstr ""
 
 #. Translators: Title of the progress window shown while a selected part is being saved.
-#: Application/Commands/Playback/SelectionPoints.cs:226
+#: Application/Commands/Playback/SelectionPoints.cs:233
 msgid "Saving selection"
 msgstr ""
 
 #. Translators: Initial text in the progress window while a selected part begins saving.
-#: Application/Commands/Playback/SelectionPoints.cs:228
+#: Application/Commands/Playback/SelectionPoints.cs:235
 msgid "Preparing the selected part..."
 msgstr ""
 
 #. Translators: Progress text while a selected part is being saved. {name} is the output file name.
-#: Application/Commands/Playback/SelectionPoints.cs:231
+#: Application/Commands/Playback/SelectionPoints.cs:238
 msgid "Saving {name}"
 msgstr ""
 
 #. Translators: Shown after a selected part has been saved. {file} is the output file name.
-#: Application/Commands/Playback/SelectionPoints.cs:244
+#: Application/Commands/Playback/SelectionPoints.cs:251
 msgid "The selection was saved as {file}."
 msgstr ""
 
 #. Translators: Title of the message shown after a selected part was saved.
-#: Application/Commands/Playback/SelectionPoints.cs:246
+#: Application/Commands/Playback/SelectionPoints.cs:253
 msgid "Selection saved"
 msgstr ""
 
 #. Translators: Fallback reason when FFmpeg did not say why a selected part could not be saved.
-#: Application/Commands/Playback/SelectionPoints.cs:250
+#: Application/Commands/Playback/SelectionPoints.cs:257
 msgid "Unknown error."
 msgstr ""
 
 #. Translators: Shown when a selected part could not be saved. {error} is FFmpeg's reason.
-#: Application/Commands/Playback/SelectionPoints.cs:253
+#: Application/Commands/Playback/SelectionPoints.cs:260
 msgid ""
 "The selection could not be saved.\n"
 "\n"
@@ -2144,12 +2144,12 @@ msgid ""
 msgstr ""
 
 #. Translators: Spoken when an end marker is requested before a start marker has been set.
-#: Application/Commands/Playback/SelectionPoints.cs:293
+#: Application/Commands/Playback/SelectionPoints.cs:300
 msgid "The selection start has not been set."
 msgstr ""
 
 #. Translators: Spoken after moving to a selection slot. {number} is its one-based number.
-#: Application/Commands/Playback/SelectionPoints.cs:299
+#: Application/Commands/Playback/SelectionPoints.cs:306
 msgid "Selection {number}"
 msgstr ""
 
