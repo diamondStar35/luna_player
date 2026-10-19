@@ -13,8 +13,8 @@ namespace LunaPlayer.Configuration;
 /// catalogue simply shows the English strings the source is written in, so a missing or partial translation
 /// is never an error.
 ///
-/// <see cref="Initialize"/> has to run before anything builds a string, which in practice means before the
-/// first window and before the action tables are touched.
+/// <see cref="Initialize"/> has to run before anything builds a translated string: in particular before the
+/// action tables, menus and labelled controls are created. The empty shell frame may exist before it.
 /// </remarks>
 internal static partial class Localization
 {

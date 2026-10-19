@@ -133,6 +133,14 @@ internal sealed class Settings
 
     internal void Validate()
     {
+        NormalizeValues();
+        NormalizeShortcuts();
+    }
+
+    /// <summary>Normalizes settings that do not depend on localized action definitions. Startup may run this
+    /// on a worker so playback settings are ready before the window's menus are built.</summary>
+    internal void NormalizeValues()
+    {
         // Repeated step-based changes accumulate binary floating-point error; round so the stored
         // value stays the one the user actually selected rather than 1.0000000000000009.
         Audio.Volume = Precision.Normalize(Math.Clamp(Audio.Volume, 0, AudioSettings.MaximumVolume));
@@ -152,8 +160,9 @@ internal sealed class Settings
         YouTube.SearchResultCount = Math.Clamp(YouTube.SearchResultCount, 5, 100);
         YouTube.CookiesPath ??= string.Empty;
         YouTube.Download ??= new();
-        YouTube.Download.Folder = string.IsNullOrWhiteSpace(YouTube.Download.Folder)
-            ? Paths.DefaultDownloadsDirectory : YouTube.Download.Folder.Trim();
+        // Keep the default implicit. Resolving the user's Downloads known folder calls into the shell and
+        // is only needed when a download is actually requested.
+        YouTube.Download.Folder = YouTube.Download.Folder?.Trim() ?? string.Empty;
         YouTube.Download.ConcurrentFragments = Math.Clamp(YouTube.Download.ConcurrentFragments, 1, 16);
         YouTube.Download.SimultaneousDownloads = Math.Clamp(YouTube.Download.SimultaneousDownloads, 1, 16);
         // Only that it is one of the rates the player offers at all. Whether the chosen format can be
@@ -165,8 +174,9 @@ internal sealed class Settings
         // Only sanity bounds. What a format will actually accept is asked of Windows when the list is
         // shown, and differs with the rate and the channel count, so it cannot be settled here.
         Recording.Bitrate = Math.Clamp(Recording.Bitrate, 8000, 512000);
-        Recording.Folder = string.IsNullOrWhiteSpace(Recording.Folder)
-            ? Paths.DefaultRecordingsDirectory : Recording.Folder.Trim();
+        // Keep the default implicit. Resolving Documents can call into the Windows shell and is only needed
+        // when recording is opened or started.
+        Recording.Folder = Recording.Folder?.Trim() ?? string.Empty;
         SleepTimer.DurationMinutes = Math.Clamp(
             SleepTimer.DurationMinutes, SleepTimerSettings.MinimumDuration, SleepTimerSettings.MaximumDuration);
         SleepTimer.FadeSeconds = Math.Clamp(
@@ -197,11 +207,17 @@ internal sealed class Settings
         Playback.LastFile ??= string.Empty;
         Shortcuts.Primary ??= [];
         Shortcuts.Secondary ??= [];
+        Shortcuts.Global ??= [];
+    }
+
+    /// <summary>Normalizes shortcut overrides after localization has initialized the translated action
+    /// definitions. This remains on the UI thread because their labels come from wxWidgets.</summary>
+    internal void NormalizeShortcuts()
+    {
         var shortcutManager = new ShortcutManager(ActionRegistry.All);
         shortcutManager.Apply(Shortcuts.Primary, Shortcuts.Secondary);
         Shortcuts.Primary = shortcutManager.PrimaryOverrides();
         Shortcuts.Secondary = shortcutManager.SecondaryOverrides();
-        Shortcuts.Global ??= [];
         var globalManager = new ShortcutManager(GlobalActions.All);
         globalManager.Apply(Shortcuts.Global, ReadOnlyDictionary<ActionId, Shortcut>.Empty);
         Shortcuts.Global = globalManager.PrimaryOverrides();

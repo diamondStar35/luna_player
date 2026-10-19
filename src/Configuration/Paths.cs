@@ -122,12 +122,27 @@ internal static partial class Paths
     /// Under Documents rather than beside the settings, because these are the user's files rather than the
     /// player's: they are meant to be found, played and sent on.
     /// </remarks>
-    internal static string DefaultRecordingsDirectory { get; } = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), AppInfo.Name, "Recordings");
+    internal static string DefaultRecordingsDirectory => DefaultRecordings.Value;
+
+    /// <summary>Uses the saved recordings folder, or resolves the default only when recording needs it.</summary>
+    internal static string RecordingsDirectory(string? configured) => string.IsNullOrWhiteSpace(configured)
+        ? DefaultRecordingsDirectory
+        : configured.Trim();
+
+    // Environment.GetFolderPath may ask the Windows shell for Documents. Keep that query out of static path
+    // initialization and out of settings validation: most sessions never open or start recording.
+    private static readonly Lazy<string> DefaultRecordings = new(
+        () => Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), AppInfo.Name, "Recordings"));
 
     /// <summary>The base folder downloads go into unless the user says otherwise: a Luna Player folder in
     /// the user's Downloads. A video or audio subfolder is added under it per download.</summary>
-    internal static string DefaultDownloadsDirectory { get; } = Path.Combine(DownloadsDirectory(), AppInfo.Name);
+    internal static string DefaultDownloadsDirectory => DefaultDownloads.Value;
+
+    // Resolving a known folder calls into the Windows shell. Most launches never download anything, so do
+    // not pay for that native query when Paths is first initialized for the settings or icon locations.
+    private static readonly Lazy<string> DefaultDownloads = new(
+        () => Path.Combine(DownloadsDirectory(), AppInfo.Name));
 
     /// <summary>The user's Downloads folder, from the Windows known folder, falling back to the profile.</summary>
     private static string DownloadsDirectory()

@@ -43,7 +43,19 @@ internal sealed class SettingsStore
         return AppTheme.SystemDefault;
     }
 
-    internal Settings Load()
+    internal Settings Load() => Load(normalize: true);
+
+    /// <summary>Reads and structurally validates settings on a worker during application startup. The host
+    /// normalizes only shortcuts after it has initialized localization on the UI thread, because shortcut
+    /// normalization builds the translated action table.</summary>
+    internal Settings LoadForStartup()
+    {
+        var settings = Load(normalize: false);
+        settings.NormalizeValues();
+        return settings;
+    }
+
+    private Settings Load(bool normalize)
     {
         if (!File.Exists(_jsonPath))
         {
@@ -51,7 +63,7 @@ internal sealed class SettingsStore
             _writeBlocked = false;
             return new Settings();
         }
-        if (TryReadFile(_jsonPath, out var settings, out var error))
+        if (TryReadFile(_jsonPath, normalize, out var settings, out var error))
         {
             LastError = string.Empty;
             _writeBlocked = false;
@@ -86,12 +98,16 @@ internal sealed class SettingsStore
 
     internal bool TryRead(string path, out Settings settings)
     {
-        var read = TryReadFile(path, out settings, out var error);
+        var read = TryReadFile(path, normalize: true, out settings, out var error);
         LastError = error;
         return read;
     }
 
-    private static bool TryReadFile(string path, out Settings settings, out string error)
+    private static bool TryReadFile(
+        string path,
+        bool normalize,
+        out Settings settings,
+        out string error)
     {
         try
         {
@@ -99,7 +115,8 @@ internal sealed class SettingsStore
             settings = JsonSerializer.Deserialize(stream, SettingsJsonContext.Default.Settings)
                 ?? throw new JsonException("The settings file is empty.");
             settings.ValidateStored();
-            settings.Validate();
+            if (normalize)
+                settings.Validate();
             error = string.Empty;
             return true;
         }

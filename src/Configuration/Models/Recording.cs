@@ -21,7 +21,9 @@ internal sealed class RecordingSettings
     /// <summary>Bits per second, for the formats that compress. Ignored by the rest.</summary>
     public int Bitrate { get; set; } = 192000;
 
-    public string Folder { get; set; } = Paths.DefaultRecordingsDirectory;
+    // Empty means the standard Luna Player recordings folder. Resolve it only when recording is used;
+    // looking up Documents during settings construction needlessly delays ordinary startup.
+    public string Folder { get; set; } = string.Empty;
 
     internal RecordingSettings Copy() => (RecordingSettings)MemberwiseClone();
 

@@ -55,7 +55,6 @@ internal sealed partial class Files
         router.Register(ActionId.AnnounceFileInfo, AnnounceFileInfo);
         router.Register(ActionId.AnnounceTitle, AnnounceTitle);
         _view.RecentRequested += OnRecentRequested;
-        RefreshRecents();
     }
 
     internal void OpenPaths(IEnumerable<string> rawPaths)

@@ -67,7 +67,7 @@ internal sealed class RecordingPreferences : PreferencesPage
         _bitrate = new Choice(panel);
         // Translators: Label of the box holding the folder recordings are saved into.
         var folderLabel = new StaticText(panel, label: Tr("Recordings folder"));
-        _folder = new TextCtrl(panel, value: settings.Folder);
+        _folder = new TextCtrl(panel, value: Paths.RecordingsDirectory(settings.Folder));
         // Translators: Button that opens a window for choosing the folder recordings are saved into.
         var browse = new Button(panel, label: Tr("Browse..."));
         browse.Click += (_, _) => Browse();
@@ -120,7 +120,7 @@ internal sealed class RecordingPreferences : PreferencesPage
     public override void Refresh()
     {
         _format.SelectedIndex = (int)_settings.Format;
-        _folder.Value = _settings.Folder;
+        _folder.Value = Paths.RecordingsDirectory(_settings.Folder);
         LoadSupport();
     }
 

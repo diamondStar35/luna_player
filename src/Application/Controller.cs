@@ -48,7 +48,8 @@ internal sealed class ApplicationController : IDisposable
         SelectionSlots selections,
         YouTube.Playback.Sessions sessions,
         SleepTimer sleepTimer,
-        ISpeechOutput speech)
+        ISpeechOutput speech,
+        SystemMediaControls mediaControls)
     {
         _view = view;
         _player = player;
@@ -66,7 +67,7 @@ internal sealed class ApplicationController : IDisposable
         _selectionPlaylistIndex = player.CurrentIndex;
         _viewState = new ViewStatePresenter(view, player, speech);
         _title = new WindowTitlePresenter(view, player, settings, _tags);
-        _overlay = new MediaOverlayPresenter(player, settings, dispatcher, _tags, HandleAction);
+        _overlay = new MediaOverlayPresenter(player, settings, dispatcher, _tags, mediaControls, HandleAction);
         _view.ActionRequested += HandleAction;
         _view.CloseRequested += Shutdown;
         _view.EscapePressed += _sessions.HandleEscape;
@@ -77,21 +78,6 @@ internal sealed class ApplicationController : IDisposable
         _player.Ended += OnPlaybackEnded;
         _player.VideoAvailabilityChanged += OnVideoAvailabilityChanged;
         _player.AudioTracksChanged += OnAudioTracksChanged;
-        _player.SetVolume(settings.Audio.Volume);
-        settings.Audio.Pitch = _player.SetPitch(settings.Audio.Pitch);
-        _player.SetSpeed(settings.Audio.Speed);
-        _player.TrackPositions(settings.Audio.SaveFilePositions);
-        _player.SetEndBehavior(settings.Audio.EndBehavior);
-        _player.ConfigureSilence(settings.Silence);
-        _player.SetNormalization(settings.Audio.NormalizeAudio);
-        _player.SetMono(settings.Audio.MonoAudio);
-        _player.SetPan(settings.Audio.Pan);
-        _player.SetSilenceRemoval(settings.Silence.Enabled);
-        settings.Audio.NormalizeAudio = _player.IsNormalizationEnabled;
-        settings.Audio.MonoAudio = _player.IsMonoEnabled;
-        settings.Silence.Enabled = _player.IsSilenceRemovalEnabled;
-        if (!string.IsNullOrWhiteSpace(settings.Audio.Device))
-            _player.SetAudioDevice(settings.Audio.Device);
         _viewState.PushInitial();
         _overlay.ApplySetting();
         _overlay.Sync();

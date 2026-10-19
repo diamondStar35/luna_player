@@ -37,7 +37,7 @@ internal sealed class Service
     private readonly Settings _settings;
     private readonly ISpeechOutput _speech;
     private readonly IApplicationDispatcher _dispatcher;
-    private readonly Installer _installer = new();
+    private readonly Installer _installer;
     private readonly Client.Updater _updater;
 
     internal Service(
@@ -45,13 +45,15 @@ internal sealed class Service
         Settings settings,
         ISpeechOutput speech,
         IApplicationDispatcher dispatcher,
-        Client.Updater updater)
+        Client.Updater updater,
+        Installer installer)
     {
         _view = view;
         _settings = settings;
         _speech = speech;
         _dispatcher = dispatcher;
         _updater = updater;
+        _installer = installer;
     }
 
     /// <summary>Whether both programs are installed.</summary>

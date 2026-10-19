@@ -54,11 +54,12 @@ internal sealed class MenuController
         Frame frame,
         IReadOnlyList<ActionDefinition> actions,
         ShortcutManager shortcuts,
-        IReadOnlyList<PresetEntry> presets)
+        IReadOnlyList<PresetEntry> presets,
+        RecentMenuState recents)
     {
         _shortcuts = shortcuts;
         BuildCommandIds(actions);
-        var menu = MainMenuBuilder.Build(frame, _commandIds, shortcuts, presets);
+        var menu = MainMenuBuilder.Build(_commandIds, shortcuts, presets, recents);
         _menuBar = menu.MenuBar;
         _selectionMenuIndex = menu.SelectionMenuIndex;
         _bookmarksMenuIndex = menu.BookmarksMenuIndex;
@@ -99,6 +100,7 @@ internal sealed class MenuController
         _startRecordingItem = menu.StartRecordingItem;
         _pauseRecordingItem = menu.PauseRecordingItem;
         _stopRecordingItem = menu.StopRecordingItem;
+        frame.SetMenuBar(_menuBar);
     }
 
     /// <summary>The menu-command id reserved for each action, used to build the accelerator table.</summary>
@@ -208,29 +210,21 @@ internal sealed class MenuController
     {
         // One shared command map for all three submenus, cleared once and refilled with fresh ids.
         _recentCommands.Clear();
-        FillRecents(_recentFilesMenu, RecentKind.File, files,
-            // Translators: Shown in the Recent files submenu when no files have been opened yet.
-            Tr("No recent files"),
-            // Translators: Recent files submenu item that empties the list of recently opened files.
-            Tr("Clear recent files"));
-        FillRecents(_recentFoldersMenu, RecentKind.Folder, folders,
-            // Translators: Shown in the Recent folders submenu when no folders have been opened yet.
-            Tr("No recent folders"),
-            // Translators: Recent folders submenu item that empties the list of recently opened folders.
-            Tr("Clear recent folders"));
-        FillRecents(_recentPlaylistsMenu, RecentKind.Playlist, playlists,
-            // Translators: Shown in the Recent playlists submenu when no playlists have been opened yet.
-            Tr("No recent playlists"),
-            // Translators: Recent playlists submenu item that empties the list of recently opened playlists.
-            Tr("Clear recent playlists"));
+        Clear(_recentFilesMenu);
+        Clear(_recentFoldersMenu);
+        Clear(_recentPlaylistsMenu);
+        MainMenuBuilder.FillRecentsMenus(
+            _recentFilesMenu,
+            _recentFoldersMenu,
+            _recentPlaylistsMenu,
+            new RecentMenuState(files, folders, playlists),
+            _recentCommands);
     }
 
-    private void FillRecents(Menu menu, RecentKind kind, IReadOnlyList<RecentMenuEntry> entries,
-        string emptyLabel, string clearLabel)
+    private static void Clear(Menu menu)
     {
         while (menu.Count > 0)
             menu.Delete(menu[0]);
-        MainMenuBuilder.FillRecentsSubmenu(menu, kind, entries, emptyLabel, clearLabel, _recentCommands);
     }
 
     internal void SetMediaLoaded(bool loaded)

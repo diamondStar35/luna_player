@@ -39,14 +39,22 @@ internal sealed partial class Files
     }
 
     private void RefreshRecents()
-        => _view.RebuildRecentsMenu(
-            BuildRecentEntries(RecentKind.File),
-            BuildRecentEntries(RecentKind.Folder),
-            BuildRecentEntries(RecentKind.Playlist));
-
-    private IReadOnlyList<RecentMenuEntry> BuildRecentEntries(RecentKind kind)
     {
-        var paths = _recents.Get(kind);
+        var state = BuildRecentMenu(_recents);
+        _view.RebuildRecentsMenu(state.Files, state.Folders, state.Playlists);
+    }
+
+    /// <summary>Builds the labels once so the initial menu can be populated before it is attached to the
+    /// frame; later changes use the same path when rebuilding it.</summary>
+    internal static RecentMenuState BuildRecentMenu(RecentsStore recents)
+        => new(
+            BuildRecentEntries(recents, RecentKind.File),
+            BuildRecentEntries(recents, RecentKind.Folder),
+            BuildRecentEntries(recents, RecentKind.Playlist));
+
+    private static IReadOnlyList<RecentMenuEntry> BuildRecentEntries(RecentsStore recents, RecentKind kind)
+    {
+        var paths = recents.Get(kind);
         var entries = new List<RecentMenuEntry>(paths.Count);
         for (var i = 0; i < paths.Count; i++)
             entries.Add(new RecentMenuEntry(paths[i], RecentLabel(i + 1, paths[i])));

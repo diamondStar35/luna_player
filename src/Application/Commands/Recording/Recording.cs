@@ -58,7 +58,11 @@ internal sealed class Recording
         _view.SetRecordingState(_engine.State);
     }
 
-    private void Open() => _view.Dialogs.ShowRecording(_catalog, _sources, _engine);
+    private void Open()
+    {
+        _sources.EnsureFolder();
+        _view.Dialogs.ShowRecording(_catalog, _sources, _engine);
+    }
 
     private void Start()
     {
@@ -171,7 +175,9 @@ internal sealed class Recording
 
     private void OpenFolder()
     {
-        var folder = _sources.Count > 0 ? _sources.Options.Folder : _settings.Recording.Folder;
+        var folder = _sources.Count > 0
+            ? _sources.Options.Folder
+            : Paths.RecordingsDirectory(_settings.Recording.Folder);
         try
         {
             Directory.CreateDirectory(folder);
@@ -199,7 +205,7 @@ internal sealed class Recording
         _settings.Recording.SampleRate,
         _settings.Recording.Channels,
         _settings.Recording.Bitrate,
-        _settings.Recording.Folder);
+        Paths.RecordingsDirectory(_settings.Recording.Folder));
 
     private static RecordingSource DefaultMicrophone() => new()
     {

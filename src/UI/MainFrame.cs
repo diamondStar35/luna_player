@@ -12,14 +12,14 @@ namespace LunaPlayer.UI;
 internal sealed class MainFrame : IMainView
 {
     private readonly Frame _frame;
-    private readonly CustomBitmapButton _playButton;
-    private readonly Bitmap _playBitmap;
-    private readonly Bitmap _pauseBitmap;
-    private readonly Bitmap[] _transportBitmaps;
-    private readonly MenuController _menus;
-    private readonly WindowInput _input;
-    private readonly IApplicationDispatcher _dispatcher;
-    private readonly LunaPlayer.Recording.AudioCatalog _catalog;
+    private readonly List<Bitmap> _transportBitmaps = [];
+    private CustomBitmapButton? _playButton;
+    private Bitmap? _playBitmap;
+    private Bitmap? _pauseBitmap;
+    private MenuController? _menus;
+    private WindowInput? _input;
+    private IApplicationDispatcher? _dispatcher;
+    private LunaPlayer.Recording.AudioCatalog? _catalog;
     private DialogService? _dialogs;
     private bool _disposed;
     private bool _waitingForCloseKeys;
@@ -28,23 +28,33 @@ internal sealed class MainFrame : IMainView
     // event a screen reader reads out, and repeating the same text would announce it for nothing.
     private string _windowTitle = AppInfo.Name;
 
-    /// <param name="dispatcher">Handed on to the windows that fetch things in the background - the
-    /// recording window asks Windows for its devices and its encoders - so they post their answers back
-    /// through the same guarded path as everything else.</param>
-    internal MainFrame(
-        ShortcutManager shortcuts,
-        IReadOnlyList<ActionDefinition> actions,
-        IApplicationDispatcher dispatcher,
-        LunaPlayer.Recording.AudioCatalog catalog,
-        IReadOnlyList<PresetEntry> presets)
+    /// <summary>Creates only the top-level window. Its menus and controls are added after the window has
+    /// been shown, so native and configuration startup work cannot delay the first visible frame.</summary>
+    internal MainFrame()
     {
-        _dispatcher = dispatcher;
-        _catalog = catalog;
         _frame = new Frame(title: AppInfo.Name, size: new Size(420, 160));
         // The themed window background rather than the grey a frame paints by default, so the main window
         // follows the chosen light/dark/high-contrast appearance. Asked of the system (not hard-coded), so
         // it is already the dark colour when dark mode is on.
         _frame.BackgroundColour = SystemSettings.GetColour(SystemColour.Window);
+        _frame.Closing += OnClosing;
+    }
+
+    /// <param name="dispatcher">Handed on to the windows that fetch things in the background - the
+    /// recording window asks Windows for its devices and its encoders - so they post their answers back
+    /// through the same guarded path as everything else.</param>
+    internal void Initialize(
+        ShortcutManager shortcuts,
+        IReadOnlyList<ActionDefinition> actions,
+        IApplicationDispatcher dispatcher,
+        LunaPlayer.Recording.AudioCatalog catalog,
+        IReadOnlyList<PresetEntry> presets,
+        RecentMenuState recents)
+    {
+        if (_input is not null)
+            return;
+        _dispatcher = dispatcher;
+        _catalog = catalog;
         // The window and taskbar icon, the same V2 moon-and-play mark embedded in the executable. Guarded so
         // a missing or unreadable asset file can never stop the window from opening.
         try
@@ -54,8 +64,10 @@ internal sealed class MainFrame : IMainView
         catch (Exception)
         {
         }
-        _menus = new MenuController(_frame, actions, shortcuts, presets);
-        _input = new WindowInput(_frame, _menus, shortcuts);
+        var menus = new MenuController(_frame, actions, shortcuts, presets, recents);
+        _menus = menus;
+        var input = new WindowInput(_frame, menus, shortcuts);
+        _input = input;
         // The transport buttons show the control icons rather than text. They sit directly on the frame, not
         // on a wxPanel: a panel with no keyboard-focusable children becomes the focus target when the window
         // opens, and a screen reader announces "panel" on every launch. Each is a CustomBitmapButton, which
@@ -66,20 +78,24 @@ internal sealed class MainFrame : IMainView
         Bitmap LoadControl(string name) => new(Path.Combine(controls, name + ".png"));
         var previousBitmap = LoadControl("previous");
         var rewindBitmap = LoadControl("rewind");
-        _playBitmap = LoadControl("play");
-        _pauseBitmap = LoadControl("pause");
+        var playBitmap = LoadControl("play");
+        _playBitmap = playBitmap;
+        var pauseBitmap = LoadControl("pause");
+        _pauseBitmap = pauseBitmap;
         var forwardBitmap = LoadControl("forward");
         var nextBitmap = LoadControl("next");
         // Held for the button lifetime: the Play button swaps between play and pause, and keeping every
         // bitmap alive until the frame goes avoids disposing one a button still draws.
-        _transportBitmaps = [previousBitmap, rewindBitmap, _playBitmap, _pauseBitmap, forwardBitmap, nextBitmap];
+        _transportBitmaps.AddRange(
+            [previousBitmap, rewindBitmap, playBitmap, pauseBitmap, forwardBitmap, nextBitmap]);
 
         // Translators: Spoken name of the main-window button that plays the previous track. The button shows an icon, not this text.
         var previousButton = new CustomBitmapButton(_frame, previousBitmap, Tr("Previous"));
         // Translators: Spoken name of the main-window button that steps playback backward. The button shows an icon, not this text.
         var rewindButton = new CustomBitmapButton(_frame, rewindBitmap, Tr("Rewind"));
         // Translators: Spoken name of the main-window button that starts playback. It becomes Pause while playing. The button shows an icon, not this text.
-        _playButton = new CustomBitmapButton(_frame, _playBitmap, Tr("Play"));
+        var playButton = new CustomBitmapButton(_frame, playBitmap, Tr("Play"));
+        _playButton = playButton;
         // Translators: Spoken name of the main-window button that steps playback forward. The button shows an icon, not this text.
         var forwardButton = new CustomBitmapButton(_frame, forwardBitmap, Tr("Forward"));
         // Translators: Spoken name of the main-window button that plays the next track. The button shows an icon, not this text.
@@ -88,7 +104,7 @@ internal sealed class MainFrame : IMainView
         var buttonSizer = new BoxSizer(Orientation.Horizontal);
         buttonSizer.Insert(0, previousButton, flags: SizerFlags.All, border: 5);
         buttonSizer.Add(rewindButton, flags: SizerFlags.All, border: 5);
-        buttonSizer.Add(_playButton, flags: SizerFlags.All, border: 5);
+        buttonSizer.Add(playButton, flags: SizerFlags.All, border: 5);
         buttonSizer.Add(forwardButton, flags: SizerFlags.All, border: 5);
         buttonSizer.Add(nextButton, flags: SizerFlags.All, border: 5);
 
@@ -97,46 +113,51 @@ internal sealed class MainFrame : IMainView
         _frame.SetSizer(sizer);
         _frame.Fit();
 
-        previousButton.Click += (_, _) => _input.Request(ActionId.PreviousTrack);
-        rewindButton.Click += (_, _) => _input.Request(ActionId.SeekBackward);
-        _playButton.Click += (_, _) => _input.Request(ActionId.PlayPause);
-        forwardButton.Click += (_, _) => _input.Request(ActionId.SeekForward);
-        nextButton.Click += (_, _) => _input.Request(ActionId.NextTrack);
-        _frame.Closing += OnClosing;
-        _menus.SetMediaLoaded(false);
+        previousButton.Click += (_, _) => input.Request(ActionId.PreviousTrack);
+        rewindButton.Click += (_, _) => input.Request(ActionId.SeekBackward);
+        playButton.Click += (_, _) => input.Request(ActionId.PlayPause);
+        forwardButton.Click += (_, _) => input.Request(ActionId.SeekForward);
+        nextButton.Click += (_, _) => input.Request(ActionId.NextTrack);
+        menus.SetMediaLoaded(false);
     }
     // Input events are raised by WindowInput and forwarded here; CloseRequested is the window's own.
     public event Action<ActionId>? ActionRequested
     {
-        add => _input.ActionRequested += value;
-        remove => _input.ActionRequested -= value;
+        add => Input.ActionRequested += value;
+        remove => Input.ActionRequested -= value;
     }
     public event Action<string?>? EqualizerPresetRequested
     {
-        add => _input.EqualizerPresetRequested += value;
-        remove => _input.EqualizerPresetRequested -= value;
+        add => Input.EqualizerPresetRequested += value;
+        remove => Input.EqualizerPresetRequested -= value;
     }
     public event Action<int?>? SubtitleTrackRequested
     {
-        add => _input.SubtitleTrackRequested += value;
-        remove => _input.SubtitleTrackRequested -= value;
+        add => Input.SubtitleTrackRequested += value;
+        remove => Input.SubtitleTrackRequested -= value;
     }
     public event Action<RecentCommand>? RecentRequested
     {
-        add => _input.RecentRequested += value;
-        remove => _input.RecentRequested -= value;
+        add => Input.RecentRequested += value;
+        remove => Input.RecentRequested -= value;
     }
     public event Func<bool>? EscapePressed
     {
-        add => _input.EscapePressed += value;
-        remove => _input.EscapePressed -= value;
+        add => Input.EscapePressed += value;
+        remove => Input.EscapePressed -= value;
     }
     public event Func<bool>? CloseConfirmationRequested;
     public event Action? CloseRequested;
 
     public nint NativeHandle => _frame.NativeHandle;
 
-    public void Show() => _frame.Show();
+    public void Show()
+    {
+        _frame.Show();
+        // wxWidgets normally leaves the first paint in the event queue. Force the lightweight shell to draw
+        // now, before menu construction or any service completion callback can occupy the UI thread.
+        _frame.Update();
+    }
 
     public void Close() => _frame.Close();
 
@@ -148,8 +169,9 @@ internal sealed class MainFrame : IMainView
 
     public void SetPlaying(bool isPlaying)
     {
-        _playButton.SetBitmap(isPlaying ? _pauseBitmap : _playBitmap);
-        _playButton.Label = isPlaying
+        var playButton = PlayButton;
+        playButton.SetBitmap(isPlaying ? _pauseBitmap! : _playBitmap!);
+        playButton.Label = isPlaying
             // Translators: Spoken name of the play/pause button while a track is playing, so the key pauses it.
             ? Tr("Pause")
             // Translators: Spoken name of the play/pause button while playback is stopped or paused.
@@ -166,66 +188,67 @@ internal sealed class MainFrame : IMainView
     public void SetFullScreen(bool fullScreen)
     {
         _frame.ShowFullScreen(fullScreen, FullScreenStyle.All);
-        _menus.SetFullScreenChecked(fullScreen);
+        Menus.SetFullScreenChecked(fullScreen);
     }
 
     public bool IsFullScreen => _frame.IsFullScreen;
 
     /// <summary>Dialogs, built lazily and parented to this window.</summary>
-    public IDialogService Dialogs => _dialogs ??= new DialogService(_frame, _dispatcher, _catalog, _input.GlobalShortcuts);
+    public IDialogService Dialogs => _dialogs ??= new DialogService(
+        _frame, _dispatcher!, _catalog!, Input.GlobalShortcuts);
 
-    public bool ApplyGlobalShortcuts(ShortcutManager shortcuts) => _input.ApplyGlobalShortcuts(shortcuts);
+    public bool ApplyGlobalShortcuts(ShortcutManager shortcuts) => Input.ApplyGlobalShortcuts(shortcuts);
 
     public void ApplyShortcuts(ShortcutManager shortcuts)
     {
-        _menus.ApplyShortcuts(shortcuts);
-        _input.ApplyAccelerators(shortcuts);
+        Menus.ApplyShortcuts(shortcuts);
+        Input.ApplyAccelerators(shortcuts);
     }
-    public void SetShuffleChecked(bool isChecked) => _menus.SetShuffleChecked(isChecked);
+    public void SetShuffleChecked(bool isChecked) => Menus.SetShuffleChecked(isChecked);
 
-    public void SetRepeatFileChecked(bool isChecked) => _menus.SetRepeatFileChecked(isChecked);
+    public void SetRepeatFileChecked(bool isChecked) => Menus.SetRepeatFileChecked(isChecked);
 
-    public void SetSilenceRemovalChecked(bool isChecked) => _menus.SetSilenceRemovalChecked(isChecked);
+    public void SetSilenceRemovalChecked(bool isChecked) => Menus.SetSilenceRemovalChecked(isChecked);
 
-    public void SetSelectionState(SelectionMenuState state) => _menus.SetSelectionState(state);
+    public void SetSelectionState(SelectionMenuState state) => Menus.SetSelectionState(state);
 
-    public void SetFullScreenAvailable(bool available) => _menus.SetFullScreenAvailable(available);
+    public void SetFullScreenAvailable(bool available) => Menus.SetFullScreenAvailable(available);
 
-    public void SetEqualizerPreset(string? presetId) => _menus.SetEqualizerPreset(presetId);
+    public void SetEqualizerPreset(string? presetId) => Menus.SetEqualizerPreset(presetId);
 
     public void RebuildEqualizerMenu(IReadOnlyList<PresetEntry> presets, string? selected)
-        => _menus.RebuildEqualizerMenu(presets, selected);
+        => Menus.RebuildEqualizerMenu(presets, selected);
 
     public void RebuildSubtitleMenu(IReadOnlyList<SubtitleMenuEntry> entries, int? activeId)
-        => _menus.RebuildSubtitleMenu(entries, activeId);
+        => Menus.RebuildSubtitleMenu(entries, activeId);
 
-    public void SetSubtitleRemember(bool on) => _menus.SetSubtitleRemember(on);
+    public void SetSubtitleRemember(bool on) => Menus.SetSubtitleRemember(on);
 
     public void RebuildRecentsMenu(
         IReadOnlyList<RecentMenuEntry> files,
         IReadOnlyList<RecentMenuEntry> folders,
         IReadOnlyList<RecentMenuEntry> playlists)
-        => _menus.RebuildRecentsMenu(files, folders, playlists);
+        => Menus.RebuildRecentsMenu(files, folders, playlists);
 
-    public void SetSubtitleSelection(int? activeId) => _menus.SetSubtitleSelection(activeId);
+    public void SetSubtitleSelection(int? activeId) => Menus.SetSubtitleSelection(activeId);
 
-    public void SetSubtitleControlsEnabled(bool enabled) => _menus.SetSubtitleControlsEnabled(enabled);
+    public void SetSubtitleControlsEnabled(bool enabled) => Menus.SetSubtitleControlsEnabled(enabled);
 
-    public void SetMediaLoaded(bool loaded) => _menus.SetMediaLoaded(loaded);
+    public void SetMediaLoaded(bool loaded) => Menus.SetMediaLoaded(loaded);
 
-    public void SetEditState(bool hasLocalFile, bool hasMedia) => _menus.SetEditState(hasLocalFile, hasMedia);
+    public void SetEditState(bool hasLocalFile, bool hasMedia) => Menus.SetEditState(hasLocalFile, hasMedia);
 
-    public void SetBookmarkState(bool enabled) => _menus.SetBookmarkState(enabled);
+    public void SetBookmarkState(bool enabled) => Menus.SetBookmarkState(enabled);
 
-    public void SetMarkState(bool currentMarked, bool allMarked) => _menus.SetMarkState(currentMarked, allMarked);
+    public void SetMarkState(bool currentMarked, bool allMarked) => Menus.SetMarkState(currentMarked, allMarked);
 
-    public void SetRecordingState(RecordingState state) => _menus.SetRecordingState(state);
+    public void SetRecordingState(RecordingState state) => Menus.SetRecordingState(state);
 
-    public void SetVideoOptionsEnabled(bool enabled) => _menus.SetVideoOptionsEnabled(enabled);
+    public void SetVideoOptionsEnabled(bool enabled) => Menus.SetVideoOptionsEnabled(enabled);
 
-    public void SetAudioTrackControlsEnabled(bool enabled) => _menus.SetAudioTrackControlsEnabled(enabled);
+    public void SetAudioTrackControlsEnabled(bool enabled) => Menus.SetAudioTrackControlsEnabled(enabled);
 
-    public void SetMarkedActionsEnabled(bool enabled) => _menus.SetMarkedActionsEnabled(enabled);
+    public void SetMarkedActionsEnabled(bool enabled) => Menus.SetMarkedActionsEnabled(enabled);
 
     public void Dispose()
     {
@@ -234,7 +257,7 @@ internal sealed class MainFrame : IMainView
         _disposed = true;
         // Before the frame goes: a keyboard hook left installed keeps being called into a process that is
         // shutting down.
-        _input.Dispose();
+        _input?.Dispose();
         // Before the frame: the reused results window is a child of it, so it must be torn down before the
         // frame destroys the native window out from under it.
         _dialogs?.Dispose();
@@ -250,7 +273,7 @@ internal sealed class MainFrame : IMainView
         // window before Windows delivers the rest of that chord can leave the newly focused thread with a
         // stale logical modifier state. Keep this window as the keyboard target until the physical keys are
         // up, then issue a fresh close on the UI thread. No synthetic key events are sent.
-        if (!_closing && args.CanVeto && _input.CloseChordIsDown())
+        if (!_closing && args.CanVeto && _input?.CloseChordIsDown() == true)
         {
             args.Veto();
             if (!_waitingForCloseKeys)
@@ -270,7 +293,7 @@ internal sealed class MainFrame : IMainView
         _closing = true;
         // Stop system-wide shortcuts before the close handlers save state and stop playback, so no action can
         // arrive while shutdown is in progress.
-        _input.StopGlobalShortcuts();
+        _input?.StopGlobalShortcuts();
         CloseRequested?.Invoke();
         // Parentless modeless progress windows would otherwise keep wxWidgets' event loop alive after the
         // main frame disappears. They are views only; their jobs remain owned by the queue until host disposal.
@@ -290,13 +313,13 @@ internal sealed class MainFrame : IMainView
 
     private async Task CloseAfterKeysAreReleasedAsync()
     {
-        while (!_disposed && _input.CloseChordIsDown())
+        while (!_disposed && _input?.CloseChordIsDown() == true)
             await Task.Delay(10).ConfigureAwait(false);
 
         if (_disposed)
             return;
 
-        _dispatcher.Post(() =>
+        _dispatcher!.Post(() =>
         {
             if (_disposed)
                 return;
@@ -304,4 +327,13 @@ internal sealed class MainFrame : IMainView
             _frame.Close();
         });
     }
+
+    private WindowInput Input
+        => _input ?? throw new InvalidOperationException("The main window has not finished initializing.");
+
+    private MenuController Menus
+        => _menus ?? throw new InvalidOperationException("The main window has not finished initializing.");
+
+    private CustomBitmapButton PlayButton
+        => _playButton ?? throw new InvalidOperationException("The main window has not finished initializing.");
 }

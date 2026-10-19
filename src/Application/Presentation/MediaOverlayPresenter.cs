@@ -20,7 +20,7 @@ internal sealed class MediaOverlayPresenter : IDisposable
     private readonly Settings _settings;
     private readonly IApplicationDispatcher _dispatcher;
     private readonly MediaTagsCache _tags;
-    private readonly SystemMediaControls _mediaControls = new();
+    private readonly SystemMediaControls _mediaControls;
     private IDisposable? _clock;
 
     internal MediaOverlayPresenter(
@@ -28,12 +28,14 @@ internal sealed class MediaOverlayPresenter : IDisposable
         Settings settings,
         IApplicationDispatcher dispatcher,
         MediaTagsCache tags,
+        SystemMediaControls mediaControls,
         Action<ActionId> onButton)
     {
         _player = player;
         _settings = settings;
         _dispatcher = dispatcher;
         _tags = tags;
+        _mediaControls = mediaControls;
         _mediaControls.ButtonPressed += action => _dispatcher.Post(() => onButton(action));
     }
 

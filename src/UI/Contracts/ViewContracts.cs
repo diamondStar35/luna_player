@@ -26,6 +26,12 @@ internal readonly record struct SubtitleMenuEntry(int Id, string Label);
 /// user (such as "1. song.mp3 — C:\Music").</summary>
 internal readonly record struct RecentMenuEntry(string Path, string Label);
 
+/// <summary>The three kinds of recent paths as they are displayed in the File menu.</summary>
+internal readonly record struct RecentMenuState(
+    IReadOnlyList<RecentMenuEntry> Files,
+    IReadOnlyList<RecentMenuEntry> Folders,
+    IReadOnlyList<RecentMenuEntry> Playlists);
+
 /// <summary>Whether the user picked a recent item to open, or its kind's Clear command.</summary>
 internal enum RecentAction { Open, Clear }
 

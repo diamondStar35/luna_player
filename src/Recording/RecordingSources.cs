@@ -28,6 +28,13 @@ internal sealed class RecordingSources
     /// <summary>How the recording window is set to write, for this session.</summary>
     internal RecordingOptions Options { get; set; }
 
+    /// <summary>Resolves the implicit default folder immediately before the recording interface uses it.</summary>
+    internal void EnsureFolder()
+    {
+        if (string.IsNullOrWhiteSpace(Options.Folder))
+            Options = Options with { Folder = Configuration.Paths.DefaultRecordingsDirectory };
+    }
+
     internal RecordingSource? Find(string id)
         => _sources.Find(source => string.Equals(source.Id, id, StringComparison.Ordinal));
 

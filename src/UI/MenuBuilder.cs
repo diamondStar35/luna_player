@@ -46,12 +46,12 @@ internal sealed record MainMenuComponents(
 internal static partial class MainMenuBuilder
 {
     internal static MainMenuComponents Build(
-        Frame frame,
         IReadOnlyDictionary<ActionId, int> commandIds,
         ShortcutManager shortcuts,
-        IReadOnlyList<PresetEntry> presets)
+        IReadOnlyList<PresetEntry> presets,
+        RecentMenuState recents)
     {
-        var file = BuildFileMenu(commandIds, shortcuts);
+        var file = BuildFileMenu(commandIds, shortcuts, recents);
         var edit = BuildEditMenu(commandIds, shortcuts);
         var selection = BuildSelectionMenu(commandIds, shortcuts);
         var bookmarks = BuildBookmarksMenu(commandIds, shortcuts);
@@ -91,7 +91,6 @@ internal static partial class MainMenuBuilder
         menuBar.Append(tools, Tr("Tools"));
         // Translators: Name of the Help menu in the menu bar.
         menuBar.Append(help, Tr("Help"));
-        frame.SetMenuBar(menuBar);
         return new MainMenuComponents(
             menuBar, selectionMenuIndex, 3, markedMenuIndex, videoMenuIndex,
             player.PlaybackItems, file.MediaFileItems, file.LocalFileItems, marked.Items,

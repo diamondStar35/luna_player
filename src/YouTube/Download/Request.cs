@@ -1,3 +1,4 @@
+using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
 
 namespace LunaPlayer.YouTube.Download;
@@ -47,7 +48,9 @@ internal sealed record Request
         {
             Url = url,
             Kind = settings.Kind,
-            Folder = settings.Folder,
+            Folder = string.IsNullOrWhiteSpace(settings.Folder)
+                ? Paths.DefaultDownloadsDirectory
+                : settings.Folder,
             SplitByType = settings.SplitByType,
             FileName = fileName,
             VideoQuality = settings.VideoQuality,
