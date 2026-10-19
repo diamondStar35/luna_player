@@ -31,6 +31,13 @@ internal interface IPlaybackEngine : IDisposable
 {
     event Action<PlaybackEndReason>? Ended;
 
+    /// <summary>Raised when a one-shot selection reaches its boundary. This is deliberately separate from
+    /// <see cref="Ended"/> so a selection boundary can never enter the file-advance path.</summary>
+    event Action<double>? SelectionEnded;
+
+    /// <summary>Raised after an asynchronous seek into or out of a selection has completed.</summary>
+    event Action? SelectionSeekCompleted;
+
     /// <summary>Raised when <see cref="HasVideo"/> may have changed. mpv learns a file's video parameters
     /// after the load returns, so the answer is not known the moment a file opens.</summary>
     event Action? VideoAvailabilityChanged;
@@ -56,6 +63,7 @@ internal interface IPlaybackEngine : IDisposable
     void Play();
     void Pause();
     bool IsPaused { get; }
+    bool SelectionRangeCompleted { get; }
     double? Duration { get; }
     double? Elapsed { get; }
     double? Remaining { get; }
@@ -64,6 +72,17 @@ internal interface IPlaybackEngine : IDisposable
     bool SetLoopStart(double seconds);
     bool SetLoopEnd(double seconds);
     bool ClearLoop();
+    /// <summary>Constrains playback to one range. Repeating uses mpv's A-B loop; a one-shot range uses
+    /// mpv's own end boundary so it stops at the requested media timestamp rather than on a UI timer.</summary>
+    bool SetSelectionRange(double start, double end, bool repeat);
+    /// <summary>Constrains playback to one range, seeks precisely to its start, then plays it.</summary>
+    bool PlaySelectionRange(double start, double end, bool repeat);
+    /// <summary>Removes a completed selection boundary, seeks to its end, and optionally resumes playback
+    /// after mpv has left its end-of-file state.</summary>
+    bool ExitSelectionRange(double end, bool play);
+    /// <summary>Removes a selection range. When restoration is deferred, the selection's safe keep-open
+    /// setting remains until playback restarts, preventing its artificial end from advancing the file.</summary>
+    bool ClearSelectionRange(bool restoreEndBehavior = true);
     double SetVolume(double volume);
     double Volume { get; }
     double SetSpeed(double speed);

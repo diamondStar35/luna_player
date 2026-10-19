@@ -16,7 +16,9 @@ internal sealed partial class Playback
     private readonly Settings _settings;
     private readonly SettingsStore _settingsStore;
     private readonly ISpeechOutput _speech;
+    private readonly IApplicationDispatcher _dispatcher;
     private readonly PlaybackSelection _selection;
+    private readonly SelectionSlots _selections;
     private readonly MediaGuard _guard;
 
     internal Playback(
@@ -26,14 +28,18 @@ internal sealed partial class Playback
         Settings settings,
         SettingsStore settingsStore,
         ISpeechOutput speech,
-        PlaybackSelection selection)
+        PlaybackSelection selection,
+        SelectionSlots selections,
+        IApplicationDispatcher dispatcher)
     {
         _view = view;
         _player = player;
         _settings = settings;
         _settingsStore = settingsStore;
         _speech = speech;
+        _dispatcher = dispatcher;
         _selection = selection;
+        _selections = selections;
         _guard = new MediaGuard(player, speech);
         RegisterCoreActions(router);
         RegisterGeneratedActions(router);
@@ -80,9 +86,19 @@ internal sealed partial class Playback
         router.Register(ActionId.PanRight, () => ChangePan(_settings.Audio.PanStep));
         router.Register(ActionId.AnnouncePan, AnnouncePan);
         router.Register(ActionId.ToggleSilenceRemoval, ToggleSilenceRemoval);
-        router.Register(ActionId.StartSelection, StartSelection);
+        router.Register(ActionId.StartSelection, StartAbSelection);
         router.Register(ActionId.EndSelection, EndSelection);
         router.Register(ActionId.ClearSelection, ClearSelection);
+        router.Register(ActionId.SetSelectionStartMarker, SetSelectionStartMarker);
+        router.Register(ActionId.SetSelectionStartTime, SetSelectionStartTime);
+        router.Register(ActionId.SetSelectionEndMarker, SetSelectionEndMarker);
+        router.Register(ActionId.SetSelectionEndTime, SetSelectionEndTime);
+        router.Register(ActionId.PreviousSelection, PreviousSelection);
+        router.Register(ActionId.NextSelection, NextSelection);
+        router.Register(ActionId.ClearSelectionPoint, ClearSelectionPoint);
+        router.Register(ActionId.ClearAllSelections, ClearAllSelections);
+        router.Register(ActionId.SaveSelection, SaveSelection);
+        router.Register(ActionId.ToggleRepeatSelections, ToggleRepeatSelections);
     }
 
     private void RegisterGeneratedActions(ActionRouter router)
@@ -96,6 +112,13 @@ internal sealed partial class Playback
     private void TogglePlayPause()
     {
         if (!_guard.RequireFile(out _))
+            return;
+
+        // A completed one-shot selection stays bounded to its slot. The user leaves that boundary by
+        // moving forward to the always-present free slot, not by toggling playback.
+        if (_selections.OneShotActive
+            && _selections.Current is SelectionRange range
+            && IsAtSelectionEnd(range))
             return;
 
         if (_player.Duration is null)
@@ -118,12 +141,20 @@ internal sealed partial class Playback
     private void SeekByMultiplier(double multiplier)
     {
         var delta = GetSeekStepSeconds() * multiplier;
-        if (_selection.IsActive(_player.CurrentPath)
+        if (_selections.PlaybackActive
             && _player.Elapsed is double elapsed
+            && _selections.Start is double selectionStart
+            && _selections.End is double selectionEnd)
+        {
+            _player.SeekAbsolute(Math.Clamp(elapsed + delta, selectionStart, selectionEnd));
+            return;
+        }
+        if (_selection.IsActive(_player.CurrentPath)
+            && _player.Elapsed is double loopElapsed
             && _selection.Start is double start
             && _selection.End is double end)
         {
-            _player.SeekAbsolute(Math.Clamp(elapsed + delta, start, end));
+            _player.SeekAbsolute(Math.Clamp(loopElapsed + delta, start, end));
             return;
         }
         _player.Seek(delta);
@@ -131,7 +162,9 @@ internal sealed partial class Playback
 
     private void SeekStart()
     {
-        if (_selection.IsActive(_player.CurrentPath) && _selection.Start is double start)
+        if (_selections.PlaybackActive && _selections.Start is double selectionStart)
+            _player.SeekAbsolute(selectionStart);
+        else if (_selection.IsActive(_player.CurrentPath) && _selection.Start is double start)
             _player.SeekAbsolute(start);
         else
             _player.SeekAbsolute(0);
@@ -139,6 +172,11 @@ internal sealed partial class Playback
 
     private void SeekEnd()
     {
+        if (_selections.PlaybackActive && _selections.End is double selectionEnd)
+        {
+            _player.SeekAbsolute(selectionEnd);
+            return;
+        }
         if (_selection.IsActive(_player.CurrentPath) && _selection.End is double end)
         {
             _player.SeekAbsolute(end);
@@ -160,7 +198,7 @@ internal sealed partial class Playback
         var position = _view.Dialogs.ChooseTime(duration, Math.Clamp(_player.Elapsed ?? 0, 0, duration));
         if (!position.HasValue)
             return;
-        _player.SeekAbsolute(position.Value);
+        _player.SeekAbsolute(_selections.Bound(position.Value));
     }
 
     private void ToggleFullScreen()
@@ -340,7 +378,9 @@ internal sealed partial class Playback
     {
         if (!_guard.RequireDuration(out var duration))
             return;
-        if (percent >= 100)
+        if (_selections.PlaybackActive)
+            _player.SeekAbsolute(_selections.Bound(duration * percent / 100.0));
+        else if (percent >= 100)
             _player.SeekToEnd();
         else
             _player.SeekAbsolute(duration * percent / 100.0);

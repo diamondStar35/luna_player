@@ -4,6 +4,16 @@ using LunaPlayer.UI.Equalizer;
 
 namespace LunaPlayer.UI;
 
+/// <summary>Which selection commands make sense for the current file and slot.</summary>
+internal readonly record struct SelectionMenuState(
+    bool Available,
+    bool Previous,
+    bool Next,
+    bool ClearCurrent,
+    bool ClearAll,
+    bool Save,
+    bool Repeat);
+
 /// <summary>The state of the menus and their checkable items, kept in step with what the player is doing,
 /// plus the menu choices that are not fixed actions (equalizer presets, subtitle tracks, recents).</summary>
 internal interface IMenuState
@@ -29,6 +39,7 @@ internal interface IMenuState
     void SetShuffleChecked(bool isChecked);
     void SetRepeatFileChecked(bool isChecked);
     void SetSilenceRemovalChecked(bool isChecked);
+    void SetSelectionState(SelectionMenuState state);
 
     /// <summary>Ticks the equalizer preset in force, or the Off item when <paramref name="presetId"/> is
     /// null.</summary>

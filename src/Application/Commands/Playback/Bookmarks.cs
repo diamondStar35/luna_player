@@ -12,13 +12,21 @@ internal sealed class Bookmarks
     private readonly MediaPlayer _player;
     private readonly ISpeechOutput _speech;
     private readonly BookmarkStore _store;
+    private readonly SelectionSlots _selections;
 
-    internal Bookmarks(ActionRouter router, IMainView view, MediaPlayer player, ISpeechOutput speech, BookmarkStore store)
+    internal Bookmarks(
+        ActionRouter router,
+        IMainView view,
+        MediaPlayer player,
+        ISpeechOutput speech,
+        BookmarkStore store,
+        SelectionSlots selections)
     {
         _view = view;
         _player = player;
         _speech = speech;
         _store = store;
+        _selections = selections;
         router.Register(ActionId.AddBookmark, Add);
         router.Register(ActionId.ManageBookmarks, Manage);
         foreach (var slot in BookmarkActions.Slots)
@@ -158,13 +166,14 @@ internal sealed class Bookmarks
 
     private void Jump(Bookmark bookmark)
     {
-        _player.SeekAbsolute(bookmark.Position);
+        var position = _selections.Bound(bookmark.Position);
+        _player.SeekAbsolute(position);
         _speech.Speak(
             // Translators: Spoken once playing has moved to a bookmark. {name} is what the bookmark is called.
             TrFormat("Jumped to bookmark {name}.", bookmark.Name),
             // Translators: The short wording spoken once playing has moved to a bookmark. {name} is what the bookmark is
             // called and {time} the point in the file it sits at, such as 00:01:20.
-            TrFormat("Jumped to '{name}' at {time}.", bookmark.Name, PlaybackTimeFormatter.Format(bookmark.Position)));
+            TrFormat("Jumped to '{name}' at {time}.", bookmark.Name, PlaybackTimeFormatter.Format(position)));
     }
 
     private bool TryGetContext(out string path, out double position)

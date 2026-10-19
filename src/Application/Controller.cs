@@ -24,12 +24,16 @@ internal sealed class ApplicationController : IDisposable
     private readonly ActionRouter _router;
     private readonly Files _fileActions;
     private readonly PlaybackSelection _selection;
+    private readonly SelectionSlots _selections;
     private readonly YouTube.Playback.Sessions _sessions;
     private readonly SleepTimer _sleepTimer;
+    private readonly ISpeechOutput _speech;
     private readonly MediaTagsCache _tags = new();
     private readonly ViewStatePresenter _viewState;
     private readonly WindowTitlePresenter _title;
     private readonly MediaOverlayPresenter _overlay;
+    private string? _selectionPath;
+    private int _selectionPlaylistIndex = -1;
     private bool _shutDown;
 
     internal ApplicationController(
@@ -41,6 +45,7 @@ internal sealed class ApplicationController : IDisposable
         ActionRouter router,
         Files fileActions,
         PlaybackSelection selection,
+        SelectionSlots selections,
         YouTube.Playback.Sessions sessions,
         SleepTimer sleepTimer,
         ISpeechOutput speech)
@@ -53,8 +58,12 @@ internal sealed class ApplicationController : IDisposable
         _router = router;
         _fileActions = fileActions;
         _selection = selection;
+        _selections = selections;
         _sessions = sessions;
         _sleepTimer = sleepTimer;
+        _speech = speech;
+        _selectionPath = player.CurrentPath;
+        _selectionPlaylistIndex = player.CurrentIndex;
         _viewState = new ViewStatePresenter(view, player, speech);
         _title = new WindowTitlePresenter(view, player, settings, _tags);
         _overlay = new MediaOverlayPresenter(player, settings, dispatcher, _tags, HandleAction);
@@ -63,6 +72,8 @@ internal sealed class ApplicationController : IDisposable
         _view.EscapePressed += _sessions.HandleEscape;
         _player.CurrentChanged += OnCurrentChanged;
         _player.StateChanged += SyncViewState;
+        _player.SelectionSeekCompleted += OnSelectionSeekCompleted;
+        _player.SelectionEnded += OnSelectionEnded;
         _player.Ended += OnPlaybackEnded;
         _player.VideoAvailabilityChanged += OnVideoAvailabilityChanged;
         _player.AudioTracksChanged += OnAudioTracksChanged;
@@ -131,6 +142,8 @@ internal sealed class ApplicationController : IDisposable
         _view.CloseRequested -= Shutdown;
         _player.CurrentChanged -= OnCurrentChanged;
         _player.StateChanged -= SyncViewState;
+        _player.SelectionSeekCompleted -= OnSelectionSeekCompleted;
+        _player.SelectionEnded -= OnSelectionEnded;
         _player.Ended -= OnPlaybackEnded;
         _player.VideoAvailabilityChanged -= OnVideoAvailabilityChanged;
         _player.AudioTracksChanged -= OnAudioTracksChanged;
@@ -151,7 +164,18 @@ internal sealed class ApplicationController : IDisposable
     {
         if (_shutDown)
             return;
+        var path = _player.CurrentPath;
+        var playlistIndex = _player.CurrentIndex;
+        if (_selectionPath is not null
+            && (path is null
+                || playlistIndex != _selectionPlaylistIndex
+                || !Paths.AreSame(_selectionPath, path)))
+            _selections.ClearAll();
+        _selectionPath = path;
+        _selectionPlaylistIndex = playlistIndex;
         _selection.Reset();
+        _selections.SwitchTo(path);
+        SyncSelectionState();
     }
 
     /// <summary>Brings every presenter back in line with the player after a state change.</summary>
@@ -168,6 +192,25 @@ internal sealed class ApplicationController : IDisposable
     private void OnVideoAvailabilityChanged()
         => _dispatcher.Post(SyncViewState);
 
+    private void OnSelectionSeekCompleted()
+        => _dispatcher.Post(SyncViewState);
+
+    private void OnSelectionEnded(double end)
+        => _dispatcher.Post(() => HandleSelectionEnded(end));
+
+    private void HandleSelectionEnded(double end)
+    {
+        if (_shutDown
+            || !_selections.OneShotActive
+            || _selections.Current is not SelectionRange current
+            || Math.Abs(current.End - end) > 0.001
+            || _player.Elapsed is double elapsed && Math.Abs(elapsed - end) > 0.5)
+            return;
+        _player.Pause();
+        SyncViewState();
+        SyncSelectionState();
+    }
+
     private void OnAudioTracksChanged()
         => _dispatcher.Post(SyncViewState);
 
@@ -176,10 +219,17 @@ internal sealed class ApplicationController : IDisposable
 
     private void HandlePlaybackEnded(PlaybackEndReason reason)
     {
-        if (_shutDown || reason is not (PlaybackEndReason.EndOfFile or PlaybackEndReason.Error))
+        if (_shutDown
+            || reason is not (PlaybackEndReason.EndOfFile or PlaybackEndReason.Error))
             return;
         if (_player.CurrentPath is null)
             return;
+        if (reason == PlaybackEndReason.Error && _selections.PlaybackActive)
+        {
+            _player.ClearSelectionRange();
+            _selections.DeactivatePlayback();
+            SyncSelectionState();
+        }
         // An end-of-track sleep timer fires here, ahead of the repeat and advance logic, and takes over the
         // end of the track: SyncViewState reflects the pause it may have left, and returning stops the player
         // advancing or looping past the point the user meant it to stop.
@@ -201,13 +251,18 @@ internal sealed class ApplicationController : IDisposable
                 // Stopping on that would end the session a moment before its successor arrived.
                 switch (_sessions.TryNext())
                 {
-                    case YouTube.Playback.NextOutcome.Advanced or YouTube.Playback.NextOutcome.Pending:
+                    case YouTube.Playback.NextOutcome.Advanced:
+                        AnnounceAutomaticNavigation();
+                        return;
+                    case YouTube.Playback.NextOutcome.Pending:
                         return;
                     case YouTube.Playback.NextOutcome.Exhausted:
                         _player.Stop();
                         return;
                 }
-                if (!_player.Next(_settings.Audio.WrapPlaylist))
+                if (_player.Next(_settings.Audio.WrapPlaylist))
+                    AnnounceAutomaticNavigation();
+                else
                     _player.Stop();
                 break;
             case EndBehavior.Loop:
@@ -220,5 +275,24 @@ internal sealed class ApplicationController : IDisposable
                 SyncViewState();
                 break;
         }
+    }
+
+    private void AnnounceAutomaticNavigation()
+    {
+        if (_settings.General.SpeakFileOnNavigation && _player.CurrentDisplayName is string name)
+            _speech.Speak(name, name);
+    }
+
+    private void SyncSelectionState()
+    {
+        var available = _player.IsLoaded;
+        _view.SetSelectionState(new SelectionMenuState(
+            available,
+            available && _selections.CanMovePrevious,
+            available && _selections.CanMoveNext,
+            available && (_selections.Current.HasValue || _selections.PendingStart.HasValue),
+            available && _selections.HasAny,
+            available && _selections.Count > 0 && _player.CurrentPath is string path && File.Exists(path),
+            _selections.Repeat));
     }
 }

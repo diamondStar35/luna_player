@@ -6,6 +6,7 @@ namespace LunaPlayer.UI;
 
 internal sealed record MainMenuComponents(
     MenuBar MenuBar,
+    int SelectionMenuIndex,
     int BookmarksMenuIndex,
     int MarkedMenuIndex,
     int VideoMenuIndex,
@@ -15,6 +16,8 @@ internal sealed record MainMenuComponents(
     IReadOnlyList<MenuItem> MarkedItems,
     IReadOnlyList<MenuItem> LocalEditItems,
     IReadOnlyList<MenuItem> BookmarkItems,
+    IReadOnlyDictionary<ActionId, MenuItem> SelectionItems,
+    MenuItem RepeatSelectionsItem,
     IReadOnlyList<MenuItem> VideoItems,
     IReadOnlyList<MenuItem> AudioTrackItems,
     IReadOnlyDictionary<int, string> SubtitleCommands,
@@ -50,6 +53,7 @@ internal static partial class MainMenuBuilder
     {
         var file = BuildFileMenu(commandIds, shortcuts);
         var edit = BuildEditMenu(commandIds, shortcuts);
+        var selection = BuildSelectionMenu(commandIds, shortcuts);
         var bookmarks = BuildBookmarksMenu(commandIds, shortcuts);
         var marked = BuildMarkedMenu(commandIds, shortcuts);
         var player = BuildPlayerMenu(commandIds, shortcuts, presets);
@@ -63,20 +67,23 @@ internal static partial class MainMenuBuilder
         menuBar.Append(file.Menu, Tr("File"));
         // Translators: Name of the Edit menu in the menu bar.
         menuBar.Append(edit.Menu, Tr("Edit"));
+        var selectionMenuIndex = 2;
+        // Translators: Name of the menu holding commands for marking and saving parts of a media file.
+        menuBar.Append(selection.Menu, Tr("Selection"));
         // Translators: Name of the Bookmarks menu in the menu bar.
         menuBar.Append(bookmarks.Menu, Tr("Bookmarks"));
-        var markedMenuIndex = 3;
+        var markedMenuIndex = 4;
         // Translators: Name of the menu bar menu holding the things that can be done to the marked files at once.
         menuBar.Append(marked.Menu, Tr("Actions for marked files"));
         // Translators: Name of the Player menu in the menu bar, holding the playing, seeking and volume items.
         menuBar.Append(player.Menu, Tr("Player"));
         // The index returned below is written out as a number, so a menu inserted before the Video menu would
         // leave it pointing at the wrong one.
-        var videoMenuIndex = 5;
+        var videoMenuIndex = 6;
         // Translators: Name of the menu bar menu holding what can be done with the YouTube video being played.
         menuBar.Append(video.Menu, Tr("Video options"));
-        // Last, and it has to be: the three indices returned below are written out as numbers, so a menu
-        // put in front of any of them would leave those pointing at the wrong one.
+        // Last indexed menu, and it has to be: the four indices returned below are written out as numbers,
+        // so a menu put in front of any of them would leave those pointing at the wrong one.
         // Translators: Name of the menu bar menu holding what can be recorded and how.
         menuBar.Append(recording.Menu, Tr("Recording"));
         // Safe after the indexed menus above: nothing counts the tools or help menus by position.
@@ -86,9 +93,10 @@ internal static partial class MainMenuBuilder
         menuBar.Append(help, Tr("Help"));
         frame.SetMenuBar(menuBar);
         return new MainMenuComponents(
-            menuBar, 2, markedMenuIndex, videoMenuIndex,
+            menuBar, selectionMenuIndex, 3, markedMenuIndex, videoMenuIndex,
             player.PlaybackItems, file.MediaFileItems, file.LocalFileItems, marked.Items,
-            edit.LocalEditItems, bookmarks.Items, video.Items, player.AudioTrackItems,
+            edit.LocalEditItems, bookmarks.Items, selection.Items, selection.RepeatItem,
+            video.Items, player.AudioTrackItems,
             player.SubtitleCommands, player.SubtitleItems, player.SubtitleMenu, player.SubtitleMenuItem,
             player.SubtitleRememberItem, file.RecentCommands, file.RecentFilesMenu, file.RecentFoldersMenu,
             file.RecentPlaylistsMenu, player.EqualizerCommands, player.EqualizerItems, player.EqualizerMenu,

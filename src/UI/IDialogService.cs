@@ -50,6 +50,8 @@ internal interface IDialogService
     /// <summary>Offers a newer Luna Player release and shows its change list. True means update now.</summary>
     bool OfferAppUpdate(AppUpdatePrompt prompt);
     double? ChooseTime(double duration, double elapsed);
+    double? ChooseSelectionTime(string title, string prompt, double duration, double elapsed);
+    string? ChooseSelectionDestination(string source, bool video);
 
     /// <summary>Opens the sleep-timer window, prefilled from the last-used choices and the current armed state.
     /// Null means the window was cancelled.</summary>

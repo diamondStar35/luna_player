@@ -96,6 +96,77 @@ internal sealed class DialogService : IDialogService, IDisposable
     public void ShowAbout() { using var dialog = new AboutDialog(DialogParent); dialog.Show(); }
     public bool OfferAppUpdate(AppUpdatePrompt prompt) { using var dialog = new AppUpdateDialog(DialogParent, prompt); return dialog.Show(); }
     public double? ChooseTime(double duration, double elapsed) { using var dialog = new GoToTimeDialog(DialogParent, duration, elapsed); return dialog.Show(); }
+
+    public double? ChooseSelectionTime(string title, string prompt, double duration, double elapsed)
+    {
+        using var dialog = new SelectionTimeDialog(DialogParent, title, prompt, duration, elapsed);
+        return dialog.Show();
+    }
+
+    public string? ChooseSelectionDestination(string source, bool video)
+    {
+        var directory = File.Exists(source) ? Path.GetDirectoryName(source) ?? string.Empty : string.Empty;
+        // Translators: Default base name for a selected part when the source has no usable file name.
+        var sourceName = File.Exists(source) ? Path.GetFileNameWithoutExtension(source) : Tr("selection");
+        // Translators: Default file name for a saved selection. {name} is the source file's base name.
+        var name = TrFormat("{name} - selection", sourceName);
+        (string Label, string Extension)[] formats = video
+            ?
+            [
+                // Translators: MP4 choice in the file-type list when saving a selected part of a video.
+                (Tr("MP4 video (*.mp4)"), ".mp4"),
+                // Translators: Matroska choice in the file-type list when saving a selected part of a video.
+                (Tr("Matroska video (*.mkv)"), ".mkv"),
+                // Translators: WebM choice in the file-type list when saving a selected part of a video.
+                (Tr("WebM video (*.webm)"), ".webm"),
+                // Translators: QuickTime choice in the file-type list when saving a selected part of a video.
+                (Tr("QuickTime video (*.mov)"), ".mov"),
+                // Translators: AVI choice in the file-type list when saving a selected part of a video.
+                (Tr("AVI video (*.avi)"), ".avi"),
+            ]
+            :
+            [
+                // Translators: MP3 choice in the file-type list when saving a selected part of an audio file.
+                (Tr("MP3 audio (*.mp3)"), ".mp3"),
+                // Translators: M4A choice in the file-type list when saving a selected part of an audio file.
+                (Tr("M4A audio (*.m4a)"), ".m4a"),
+                // Translators: FLAC choice in the file-type list when saving a selected part of an audio file.
+                (Tr("FLAC audio (*.flac)"), ".flac"),
+                // Translators: WAV choice in the file-type list when saving a selected part of an audio file.
+                (Tr("WAV audio (*.wav)"), ".wav"),
+                // Translators: Ogg Vorbis choice in the file-type list when saving a selected part of an audio file.
+                (Tr("Ogg Vorbis audio (*.ogg)"), ".ogg"),
+                // Translators: Opus choice in the file-type list when saving a selected part of an audio file.
+                (Tr("Opus audio (*.opus)"), ".opus"),
+            ];
+        var extensions = new HashSet<string>(formats.Select(format => format.Extension), StringComparer.OrdinalIgnoreCase);
+        var sourceExtension = Path.GetExtension(source);
+        var selectedFormat = Array.FindIndex(formats,
+            format => format.Extension.Equals(sourceExtension, StringComparison.OrdinalIgnoreCase));
+        if (selectedFormat < 0)
+            selectedFormat = 0;
+        name += formats[selectedFormat].Extension;
+        var wildcard = string.Join('|', formats.Select(format => $"{format.Label}|*{format.Extension}"));
+        using var dialog = new FileDialog(DialogParent,
+            // Translators: Title of the file picker used to save the currently selected part of a file.
+            message: Tr("Save selection"), directory: directory, fileName: name,
+            wildcard: wildcard, style: FileDialogStyle.DefaultSave);
+        dialog.FilterIndex = selectedFormat;
+        if (dialog.ShowModal() != StandardId.Ok)
+            return null;
+        var path = dialog.Path;
+        var chosenFormat = Math.Clamp(dialog.FilterIndex, 0, formats.Length - 1);
+        var chosenExtension = Path.GetExtension(path);
+        // Windows leaves the pre-filled extension in the name when the file-type choice changes. Replace
+        // that untouched default so the type combo really does choose the format; a different supported
+        // extension typed into the name is an explicit choice and wins.
+        if (chosenFormat != selectedFormat
+            && chosenExtension.Equals(formats[selectedFormat].Extension, StringComparison.OrdinalIgnoreCase))
+            return Path.ChangeExtension(path, formats[chosenFormat].Extension);
+        return extensions.Contains(chosenExtension)
+            ? path
+            : path + formats[chosenFormat].Extension;
+    }
     public SleepTimerDialogResult? ChooseSleepTimer(SleepTimerRequest initial, bool armed, string? statusText) { using var dialog = new SleepTimerDialog(DialogParent, initial, armed, statusText); return dialog.Show(); }
     public int? ChooseAudioDevice(IReadOnlyList<string> descriptions, int selectedIndex) { using var dialog = new AudioDeviceDialog(DialogParent, descriptions, selectedIndex); return dialog.Show(); }
     public int? ChooseAudioTrack(IReadOnlyList<string> labels, int selectedIndex) { using var dialog = new AudioTrackDialog(DialogParent, labels, selectedIndex); return dialog.Show(); }

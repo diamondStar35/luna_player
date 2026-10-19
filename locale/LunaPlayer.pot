@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-10-18 13:52+0300\n"
+"POT-Creation-Date: 2026-10-19 10:32+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -533,15 +533,69 @@ msgstr ""
 msgid "Clear the selection"
 msgstr ""
 
+#. Translators: Name of the command that marks the beginning of a precise selection slot.
+#: Actions/PlaybackActions.cs:159
+msgid "Set selection start marker"
+msgstr ""
+
+#. Translators: Name of the command that asks for the exact time where a selection begins.
+#. Translators: Title of the dialog for entering the exact beginning of a selection.
+#: Actions/PlaybackActions.cs:161
+#: Application/Commands/Playback/SelectionPoints.cs:35
+msgid "Set selection start time"
+msgstr ""
+
+#. Translators: Name of the command that marks the end of a precise selection slot.
+#: Actions/PlaybackActions.cs:163
+msgid "Set selection end marker"
+msgstr ""
+
+#. Translators: Name of the command that asks for the exact time where a selection ends.
+#. Translators: Title of the dialog for entering the exact end of a selection.
+#: Actions/PlaybackActions.cs:165
+#: Application/Commands/Playback/SelectionPoints.cs:77
+msgid "Set selection end time"
+msgstr ""
+
+#. Translators: Name of the command that plays the selection before the current one.
+#: Actions/PlaybackActions.cs:167
+msgid "Previous selection"
+msgstr ""
+
+#. Translators: Name of the command that plays the selection after the current one.
+#: Actions/PlaybackActions.cs:169
+msgid "Next selection"
+msgstr ""
+
+#. Translators: Name of the command that removes the current precise selection slot.
+#: Actions/PlaybackActions.cs:171
+msgid "Clear selection point"
+msgstr ""
+
+#. Translators: Name of the command that removes every selection from the current file.
+#: Actions/PlaybackActions.cs:173
+msgid "Clear all selections"
+msgstr ""
+
+#. Translators: Name of the command that saves the selected part as a new media file.
+#: Actions/PlaybackActions.cs:175
+msgid "Save selected time to a file"
+msgstr ""
+
+#. Translators: Name of the command that turns repeated selection playback on or off.
+#: Actions/PlaybackActions.cs:177
+msgid "Repeat selections"
+msgstr ""
+
 #. Translators: Name of the command that chooses how far a single rewind or fast forward moves.
 #. {amount} is one of the seek step amounts, such as "10 seconds".
-#: Actions/PlaybackActions.cs:164
+#: Actions/PlaybackActions.cs:184
 msgid "Set seek step to {amount}"
 msgstr ""
 
 #. Translators: Name of the command that jumps to a position given as a percentage of the file.
 #. {percent} is a whole number from 10 to 100.
-#: Actions/PlaybackActions.cs:180
+#: Actions/PlaybackActions.cs:200
 msgid "Jump to {percent}% of the file"
 msgstr ""
 
@@ -712,7 +766,7 @@ msgstr ""
 #. Translators: Title of the message shown once a bookmark has been made.
 #. Translators: Title of the message shown when a download has finished.
 #: Application/Commands/App/Tools.cs:55
-#: Application/Commands/Playback/Bookmarks.cs:58
+#: Application/Commands/Playback/Bookmarks.cs:66
 #: Application/Commands/YouTube/Download.cs:110
 msgid "Success"
 msgstr ""
@@ -1072,7 +1126,7 @@ msgstr ""
 #: Application/Commands/Files/Playlists.cs:46
 #: Application/Commands/Files/Playlists.cs:57
 #: Application/Commands/Files/Playlists.cs:64
-#: Application/Commands/Playback/Bookmarks.cs:133
+#: Application/Commands/Playback/Bookmarks.cs:141
 #: Application/Commands/YouTube/Download.cs:120
 msgid "Error"
 msgstr ""
@@ -1529,7 +1583,7 @@ msgstr ""
 
 #. Translators: The short wording spoken when a time the user asked for is not known.
 #: Application/Commands/MediaGuard.cs:108
-#: Application/Commands/Playback/Playback.cs:214
+#: Application/Commands/Playback/Playback.cs:252
 msgid "Unavailable"
 msgstr ""
 
@@ -1596,102 +1650,104 @@ msgstr ""
 
 #. Translators: The name a new bookmark is given unless the user types another one. {time} is the point in the
 #. file the bookmark was made at, such as 00:01:20.
-#: Application/Commands/Playback/Bookmarks.cs:34
+#: Application/Commands/Playback/Bookmarks.cs:42
 msgid "Bookmark {time}"
 msgstr ""
 
 #. Translators: Bookmarks menu item that saves the current position in the file as a bookmark.
-#: Application/Commands/Playback/Bookmarks.cs:37 UI/Menus/BookmarksMenu.cs:16
+#: Application/Commands/Playback/Bookmarks.cs:45 UI/Menus/BookmarksMenu.cs:16
 msgid "Add a new bookmark"
 msgstr ""
 
 #. Translators: Asks the user what the new bookmark should be called.
-#: Application/Commands/Playback/Bookmarks.cs:37
+#: Application/Commands/Playback/Bookmarks.cs:45
 msgid "Enter bookmark name"
 msgstr ""
 
 #. Translators: Shown when the user confirms a bookmark name without typing anything.
-#: Application/Commands/Playback/Bookmarks.cs:45
-#: Application/Commands/Playback/Bookmarks.cs:131
+#: Application/Commands/Playback/Bookmarks.cs:53
+#: Application/Commands/Playback/Bookmarks.cs:139
 msgid "Bookmark name cannot be empty."
 msgstr ""
 
 #. Translators: Title of an error message about reading or writing the bookmarks file.
 #. Translators: Name of the Bookmarks menu in the menu bar.
-#: Application/Commands/Playback/Bookmarks.cs:45
-#: Application/Commands/Playback/Bookmarks.cs:75
-#: Application/Commands/Playback/Bookmarks.cs:112
-#: Application/Commands/Playback/Bookmarks.cs:196 UI/MenuBuilder.cs:67
+#: Application/Commands/Playback/Bookmarks.cs:53
+#: Application/Commands/Playback/Bookmarks.cs:83
+#: Application/Commands/Playback/Bookmarks.cs:120
+#: Application/Commands/Playback/Bookmarks.cs:205 UI/MenuBuilder.cs:74
 msgid "Bookmarks"
 msgstr ""
 
 #. Translators: Shown once a bookmark has been made. {name} is what it is called and {time} the point in the
 #. file it was made at, such as 00:01:20.
-#: Application/Commands/Playback/Bookmarks.cs:56
+#: Application/Commands/Playback/Bookmarks.cs:64
 msgid "Bookmark '{name}' added at {time}."
 msgstr ""
 
 #. Translators: Shown when the user opens the bookmark list but the current file has none.
-#: Application/Commands/Playback/Bookmarks.cs:75
+#: Application/Commands/Playback/Bookmarks.cs:83
 msgid "No bookmarks found for the current file."
 msgstr ""
 
 #. Translators: Asks the user to confirm removing one bookmark. {name} is what the bookmark is called.
-#: Application/Commands/Playback/Bookmarks.cs:95
+#: Application/Commands/Playback/Bookmarks.cs:103
 msgid "Delete bookmark '{name}'?"
 msgstr ""
 
 #. Translators: Title of the window that asks the user to confirm removing a bookmark.
-#: Application/Commands/Playback/Bookmarks.cs:97
+#: Application/Commands/Playback/Bookmarks.cs:105
 msgid "Confirm delete"
 msgstr ""
 
 #. Translators: Shown once the last bookmark of the current file has been removed.
-#: Application/Commands/Playback/Bookmarks.cs:112
+#: Application/Commands/Playback/Bookmarks.cs:120
 msgid "All bookmarks for this file were removed."
 msgstr ""
 
 #. Translators: Asks the user for the new name of a bookmark they are renaming.
-#: Application/Commands/Playback/Bookmarks.cs:125
+#: Application/Commands/Playback/Bookmarks.cs:133
 msgid "Edit bookmark name"
 msgstr ""
 
 #. Translators: Bookmarks menu item that opens the window for renaming and deleting bookmarks.
-#: Application/Commands/Playback/Bookmarks.cs:125
+#: Application/Commands/Playback/Bookmarks.cs:133
 #: UI/Dialogs/BookmarkManagerDialog.cs:16 UI/Menus/BookmarksMenu.cs:18
 msgid "Manage bookmarks"
 msgstr ""
 
 #. Translators: Spoken when the user asks for one of the ten numbered bookmark slots but nothing is saved
 #. in it. {slot} is the slot number, 1 to 10.
-#: Application/Commands/Playback/Bookmarks.cs:151
+#: Application/Commands/Playback/Bookmarks.cs:159
 msgid "No bookmark in slot {slot}."
 msgstr ""
 
 #. Translators: The short wording spoken when a numbered bookmark slot is empty. {slot} is the slot number, 1 to 10.
-#: Application/Commands/Playback/Bookmarks.cs:153
+#: Application/Commands/Playback/Bookmarks.cs:161
 msgid "No bookmark {slot}."
 msgstr ""
 
 #. Translators: Spoken once playing has moved to a bookmark. {name} is what the bookmark is called.
-#: Application/Commands/Playback/Bookmarks.cs:164
+#: Application/Commands/Playback/Bookmarks.cs:173
 msgid "Jumped to bookmark {name}."
 msgstr ""
 
 #. Translators: The short wording spoken once playing has moved to a bookmark. {name} is what the bookmark is
 #. called and {time} the point in the file it sits at, such as 00:01:20.
-#: Application/Commands/Playback/Bookmarks.cs:167
+#: Application/Commands/Playback/Bookmarks.cs:176
 msgid "Jumped to '{name}' at {time}."
 msgstr ""
 
 #. Translators: Spoken when a command needs to know where playing has got to but the player cannot tell.
-#: Application/Commands/Playback/Bookmarks.cs:178
-#: Application/Commands/Playback/Playback.cs:155
+#. Translators: Shown when the player cannot offer exact time fields for the current item.
+#: Application/Commands/Playback/Bookmarks.cs:187
+#: Application/Commands/Playback/Playback.cs:193
+#: Application/Commands/Playback/SelectionPoints.cs:267
 msgid "Time is not available for the current file."
 msgstr ""
 
 #. Translators: The short wording spoken when the player cannot tell where playing has got to.
-#: Application/Commands/Playback/Bookmarks.cs:180
+#: Application/Commands/Playback/Bookmarks.cs:189
 msgid "Time unavailable."
 msgstr ""
 
@@ -1755,17 +1811,17 @@ msgid "Equalizer"
 msgstr ""
 
 #. Translators: Spoken before the time played so far, as in "Elapsed time: 1 minute 20 seconds".
-#: Application/Commands/Playback/Playback.cs:62
+#: Application/Commands/Playback/Playback.cs:68
 msgid "Elapsed time:"
 msgstr ""
 
 #. Translators: Spoken before the time still left to play, as in "Remaining time: 1 minute 20 seconds".
-#: Application/Commands/Playback/Playback.cs:65
+#: Application/Commands/Playback/Playback.cs:71
 msgid "Remaining time:"
 msgstr ""
 
 #. Translators: Spoken before the whole length of the file, as in "Total time: 3 minutes 40 seconds".
-#: Application/Commands/Playback/Playback.cs:68
+#: Application/Commands/Playback/Playback.cs:74
 msgid "Total time:"
 msgstr ""
 
@@ -1774,8 +1830,8 @@ msgstr ""
 #. Translators: Spoken name of the main-window button that starts playback. It becomes Pause while playing. The button shows an icon, not this text.
 #. Translators: Spoken name of the play/pause button while playback is stopped or paused.
 #. Translators: Button that plays the video chosen in the list of results.
-#: Application/Commands/Playback/Playback.cs:105
-#: Application/Commands/Playback/Playback.cs:113
+#: Application/Commands/Playback/Playback.cs:128
+#: Application/Commands/Playback/Playback.cs:136
 #: UI/Iptv/ChannelBrowserDialog.cs:118 UI/MainFrame.cs:82 UI/MainFrame.cs:156
 #: UI/YouTube/ResultsDialog.cs:196
 msgid "Play"
@@ -1788,124 +1844,124 @@ msgstr ""
 #. Translators: Recording menu item that holds a recording where it is, or starts it again.
 #. Translators: Button that holds a recording where it is, and starts it again when pressed a second time.
 #. Translators: Button that holds a recording where it is.
-#: Application/Commands/Playback/Playback.cs:115
+#: Application/Commands/Playback/Playback.cs:138
 #: UI/Dialogs/SleepTimerDialog.cs:84 UI/MainFrame.cs:154
-#: UI/MenuController.cs:259 UI/Menus/RecordingMenu.cs:23
+#: UI/MenuController.cs:279 UI/Menus/RecordingMenu.cs:23
 #: UI/Recording/RecordingDialog.cs:169 UI/Recording/RecordingDialog.cs:625
 msgid "Pause"
 msgstr ""
 
 #. Translators: Title of the window that asks the user which point in the file to move to.
-#: Application/Commands/Playback/Playback.cs:157
+#: Application/Commands/Playback/Playback.cs:195
 #: UI/Dialogs/GoToTimeDialog.cs:22 UI/Dialogs/GoToTimeDialog.cs:113
 msgid "Go to time"
 msgstr ""
 
 #. Translators: Spoken when full-screen mode ends on its own because the video stopped playing.
 #. Translators: The short advanced-verbosity wording for the same automatic end of full-screen mode.
-#: Application/Commands/Playback/Playback.cs:176
-#: Application/Presentation/ViewStatePresenter.cs:72
+#: Application/Commands/Playback/Playback.cs:214
+#: Application/Presentation/ViewStatePresenter.cs:73
 msgid "Full-screen mode off."
 msgstr ""
 
 #. Translators: Spoken when full-screen mode is turned on. The beginner form names the F11 key so the
 #. user knows how to leave it again.
-#: Application/Commands/Playback/Playback.cs:176
+#: Application/Commands/Playback/Playback.cs:214
 msgid "Full-screen mode on. Press F11 again to turn it off."
 msgstr ""
 
-#: Application/Commands/Playback/Playback.cs:178
-#: Application/Presentation/ViewStatePresenter.cs:72
+#: Application/Commands/Playback/Playback.cs:216
+#: Application/Presentation/ViewStatePresenter.cs:73
 msgid "Full-screen off"
 msgstr ""
 
 #. Translators: The short advanced-verbosity wording spoken when full-screen mode is turned on or off.
-#: Application/Commands/Playback/Playback.cs:178
+#: Application/Commands/Playback/Playback.cs:216
 msgid "Full-screen on"
 msgstr ""
 
 #. Translators: Spoken after the loudness has been changed. {volume} is the new loudness as a number out of a hundred.
-#: Application/Commands/Playback/Playback.cs:190
+#: Application/Commands/Playback/Playback.cs:228
 msgid "Volume {volume} percent"
 msgstr ""
 
 #. Translators: Spoken when the user asks how loud the sound is. {percent} is the loudness as a number out of a hundred.
-#: Application/Commands/Playback/Playback.cs:197
+#: Application/Commands/Playback/Playback.cs:235
 msgid "Volume is {percent}%"
 msgstr ""
 
 #. Translators: Spoken when the player cannot work out how far through the file it is.
-#: Application/Commands/Playback/Playback.cs:214
+#: Application/Commands/Playback/Playback.cs:252
 msgid "Percentage not available"
 msgstr ""
 
 #. Translators: Spoken when the user asks how far through the file playing has got. {percent} is that share out of a hundred.
-#: Application/Commands/Playback/Playback.cs:219
-#: Application/Commands/Playback/Playback.cs:347
+#: Application/Commands/Playback/Playback.cs:257
+#: Application/Commands/Playback/Playback.cs:387
 msgid "{percent} percent"
 msgstr ""
 
 #. Translators: Spoken when the user asks how fast the file is playing. {speed} is the speed, where 1 is the normal
 #. speed; "x" is short for "times" and is usually left as it is.
-#: Application/Commands/Playback/Playback.cs:224
-#: Application/Commands/Playback/Playback.cs:232
+#: Application/Commands/Playback/Playback.cs:262
+#: Application/Commands/Playback/Playback.cs:270
 msgid "{speed}x"
 msgstr ""
 
 #. Translators: Short announcement of pitch in advanced mode. {pitch} is a signed number such as
 #. +1, -2, or +0.25, or zero when pitch is normal.
-#: Application/Commands/Playback/Playback.cs:262
+#: Application/Commands/Playback/Playback.cs:300
 msgid "{pitch} semitones"
 msgstr ""
 
 #. Translators: Spoken when audio is playing at its original pitch.
-#: Application/Commands/Playback/Playback.cs:266
+#: Application/Commands/Playback/Playback.cs:304
 msgid "Pitch normal"
 msgstr ""
 
 #. Translators: Spoken after audio pitch changes or when it is requested. {pitch} is a signed
 #. number of semitones, such as +1, -2, or +0.25.
-#: Application/Commands/Playback/Playback.cs:271
+#: Application/Commands/Playback/Playback.cs:309
 msgid "Pitch {pitch} semitones"
 msgstr ""
 
 #. Translators: Spoken after audio panning changes or when it is requested. Negative values are
 #. toward the left, positive values are toward the right, and zero is centered.
-#: Application/Commands/Playback/Playback.cs:294
+#: Application/Commands/Playback/Playback.cs:332
 msgid "Pan {pan}%"
 msgstr ""
 
 #. Translators: Spoken when the user switches to whole, clearly worded messages. It should read the same as
 #. the "Beginner" entry in the Verbosity list on the General settings page.
-#: Application/Commands/Playback/Playback.cs:304
+#: Application/Commands/Playback/Playback.cs:342
 msgid "Beginner mode"
 msgstr ""
 
 #. Translators: Spoken when the user switches to short messages. It should read the same as the "Advanced"
 #. entry in the Verbosity list on the General settings page.
-#: Application/Commands/Playback/Playback.cs:311
+#: Application/Commands/Playback/Playback.cs:349
 msgid "Advanced mode"
 msgstr ""
 
 #. Translators: Spoken when trimming the silent parts out could not be switched on or off.
-#: Application/Commands/Playback/Playback.cs:323
+#: Application/Commands/Playback/Playback.cs:361
 msgid "Could not change silence removal filter."
 msgstr ""
 
 #. Translators: The short wording spoken when trimming the silent parts out could not be switched on or off.
-#: Application/Commands/Playback/Playback.cs:325
+#: Application/Commands/Playback/Playback.cs:363
 msgid "Filter failed."
 msgstr ""
 
 #. Translators: Spoken once the player has started trimming the silent parts out.
-#: Application/Commands/Playback/Playback.cs:333
-#: Application/Commands/Playback/Playback.cs:336
+#: Application/Commands/Playback/Playback.cs:371
+#: Application/Commands/Playback/Playback.cs:374
 msgid "Silence removal on"
 msgstr ""
 
 #. Translators: Spoken once the player has stopped trimming the silent parts out.
-#: Application/Commands/Playback/Playback.cs:335
-#: Application/Commands/Playback/Playback.cs:336
+#: Application/Commands/Playback/Playback.cs:373
+#: Application/Commands/Playback/Playback.cs:374
 msgid "Silence removal off"
 msgstr ""
 
@@ -1917,7 +1973,9 @@ msgstr ""
 
 #. Translators: The short wording spoken once the beginning of a repeating stretch has been marked. {time} is
 #. that point in the file, such as 00:01:20.
+#. Translators: Brief announcement after the beginning of a selection is marked. {time} includes milliseconds.
 #: Application/Commands/Playback/Selection.cs:22
+#: Application/Commands/Playback/SelectionPoints.cs:57
 msgid "Start {time}"
 msgstr ""
 
@@ -1928,7 +1986,9 @@ msgid "Start selection not set."
 msgstr ""
 
 #. Translators: The short wording spoken when the beginning of a repeating stretch has not been marked yet.
+#. Translators: Brief announcement when an end marker is requested before a start marker.
 #: Application/Commands/Playback/Selection.cs:35
+#: Application/Commands/Playback/SelectionPoints.cs:295
 msgid "No start."
 msgstr ""
 
@@ -1938,7 +1998,9 @@ msgid "End selection must be after start."
 msgstr ""
 
 #. Translators: The short wording spoken when the end of a repeating stretch would fall before its beginning.
+#. Translators: Brief announcement when a selection's end would be at or before its beginning.
 #: Application/Commands/Playback/Selection.cs:45
+#: Application/Commands/Playback/SelectionPoints.cs:97
 msgid "Invalid end."
 msgstr ""
 
@@ -1950,7 +2012,9 @@ msgstr ""
 
 #. Translators: The short wording spoken once the end of a repeating stretch has been marked. {time} is that
 #. point in the file, such as 00:01:20.
+#. Translators: Brief announcement after the end of a selection is marked. {time} includes milliseconds.
 #: Application/Commands/Playback/Selection.cs:57
+#: Application/Commands/Playback/SelectionPoints.cs:107
 msgid "End {time}"
 msgstr ""
 
@@ -1965,8 +2029,128 @@ msgid "No selection."
 msgstr ""
 
 #. Translators: Spoken once the repeating stretch of the file has been dropped, so playing carries on normally.
+#. Translators: Spoken after the current selection slot is removed.
 #: Application/Commands/Playback/Selection.cs:78
+#: Application/Commands/Playback/SelectionPoints.cs:150
 msgid "Selection cleared"
+msgstr ""
+
+#. Translators: Prompt above the time fields for the exact beginning of a selection.
+#: Application/Commands/Playback/SelectionPoints.cs:37
+msgid "Enter the selection start time:"
+msgstr ""
+
+#. Translators: Spoken after the beginning of a selection is marked. {time} includes milliseconds.
+#: Application/Commands/Playback/SelectionPoints.cs:55
+msgid "Selection start: {time}"
+msgstr ""
+
+#. Translators: Prompt above the time fields for the exact end of a selection.
+#: Application/Commands/Playback/SelectionPoints.cs:79
+msgid "Enter the selection end time:"
+msgstr ""
+
+#. Translators: Spoken when a selection's end would be at or before its beginning.
+#: Application/Commands/Playback/SelectionPoints.cs:95
+msgid "The selection end must be after the selection start."
+msgstr ""
+
+#. Translators: Spoken after the end of a selection is marked. {time} includes milliseconds.
+#: Application/Commands/Playback/SelectionPoints.cs:105
+msgid "Selection end: {time}"
+msgstr ""
+
+#. Translators: Spoken when the current selection slot contains nothing to remove.
+#. Translators: Brief announcement when the current selection slot contains nothing to remove.
+#: Application/Commands/Playback/SelectionPoints.cs:142
+#: Application/Commands/Playback/SelectionPoints.cs:144
+msgid "No selection here."
+msgstr ""
+
+#. Translators: Spoken after every selection belonging to the current file is removed.
+#: Application/Commands/Playback/SelectionPoints.cs:163
+msgid "All selections cleared"
+msgstr ""
+
+#. Translators: Spoken when selections begin repeating.
+#: Application/Commands/Playback/SelectionPoints.cs:187
+msgid "Repeat selections on"
+msgstr ""
+
+#. Translators: Spoken when selections stop repeating.
+#: Application/Commands/Playback/SelectionPoints.cs:189
+msgid "Repeat selections off"
+msgstr ""
+
+#. Translators: Shown when a file has several selections but the user has not moved to the one to save.
+#: Application/Commands/Playback/SelectionPoints.cs:206
+msgid ""
+"There are multiple selection points in the current file. Save all selections "
+"to a file, or move to the selection point you want to save."
+msgstr ""
+
+#. Translators: Title of information about choosing one of several selections to save.
+#. Translators: Title of a warning that a selection cannot be saved.
+#. Translators: Title of the error shown when a selected part could not be saved.
+#. Translators: Title of the file picker used to save the currently selected part of a file.
+#: Application/Commands/Playback/SelectionPoints.cs:208
+#: Application/Commands/Playback/SelectionPoints.cs:217
+#: Application/Commands/Playback/SelectionPoints.cs:255
+#: UI/DialogService.cs:152
+msgid "Save selection"
+msgstr ""
+
+#. Translators: Shown when saving a selection is attempted from a web stream rather than a local file.
+#: Application/Commands/Playback/SelectionPoints.cs:215
+msgid "Only selections from files on this computer can be saved."
+msgstr ""
+
+#. Translators: Title of the progress window shown while a selected part is being saved.
+#: Application/Commands/Playback/SelectionPoints.cs:226
+msgid "Saving selection"
+msgstr ""
+
+#. Translators: Initial text in the progress window while a selected part begins saving.
+#: Application/Commands/Playback/SelectionPoints.cs:228
+msgid "Preparing the selected part..."
+msgstr ""
+
+#. Translators: Progress text while a selected part is being saved. {name} is the output file name.
+#: Application/Commands/Playback/SelectionPoints.cs:231
+msgid "Saving {name}"
+msgstr ""
+
+#. Translators: Shown after a selected part has been saved. {file} is the output file name.
+#: Application/Commands/Playback/SelectionPoints.cs:244
+msgid "The selection was saved as {file}."
+msgstr ""
+
+#. Translators: Title of the message shown after a selected part was saved.
+#: Application/Commands/Playback/SelectionPoints.cs:246
+msgid "Selection saved"
+msgstr ""
+
+#. Translators: Fallback reason when FFmpeg did not say why a selected part could not be saved.
+#: Application/Commands/Playback/SelectionPoints.cs:250
+msgid "Unknown error."
+msgstr ""
+
+#. Translators: Shown when a selected part could not be saved. {error} is FFmpeg's reason.
+#: Application/Commands/Playback/SelectionPoints.cs:253
+msgid ""
+"The selection could not be saved.\n"
+"\n"
+"{error}"
+msgstr ""
+
+#. Translators: Spoken when an end marker is requested before a start marker has been set.
+#: Application/Commands/Playback/SelectionPoints.cs:293
+msgid "The selection start has not been set."
+msgstr ""
+
+#. Translators: Spoken after moving to a selection slot. {number} is its one-based number.
+#: Application/Commands/Playback/SelectionPoints.cs:299
+msgid "Selection {number}"
 msgstr ""
 
 #. Translators: Shown when the sleep timer is set to stop at the end of the current track but
@@ -2169,7 +2353,7 @@ msgstr ""
 #. Translators: Title of the window where recording is set up and started.
 #. Translators: Title of the messages shown about recording.
 #: Application/Commands/Recording/Recording.cs:214
-#: UI/Dialogs/PreferencesDialog.cs:56 UI/MenuBuilder.cs:81
+#: UI/Dialogs/PreferencesDialog.cs:56 UI/MenuBuilder.cs:88
 #: UI/Recording/RecordingDialog.cs:83 UI/Recording/RecordingDialog.cs:720
 msgid "Recording"
 msgstr ""
@@ -2417,11 +2601,11 @@ msgstr ""
 msgid "Settings error"
 msgstr ""
 
-#: Application/Host.cs:106
+#: Application/Host.cs:108
 msgid "Downloads completed"
 msgstr ""
 
-#: Application/Host.cs:107
+#: Application/Host.cs:109
 msgid "All items in the download queue have completed."
 msgstr ""
 
@@ -2863,15 +3047,17 @@ msgstr ""
 #. Translators: The button that stops a job that is running behind a progress window.
 #. Translators: The button that stops a running conversion. It asks for confirmation first.
 #. Translators: The button that closes a window and leaves everything as it was.
+#. Translators: Button that closes a selection time dialog without changing anything.
+#. Translators: The button that closes a window and leaves everything as it was.
 #. Translators: Dismisses the close warning and keeps Luna and its downloads running.
 #. Translators: The button that stops a running download. It asks for confirmation first.
 #. Translators: Closes the link-entry window without adding anything.
 #. Translators: The button that closes a window and leaves everything as it was.
 #: UI/Controls/ProgressView.cs:66 UI/Dialogs/ConversionProgressDialog.cs:84
 #: UI/Dialogs/GoToTimeDialog.cs:71 UI/Dialogs/OpenedFilesDialog.cs:50
-#: UI/Dialogs/SleepTimerDialog.cs:170 UI/Equalizer/EditDialog.cs:116
-#: UI/YouTube/DownloadDialog.cs:127 UI/YouTube/DownloadExitDialog.cs:22
-#: UI/YouTube/DownloadProgressDialog.cs:59
+#: UI/Dialogs/SelectionTimeDialog.cs:61 UI/Dialogs/SleepTimerDialog.cs:170
+#: UI/Equalizer/EditDialog.cs:116 UI/YouTube/DownloadDialog.cs:127
+#: UI/YouTube/DownloadExitDialog.cs:22 UI/YouTube/DownloadProgressDialog.cs:59
 #: UI/YouTube/DownloadQueueDialog.cs:367 UI/YouTube/LinkKindDialog.cs:33
 msgid "Cancel"
 msgstr ""
@@ -2894,6 +3080,71 @@ msgstr ""
 
 #: UI/DialogService.cs:66
 msgid "Load subtitle from URL"
+msgstr ""
+
+#. Translators: Default base name for a selected part when the source has no usable file name.
+#: UI/DialogService.cs:110
+msgid "selection"
+msgstr ""
+
+#. Translators: Default file name for a saved selection. {name} is the source file's base name.
+#: UI/DialogService.cs:112
+msgid "{name} - selection"
+msgstr ""
+
+#. Translators: MP4 choice in the file-type list when saving a selected part of a video.
+#: UI/DialogService.cs:117
+msgid "MP4 video (*.mp4)"
+msgstr ""
+
+#. Translators: Matroska choice in the file-type list when saving a selected part of a video.
+#: UI/DialogService.cs:119
+msgid "Matroska video (*.mkv)"
+msgstr ""
+
+#. Translators: WebM choice in the file-type list when saving a selected part of a video.
+#: UI/DialogService.cs:121
+msgid "WebM video (*.webm)"
+msgstr ""
+
+#. Translators: QuickTime choice in the file-type list when saving a selected part of a video.
+#: UI/DialogService.cs:123
+msgid "QuickTime video (*.mov)"
+msgstr ""
+
+#. Translators: AVI choice in the file-type list when saving a selected part of a video.
+#: UI/DialogService.cs:125
+msgid "AVI video (*.avi)"
+msgstr ""
+
+#. Translators: MP3 choice in the file-type list when saving a selected part of an audio file.
+#: UI/DialogService.cs:130
+msgid "MP3 audio (*.mp3)"
+msgstr ""
+
+#. Translators: M4A choice in the file-type list when saving a selected part of an audio file.
+#: UI/DialogService.cs:132
+msgid "M4A audio (*.m4a)"
+msgstr ""
+
+#. Translators: FLAC choice in the file-type list when saving a selected part of an audio file.
+#: UI/DialogService.cs:134
+msgid "FLAC audio (*.flac)"
+msgstr ""
+
+#. Translators: WAV choice in the file-type list when saving a selected part of an audio file.
+#: UI/DialogService.cs:136
+msgid "WAV audio (*.wav)"
+msgstr ""
+
+#. Translators: Ogg Vorbis choice in the file-type list when saving a selected part of an audio file.
+#: UI/DialogService.cs:138
+msgid "Ogg Vorbis audio (*.ogg)"
+msgstr ""
+
+#. Translators: Opus choice in the file-type list when saving a selected part of an audio file.
+#: UI/DialogService.cs:140
+msgid "Opus audio (*.opus)"
 msgstr ""
 
 #. Translators: Title of the window containing Luna Player's version and website.
@@ -2942,8 +3193,10 @@ msgid "Visit the Luna Player website"
 msgstr ""
 
 #. Translators: The button that accepts a window and carries the change out.
+#. Translators: Button that accepts the time entered in a selection time dialog.
+#. Translators: The button that accepts a window and carries the change out.
 #: UI/Dialogs/AboutDialog.cs:49 UI/Dialogs/GoToTimeDialog.cs:66
-#: UI/Dialogs/SleepTimerDialog.cs:165
+#: UI/Dialogs/SelectionTimeDialog.cs:56 UI/Dialogs/SleepTimerDialog.cs:165
 msgid "OK"
 msgstr ""
 
@@ -3019,7 +3272,7 @@ msgid "Jump"
 msgstr ""
 
 #. Translators: Name of the Edit menu in the menu bar.
-#: UI/Dialogs/BookmarkManagerDialog.cs:36 UI/MenuBuilder.cs:65
+#: UI/Dialogs/BookmarkManagerDialog.cs:36 UI/MenuBuilder.cs:69
 msgid "Edit"
 msgstr ""
 
@@ -3148,24 +3401,30 @@ msgid "Choose time position:"
 msgstr ""
 
 #. Translators: Label of the box holding the hours part of the point in the file to move to.
+#. Translators: Label of the hours box in a selection time dialog.
 #. Translators: Label of the box holding the hours part of a custom timer length.
-#: UI/Dialogs/GoToTimeDialog.cs:30 UI/Dialogs/SleepTimerDialog.cs:74
+#: UI/Dialogs/GoToTimeDialog.cs:30 UI/Dialogs/SelectionTimeDialog.cs:26
+#: UI/Dialogs/SleepTimerDialog.cs:74
 msgid "Hours"
 msgstr ""
 
 #. Translators: Label of the box holding the minutes part of the point in the file to move to.
+#. Translators: Label of the minutes box in a selection time dialog.
 #. Translators: Label of the box holding the minutes part of a custom timer length.
-#: UI/Dialogs/GoToTimeDialog.cs:33 UI/Dialogs/SleepTimerDialog.cs:77
+#: UI/Dialogs/GoToTimeDialog.cs:33 UI/Dialogs/SelectionTimeDialog.cs:29
+#: UI/Dialogs/SleepTimerDialog.cs:77
 msgid "Minutes"
 msgstr ""
 
 #. Translators: Label of the box holding the seconds part of the point in the file to move to.
-#: UI/Dialogs/GoToTimeDialog.cs:36
+#. Translators: Label of the seconds box in a selection time dialog.
+#: UI/Dialogs/GoToTimeDialog.cs:36 UI/Dialogs/SelectionTimeDialog.cs:33
 msgid "Seconds"
 msgstr ""
 
 #. Translators: Shown when the point in the file the user typed lies past the end of the file.
-#: UI/Dialogs/GoToTimeDialog.cs:113
+#. Translators: Shown when a manually entered selection marker lies beyond the file's end.
+#: UI/Dialogs/GoToTimeDialog.cs:113 UI/Dialogs/SelectionTimeDialog.cs:92
 msgid "The selected time exceeds the file duration."
 msgstr ""
 
@@ -3439,6 +3698,16 @@ msgstr ""
 #. Translators: Spoken when the user asks for help on a control that has none.
 #: UI/Dialogs/PreferencesDialog.cs:187
 msgid "No detailed help is available for this control."
+msgstr ""
+
+#. Translators: Label of the milliseconds box in a selection time dialog.
+#: UI/Dialogs/SelectionTimeDialog.cs:37
+msgid "Milliseconds"
+msgstr ""
+
+#. Translators: Title of the error for a selection time entered beyond the file's end.
+#: UI/Dialogs/SelectionTimeDialog.cs:94
+msgid "Selection time"
 msgstr ""
 
 #. Translators: Label of the list choosing whether the sleep timer ends after a length of time or when
@@ -3812,68 +4081,73 @@ msgid "Next"
 msgstr ""
 
 #. Translators: Name of the File menu in the menu bar.
-#: UI/MenuBuilder.cs:63
+#: UI/MenuBuilder.cs:67
 msgid "File"
 msgstr ""
 
+#. Translators: Name of the menu holding commands for marking and saving parts of a media file.
+#: UI/MenuBuilder.cs:72
+msgid "Selection"
+msgstr ""
+
 #. Translators: Name of the menu bar menu holding the things that can be done to the marked files at once.
-#: UI/MenuBuilder.cs:70
+#: UI/MenuBuilder.cs:77
 msgid "Actions for marked files"
 msgstr ""
 
 #. Translators: Name of the Player menu in the menu bar, holding the playing, seeking and volume items.
-#: UI/MenuBuilder.cs:72
+#: UI/MenuBuilder.cs:79
 msgid "Player"
 msgstr ""
 
 #. Translators: Name of the menu bar menu holding what can be done with the YouTube video being played.
-#: UI/MenuBuilder.cs:77
+#: UI/MenuBuilder.cs:84
 msgid "Video options"
 msgstr ""
 
 #. Translators: Name of the Tools menu in the menu bar, holding the media converter.
-#: UI/MenuBuilder.cs:84
+#: UI/MenuBuilder.cs:91
 msgid "Tools"
 msgstr ""
 
 #. Translators: Name of the Help menu in the menu bar.
-#: UI/MenuBuilder.cs:86
+#: UI/MenuBuilder.cs:93
 msgid "Help"
 msgstr ""
 
 #. Translators: Shown in the Recent files submenu when no files have been opened yet.
-#: UI/MenuController.cs:192
+#: UI/MenuController.cs:212
 msgid "No recent files"
 msgstr ""
 
 #. Translators: Recent files submenu item that empties the list of recently opened files.
-#: UI/MenuController.cs:194
+#: UI/MenuController.cs:214
 msgid "Clear recent files"
 msgstr ""
 
 #. Translators: Shown in the Recent folders submenu when no folders have been opened yet.
-#: UI/MenuController.cs:197
+#: UI/MenuController.cs:217
 msgid "No recent folders"
 msgstr ""
 
 #. Translators: Recent folders submenu item that empties the list of recently opened folders.
-#: UI/MenuController.cs:199
+#: UI/MenuController.cs:219
 msgid "Clear recent folders"
 msgstr ""
 
 #. Translators: Shown in the Recent playlists submenu when no playlists have been opened yet.
-#: UI/MenuController.cs:202
+#: UI/MenuController.cs:222
 msgid "No recent playlists"
 msgstr ""
 
 #. Translators: Recent playlists submenu item that empties the list of recently opened playlists.
-#: UI/MenuController.cs:204
+#: UI/MenuController.cs:224
 msgid "Clear recent playlists"
 msgstr ""
 
 #. Translators: Recording menu item that starts a paused recording again.
 #. Translators: Button that starts a paused recording again.
-#: UI/MenuController.cs:257 UI/Recording/RecordingDialog.cs:623
+#: UI/MenuController.cs:277 UI/Recording/RecordingDialog.cs:623
 msgid "Resume"
 msgstr ""
 
@@ -4227,6 +4501,56 @@ msgstr ""
 #. Translators: Recording menu item that opens the folder recordings are saved into.
 #: UI/Menus/RecordingMenu.cs:28
 msgid "Open recordings folder"
+msgstr ""
+
+#. Translators: Selection menu item that marks the current playback position as a new part's beginning.
+#: UI/Menus/SelectionMenu.cs:20
+msgid "Set Start Marker"
+msgstr ""
+
+#. Translators: Selection menu item that asks for the exact time where a new part begins.
+#: UI/Menus/SelectionMenu.cs:22
+msgid "Set Start Time..."
+msgstr ""
+
+#. Translators: Selection menu item that marks the current playback position as the unfinished part's end.
+#: UI/Menus/SelectionMenu.cs:24
+msgid "Set End Marker"
+msgstr ""
+
+#. Translators: Selection menu item that asks for the exact time where the unfinished part ends.
+#: UI/Menus/SelectionMenu.cs:26
+msgid "Set End Time..."
+msgstr ""
+
+#. Translators: Selection menu item that moves to and plays the previous saved part.
+#: UI/Menus/SelectionMenu.cs:29
+msgid "Previous Selection Point"
+msgstr ""
+
+#. Translators: Selection menu item that moves to and plays the next saved part or its free slot.
+#: UI/Menus/SelectionMenu.cs:31
+msgid "Next Selection Point"
+msgstr ""
+
+#. Translators: Selection menu item that removes the part in the current selection slot.
+#: UI/Menus/SelectionMenu.cs:34
+msgid "Clear Selection Point"
+msgstr ""
+
+#. Translators: Selection menu item that removes every saved part from the current file.
+#: UI/Menus/SelectionMenu.cs:36
+msgid "Clear All Selection Points"
+msgstr ""
+
+#. Translators: Selection menu item that writes the current selected part as a new media file.
+#: UI/Menus/SelectionMenu.cs:39
+msgid "Save Selected Time to a File..."
+msgstr ""
+
+#. Translators: Selection menu item that repeatedly plays the chosen part. It is ticked while enabled.
+#: UI/Menus/SelectionMenu.cs:44
+msgid "Repeat Selections"
 msgstr ""
 
 #. Translators: Tools menu item that opens the window for converting files to another audio format.

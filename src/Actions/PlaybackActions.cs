@@ -155,6 +155,26 @@ internal static class PlaybackActions
             new(ActionId.EndSelection, Tr("Mark end of selection"), new("]")),
             // Translators: Name of the command that forgets the marked part and plays the whole file again.
             new(ActionId.ClearSelection, Tr("Clear the selection"), new("backspace")),
+            // Translators: Name of the command that marks the beginning of a precise selection slot.
+            new(ActionId.SetSelectionStartMarker, Tr("Set selection start marker"), new("[", ShortcutModifiers.Shift)),
+            // Translators: Name of the command that asks for the exact time where a selection begins.
+            new(ActionId.SetSelectionStartTime, Tr("Set selection start time"), new("[", ShortcutModifiers.Control)),
+            // Translators: Name of the command that marks the end of a precise selection slot.
+            new(ActionId.SetSelectionEndMarker, Tr("Set selection end marker"), new("]", ShortcutModifiers.Shift)),
+            // Translators: Name of the command that asks for the exact time where a selection ends.
+            new(ActionId.SetSelectionEndTime, Tr("Set selection end time"), new("]", ShortcutModifiers.Control)),
+            // Translators: Name of the command that plays the selection before the current one.
+            new(ActionId.PreviousSelection, Tr("Previous selection"), new("b", ShortcutModifiers.Shift)),
+            // Translators: Name of the command that plays the selection after the current one.
+            new(ActionId.NextSelection, Tr("Next selection"), new("n", ShortcutModifiers.Shift)),
+            // Translators: Name of the command that removes the current precise selection slot.
+            new(ActionId.ClearSelectionPoint, Tr("Clear selection point"), new("backspace", ShortcutModifiers.Shift)),
+            // Translators: Name of the command that removes every selection from the current file.
+            new(ActionId.ClearAllSelections, Tr("Clear all selections"), new("backspace", ShortcutModifiers.Control)),
+            // Translators: Name of the command that saves the selected part as a new media file.
+            new(ActionId.SaveSelection, Tr("Save selected time to a file"), new("s", ShortcutModifiers.Control)),
+            // Translators: Name of the command that turns repeated selection playback on or off.
+            new(ActionId.ToggleRepeatSelections, Tr("Repeat selections")),
         };
 
         actions.AddRange(SeekSteps.Select(step => new ActionDefinition(

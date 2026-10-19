@@ -11,6 +11,8 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
 {
     private readonly MPV _mpv;
     private readonly IDisposable _endRegistration;
+    private readonly IDisposable _playbackRestartRegistration;
+    private readonly IDisposable _positionRegistration;
     private readonly IDisposable _sampleRateRegistration;
     private readonly IDisposable _videoParamsRegistration;
     private readonly IDisposable _trackListRegistration;
@@ -23,6 +25,23 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
     private double _pan;
     private bool _panFilterActive;
     private bool _normalizationEnabled;
+    private EndBehavior _endBehavior;
+    private bool _selectionRangeActive;
+    private bool _selectionRangeRepeats;
+    private bool _selectionRangeCompleted;
+    private double _selectionRangeEnd;
+    private long? _selectionRangeEntryId;
+    private bool _releasedSelectionEndPending;
+    private double _releasedSelectionEnd;
+    private long? _releasedSelectionEntryId;
+    private bool _releasedSelectionWasPlaying;
+    private bool _releasedSelectionWasCompleted;
+    private bool _releasedSelectionPassed;
+    private bool _endBehaviorRestorePending;
+    private bool _selectionSeekPending;
+    private bool _playAfterSelectionSeek;
+    private bool _restoreEndBehaviorAfterSelectionSeek;
+    private double _selectionSeekTarget;
     private Preset? _equalizerPreset;
     private double _equalizerSampleRate;
     private bool _equalizerFilterActive;
@@ -53,6 +72,8 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
         SetPropertySafely("network-timeout", 10);
         ApplyMediaControls(mediaControls);
         _endRegistration = _mpv.OnEvent(HandleEndFile, MpvEventId.EndFile);
+        _playbackRestartRegistration = _mpv.OnEvent(HandlePlaybackRestart, MpvEventId.PlaybackRestart);
+        _positionRegistration = _mpv.ObserveProperty("time-pos", HandlePositionChange);
         // The equalizer is left out of the chain entirely until a preset asks for it, and which bands it
         // then carries depends on the file's sample rate: a band at the Nyquist frequency rings rather
         // than filters, so the graph is rebuilt whenever that rate changes under it. Off is nothing at
@@ -69,6 +90,10 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
     }
 
     public event Action<PlaybackEndReason>? Ended;
+
+    public event Action<double>? SelectionEnded;
+
+    public event Action? SelectionSeekCompleted;
 
     public event Action? VideoAvailabilityChanged;
 
@@ -93,6 +118,12 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
     /// </remarks>
     public bool Load(string path, double? startPosition = null, bool paused = false, string? audioFile = null, bool noVideo = false)
     {
+        CancelSelectionSeek();
+        _endBehaviorRestorePending = false;
+        // A delayed EOF from the replaced entry is still identified below, but it must never resume by
+        // seeking the newly loaded entry to the old selection's timestamp.
+        _releasedSelectionWasPlaying = false;
+        _releasedSelectionWasCompleted = false;
         var options = new Dictionary<string, object?>
         {
             // Track ids do not carry across files, and the user opts subtitles in per file through the menu.
@@ -103,30 +134,71 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
             // video to go full screen over, and none of the cost of decoding frames nobody is watching. It
             // rides as a per-file option, so an ordinary load afterwards gets video back on its own.
             ["vid"] = noVideo ? "no" : "auto",
+            // A one-shot selection sets this dynamically. Never let that boundary leak into the next file.
+            ["end"] = "none",
+            ["keep-open"] = _endBehavior == EndBehavior.None ? "yes" : "no",
+            ["loop-file"] = _endBehavior == EndBehavior.Loop ? "inf" : "no",
         };
         if (startPosition.HasValue)
             options["start"] = Precision.Normalize(startPosition.Value);
-        return TryDo(mpv =>
+        var loaded = TryDo(mpv =>
         {
             mpv.SetPropertyAsync(0, "audio-files", audioFile is null ? Array.Empty<string>() : new[] { audioFile });
             mpv.LoadFileAsync(path, "replace", options);
         });
+        _selectionRangeActive = false;
+        _selectionRangeRepeats = false;
+        _selectionRangeCompleted = false;
+        _selectionRangeEnd = 0;
+        _selectionRangeEntryId = null;
+        return loaded;
     }
 
-    public void Stop() => TryDo(static mpv => mpv.Command("stop"));
+    public void Stop()
+    {
+        CancelSelectionSeek();
+        _endBehaviorRestorePending = false;
+        _releasedSelectionEndPending = false;
+        _releasedSelectionWasPlaying = false;
+        _releasedSelectionWasCompleted = false;
+        _releasedSelectionPassed = false;
+        TryDo(static mpv => mpv.Command("stop"));
+    }
 
     public bool TogglePause()
     {
-        var paused = IsPaused;
-        SetPropertySafely("pause", !paused);
-        return paused;
+        if (IsPaused)
+        {
+            Play();
+            return true;
+        }
+        Pause();
+        return false;
     }
 
-    public void Play() => SetPropertySafely("pause", false);
+    public void Play()
+    {
+        // Clearing an mpv end boundary does not release its EOF latch. When playback is explicitly resumed
+        // from the free slot, seek to the exact current timestamp to re-arm decoding, then play after mpv
+        // confirms that zero-distance seek. Entering the free slot itself never changes time or playback.
+        if (_selectionSeekPending)
+            return;
+        if (_endBehaviorRestorePending
+            && (IsPaused || _releasedSelectionWasCompleted)
+            && (Elapsed ?? (_releasedSelectionEndPending ? _releasedSelectionEnd : null)) is double position
+            && BeginSelectionSeek(position, restoreEndBehavior: true, play: true))
+            return;
+        SetPropertySafely("pause", false);
+    }
 
     public void Pause() => SetPropertySafely("pause", true);
 
     public bool IsPaused => ReadBoolean("pause") ?? false;
+
+    public bool SelectionRangeCompleted
+        => _selectionRangeActive
+            && !_selectionRangeRepeats
+            && (_selectionRangeCompleted || ReadBoolean("eof-reached") == true);
 
     public double? Duration => Precision.Normalize(ReadDouble("duration"));
 
@@ -135,10 +207,23 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
     public double? Remaining => Precision.Normalize(ReadDouble("time-remaining"));
 
     public void SeekRelative(double seconds)
-        => TryDo(mpv => mpv.Command("seek", Precision.Normalize(seconds), "relative"));
+    {
+        var delta = Precision.Normalize(seconds);
+        if (_endBehaviorRestorePending
+            && Elapsed is double position
+            && BeginSelectionSeek(position + delta, restoreEndBehavior: true, play: !IsPaused))
+            return;
+        TryDo(mpv => mpv.Command("seek", delta, "relative"));
+    }
 
     public void SeekAbsolute(double seconds)
-        => TryDo(mpv => mpv.Command("seek", Precision.Normalize(Math.Max(0, seconds)), "absolute"));
+    {
+        var target = Precision.Normalize(Math.Max(0, seconds));
+        if (_endBehaviorRestorePending
+            && BeginSelectionSeek(target, restoreEndBehavior: true, play: !IsPaused))
+            return;
+        TryDo(mpv => mpv.Command("seek", target, "absolute"));
+    }
 
     public bool SetLoopStart(double seconds)
     {
@@ -155,6 +240,120 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
         var startCleared = TrySetProperty("ab-loop-a", "no");
         var endCleared = TrySetProperty("ab-loop-b", "no");
         return startCleared && endCleared;
+    }
+
+    public bool SetSelectionRange(double start, double end, bool repeat)
+    {
+        start = Precision.Normalize(Math.Max(0, start));
+        end = Precision.Normalize(Math.Max(start, end));
+        if (end <= start)
+            return false;
+        // A move between slots replaces the previous range as one operation. Clear its boundary first so
+        // neither an old one-shot end nor an old A-B loop can affect the slot being entered.
+        if (_selectionRangeActive && !ClearSelectionRange(restoreEndBehavior: false))
+        {
+            _endBehaviorRestorePending = false;
+            ApplyEndBehavior();
+            return false;
+        }
+        CancelSelectionSeek();
+        _endBehaviorRestorePending = false;
+        _selectionRangeActive = true;
+        _selectionRangeRepeats = repeat;
+        _selectionRangeCompleted = false;
+        _selectionRangeEnd = end;
+        var entryId = ReadInt64("playlist-entry-id");
+        _selectionRangeEntryId = entryId is > 0 ? entryId : null;
+        var endSet = TrySetProperty("end", repeat ? "none" : end);
+        var fileLoopCleared = TrySetProperty("loop-file", "no");
+        // A one-shot selection reaches an artificial EOF. keep-open makes mpv hold the exact boundary so
+        // Play can later clear it and continue from that same timestamp.
+        var heldOpen = TrySetProperty("keep-open", "yes");
+        if (repeat)
+        {
+            var startSet = TrySetProperty("ab-loop-a", start);
+            var loopEndSet = TrySetProperty("ab-loop-b", end);
+            var succeeded = endSet && fileLoopCleared && heldOpen && startSet && loopEndSet;
+            if (!succeeded)
+                ClearSelectionRange();
+            return succeeded;
+        }
+        var loopCleared = ClearLoop();
+        var oneShotSucceeded = endSet && fileLoopCleared && heldOpen && loopCleared;
+        if (!oneShotSucceeded)
+            ClearSelectionRange();
+        return oneShotSucceeded;
+    }
+
+    public bool PlaySelectionRange(double start, double end, bool repeat)
+    {
+        var wasPaused = IsPaused;
+        Pause();
+        if (!SetSelectionRange(start, end, repeat)
+            || !BeginSelectionSeek(start, restoreEndBehavior: false, play: true))
+        {
+            ClearSelectionRange();
+            if (!wasPaused)
+                Play();
+            return false;
+        }
+        return true;
+    }
+
+    public bool ExitSelectionRange(double end, bool play)
+    {
+        if (!ClearSelectionRange(restoreEndBehavior: false))
+        {
+            _endBehaviorRestorePending = false;
+            ApplyEndBehavior();
+            return false;
+        }
+        if (BeginSelectionSeek(end, restoreEndBehavior: true, play))
+            return true;
+        _endBehaviorRestorePending = false;
+        ApplyEndBehavior();
+        return false;
+    }
+
+    public bool ClearSelectionRange(bool restoreEndBehavior = true)
+    {
+        if (!_selectionRangeActive)
+            return true;
+        var releasedOneShot = !_selectionRangeRepeats;
+        if (releasedOneShot)
+        {
+            // END_FILE may already be queued when the boundary is removed. Keep enough identity to label
+            // that event as the released selection's end instead of the real end of the current file.
+            _releasedSelectionEndPending = true;
+            _releasedSelectionEnd = _selectionRangeEnd;
+            _releasedSelectionEntryId = _selectionRangeEntryId;
+            _releasedSelectionWasPlaying = !IsPaused;
+            _releasedSelectionWasCompleted = SelectionRangeCompleted;
+            _releasedSelectionPassed = false;
+        }
+        CancelSelectionSeek();
+        _selectionRangeActive = false;
+        _selectionRangeRepeats = false;
+        _selectionRangeCompleted = false;
+        _selectionRangeEnd = 0;
+        _selectionRangeEntryId = null;
+        var endCleared = TrySetProperty("end", "none");
+        var loopCleared = ClearLoop();
+        if (restoreEndBehavior)
+        {
+            _endBehaviorRestorePending = false;
+            ApplyEndBehavior();
+        }
+        else if (releasedOneShot)
+            _endBehaviorRestorePending = true;
+        else
+        {
+            // A repeating range has no artificial EOF latch: removing its A-B loop is sufficient, so the
+            // configured file-end behaviour can be restored immediately without a recovery seek.
+            _endBehaviorRestorePending = false;
+            ApplyEndBehavior();
+        }
+        return endCleared && loopCleared;
     }
 
     public double SetVolume(double volume)
@@ -509,6 +708,8 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
             return;
         _disposed = true;
         _endRegistration.Dispose();
+        _playbackRestartRegistration.Dispose();
+        _positionRegistration.Dispose();
         _sampleRateRegistration.Dispose();
         _videoParamsRegistration.Dispose();
         _trackListRegistration.Dispose();
@@ -520,6 +721,48 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
     {
         if (_disposed || mpvEvent.Data is not MpvEndFileEvent endFile)
             return;
+        var releasedSelectionEnd = false;
+        var continueReleasedSelection = false;
+        var releasedSelectionEndPosition = 0d;
+        if (endFile.Reason == MpvEndFileReason.Eof
+            && _releasedSelectionEndPending
+            && (!_releasedSelectionEntryId.HasValue
+                || endFile.PlaylistEntryId <= 0
+                || _releasedSelectionEntryId.Value == endFile.PlaylistEntryId))
+        {
+            // A boundary that was already firing when the free slot was entered arrives after the boundary
+            // has been removed. Match it to that boundary's timestamp; merely being before the file's real
+            // end is not enough, because a newer selection in the same file may now be ending instead.
+            releasedSelectionEnd = !_releasedSelectionPassed
+                && (Elapsed is not double elapsed
+                    || Math.Abs(elapsed - _releasedSelectionEnd) <= 0.05);
+            continueReleasedSelection = releasedSelectionEnd
+                && _releasedSelectionWasPlaying
+                && !_selectionRangeActive;
+            releasedSelectionEndPosition = _releasedSelectionEnd;
+            _releasedSelectionEndPending = false;
+            _releasedSelectionEnd = 0;
+            _releasedSelectionEntryId = null;
+            _releasedSelectionWasPlaying = false;
+            _releasedSelectionWasCompleted = false;
+            _releasedSelectionPassed = false;
+        }
+        if (releasedSelectionEnd
+            || endFile.Reason == MpvEndFileReason.Eof
+                && _selectionRangeActive
+                && !_selectionRangeRepeats)
+        {
+            if (!releasedSelectionEnd)
+                _selectionRangeCompleted = true;
+            // Selection completion has its own channel. It must never be mistaken for the real end of a
+            // file, even when the UI enters the free slot while mpv is already queuing this event.
+            SelectionEnded?.Invoke(releasedSelectionEnd
+                ? releasedSelectionEndPosition
+                : _selectionRangeEnd);
+            if (continueReleasedSelection)
+                BeginSelectionSeek(releasedSelectionEndPosition, restoreEndBehavior: true, play: true);
+            return;
+        }
         var reason = endFile.Reason switch
         {
             MpvEndFileReason.Eof => PlaybackEndReason.EndOfFile,
@@ -528,6 +771,77 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
         };
         if (reason.HasValue)
             Ended?.Invoke(reason.Value);
+    }
+
+    private bool BeginSelectionSeek(double seconds, bool restoreEndBehavior, bool play)
+    {
+        var target = Precision.Normalize(Math.Max(0, seconds));
+        _selectionSeekPending = true;
+        _restoreEndBehaviorAfterSelectionSeek = restoreEndBehavior;
+        _playAfterSelectionSeek = play;
+        _selectionSeekTarget = target;
+        if (TryDo(mpv => mpv.Command("seek", target, "absolute+exact")))
+            return true;
+        CancelSelectionSeek();
+        return false;
+    }
+
+    private void HandlePlaybackRestart(MpvEvent mpvEvent)
+    {
+        if (_disposed)
+            return;
+        if (!_selectionSeekPending)
+            return;
+        // Playback-restart events from an earlier seek may already be waiting in mpv's event queue. Only
+        // finish this transition once the seek we issued is no longer running and its target is current.
+        if (ReadBoolean("seeking") == true
+            || Elapsed is double elapsed && Math.Abs(elapsed - _selectionSeekTarget) > 0.5)
+            return;
+        var restoreEndBehavior = _restoreEndBehaviorAfterSelectionSeek;
+        var play = _playAfterSelectionSeek;
+        CancelSelectionSeek();
+        if (restoreEndBehavior || _endBehaviorRestorePending)
+        {
+            _endBehaviorRestorePending = false;
+            ApplyEndBehavior();
+        }
+        if (play)
+            Play();
+        SelectionSeekCompleted?.Invoke();
+    }
+
+    private void HandlePositionChange(string name, object? value)
+    {
+        if (_disposed
+            || !_releasedSelectionEndPending
+            || _releasedSelectionPassed
+            || !TryConvertDouble(value, out var position)
+            || position <= _releasedSelectionEnd + 0.001)
+            return;
+        var entryId = ReadInt64("playlist-entry-id");
+        if (_releasedSelectionEntryId.HasValue
+            && entryId.HasValue
+            && _releasedSelectionEntryId.Value != entryId.Value)
+            return;
+        // The old boundary was removed before it fired and playback has demonstrably crossed it. End
+        // behaviour is safe to restore now; the pending identity remains until the eventual real EOF so
+        // a delayed event can still be classified from its timestamp instead of advancing by mistake.
+        _releasedSelectionPassed = true;
+        _releasedSelectionWasPlaying = false;
+        _releasedSelectionWasCompleted = false;
+        if (_endBehaviorRestorePending)
+        {
+            _endBehaviorRestorePending = false;
+            ApplyEndBehavior();
+        }
+    }
+
+    private void CancelSelectionSeek()
+    {
+        _selectionSeekPending = false;
+        _restoreEndBehaviorAfterSelectionSeek = false;
+        _playAfterSelectionSeek = false;
+        _selectionSeekTarget = 0;
     }
 
     /// <summary>What mpv reports as media-title. mpv substitutes the file name when the media declares no
@@ -541,8 +855,15 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
     // runs for the advance case, and as a fallback if either property is unavailable.
     public void SetEndBehavior(EndBehavior behavior)
     {
-        SetPropertySafely("keep-open", behavior == EndBehavior.None ? "yes" : "no");
-        SetPropertySafely("loop-file", behavior == EndBehavior.Loop ? "inf" : "no");
+        _endBehavior = behavior;
+        if (!_selectionRangeActive && !_endBehaviorRestorePending)
+            ApplyEndBehavior();
+    }
+
+    private void ApplyEndBehavior()
+    {
+        SetPropertySafely("keep-open", _endBehavior == EndBehavior.None ? "yes" : "no");
+        SetPropertySafely("loop-file", _endBehavior == EndBehavior.Loop ? "inf" : "no");
     }
 
     public void SetMediaControls(bool enabled) => ApplyMediaControls(enabled);
@@ -574,6 +895,20 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
     private static bool IsFailure(Exception exception)
         => exception is MpvException or InvalidOperationException
             or FormatException or InvalidCastException or OverflowException;
+
+    private static bool TryConvertDouble(object? value, out double result)
+    {
+        try
+        {
+            result = Convert.ToDouble(value, CultureInfo.InvariantCulture);
+            return value is not null;
+        }
+        catch (Exception exception) when (IsFailure(exception))
+        {
+            result = 0;
+            return false;
+        }
+    }
 
     /// <summary>Runs something against mpv, reporting whether it got through.</summary>
     private bool TryDo(Action<MPV> action)
@@ -621,6 +956,9 @@ internal sealed class MpvPlaybackEngine : IPlaybackEngine
 
     private double? ReadDouble(string name)
         => ReadValue(name, static value => Convert.ToDouble(value, CultureInfo.InvariantCulture));
+
+    private long? ReadInt64(string name)
+        => ReadValue(name, static value => Convert.ToInt64(value, CultureInfo.InvariantCulture));
 
     private bool? ReadBoolean(string name)
         => ReadValue(name, static value => Convert.ToBoolean(value, CultureInfo.InvariantCulture));

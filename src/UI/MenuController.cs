@@ -21,6 +21,7 @@ internal sealed class MenuController
     private readonly List<MenuItem> _audioTrackItems = [];
     private readonly List<MenuItem> _localEditItems = [];
     private readonly List<MenuItem> _bookmarkItems = [];
+    private readonly Dictionary<ActionId, MenuItem> _selectionItems = [];
     private readonly Dictionary<int, string> _equalizerCommands = [];
     private readonly Dictionary<string, MenuItem> _equalizerItems = new(StringComparer.Ordinal);
     private readonly Menu _equalizerMenu;
@@ -35,6 +36,7 @@ internal sealed class MenuController
     private readonly Menu _recentPlaylistsMenu;
     private readonly MenuBar _menuBar;
     private readonly int _bookmarksMenuIndex;
+    private readonly int _selectionMenuIndex;
     private readonly int _markedMenuIndex;
     private readonly int _videoMenuIndex;
     private readonly MenuItem _markCurrentItem;
@@ -42,6 +44,7 @@ internal sealed class MenuController
     private readonly MenuItem _shuffleItem;
     private readonly MenuItem _repeatFileItem;
     private readonly MenuItem _silenceRemovalItem;
+    private readonly MenuItem _repeatSelectionsItem;
     private readonly MenuItem _fullScreenItem;
     private readonly MenuItem _startRecordingItem;
     private readonly MenuItem _pauseRecordingItem;
@@ -57,6 +60,7 @@ internal sealed class MenuController
         BuildCommandIds(actions);
         var menu = MainMenuBuilder.Build(frame, _commandIds, shortcuts, presets);
         _menuBar = menu.MenuBar;
+        _selectionMenuIndex = menu.SelectionMenuIndex;
         _bookmarksMenuIndex = menu.BookmarksMenuIndex;
         _markedMenuIndex = menu.MarkedMenuIndex;
         _videoMenuIndex = menu.VideoMenuIndex;
@@ -68,6 +72,8 @@ internal sealed class MenuController
         _audioTrackItems.AddRange(menu.AudioTrackItems);
         _localEditItems.AddRange(menu.LocalEditItems);
         _bookmarkItems.AddRange(menu.BookmarkItems);
+        foreach (var item in menu.SelectionItems)
+            _selectionItems[item.Key] = item.Value;
         foreach (var command in menu.EqualizerCommands)
             _equalizerCommands[command.Key] = command.Value;
         foreach (var item in menu.EqualizerItems)
@@ -88,6 +94,7 @@ internal sealed class MenuController
         _shuffleItem = menu.ShuffleItem;
         _repeatFileItem = menu.RepeatFileItem;
         _silenceRemovalItem = menu.SilenceRemovalItem;
+        _repeatSelectionsItem = menu.RepeatSelectionsItem;
         _fullScreenItem = menu.FullScreenItem;
         _startRecordingItem = menu.StartRecordingItem;
         _pauseRecordingItem = menu.PauseRecordingItem;
@@ -132,6 +139,19 @@ internal sealed class MenuController
     internal void SetRepeatFileChecked(bool isChecked) => _repeatFileItem.Checked = isChecked;
 
     internal void SetSilenceRemovalChecked(bool isChecked) => _silenceRemovalItem.Checked = isChecked;
+
+    internal void SetSelectionState(SelectionMenuState state)
+    {
+        _menuBar.EnableTop(_selectionMenuIndex, state.Available);
+        foreach (var item in _selectionItems.Values)
+            item.Enabled = state.Available;
+        _selectionItems[ActionId.PreviousSelection].Enabled = state.Previous;
+        _selectionItems[ActionId.NextSelection].Enabled = state.Next;
+        _selectionItems[ActionId.ClearSelectionPoint].Enabled = state.ClearCurrent;
+        _selectionItems[ActionId.ClearAllSelections].Enabled = state.ClearAll;
+        _selectionItems[ActionId.SaveSelection].Enabled = state.Save;
+        _repeatSelectionsItem.Checked = state.Repeat;
+    }
 
     /// <summary>Ticks the full-screen item to match the window.</summary>
     internal void SetFullScreenChecked(bool fullScreen) => _fullScreenItem.Checked = fullScreen;

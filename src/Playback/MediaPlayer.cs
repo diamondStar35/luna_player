@@ -27,6 +27,8 @@ internal sealed class MediaPlayer : IDisposable
         _engine = engine;
         _positions = positions;
         _engine.Ended += OnEnded;
+        _engine.SelectionEnded += OnSelectionEnded;
+        _engine.SelectionSeekCompleted += OnSelectionSeekCompleted;
         _engine.VideoAvailabilityChanged += OnVideoAvailabilityChanged;
         _engine.AudioTracksChanged += OnAudioTracksChanged;
         _engine.SubtitleTracksChanged += OnSubtitleTracksChanged;
@@ -45,15 +47,6 @@ internal sealed class MediaPlayer : IDisposable
     /// shuffle order, and leaves the current entry somewhere else entirely once they are taken out again -
     /// so coming back from YouTube starts the last file in the folder rather than carrying on where it left
     /// off.
-    ///
-    /// One engine, not two. What a session disturbs falls into two halves, and only one of them is the
-    /// engine's: the files, their order, the shuffle order and the current entry all live in
-    /// <see cref="PlaylistState"/>, which is a plain object and can simply be set aside. Everything the
-    /// engine holds - the volume, the speed, the output device, the filters - is not disturbed at all,
-    /// because it is the same engine throughout. A second engine would have to be given every one of those
-    /// on the way in and asked for them again on the way out, and every setting added afterwards would have
-    /// to be added to that list or be quietly lost; sharing one engine cannot get that wrong because there
-    /// is nothing to copy.
     ///
     /// What is lost is only the file that was loaded and how far into it playback had got. Both are
     /// remembered here and put back by <see cref="LeaveSession"/>, which is what the player already does to
@@ -126,8 +119,11 @@ internal sealed class MediaPlayer : IDisposable
     private sealed record Stage(PlaylistState Playlist, string? Path, double Position, bool Running);
 
     internal event Action<PlaybackEndReason>? Ended;
+    internal event Action<double>? SelectionEnded;
     internal event Action? CurrentChanged;
     internal event Action? StateChanged;
+
+    internal event Action? SelectionSeekCompleted;
 
     /// <summary>Raised when <see cref="HasVideo"/> may have changed, a moment after a file loads.</summary>
     internal event Action? VideoAvailabilityChanged;
@@ -148,6 +144,7 @@ internal sealed class MediaPlayer : IDisposable
     internal int CurrentIndex => _playlist.CurrentIndex;
     internal IReadOnlyList<string> Files => _playlist.Files;
     internal bool IsPaused => _engine.IsPaused;
+    internal bool SelectionRangeCompleted => _engine.SelectionRangeCompleted;
 
     /// <summary>Whether mpv has the current entry open, and so can report and change a position in it -
     /// whether or not it is playing. False before anything has been loaded and after <see cref="Stop"/>,
@@ -308,6 +305,7 @@ internal sealed class MediaPlayer : IDisposable
     // otherwise have no way of hearing about it.
     internal bool TogglePause() => Changed(_engine.TogglePause());
     internal void Play() { _engine.Play(); StateChanged?.Invoke(); }
+    internal void Pause() { _engine.Pause(); StateChanged?.Invoke(); }
     internal void Seek(double seconds) => _engine.SeekRelative(seconds);
     internal void SeekAbsolute(double seconds) => _engine.SeekAbsolute(seconds);
     internal bool SeekToEnd()
@@ -330,6 +328,14 @@ internal sealed class MediaPlayer : IDisposable
     internal bool SetLoopStart(double seconds) => _engine.SetLoopStart(seconds);
     internal bool SetLoopEnd(double seconds) => _engine.SetLoopEnd(seconds);
     internal bool ClearLoop() => _engine.ClearLoop();
+    internal bool SetSelectionRange(double start, double end, bool repeat)
+        => _engine.SetSelectionRange(start, end, repeat);
+    internal bool PlaySelectionRange(double start, double end, bool repeat)
+        => _engine.PlaySelectionRange(start, end, repeat);
+    internal bool ExitSelectionRange(double end, bool play)
+        => _engine.ExitSelectionRange(end, play);
+    internal bool ClearSelectionRange(bool restoreEndBehavior = true)
+        => _engine.ClearSelectionRange(restoreEndBehavior);
     internal bool IsShuffleEnabled => _playlist.IsShuffleEnabled;
     internal bool IsRepeatFileEnabled => _playlist.IsRepeatFileEnabled;
     internal bool IsSilenceRemovalEnabled => _silenceEnabled;
@@ -520,6 +526,8 @@ internal sealed class MediaPlayer : IDisposable
             return;
         _disposed = true;
         _engine.Ended -= OnEnded;
+        _engine.SelectionEnded -= OnSelectionEnded;
+        _engine.SelectionSeekCompleted -= OnSelectionSeekCompleted;
         _engine.VideoAvailabilityChanged -= OnVideoAvailabilityChanged;
         _engine.AudioTracksChanged -= OnAudioTracksChanged;
         _engine.SubtitleTracksChanged -= OnSubtitleTracksChanged;
@@ -537,6 +545,9 @@ internal sealed class MediaPlayer : IDisposable
             return false;
         if (!startPosition.HasValue && _trackPositions && _positions is not null && File.Exists(path))
             startPosition = _positions.Get(path);
+        // A replacement load supplies its own end-behaviour options. Restoring them on the outgoing file
+        // can turn a completed selection's artificial EOF into another playlist advance before loadfile.
+        _engine.ClearSelectionRange(restoreEndBehavior: false);
         _engine.ClearLoop();
         if (!_engine.Load(path, startPosition, paused, _playlist.GetAudioFile(path), _playlist.GetAudioOnly(path)))
             return false;
@@ -606,6 +617,18 @@ internal sealed class MediaPlayer : IDisposable
     {
         if (!_disposed)
             Ended?.Invoke(reason);
+    }
+
+    private void OnSelectionEnded(double end)
+    {
+        if (!_disposed)
+            SelectionEnded?.Invoke(end);
+    }
+
+    private void OnSelectionSeekCompleted()
+    {
+        if (!_disposed)
+            SelectionSeekCompleted?.Invoke();
     }
 
     private void OnVideoAvailabilityChanged()

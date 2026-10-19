@@ -187,6 +187,8 @@ internal sealed class MainFrame : IMainView
 
     public void SetSilenceRemovalChecked(bool isChecked) => _menus.SetSilenceRemovalChecked(isChecked);
 
+    public void SetSelectionState(SelectionMenuState state) => _menus.SetSelectionState(state);
+
     public void SetFullScreenAvailable(bool available) => _menus.SetFullScreenAvailable(available);
 
     public void SetEqualizerPreset(string? presetId) => _menus.SetEqualizerPreset(presetId);

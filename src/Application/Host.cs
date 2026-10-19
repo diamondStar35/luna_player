@@ -76,16 +76,18 @@ internal sealed class ApplicationHost : IDisposable
         // Now that there is a toolkit, the crash window can offer to copy.
         CrashReport.SetClipboard(clipboard);
         var selection = new PlaybackSelection();
+        var selections = new SelectionSlots();
         var router = new ActionRouter();
         _ = new Help(router, _view);
         _appUpdates = new Updates(router, _view, _settings, _dispatcher);
         var fileActions = new Files(router, _view, _player, _settings, _speech, clipboard, _dispatcher, new RecentsStore(Paths.RecentsFile));
-        _ = new Commands.Playback.Playback(router, _view, _player, _settings, _settingsStore, _speech, selection);
+        _ = new Commands.Playback.Playback(
+            router, _view, _player, _settings, _settingsStore, _speech, selection, selections, _dispatcher);
 
         _ = new Edit(router, _view, _player, _speech, clipboard, fileActions);
         _ = new MarkedFiles(router, _view, _player, _settings, _speech, clipboard, _dispatcher);
         var bookmarks = new BookmarkStore(Paths.BookmarksFile);
-        _ = new Commands.Playback.Bookmarks(router, _view, _player, _speech, bookmarks);
+        _ = new Commands.Playback.Bookmarks(router, _view, _player, _speech, bookmarks, selections);
         _ = new Devices(router, _view, _player, _settings, _settingsStore, _speech);
         _ = new AudioTracks(router, _view, _player, _speech);
         _subtitles = new Subtitles(router, _view, _player, _speech, _settings, _dispatcher);
@@ -145,6 +147,7 @@ internal sealed class ApplicationHost : IDisposable
             router,
             fileActions,
             selection,
+            selections,
             _sessions,
             sleepTimer,
             _speech);
