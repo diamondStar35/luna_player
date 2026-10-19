@@ -149,7 +149,8 @@ internal sealed class MenuController
         _selectionItems[ActionId.NextSelection].Enabled = state.Next;
         _selectionItems[ActionId.ClearSelectionPoint].Enabled = state.ClearCurrent;
         _selectionItems[ActionId.ClearAllSelections].Enabled = state.ClearAll;
-        _selectionItems[ActionId.SaveSelection].Enabled = state.Save;
+        _selectionItems[ActionId.SaveSelection].Enabled = state.SaveSelection;
+        _selectionItems[ActionId.SaveSelections].Enabled = state.SaveSelections;
         _repeatSelectionsItem.Checked = state.Repeat;
     }
 

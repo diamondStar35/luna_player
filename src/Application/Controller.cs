@@ -284,15 +284,5 @@ internal sealed class ApplicationController : IDisposable
     }
 
     private void SyncSelectionState()
-    {
-        var available = _player.IsLoaded;
-        _view.SetSelectionState(new SelectionMenuState(
-            available,
-            available && _selections.CanMovePrevious,
-            available && _selections.CanMoveNext,
-            available && (_selections.Current.HasValue || _selections.PendingStart.HasValue),
-            available && _selections.HasAny,
-            available && _selections.Count > 0 && _player.CurrentPath is string path && File.Exists(path),
-            _selections.Repeat));
-    }
+        => SelectionStatePresenter.Sync(_view, _player, _selections);
 }

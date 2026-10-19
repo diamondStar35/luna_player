@@ -11,7 +11,8 @@ internal readonly record struct SelectionMenuState(
     bool Next,
     bool ClearCurrent,
     bool ClearAll,
-    bool Save,
+    bool SaveSelection,
+    bool SaveSelections,
     bool Repeat);
 
 /// <summary>The state of the menus and their checkable items, kept in step with what the player is doing,

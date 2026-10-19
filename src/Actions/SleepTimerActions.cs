@@ -14,7 +14,7 @@ internal static class SleepTimerActions
     [
         // Translators: Name of the command that opens the window where a sleep timer is set.
         new(ActionId.OpenSleepTimer, Tr("Set sleep timer..."),
-            new("s", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
+            new("s", ShortcutModifiers.Control | ShortcutModifiers.Alt)),
         // Translators: Name of the command that cancels a sleep timer that is counting down.
         new(ActionId.CancelSleepTimer, Tr("Cancel sleep timer")),
         // Translators: Name of the command that speaks how long is left before the sleep timer fires.

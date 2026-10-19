@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
 using LunaPlayer.Configuration;
@@ -8,20 +9,120 @@ namespace LunaPlayer.Media;
 
 internal readonly record struct SelectionExportOutcome(bool Success, string? Error);
 
-/// <summary>Writes one precise selection with FFmpeg, retaining audio for audio and both picture and sound
-/// for video. Encoder defaults supply every setting the user did not choose, matching the source where the
-/// output container permits it.</summary>
+/// <summary>Everything needed to write the completed selection slots of one source file.</summary>
+internal sealed record SelectionExportBatchRequest(
+    string Source,
+    IReadOnlyList<SelectionRange> Ranges,
+    string Folder,
+    string Name,
+    string Extension,
+    bool Video,
+    int MaxConcurrency);
+
+/// <summary>One selection that could not be written, with its intended file and FFmpeg's reason.</summary>
+internal readonly record struct SelectionExportFailure(int Number, string File, string Error);
+
+/// <summary>The result of writing every selection in a batch.</summary>
+internal sealed record SelectionExportBatchOutcome(
+    int Saved,
+    int Total,
+    IReadOnlyList<SelectionExportFailure> Failures);
+
+/// <summary>Writes precise selections with FFmpeg, retaining audio for audio and both picture and sound for
+/// video. Single and concurrent batch saves share the same per-selection path, including progress parsing,
+/// cancellation and temporary-file cleanup.</summary>
 internal sealed class SelectionExporter
 {
+    private const int ProgressScale = 1000;
     private static readonly string FfmpegPath = Path.Combine(Utils.NativeDirectory, "ffmpeg.exe");
 
     internal SelectionExportOutcome Export(
         string source, string destination, SelectionRange range, bool video,
         Action<ProgressUpdate> report, CancellationToken token)
+        => ExportOne(
+            source, destination, range, video,
+            fraction => report(new ProgressUpdate(
+                (int)Math.Round(fraction * ProgressScale), ProgressScale, Path.GetFileName(destination))),
+            token);
+
+    /// <summary>Writes every range with one FFmpeg process per selection, running no more than the chosen
+    /// number at once. Each selection contributes an equal share to the aggregate progress bar.</summary>
+    internal SelectionExportBatchOutcome ExportBatch(
+        SelectionExportBatchRequest request,
+        Action<ProgressUpdate> report,
+        CancellationToken token)
+    {
+        var total = request.Ranges.Count;
+        if (total == 0)
+            return new SelectionExportBatchOutcome(0, 0, []);
+
+        // Resolve every destination before starting workers. The numbered preferred names are already
+        // distinct from one another; Unused protects files left by an earlier batch from being overwritten.
+        var destinations = Enumerable.Range(0, total)
+            .Select(index => Paths.Unused(Path.Combine(
+                request.Folder, $"{request.Name}{index + 1}{request.Extension}")))
+            .ToArray();
+        var failures = new ConcurrentBag<SelectionExportFailure>();
+        var fractions = new double[total];
+        var sum = 0.0;
+        var gate = new object();
+
+        void Emit(int index, double fraction)
+        {
+            fraction = Math.Clamp(fraction, 0, 1);
+            double aggregate;
+            lock (gate)
+            {
+                sum += fraction - fractions[index];
+                fractions[index] = fraction;
+                aggregate = sum / total;
+            }
+            report(new ProgressUpdate(
+                (int)Math.Round(aggregate * ProgressScale),
+                ProgressScale,
+                Path.GetFileName(destinations[index]),
+                ItemNumber: index + 1,
+                ItemValue: (int)Math.Round(fraction * ProgressScale),
+                ItemTotal: ProgressScale));
+        }
+
+        var options = new ParallelOptions
+        {
+            MaxDegreeOfParallelism = Math.Clamp(request.MaxConcurrency, 1, 16),
+            CancellationToken = token,
+        };
+        Parallel.ForEach(Enumerable.Range(0, total), options, index =>
+        {
+            Emit(index, 0);
+            var outcome = ExportOne(
+                request.Source, destinations[index], request.Ranges[index], request.Video,
+                fraction => Emit(index, fraction), token);
+            if (!outcome.Success)
+            {
+                failures.Add(new SelectionExportFailure(
+                    index + 1,
+                    destinations[index],
+                    outcome.Error ?? string.Empty));
+                // A failed selection is finished work too; otherwise the total bar could never reach 100%.
+                Emit(index, 1);
+            }
+        });
+        var orderedFailures = failures.OrderBy(failure => failure.Number).ToArray();
+        return new SelectionExportBatchOutcome(total - orderedFailures.Length, total, orderedFailures);
+    }
+
+    /// <summary>The single FFmpeg path shared by one-file and batch saves. Progress is a fraction from zero
+    /// to one, leaving each caller to decide whether it drives a file bar or one share of an aggregate.</summary>
+    private static SelectionExportOutcome ExportOne(
+        string source,
+        string destination,
+        SelectionRange range,
+        bool video,
+        Action<double> report,
+        CancellationToken token)
     {
         var temporary = TemporaryPath(destination);
         var duration = Math.Max(0.001, range.End - range.Start);
-        var totalMilliseconds = (int)Math.Clamp(Math.Ceiling(duration * 1000), 1, int.MaxValue);
         try
         {
             Paths.EnsureDirectoryFor(destination);
@@ -35,10 +136,7 @@ internal sealed class SelectionExporter
                 if (!line.StartsWith("out_time=", StringComparison.Ordinal)
                     || !TimeSpan.TryParse(line[9..], CultureInfo.InvariantCulture, out var elapsed))
                     continue;
-                report(new ProgressUpdate(
-                    (int)Math.Clamp(elapsed.TotalMilliseconds, 0, totalMilliseconds),
-                    totalMilliseconds,
-                    Path.GetFileName(destination)));
+                report(Math.Clamp(elapsed.TotalSeconds / duration, 0, 1));
             }
             process.WaitForExit();
             var error = errors.GetAwaiter().GetResult();
@@ -49,7 +147,7 @@ internal sealed class SelectionExporter
                 return new SelectionExportOutcome(false, error);
             }
             File.Move(temporary, destination, overwrite: true);
-            report(new ProgressUpdate(1, 1, Path.GetFileName(destination)));
+            report(1);
             return new SelectionExportOutcome(true, null);
         }
         catch (OperationCanceledException)

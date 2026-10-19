@@ -173,6 +173,9 @@ internal static class PlaybackActions
             new(ActionId.ClearAllSelections, Tr("Clear all selections"), new("backspace", ShortcutModifiers.Control)),
             // Translators: Name of the command that saves the selected part as a new media file.
             new(ActionId.SaveSelection, Tr("Save selected time to a file"), new("s", ShortcutModifiers.Control)),
+            // Translators: Name of the command that saves every precise selection as a separate media file.
+            new(ActionId.SaveSelections, Tr("Save selection points to files"),
+                new("s", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
             // Translators: Name of the command that turns repeated selection playback on or off.
             new(ActionId.ToggleRepeatSelections, Tr("Repeat selections")),
         };

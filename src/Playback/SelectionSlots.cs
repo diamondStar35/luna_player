@@ -25,6 +25,11 @@ internal sealed class SelectionSlots
     internal bool HasAny => Count > 0 || PendingStart.HasValue;
     internal SelectionRange? Sole => Count == 1 ? _current!.Ranges[0] : null;
 
+    /// <summary>A stable copy of the completed slots, safe to hand to a background export while the user
+    /// continues using the player and may change the live slots.</summary>
+    internal IReadOnlyList<SelectionRange> Snapshot()
+        => _current?.Ranges.ToArray() ?? [];
+
     internal SelectionRange? Current
     {
         get

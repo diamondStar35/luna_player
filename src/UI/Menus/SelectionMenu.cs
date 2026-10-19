@@ -37,6 +37,8 @@ internal static partial class MainMenuBuilder
         menu.AppendSeparator();
         // Translators: Selection menu item that writes the current selected part as a new media file.
         AddSelection(ActionId.SaveSelection, Tr("Save Selected Time to a File..."));
+        // Translators: Selection menu item that writes every saved selection point as a separate media file.
+        AddSelection(ActionId.SaveSelections, Tr("Save Selection Points..."));
         menu.AppendSeparator();
         var repeat = menu.AppendCheckItem(
             commandIds[ActionId.ToggleRepeatSelections],

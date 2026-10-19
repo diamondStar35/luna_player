@@ -1,14 +1,11 @@
 using System.Globalization;
-using LunaPlayer.Media;
+using LunaPlayer.Application.Presentation;
 using LunaPlayer.Playback;
-using LunaPlayer.UI;
 
 namespace LunaPlayer.Application.Commands.Playback;
 
 internal sealed partial class Playback
 {
-    private readonly SelectionExporter _selectionExporter = new();
-
     private void StartAbSelection()
     {
         if (_selections.PlaybackActive)
@@ -197,71 +194,6 @@ internal sealed partial class Playback
         SyncSelectionState();
     }
 
-    private void SaveSelection()
-    {
-        if (_player.CurrentPath is not string source || _selections.Count == 0)
-            return;
-        SelectionRange range;
-        if (_selections.Sole is SelectionRange sole)
-            range = sole;
-        else if (_selections.Current is SelectionRange current)
-            range = current;
-        else
-        {
-            _view.Dialogs.ShowInfo(
-                // Translators: Shown when a file has several selections but the user has not moved to the one to save.
-                Tr("There are multiple selection points in the current file. Save all selections to a file, or move to the selection point you want to save."),
-                // Translators: Title of information about choosing one of several selections to save.
-                Tr("Save selection"));
-            return;
-        }
-        if (!File.Exists(source))
-        {
-            _view.Dialogs.ShowWarning(
-                // Translators: Shown when saving a selection is attempted from a web stream rather than a local file.
-                Tr("Only selections from files on this computer can be saved."),
-                // Translators: Title of a warning that a selection cannot be saved.
-                Tr("Save selection"));
-            return;
-        }
-        var video = _player.CurrentKind == MediaKind.Video;
-        var destination = _view.Dialogs.ChooseSelectionDestination(source, video);
-        if (string.IsNullOrWhiteSpace(destination))
-            return;
-        var prompt = new ProgressPrompt(
-            // Translators: Title of the progress window shown while a selected part is being saved.
-            Tr("Saving selection"),
-            // Translators: Initial text in the progress window while a selected part begins saving.
-            Tr("Preparing the selected part..."),
-            update =>
-                // Translators: Progress text while a selected part is being saved. {name} is the output file name.
-                TrFormat("Saving {name}", update.Name));
-        BackgroundProgress.Start(
-            _view, _dispatcher, prompt,
-            (report, token) => _selectionExporter.Export(source, destination, range, video, report, token),
-            outcome => ReportSelectionExport(destination, outcome));
-    }
-
-    private void ReportSelectionExport(string destination, SelectionExportOutcome outcome)
-    {
-        if (outcome.Success)
-        {
-            _view.Dialogs.ShowInfo(
-                // Translators: Shown after a selected part has been saved. {file} is the output file name.
-                TrFormat("The selection was saved as {file}.", Path.GetFileName(destination)),
-                // Translators: Title of the message shown after a selected part was saved.
-                Tr("Selection saved"));
-            return;
-        }
-        // Translators: Fallback reason when FFmpeg did not say why a selected part could not be saved.
-        var error = outcome.Error ?? Tr("Unknown error.");
-        _view.Dialogs.ShowError(
-            // Translators: Shown when a selected part could not be saved. {error} is FFmpeg's reason.
-            TrFormat("The selection could not be saved.\n\n{error}", error),
-            // Translators: Title of the error shown when a selected part could not be saved.
-            Tr("Save selection"));
-    }
-
     private bool TryChooseSelectionTime(
         string title, string prompt, out string path, out double time)
     {
@@ -309,17 +241,7 @@ internal sealed partial class Playback
         => _player.Elapsed is double elapsed && elapsed >= range.End - 0.001;
 
     internal void SyncSelectionState()
-    {
-        var available = _player.IsLoaded;
-        _view.SetSelectionState(new SelectionMenuState(
-            available,
-            available && _selections.CanMovePrevious,
-            available && _selections.CanMoveNext,
-            available && (_selections.Current.HasValue || _selections.PendingStart.HasValue),
-            available && _selections.HasAny,
-            available && _selections.Count > 0 && _player.CurrentPath is string path && File.Exists(path),
-            _selections.Repeat));
-    }
+        => SelectionStatePresenter.Sync(_view, _player, _selections);
 
     private static string FormatSelectionTime(double seconds)
     {

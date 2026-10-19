@@ -98,6 +98,7 @@ internal sealed partial class Playback
         router.Register(ActionId.ClearSelectionPoint, ClearSelectionPoint);
         router.Register(ActionId.ClearAllSelections, ClearAllSelections);
         router.Register(ActionId.SaveSelection, SaveSelection);
+        router.Register(ActionId.SaveSelections, SaveSelections);
         router.Register(ActionId.ToggleRepeatSelections, ToggleRepeatSelections);
     }
 

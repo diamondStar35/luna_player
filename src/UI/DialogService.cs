@@ -110,35 +110,7 @@ internal sealed class DialogService : IDialogService, IDisposable
         var sourceName = File.Exists(source) ? Path.GetFileNameWithoutExtension(source) : Tr("selection");
         // Translators: Default file name for a saved selection. {name} is the source file's base name.
         var name = TrFormat("{name} - selection", sourceName);
-        (string Label, string Extension)[] formats = video
-            ?
-            [
-                // Translators: MP4 choice in the file-type list when saving a selected part of a video.
-                (Tr("MP4 video (*.mp4)"), ".mp4"),
-                // Translators: Matroska choice in the file-type list when saving a selected part of a video.
-                (Tr("Matroska video (*.mkv)"), ".mkv"),
-                // Translators: WebM choice in the file-type list when saving a selected part of a video.
-                (Tr("WebM video (*.webm)"), ".webm"),
-                // Translators: QuickTime choice in the file-type list when saving a selected part of a video.
-                (Tr("QuickTime video (*.mov)"), ".mov"),
-                // Translators: AVI choice in the file-type list when saving a selected part of a video.
-                (Tr("AVI video (*.avi)"), ".avi"),
-            ]
-            :
-            [
-                // Translators: MP3 choice in the file-type list when saving a selected part of an audio file.
-                (Tr("MP3 audio (*.mp3)"), ".mp3"),
-                // Translators: M4A choice in the file-type list when saving a selected part of an audio file.
-                (Tr("M4A audio (*.m4a)"), ".m4a"),
-                // Translators: FLAC choice in the file-type list when saving a selected part of an audio file.
-                (Tr("FLAC audio (*.flac)"), ".flac"),
-                // Translators: WAV choice in the file-type list when saving a selected part of an audio file.
-                (Tr("WAV audio (*.wav)"), ".wav"),
-                // Translators: Ogg Vorbis choice in the file-type list when saving a selected part of an audio file.
-                (Tr("Ogg Vorbis audio (*.ogg)"), ".ogg"),
-                // Translators: Opus choice in the file-type list when saving a selected part of an audio file.
-                (Tr("Opus audio (*.opus)"), ".opus"),
-            ];
+        var formats = SelectionFormats(video);
         var extensions = new HashSet<string>(formats.Select(format => format.Extension), StringComparer.OrdinalIgnoreCase);
         var sourceExtension = Path.GetExtension(source);
         var selectedFormat = Array.FindIndex(formats,
@@ -167,6 +139,48 @@ internal sealed class DialogService : IDialogService, IDisposable
             ? path
             : path + formats[chosenFormat].Extension;
     }
+
+    public SelectionSaveOptions? ChooseSelectionBatch(string source, bool video)
+    {
+        var folder = File.Exists(source)
+            ? Path.GetDirectoryName(source) ?? string.Empty
+            : Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
+        // Translators: Default common name for numbered files created by Save Selection Points.
+        var name = Tr("selection");
+        using var dialog = new SaveSelectionsDialog(
+            DialogParent, SelectionFormats(video), folder, name, Path.GetExtension(source));
+        return dialog.Show();
+    }
+
+    private static SelectionFileFormat[] SelectionFormats(bool video) => video
+        ?
+        [
+            // Translators: MP4 choice in the format list when saving selected parts of a video.
+            new(Tr("MP4 video (*.mp4)"), ".mp4"),
+            // Translators: Matroska choice in the format list when saving selected parts of a video.
+            new(Tr("Matroska video (*.mkv)"), ".mkv"),
+            // Translators: WebM choice in the format list when saving selected parts of a video.
+            new(Tr("WebM video (*.webm)"), ".webm"),
+            // Translators: QuickTime choice in the format list when saving selected parts of a video.
+            new(Tr("QuickTime video (*.mov)"), ".mov"),
+            // Translators: AVI choice in the format list when saving selected parts of a video.
+            new(Tr("AVI video (*.avi)"), ".avi"),
+        ]
+        :
+        [
+            // Translators: MP3 choice in the format list when saving selected parts of an audio file.
+            new(Tr("MP3 audio (*.mp3)"), ".mp3"),
+            // Translators: M4A choice in the format list when saving selected parts of an audio file.
+            new(Tr("M4A audio (*.m4a)"), ".m4a"),
+            // Translators: FLAC choice in the format list when saving selected parts of an audio file.
+            new(Tr("FLAC audio (*.flac)"), ".flac"),
+            // Translators: WAV choice in the format list when saving selected parts of an audio file.
+            new(Tr("WAV audio (*.wav)"), ".wav"),
+            // Translators: Ogg Vorbis choice in the format list when saving selected parts of an audio file.
+            new(Tr("Ogg Vorbis audio (*.ogg)"), ".ogg"),
+            // Translators: Opus choice in the format list when saving selected parts of an audio file.
+            new(Tr("Opus audio (*.opus)"), ".opus"),
+        ];
     public SleepTimerDialogResult? ChooseSleepTimer(SleepTimerRequest initial, bool armed, string? statusText) { using var dialog = new SleepTimerDialog(DialogParent, initial, armed, statusText); return dialog.Show(); }
     public int? ChooseAudioDevice(IReadOnlyList<string> descriptions, int selectedIndex) { using var dialog = new AudioDeviceDialog(DialogParent, descriptions, selectedIndex); return dialog.Show(); }
     public int? ChooseAudioTrack(IReadOnlyList<string> labels, int selectedIndex) { using var dialog = new AudioTrackDialog(DialogParent, labels, selectedIndex); return dialog.Show(); }
