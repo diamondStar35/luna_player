@@ -8,6 +8,12 @@
     <PublishAot>true</PublishAot>
     <AssemblyName>Updater</AssemblyName>
     <RootNamespace>LunaPlayer.Updater</RootNamespace>
+    <!-- Version 2 is the first updater that supports the worker/finalizer handoff. The worker reads this
+         resource before installing an updater, so an older release cannot replace it with an executable
+         that would interpret the finalization switch as an update package path. -->
+    <Version>2.0.0</Version>
+    <AssemblyVersion>2.0.0.0</AssemblyVersion>
+    <FileVersion>2.0.0.0</FileVersion>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <LangVersion>latest</LangVersion>

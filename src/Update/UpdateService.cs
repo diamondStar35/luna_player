@@ -16,6 +16,7 @@ internal sealed class AppUpdateService : IDisposable
         "https://raw.githubusercontent.com/diamondStar35/luna_player/main/info.json";
     private const string InstallerMarker = ".luna_installed";
     private const string UpdaterExecutable = "Updater.exe";
+    private const string TemporaryUpdaterExecutable = "Updater.temp.exe";
 
     private readonly HttpClient _http = new() { Timeout = Timeout.InfiniteTimeSpan };
 
@@ -148,9 +149,41 @@ internal sealed class AppUpdateService : IDisposable
     {
         var applicationDirectory = Path.TrimEndingDirectorySeparator(AppContext.BaseDirectory);
         var updaterPath = Path.Combine(applicationDirectory, UpdaterExecutable);
+        var temporaryUpdaterPath = Path.Combine(applicationDirectory, TemporaryUpdaterExecutable);
+        if (!File.Exists(updaterPath) && File.Exists(temporaryUpdaterPath))
+            File.Move(temporaryUpdaterPath, updaterPath);
         if (!File.Exists(updaterPath))
             throw new FileNotFoundException("Updater.exe was not found.", updaterPath);
 
+        // Inno Setup owns installed updates, including restarting Luna Player. The updater only waits for
+        // this process to exit before starting it, so it does not need the portable archive handoff.
+        if (Path.GetExtension(packagePath).Equals(".exe", StringComparison.OrdinalIgnoreCase))
+        {
+            StartUpdater(updaterPath, packagePath, applicationDirectory);
+            return;
+        }
+
+        // The worker must not keep Updater.exe open: the downloaded package contains its replacement.
+        // A stale temporary copy can only be left by an interrupted update, when no worker is running.
+        if (File.Exists(temporaryUpdaterPath))
+            File.Delete(temporaryUpdaterPath);
+        File.Move(updaterPath, temporaryUpdaterPath);
+
+        try
+        {
+            StartUpdater(temporaryUpdaterPath, packagePath, applicationDirectory);
+        }
+        catch
+        {
+            // Starting the worker failed, so restore the updater before returning control to the player.
+            if (!File.Exists(updaterPath) && File.Exists(temporaryUpdaterPath))
+                File.Move(temporaryUpdaterPath, updaterPath);
+            throw;
+        }
+    }
+
+    private static void StartUpdater(string updaterPath, string packagePath, string applicationDirectory)
+    {
         var start = new ProcessStartInfo(updaterPath)
         {
             UseShellExecute = false,
