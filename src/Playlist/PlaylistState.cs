@@ -70,7 +70,7 @@ internal sealed class PlaylistState
         _currentIndex = selectedIndex;
         _pendingStart = selectedIndex == 0 && preferredPath is null ? null : Precision.Normalize(startPosition);
         if (IsShuffleEnabled)
-            RebuildShuffleOrder();
+            CreateShuffleOrder();
         return true;
     }
 
@@ -82,16 +82,20 @@ internal sealed class PlaylistState
     {
         if (string.IsNullOrWhiteSpace(path))
             return false;
+        var addedIndex = _files.Count;
         _files.Add(path);
+        if (IsShuffleEnabled)
+        {
+            // A playlist is shuffled once. Adding a file gives only that file a random place; moving every
+            // existing file again would make Previous and Next point somewhere different after each edit.
+            _shuffleOrder.Insert(Random.Shared.Next(_shuffleOrder.Count + 1), addedIndex);
+        }
         if (jump)
         {
-            _currentIndex = _files.Count - 1;
+            _currentIndex = addedIndex;
             _pendingStart = null;
         }
-        if (IsShuffleEnabled)
-            RebuildShuffleOrder();
-        else
-            SyncShufflePosition();
+        SyncShufflePosition();
         return true;
     }
 
@@ -123,15 +127,6 @@ internal sealed class PlaylistState
     internal bool GetAudioOnly(string? path) => Info(path).AudioOnly;
 
     internal string? CurrentSource => GetSource(CurrentPath);
-
-    /// <summary>Where in the list the entry that came from <paramref name="source"/> is, or -1.</summary>
-    /// <remarks>
-    /// Comparison is case-sensitive: these are addresses, and the part of a YouTube address that names a
-    /// video is. It is also what answers "is this video still in the list", so the caller that removes a
-    /// session's entries needs no separate record of what it queued.
-    /// </remarks>
-    internal int IndexOfSource(string source)
-        => _files.FindIndex(path => string.Equals(GetSource(path), source, StringComparison.Ordinal));
 
     private EntryInfo Info(string? path)
         => path is not null && _info.TryGetValue(path, out var info) ? info : default;
@@ -193,17 +188,35 @@ internal sealed class PlaylistState
     {
         if (_currentIndex < 0 || _currentIndex >= _files.Count)
             return null;
+        if (IsShuffleEnabled)
+            SyncShufflePosition();
+        var removedIndex = _currentIndex;
+        var removedPosition = _shufflePosition;
         var removed = _files[_currentIndex];
         _files.RemoveAt(_currentIndex);
         _marks.Remove([removed]);
         _info.Remove(removed);
-        if (_files.Count == 0)
+        _pendingStart = null;
+        if (IsShuffleEnabled)
+        {
+            RemoveFromShuffleOrder(removedIndex);
+            if (_shuffleOrder.Count == 0)
+            {
+                _currentIndex = -1;
+                _shufflePosition = -1;
+            }
+            else
+            {
+                // Removing the current item advances to the item that followed it in the fixed shuffled
+                // order. At the end there is no following item, so the preceding one remains current.
+                _shufflePosition = Math.Min(Math.Max(removedPosition, 0), _shuffleOrder.Count - 1);
+                _currentIndex = _shuffleOrder[_shufflePosition];
+            }
+        }
+        else if (_files.Count == 0)
             _currentIndex = -1;
         else if (_currentIndex >= _files.Count)
             _currentIndex = _files.Count - 1;
-        _pendingStart = null;
-        if (IsShuffleEnabled)
-            RebuildShuffleOrder();
         return removed;
     }
 
@@ -233,20 +246,73 @@ internal sealed class PlaylistState
         if (keys.Count == 0) return (false, false);
         var oldCurrent = CurrentPath;
         var oldIndex = _currentIndex;
-        var removed = _files.Where(path => keys.Contains(Paths.Key(path))).ToList();
-        if (removed.Count == 0) return (false, false);
-        _files.RemoveAll(path => keys.Contains(Paths.Key(path)));
+        if (IsShuffleEnabled)
+            SyncShufflePosition();
+        var oldShufflePosition = _shufflePosition;
+        var oldShuffleOrder = _shuffleOrder.ToArray();
+        var removedIndexes = Enumerable.Range(0, _files.Count)
+            .Where(index => keys.Contains(Paths.Key(_files[index])))
+            .ToHashSet();
+        if (removedIndexes.Count == 0) return (false, false);
+        var removed = removedIndexes.Select(index => _files[index]).ToList();
+        var newIndexes = new int[_files.Count];
+        var kept = new List<string>(_files.Count - removedIndexes.Count);
+        for (var index = 0; index < _files.Count; index++)
+        {
+            if (removedIndexes.Contains(index))
+            {
+                newIndexes[index] = -1;
+                continue;
+            }
+            newIndexes[index] = kept.Count;
+            kept.Add(_files[index]);
+        }
+        _files.Clear();
+        _files.AddRange(kept);
         _marks.Remove(paths);
         foreach (var path in removed)
             _info.Remove(path);
-        if (_files.Count == 0)
+        if (IsShuffleEnabled)
+        {
+            var stableOrder = oldShuffleOrder
+                .Where(index => !removedIndexes.Contains(index))
+                .Select(index => newIndexes[index])
+                .ToList();
+            _shuffleOrder.Clear();
+            _shuffleOrder.AddRange(stableOrder);
+            if (_shuffleOrder.Count == 0)
+            {
+                _currentIndex = -1;
+                _shufflePosition = -1;
+            }
+            else if (oldIndex >= 0 && oldIndex < newIndexes.Length && !removedIndexes.Contains(oldIndex))
+            {
+                _currentIndex = newIndexes[oldIndex];
+                _shufflePosition = _shuffleOrder.IndexOf(_currentIndex);
+            }
+            else if (oldIndex < 0 || oldIndex >= newIndexes.Length)
+            {
+                _shufflePosition = 0;
+                _currentIndex = _shuffleOrder[0];
+            }
+            else
+            {
+                // Count the surviving entries that preceded the removed current one. That is the position
+                // of its old successor after removal, or the final position when the current one was last.
+                var nextPosition = oldShuffleOrder
+                    .Take(Math.Max(0, oldShufflePosition))
+                    .Count(index => !removedIndexes.Contains(index));
+                _shufflePosition = Math.Min(nextPosition, _shuffleOrder.Count - 1);
+                _currentIndex = _shuffleOrder[_shufflePosition];
+            }
+        }
+        else if (_files.Count == 0)
             _currentIndex = -1;
         else if (oldCurrent is not null && !keys.Contains(Paths.Key(oldCurrent)))
-            _currentIndex = _files.FindIndex(path => string.Equals(path, oldCurrent, StringComparison.Ordinal));
+            _currentIndex = newIndexes[oldIndex];
         else
             _currentIndex = Math.Min(Math.Max(oldIndex, 0), _files.Count - 1);
         _pendingStart = null;
-        if (IsShuffleEnabled) RebuildShuffleOrder();
         return (true, !string.Equals(oldCurrent, CurrentPath, StringComparison.Ordinal));
     }
 
@@ -266,7 +332,7 @@ internal sealed class PlaylistState
     {
         IsShuffleEnabled = !IsShuffleEnabled;
         if (IsShuffleEnabled)
-            RebuildShuffleOrder();
+            CreateShuffleOrder();
         else
             ClearShuffleOrder();
         return IsShuffleEnabled;
@@ -287,7 +353,15 @@ internal sealed class PlaylistState
 
     private bool MoveNextSequential(bool wrap)
     {
-        if (_files.Count <= 1)
+        if (_files.Count == 0)
+            return false;
+        if (_currentIndex < 0 || _currentIndex >= _files.Count)
+        {
+            _currentIndex = 0;
+            _pendingStart = null;
+            return true;
+        }
+        if (_files.Count == 1)
             return false;
         if (_currentIndex + 1 >= _files.Count)
         {
@@ -306,7 +380,15 @@ internal sealed class PlaylistState
 
     private bool MovePreviousSequential(bool wrap)
     {
-        if (_files.Count <= 1)
+        if (_files.Count == 0)
+            return false;
+        if (_currentIndex < 0 || _currentIndex >= _files.Count)
+        {
+            _currentIndex = _files.Count - 1;
+            _pendingStart = null;
+            return true;
+        }
+        if (_files.Count == 1)
             return false;
         if (_currentIndex <= 0)
         {
@@ -325,9 +407,18 @@ internal sealed class PlaylistState
 
     private bool MoveNextShuffled(bool wrap)
     {
-        if (_files.Count <= 1)
+        if (_files.Count == 0)
             return false;
         SyncShufflePosition();
+        if (_shufflePosition < 0)
+        {
+            _shufflePosition = 0;
+            _currentIndex = _shuffleOrder[0];
+            _pendingStart = null;
+            return true;
+        }
+        if (_files.Count == 1)
+            return false;
         if (_shufflePosition + 1 >= _shuffleOrder.Count)
         {
             if (!wrap)
@@ -345,9 +436,18 @@ internal sealed class PlaylistState
 
     private bool MovePreviousShuffled(bool wrap)
     {
-        if (_files.Count <= 1)
+        if (_files.Count == 0)
             return false;
         SyncShufflePosition();
+        if (_shufflePosition < 0)
+        {
+            _shufflePosition = _shuffleOrder.Count - 1;
+            _currentIndex = _shuffleOrder[_shufflePosition];
+            _pendingStart = null;
+            return true;
+        }
+        if (_files.Count == 1)
+            return false;
         if (_shufflePosition <= 0)
         {
             if (!wrap)
@@ -367,32 +467,48 @@ internal sealed class PlaylistState
     {
         if (!IsShuffleEnabled)
             return;
-        if (_shuffleOrder.Count != _files.Count || !_shuffleOrder.Contains(_currentIndex))
-        {
-            RebuildShuffleOrder();
-            return;
-        }
+        RepairShuffleOrder();
         _shufflePosition = _shuffleOrder.IndexOf(_currentIndex);
     }
 
-    private void RebuildShuffleOrder()
+    /// <summary>Creates the one random order used until shuffle is turned off or a new playlist is opened.
+    /// The current item is shuffled like every other item; keeping its old numeric position is what made
+    /// the first and last entries remain at the edges.</summary>
+    private void CreateShuffleOrder()
     {
         ClearShuffleOrder();
         if (_currentIndex < 0 || _currentIndex >= _files.Count)
             return;
         for (var index = 0; index < _files.Count; index++)
-        {
-            if (index != _currentIndex)
-                _shuffleOrder.Add(index);
-        }
+            _shuffleOrder.Add(index);
         for (var index = _shuffleOrder.Count - 1; index > 0; index--)
         {
             var target = Random.Shared.Next(index + 1);
             (_shuffleOrder[index], _shuffleOrder[target]) = (_shuffleOrder[target], _shuffleOrder[index]);
         }
-        var insertPosition = Math.Min(Math.Max(_currentIndex, 0), _shuffleOrder.Count);
-        _shuffleOrder.Insert(insertPosition, _currentIndex);
-        _shufflePosition = insertPosition;
+        _shufflePosition = _shuffleOrder.IndexOf(_currentIndex);
+    }
+
+    /// <summary>Repairs an invalid permutation without changing the relative order of valid entries.</summary>
+    private void RepairShuffleOrder()
+    {
+        var seen = new HashSet<int>();
+        _shuffleOrder.RemoveAll(index => index < 0 || index >= _files.Count || !seen.Add(index));
+        for (var index = 0; index < _files.Count; index++)
+        {
+            if (!seen.Contains(index))
+                _shuffleOrder.Insert(Random.Shared.Next(_shuffleOrder.Count + 1), index);
+        }
+    }
+
+    private void RemoveFromShuffleOrder(int removedIndex)
+    {
+        _shuffleOrder.Remove(removedIndex);
+        for (var index = 0; index < _shuffleOrder.Count; index++)
+        {
+            if (_shuffleOrder[index] > removedIndex)
+                _shuffleOrder[index]--;
+        }
     }
 
     private void ClearShuffleOrder()

@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Security.Cryptography;
 using System.Text.Json;
 using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
@@ -9,12 +10,15 @@ namespace LunaPlayer.Update;
 
 internal readonly record struct AppUpdateInfo(string Version, string Changes);
 
+internal sealed class UpdateIntegrityException(string message) : Exception(message);
+
 /// <summary>Reads release metadata, downloads the matching package, and starts the updater.</summary>
 internal sealed class AppUpdateService : IDisposable
 {
     private const string InfoUrl =
         "https://raw.githubusercontent.com/diamondStar35/luna_player/main/info.json";
     private const string InstallerMarker = ".luna_installed";
+    private const string ChecksumsFile = "SHA256SUMS.txt";
     private const string UpdaterExecutable = "Updater.exe";
     private const string TemporaryUpdaterExecutable = "Updater.temp.exe";
 
@@ -72,22 +76,15 @@ internal sealed class AppUpdateService : IDisposable
         return false;
     }
 
-    /// <summary>Whether the release already contains the package this copy of the player needs.</summary>
+    /// <summary>Whether the release contains both the package this copy needs and its checksums.</summary>
     internal bool PackageExists(AppUpdateInfo update, CancellationToken token)
     {
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(token);
         timeout.CancelAfter(TimeSpan.FromSeconds(15));
         try
         {
-            // Reading only the headers verifies the actual asset without downloading its contents.
-            using var response = _http.Send(
-                new HttpRequestMessage(HttpMethod.Get, PackageAddress(update)),
-                HttpCompletionOption.ResponseHeadersRead,
-                timeout.Token);
-            if (response.StatusCode == HttpStatusCode.NotFound)
-                return false;
-            response.EnsureSuccessStatusCode();
-            return true;
+            return RemoteFileExists(PackageAddress(update), timeout.Token)
+                && RemoteFileExists(ChecksumsAddress(update), timeout.Token);
         }
         catch (OperationCanceledException) when (!token.IsCancellationRequested)
         {
@@ -95,14 +92,28 @@ internal sealed class AppUpdateService : IDisposable
         }
     }
 
+    private bool RemoteFileExists(string address, CancellationToken token)
+    {
+        // Reading only the headers verifies the actual release asset without downloading its contents.
+        using var response = _http.Send(
+            new HttpRequestMessage(HttpMethod.Get, address),
+            HttpCompletionOption.ResponseHeadersRead,
+            token);
+        if (response.StatusCode == HttpStatusCode.NotFound)
+            return false;
+        response.EnsureSuccessStatusCode();
+        return true;
+    }
+
     /// <summary>Downloads the installer for an installed copy, or the ZIP for a portable copy.</summary>
     internal string Download(
         AppUpdateInfo update,
-        Action<long, long> report,
+        Action<long, long, bool> report,
         CancellationToken token)
     {
         var extension = PackageExtension();
         var address = PackageAddress(update);
+        var packageName = PackageName(update);
 
         var directory = Path.Combine(Path.GetTempPath(), AppInfo.Identifier, "Updates");
         Directory.CreateDirectory(directory);
@@ -119,7 +130,7 @@ internal sealed class AppUpdateService : IDisposable
             {
                 response.EnsureSuccessStatusCode();
                 var total = response.Content.Headers.ContentLength ?? 0;
-                report(0, total);
+                report(0, total, false);
                 using var source = response.Content.ReadAsStream(token);
                 using var target = File.Create(scratch);
                 var buffer = new byte[64 * 1024];
@@ -130,11 +141,13 @@ internal sealed class AppUpdateService : IDisposable
                     token.ThrowIfCancellationRequested();
                     target.Write(buffer, 0, read);
                     downloaded += read;
-                    report(downloaded, total);
+                    report(downloaded, total, false);
                 }
                 if (total > 0 && downloaded != total)
                     throw new EndOfStreamException("The update package was not downloaded completely.");
             }
+            report(1, 1, true);
+            VerifyChecksum(scratch, packageName, update, token);
             File.Move(scratch, destination, overwrite: true);
             return destination;
         }
@@ -200,10 +213,83 @@ internal sealed class AppUpdateService : IDisposable
 
     private static string PackageAddress(AppUpdateInfo update)
     {
-        var assetName = $"Luna_Player-v-{update.Version}{PackageExtension()}";
+        var assetName = PackageName(update);
         var tag = $"v{update.Version}";
         return $"{AppInfo.RepositoryUrl}/releases/download/" +
             $"{Uri.EscapeDataString(tag)}/{Uri.EscapeDataString(assetName)}";
+    }
+
+    private static string PackageName(AppUpdateInfo update)
+        => $"Luna_Player-v-{update.Version}{PackageExtension()}";
+
+    private static string ChecksumsAddress(AppUpdateInfo update)
+    {
+        var tag = $"v{update.Version}";
+        return $"{AppInfo.RepositoryUrl}/releases/download/" +
+            $"{Uri.EscapeDataString(tag)}/{ChecksumsFile}";
+    }
+
+    private void VerifyChecksum(
+        string packagePath,
+        string packageName,
+        AppUpdateInfo update,
+        CancellationToken token)
+    {
+        string checksums;
+        try
+        {
+            using var response = _http.Send(
+                new HttpRequestMessage(HttpMethod.Get, ChecksumsAddress(update)),
+                HttpCompletionOption.ResponseContentRead,
+                token);
+            response.EnsureSuccessStatusCode();
+            using var stream = response.Content.ReadAsStream(token);
+            using var reader = new StreamReader(stream);
+            checksums = reader.ReadToEnd();
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception failure) when (failure is HttpRequestException or IOException)
+        {
+            throw new UpdateIntegrityException(
+                $"The release checksums could not be downloaded: {failure.Message}");
+        }
+
+        var expected = ExpectedChecksum(checksums, packageName);
+        using var package = File.OpenRead(packagePath);
+        using var hasher = IncrementalHash.CreateHash(HashAlgorithmName.SHA256);
+        var buffer = new byte[64 * 1024];
+        int read;
+        while ((read = package.Read(buffer, 0, buffer.Length)) > 0)
+        {
+            token.ThrowIfCancellationRequested();
+            hasher.AppendData(buffer, 0, read);
+        }
+        token.ThrowIfCancellationRequested();
+        var actual = Convert.ToHexString(hasher.GetHashAndReset());
+        if (!actual.Equals(expected, StringComparison.OrdinalIgnoreCase))
+            throw new UpdateIntegrityException("The downloaded package does not match its published checksum.");
+    }
+
+    private static string ExpectedChecksum(string checksums, string packageName)
+    {
+        foreach (var sourceLine in checksums.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
+        {
+            var line = sourceLine.Trim();
+            var separator = line.IndexOfAny([' ', '\t']);
+            if (separator <= 0)
+                continue;
+            var fileName = line[(separator + 1)..].TrimStart(' ', '\t', '*');
+            if (!fileName.Equals(packageName, StringComparison.Ordinal))
+                continue;
+            var checksum = line[..separator];
+            if (checksum.Length != 64 || checksum.Any(character => !char.IsAsciiHexDigit(character)))
+                break;
+            return checksum;
+        }
+        throw new UpdateIntegrityException("The release checksums do not contain this update package.");
     }
 
     private static string PackageExtension()

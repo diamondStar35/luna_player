@@ -1,5 +1,6 @@
 using System.Globalization;
 using LunaPlayer.Actions;
+using LunaPlayer.Accessibility;
 using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
 using LunaPlayer.Media;
@@ -14,6 +15,7 @@ internal sealed class Updates : IDisposable
     private readonly IMainView _view;
     private readonly Settings _settings;
     private readonly IApplicationDispatcher _dispatcher;
+    private readonly ISpeechOutput _speech;
     private readonly AppUpdateService _service = new();
     private readonly CancellationTokenSource _lifetime = new();
     private bool _disposed;
@@ -22,11 +24,13 @@ internal sealed class Updates : IDisposable
         ActionRouter router,
         IMainView view,
         Settings settings,
-        IApplicationDispatcher dispatcher)
+        IApplicationDispatcher dispatcher,
+        ISpeechOutput speech)
     {
         _view = view;
         _settings = settings;
         _dispatcher = dispatcher;
+        _speech = speech;
         router.Register(ActionId.CheckAppUpdates, CheckNow);
     }
 
@@ -122,7 +126,7 @@ internal sealed class Updates : IDisposable
             {
                 _view.Dialogs.ShowInfo(
                     // Translators: Shown when info.json announces a newer application release before its
-                    // installer or portable archive has finished being published.
+                    // installer, portable archive, or checksum file has finished being published.
                     Tr("A new version has been announced, but its download is not available yet. Please try again later."),
                     Tr("Application update"));
             }
@@ -137,35 +141,55 @@ internal sealed class Updates : IDisposable
     private void Download(AppUpdateInfo update)
     {
         var empty = new ProgressUpdate(0, 0, string.Empty);
+        // Translators: Shown and spoken after an application update has downloaded, while its SHA-256
+        // checksum is compared with the checksum published alongside the release.
+        var verifying = Tr("Verifying integrity...");
+        var verificationAnnounced = false;
+        string Describe(ProgressUpdate progress)
+        {
+            if (progress.Name.Length == 0)
+                return DownloadStatus(progress);
+            if (!verificationAnnounced)
+            {
+                verificationAnnounced = true;
+                _speech.Speak(verifying, verifying);
+            }
+            return verifying;
+        }
         var prompt = new ProgressPrompt(
             // Translators: Title of the window shown while a Luna Player update package is downloaded.
             Tr("Downloading update"),
             DownloadStatus(empty),
-            DownloadStatus) { Detailed = true };
+            Describe) { Detailed = true };
         BackgroundProgress.Start(
             _view,
             _dispatcher,
             prompt,
-            (report, token) => RunDownload(update, report, token),
+            (report, token) => RunDownload(update, verifying, report, token),
             FinishDownload);
     }
 
     private DownloadOutcome RunDownload(
         AppUpdateInfo update,
+        string verifying,
         Action<ProgressUpdate> report,
         CancellationToken token)
     {
         try
         {
-            var path = _service.Download(update, (downloaded, total) => report(new ProgressUpdate(
+            var path = _service.Download(update, (downloaded, total, isVerifying) => report(new ProgressUpdate(
                 (int)Math.Min(downloaded, int.MaxValue),
                 (int)Math.Min(total, int.MaxValue),
-                string.Empty)), token);
+                isVerifying ? verifying : string.Empty)), token);
             return new DownloadOutcome(path, string.Empty);
         }
         catch (OperationCanceledException)
         {
             throw;
+        }
+        catch (UpdateIntegrityException failure)
+        {
+            return new DownloadOutcome(string.Empty, failure.Message, IntegrityFailure: true);
         }
         catch (Exception failure)
         {
@@ -177,11 +201,22 @@ internal sealed class Updates : IDisposable
     {
         if (outcome.Error.Length > 0)
         {
-            _view.Dialogs.ShowError(
-                // Translators: Shown when the application update package cannot be downloaded. {reason}
-                // is the network or file error reported by the system.
-                TrFormat("Could not download update.\n\n{reason}", outcome.Error),
-                Tr("Application update"));
+            if (outcome.IntegrityFailure)
+            {
+                _view.Dialogs.ShowError(
+                    // Translators: Shown when an application's downloaded update does not match the
+                    // SHA-256 checksum published with the release, or that checksum cannot be obtained.
+                    Tr("The downloaded update failed its integrity check. This may indicate malicious activity on the network or an internet problem. The updater was not started. Please try downloading the update again."),
+                    Tr("Application update"));
+            }
+            else
+            {
+                _view.Dialogs.ShowError(
+                    // Translators: Shown when the application update package cannot be downloaded. {reason}
+                    // is the network or file error reported by the system.
+                    TrFormat("Could not download update.\n\n{reason}", outcome.Error),
+                    Tr("Application update"));
+            }
             return;
         }
         try
@@ -242,5 +277,8 @@ internal sealed class Updates : IDisposable
 
     private readonly record struct CheckOutcome(
         AppUpdateInfo Update, bool Newer, bool PackageAvailable, string Error = "");
-    private readonly record struct DownloadOutcome(string Path, string Error);
+    private readonly record struct DownloadOutcome(
+        string Path,
+        string Error,
+        bool IntegrityFailure = false);
 }

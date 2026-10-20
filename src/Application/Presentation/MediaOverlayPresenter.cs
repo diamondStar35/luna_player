@@ -21,6 +21,8 @@ internal sealed class MediaOverlayPresenter : IDisposable
     private readonly IApplicationDispatcher _dispatcher;
     private readonly MediaTagsCache _tags;
     private readonly SystemMediaControls _mediaControls;
+    private readonly Func<bool> _canGoNext;
+    private readonly Func<bool> _canGoPrevious;
     private IDisposable? _clock;
 
     internal MediaOverlayPresenter(
@@ -29,6 +31,8 @@ internal sealed class MediaOverlayPresenter : IDisposable
         IApplicationDispatcher dispatcher,
         MediaTagsCache tags,
         SystemMediaControls mediaControls,
+        Func<bool> canGoNext,
+        Func<bool> canGoPrevious,
         Action<ActionId> onButton)
     {
         _player = player;
@@ -36,6 +40,8 @@ internal sealed class MediaOverlayPresenter : IDisposable
         _dispatcher = dispatcher;
         _tags = tags;
         _mediaControls = mediaControls;
+        _canGoNext = canGoNext;
+        _canGoPrevious = canGoPrevious;
         _mediaControls.ButtonPressed += action => _dispatcher.Post(() => onButton(action));
     }
 
@@ -61,8 +67,8 @@ internal sealed class MediaOverlayPresenter : IDisposable
             Album: tags.Album,
             Duration: hasMedia ? _player.Duration : null,
             Position: hasMedia ? _player.Elapsed : null,
-            CanGoNext: hasMedia && index >= 0 && index < _player.Count - 1,
-            CanGoPrevious: hasMedia && index > 0));
+            CanGoNext: hasMedia && (_player.InSession ? _canGoNext() : index >= 0 && index < _player.Count - 1),
+            CanGoPrevious: hasMedia && (_player.InSession ? _canGoPrevious() : index > 0)));
     }
 
     /// <summary>Runs the clock only while a file is open - paused counts, because a paused file can still be

@@ -14,7 +14,7 @@ internal sealed partial class Sessions
     // ---- playing ----
 
     /// <summary>Starts a video from a session and makes it the session's current one.</summary>
-    private bool Start(Session session, int index, Resolved ready)
+    private bool Start(Session session, int index, Resolved ready, int direction = 1)
     {
         // Refusing rather than installing it: a session that is no longer the current one has been
         // disposed, and putting it back would leave the player driving a list nothing can add to.
@@ -23,7 +23,9 @@ internal sealed partial class Sessions
         if (!Open(ready, Session.AudioFor(session.Mode)))
             return false;
         session.Selected = index;
-        Prefetch(session, index + 1, 1);
+        var adjacent = index + Math.Sign(direction);
+        if (adjacent >= 0 && adjacent < session.Items.Count)
+            Prefetch(session, adjacent, 1);
         return true;
     }
 
@@ -64,56 +66,59 @@ internal sealed partial class Sessions
         return false;
     }
 
-    /// <summary>Moves playback to a video that is ready, adding it to the playlist if it is not there yet.
-    /// </summary>
-    private bool Advance(Session session, int from, int to, Resolved ready)
+    /// <summary>Moves playback to a ready video if the session has not changed while it was resolving.</summary>
+    private bool MoveTo(Session session, int from, int to, Resolved ready)
     {
-        // Asked before anything is added to the playlist, not after. Between asking for the next video and
-        // its arriving the user may have opened something else entirely - and an entry appended on the way
-        // to a move that is then refused stays in the playlist for good, named after a video that is not
-        // playing and pointing at an address that expires within the hour.
         if (!ReferenceEquals(_session, session)
             || CurrentWatchUrl is not string playing || session.IndexOf(playing) != from)
             return false;
-        if (_player.IndexOfSource(ready.Item.Url) < 0
-            && !_player.QueueSessionStream(
-                ready.Url, ready.Item.Title, ready.Item.Url, ready.AudioUrl, Session.AudioFor(session.Mode)))
-            return false;
-        if (!_player.Next(wrap: false))
-            return false;
-        _activeChannelUrl = ready.Item.ChannelUrl;
-        session.Selected = to;
-        Prefetch(session, to + 1, 1);
-        return true;
+        return Start(session, to, ready, to - from);
     }
 
-    /// <summary>Resolves the next video in the background and moves to it when it arrives.</summary>
-    private void LoadNext(Session session, int from, int to, YouTubeResult item)
+    /// <summary>Resolves an adjacent video in the background and moves to it when it arrives.</summary>
+    private void LoadMove(Session session, int from, int to, YouTubeResult item, int direction)
     {
-        var pending = new PendingNext(session, from, to, item.Url);
+        var pending = new PendingMove(session, from, to, item.Url, Math.Sign(direction));
         _pending = pending;
         _speech.Speak(
-            // Translators: Spoken when the video after this one is being fetched before it can be played.
-            Tr("Loading next video..."),
-            // Translators: The short wording spoken while the video after this one is being fetched.
-            Tr("Loading next video..."));
+            direction < 0
+                // Translators: Spoken when the video before this one is being fetched before it can be played.
+                ? Tr("Loading previous video...")
+                // Translators: Spoken when the video after this one is being fetched before it can be played.
+                : Tr("Loading next video..."),
+            direction < 0
+                // Translators: The short wording spoken while the video before this one is being fetched.
+                ? Tr("Loading previous video...")
+                // Translators: The short wording spoken while the video after this one is being fetched.
+                : Tr("Loading next video..."));
         var task = _cache.Start(
             _cache.Key(item.Url, Session.AudioFor(session.Mode), session.QualityFor(session.Mode)),
             item.Url, item, Session.AudioFor(session.Mode), session.QualityFor(session.Mode),
             session.Token);
         _ = task.ContinueWith(
-            finished => _dispatcher.Post(() => NextReady(pending, finished.Result)),
+            finished =>
+            {
+                var outcome = finished.IsCompletedSuccessfully
+                    ? finished.Result
+                    : finished.IsCanceled
+                        ? ResolveOutcome.Cancelled
+                        : FailureMapping.Explain(
+                            finished.Exception?.InnerException ?? new InvalidOperationException(
+                                "The YouTube stream resolve failed."),
+                            session.Token);
+                _dispatcher.Post(() => MoveReady(pending, outcome));
+            },
             CancellationToken.None,
-            TaskContinuationOptions.OnlyOnRanToCompletion,
+            TaskContinuationOptions.None,
             TaskScheduler.Default);
     }
 
     /// <remarks>
     /// The new title is announced, so the user is not left to work out what is playing. Something is also
-    /// said when the video could not be fetched, so "Loading next video..." is not left as the last thing
+    /// said when the video could not be fetched, so the loading announcement is not left as the last thing
     /// said with nothing following it.
     /// </remarks>
-    private void NextReady(PendingNext pending, ResolveOutcome outcome)
+    private void MoveReady(PendingMove pending, ResolveOutcome outcome)
     {
         if (!ReferenceEquals(_pending, pending) || !ReferenceEquals(_session, pending.Session))
             return;
@@ -123,13 +128,19 @@ internal sealed partial class Sessions
             if (outcome.Failure is ResolveFailure.Cancelled)
                 return;
             _speech.Speak(
-                // Translators: Spoken when the video after this one could not be fetched, so playback stops.
-                Tr("Could not load the next video."),
-                // Translators: The short wording spoken when the next video could not be fetched.
-                Tr("Next video failed."));
+                pending.Direction < 0
+                    // Translators: Spoken when the video before this one could not be fetched.
+                    ? Tr("Could not load the previous video.")
+                    // Translators: Spoken when the video after this one could not be fetched, so playback stops.
+                    : Tr("Could not load the next video."),
+                pending.Direction < 0
+                    // Translators: The short wording spoken when the previous video could not be fetched.
+                    ? Tr("Previous video failed.")
+                    // Translators: The short wording spoken when the next video could not be fetched.
+                    : Tr("Next video failed."));
             return;
         }
-        if (!Advance(pending.Session, pending.From, pending.To, ready))
+        if (!MoveTo(pending.Session, pending.From, pending.To, ready))
             return;
         if (_settings.General.SpeakFileOnNavigation)
             _speech.Speak(ready.Item.Title, ready.Item.Title);
@@ -166,6 +177,6 @@ internal sealed partial class Sessions
         => _cache.TryTake(
             _cache.Key(item.Url, Session.AudioFor(session.Mode), session.QualityFor(session.Mode)));
 
-    /// <summary>The move to the next video that is waiting on a resolve.</summary>
-    private sealed record PendingNext(Session Session, int From, int To, string WatchUrl);
+    /// <summary>A move to an adjacent video that is waiting on a resolve.</summary>
+    private sealed record PendingMove(Session Session, int From, int To, string WatchUrl, int Direction);
 }

@@ -11,9 +11,12 @@
     "Added precise media selections with millisecond markers, multiple selection slots, repeat playback, a free playback slot, single-selection export, and multithreaded batch export to numbered files.",
     "Reorganized YouTube preferences into expandable General and Download pages and improved preference loading performance.",
     "Improved startup so the main window is shown and painted immediately while independent services initialize concurrently, with audio and MPV initialization prioritized.",
-    "Fixed automatic next-file navigation so file names are announced consistently, and hardened selection playback so selection boundaries cannot accidentally advance the playlist.",
+    "Fixed file-name announcements for automatic navigation and for jumps by number, first, or last, and hardened selection playback so selection boundaries cannot accidentally advance the playlist.",
+    "Fixed Previous and Next navigation in long-running playlists and YouTube result sessions, including moving backward after starting from the final search result.",
+    "Fixed shuffle so the complete playlist is randomized once and keeps that stable order when files are added, closed, deleted, or moved.",
     "Improved the IPTV channel browser by placing channel names in the first column.",
     "Improved the portable updater so it no longer copies and launches itself from the Windows temporary folder. Portable updates now replace and recover the updater within the application folder.",
+    "Added SHA-256 integrity verification for application updates before the updater is started.",
     "Updated the English documentation."
   ]
 }

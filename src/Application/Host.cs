@@ -358,7 +358,7 @@ internal sealed class ApplicationHost : IDisposable
         var selections = features.Selections;
         var router = new ActionRouter();
         _ = new Help(router, _view);
-        var appUpdates = new Updates(router, _view, _settings, _dispatcher);
+        var appUpdates = new Updates(router, _view, _settings, _dispatcher, speech);
         _appUpdates = appUpdates;
         var fileActions = new Files(router, _view, player, _settings, speech, clipboard, _dispatcher, _recents);
         _fileActions = fileActions;

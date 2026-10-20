@@ -9,22 +9,22 @@ using LunaPlayer.UI;
 
 namespace LunaPlayer.YouTube.Playback;
 
-/// <summary>What came of asking for the video after this one.</summary>
+/// <summary>What came of asking for another video in the current results list.</summary>
 ///
 /// <remarks>
-/// Four states rather than three. A plain true/false/None cannot tell "the next video is on its way, do
-/// not stop" from "there is nothing after this one, please stop"; answering both with false and stopping
-/// in either case would end the session a moment before a still-resolving successor arrives.
+/// Four states rather than three. A plain true/false/None cannot tell "the requested video is on its way"
+/// from "there is nothing in that direction"; answering both with false could stop playback a moment
+/// before a still-resolving video arrives.
 /// </remarks>
-internal enum NextOutcome
+internal enum NavigationOutcome
 {
     /// <summary>What is playing is not part of a session, so the ordinary playlist rules apply.</summary>
     NotOurs,
     /// <summary>Playback has moved on already.</summary>
     Advanced,
-    /// <summary>The next video is being resolved and will start itself. Do not stop.</summary>
+    /// <summary>The requested video is being resolved and will start itself. Do not stop.</summary>
     Pending,
-    /// <summary>This was the last video.</summary>
+    /// <summary>There is no video in the requested direction.</summary>
     Exhausted,
 }
 
@@ -61,7 +61,7 @@ internal sealed partial class Sessions : IDisposable
     private readonly FavoriteStore _favorites;
     private readonly Components.Service _components;
     private Session? _session;
-    private PendingNext? _pending;
+    private PendingMove? _pending;
 
     /// <param name="directDownload">Downloads a row straight to disk with the saved settings.</param>
     /// <param name="favorites">The shared store, so a row can be saved to the favourites straight from the
@@ -104,6 +104,19 @@ internal sealed partial class Sessions : IDisposable
 
     /// <summary>The address of the video playing now, or null when what is playing is not one.</summary>
     internal string? CurrentWatchUrl => _player.CurrentSource;
+
+    /// <summary>Whether the current results row has a predecessor.</summary>
+    internal bool CanMovePrevious => CurrentSessionIndex() > 0;
+
+    /// <summary>Whether the current results row has a successor.</summary>
+    internal bool CanMoveNext
+    {
+        get
+        {
+            var index = CurrentSessionIndex();
+            return index >= 0 && _session is Session session && index < session.Items.Count - 1;
+        }
+    }
 
     private string _activeChannelUrl = string.Empty;
 
@@ -332,48 +345,42 @@ internal sealed partial class Sessions : IDisposable
             });
     }
 
-    /// <summary>Moves to the video after the one playing, resolving it first if it is not ready.</summary>
-    internal NextOutcome TryNext()
+    internal NavigationOutcome TryNext() => TryMove(1);
+
+    internal NavigationOutcome TryPrevious() => TryMove(-1);
+
+    /// <summary>Moves through the session's result list, resolving the requested video when necessary.
+    /// The result list remains authoritative even when only the current stream is loaded in mpv.</summary>
+    private NavigationOutcome TryMove(int direction)
     {
         if (_session is not Session session || CurrentWatchUrl is not string playing)
-            return NextOutcome.NotOurs;
+            return NavigationOutcome.NotOurs;
         var current = session.IndexOf(playing);
         if (current < 0)
-            return NextOutcome.NotOurs;
+            return NavigationOutcome.NotOurs;
         session.Selected = current;
-        var next = current + 1;
-        if (next >= session.Items.Count)
+        var target = current + Math.Sign(direction);
+        if (target < 0 || target >= session.Items.Count)
         {
             _pending = null;
-            return NextOutcome.Exhausted;
+            return NavigationOutcome.Exhausted;
         }
-        var item = session.Items[next];
+        var item = session.Items[target];
         if (Ready(session, item) is Resolved ready)
         {
             _pending = null;
-            return Advance(session, current, next, ready) ? NextOutcome.Advanced : NextOutcome.Exhausted;
+            return MoveTo(session, current, target, ready)
+                ? NavigationOutcome.Advanced
+                : NavigationOutcome.Exhausted;
         }
-        LoadNext(session, current, next, item);
-        return NextOutcome.Pending;
+        LoadMove(session, current, target, item, direction);
+        return NavigationOutcome.Pending;
     }
 
-    /// <summary>Brings the session's idea of where the user is back in line with what is playing.
-    /// </summary>
-    ///
-    /// <remarks>
-    /// Moving through the playlist by the ordinary means can land on a session video without going through
-    /// <see cref="TryNext"/> - pressing Previous does exactly that. Nothing about playback goes wrong when
-    /// it does, but the row Escape returns to and the video counted as "the one after this" are both taken
-    /// from here, so both would be a step behind.
-    /// </remarks>
-    internal void SyncSelection()
-    {
-        if (_session is not Session session || CurrentWatchUrl is not string playing)
-            return;
-        var index = session.IndexOf(playing);
-        if (index >= 0)
-            session.Selected = index;
-    }
+    private int CurrentSessionIndex()
+        => _session is Session session && CurrentWatchUrl is string playing
+            ? session.IndexOf(playing)
+            : -1;
 
     /// <summary>Answers Escape: stops a session video, takes the session's entries out of the playlist and
     /// puts the results list back.</summary>

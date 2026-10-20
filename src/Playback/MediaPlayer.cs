@@ -96,20 +96,12 @@ internal sealed class MediaPlayer : IDisposable
     internal bool PlaySessionStream(string url, string? title, string? source, string? audioFile, bool audioOnly = false)
     {
         EnterSession();
-        if (!_playlist.Append(url, jump: true))
+        // The YouTube session owns its complete, durable order. Keep only the stream currently given to
+        // mpv here: stream addresses expire, while the session can resolve any previous or next row again.
+        if (!_playlist.OpenFile(url))
             return false;
         Describe(url, title, source, audioFile, audioOnly);
         return LoadCurrent();
-    }
-
-    /// <summary>Adds a resolved video to the end of the session's own list without playing it.</summary>
-    internal bool QueueSessionStream(string url, string? title, string? source, string? audioFile, bool audioOnly = false)
-    {
-        if (!InSession || !_playlist.Append(url, jump: false))
-            return false;
-        Describe(url, title, source, audioFile, audioOnly);
-        StateChanged?.Invoke();
-        return true;
     }
 
     /// <summary>The playlist a session was opened in front of, and the point playback had reached in it.
@@ -226,10 +218,6 @@ internal sealed class MediaPlayer : IDisposable
     /// <summary>The address whatever is playing was resolved from, or null when its path is its address.
     /// </summary>
     internal string? CurrentSource => _playlist.CurrentSource;
-
-    /// <summary>Where in the playlist the entry resolved from <paramref name="source"/> is, or -1.
-    /// </summary>
-    internal int IndexOfSource(string source) => _playlist.IndexOfSource(source);
 
     private void Describe(string url, string? title, string? source, string? audioFile, bool audioOnly = false)
     {

@@ -152,6 +152,24 @@ jobs:
           }
           Copy-Item -LiteralPath $source -Destination (Join-Path 'release-assets' $env:INSTALLER_NAME)
 
+      - name: Create Checksums
+        if: steps.release_info.outputs.release_needed == 'true'
+        shell: pwsh
+        env:
+          ARCHIVE_NAME: ${{ steps.release_info.outputs.archive }}
+          INSTALLER_NAME: ${{ steps.release_info.outputs.installer }}
+        run: |
+          $assetDirectory = Join-Path $env:GITHUB_WORKSPACE 'release-assets'
+          $lines = @($env:ARCHIVE_NAME, $env:INSTALLER_NAME) | ForEach-Object {
+            $path = Join-Path $assetDirectory $_
+            if (-not (Test-Path -LiteralPath $path)) {
+              throw "Cannot checksum missing release asset '$path'."
+            }
+            $hash = (Get-FileHash -LiteralPath $path -Algorithm SHA256).Hash.ToLowerInvariant()
+            "$hash  $_"
+          }
+          $lines | Set-Content -LiteralPath (Join-Path $assetDirectory 'SHA256SUMS.txt') -Encoding ascii
+
       - name: Tag
         if: steps.release_info.outputs.release_needed == 'true'
         shell: pwsh
@@ -182,3 +200,4 @@ jobs:
           files: |
             release-assets/${{ steps.release_info.outputs.archive }}
             release-assets/${{ steps.release_info.outputs.installer }}
+            release-assets/SHA256SUMS.txt

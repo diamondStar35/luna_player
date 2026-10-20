@@ -67,7 +67,15 @@ internal sealed class ApplicationController : IDisposable
         _selectionPlaylistIndex = player.CurrentIndex;
         _viewState = new ViewStatePresenter(view, player, speech);
         _title = new WindowTitlePresenter(view, player, settings, _tags);
-        _overlay = new MediaOverlayPresenter(player, settings, dispatcher, _tags, mediaControls, HandleAction);
+        _overlay = new MediaOverlayPresenter(
+            player,
+            settings,
+            dispatcher,
+            _tags,
+            mediaControls,
+            () => sessions.CanMoveNext,
+            () => sessions.CanMovePrevious,
+            HandleAction);
         _view.ActionRequested += HandleAction;
         _view.CloseRequested += Shutdown;
         _view.EscapePressed += _sessions.HandleEscape;
@@ -237,12 +245,12 @@ internal sealed class ApplicationController : IDisposable
                 // Stopping on that would end the session a moment before its successor arrived.
                 switch (_sessions.TryNext())
                 {
-                    case YouTube.Playback.NextOutcome.Advanced:
+                    case YouTube.Playback.NavigationOutcome.Advanced:
                         AnnounceAutomaticNavigation();
                         return;
-                    case YouTube.Playback.NextOutcome.Pending:
+                    case YouTube.Playback.NavigationOutcome.Pending:
                         return;
-                    case YouTube.Playback.NextOutcome.Exhausted:
+                    case YouTube.Playback.NavigationOutcome.Exhausted:
                         _player.Stop();
                         return;
                 }

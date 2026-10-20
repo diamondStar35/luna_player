@@ -43,11 +43,17 @@ internal sealed class Playlist
 
     private void MovePrevious()
     {
+        switch (_sessions.TryPrevious())
+        {
+            case NavigationOutcome.Advanced:
+                SetSwitched(true, announce: true);
+                return;
+            case NavigationOutcome.Pending:
+            case NavigationOutcome.Exhausted:
+                return;
+        }
         if (!_player.Previous(_settings.Audio.WrapPlaylist))
             return;
-        // Landing on a session video this way skips TryNext, which is what usually keeps the session's
-        // idea of the current row current.
-        _sessions.SyncSelection();
         SetSwitched(true, announce: true);
     }
     /// <remarks>
@@ -60,22 +66,21 @@ internal sealed class Playlist
     {
         switch (_sessions.TryNext())
         {
-            case NextOutcome.Advanced:
+            case NavigationOutcome.Advanced:
                 SetSwitched(true, announce: true);
                 return;
-            case NextOutcome.Pending:
+            case NavigationOutcome.Pending:
                 return;
-            case NextOutcome.Exhausted:
+            case NavigationOutcome.Exhausted:
                 SetSwitched(false, announce: true);
                 return;
         }
         if (!_player.Next(_settings.Audio.WrapPlaylist))
             return;
-        _sessions.SyncSelection();
         SetSwitched(true, announce: true);
     }
-    private void MoveFirst() => SetSwitched(_player.First(), announce: false);
-    private void MoveLast() => SetSwitched(_player.Last(), announce: false);
+    private void MoveFirst() => SetSwitched(_player.First(), announce: true);
+    private void MoveLast() => SetSwitched(_player.Last(), announce: true);
 
     private void GoToFile()
     {
@@ -113,7 +118,7 @@ internal sealed class Playlist
                 Tr("Out of range."));
             return;
         }
-        SetSwitched(_player.GoToIndex(number - 1), announce: false);
+        SetSwitched(_player.GoToIndex(number - 1), announce: true);
     }
 
     private void ToggleShuffle()
