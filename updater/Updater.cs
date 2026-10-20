@@ -10,7 +10,6 @@ internal static partial class Program
     private const string PlayerExecutable = "LunaPlayer.exe";
     private const string UpdaterExecutable = "Updater.exe";
     private const string TemporaryUpdaterExecutable = "Updater.temp.exe";
-    private const int FinalizationProtocolVersion = 2;
     private const uint Synchronize = 0x00100000;
     private const uint WaitObject0 = 0;
     private const uint WaitTimeout = 0x00000102;
@@ -243,9 +242,6 @@ internal static partial class Program
         using var updater = new FileStream(updaterPath, FileMode.Open, FileAccess.Read, FileShare.Read);
         if (updater.Length < 2 || updater.ReadByte() != 'M' || updater.ReadByte() != 'Z')
             throw new InvalidDataException("The update did not contain a valid Updater.exe.");
-        var version = FileVersionInfo.GetVersionInfo(updaterPath);
-        if (version.FileMajorPart < FinalizationProtocolVersion)
-            throw new InvalidDataException("The update package contains an incompatible Updater.exe.");
     }
 
     private static int RecoverUpdater(string installDirectory, Exception failure)

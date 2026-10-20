@@ -1,8 +1,19 @@
 {
-  "version": "0.6.0",
+  "version": "0.7.0",
   "changes": [
-    "Initial implementation of IP TV support. You can now listen to IP TV directly from Luna and it supports most common stream types such as Stalker and Xtream. It also supports opening an M3U lists which are designed for IP TV.",
-    "Added the Spanish translation.",
-    "Fixed a bug where listening to low sample-rate files would produce a ring or a beep because the Equalizer was not aware of the sample-rate of the file and wasn't skipping bands which are higher than the file's sample rate."
+    "Added a full-featured sleep timer with duration presets, end-of-track mode, pause or stop actions, an optional fade-out, and commands to cancel the timer or announce the remaining time.",
+    "Added full-screen video playback, multi-audio-track selection, and an audio-track dialog.",
+    "Added accessible subtitle reading for embedded subtitles, local subtitle files, and subtitle URLs, including options to remember a subtitle language and control whether new lines interrupt speech.",
+    "Added recent files, folders, and playlists, along with light, dark, and system theme choices.",
+    "Expanded YouTube browsing with video and audio quality preferences, audio-only playback, channel browsing, favorite toggling from search results, browser actions, and asynchronous loading that keeps the interface responsive.",
+    "Added YouTube video and audio downloads with saved defaults, custom per-download settings, direct downloads, and organized output folders.",
+    "Added a full YouTube download queue with concurrent downloads, per-item settings, background minimization, completion notifications, cancellation controls, and warnings before closing while downloads are active.",
+    "Added precise media selections with millisecond markers, multiple selection slots, repeat playback, a free playback slot, single-selection export, and multithreaded batch export to numbered files.",
+    "Reorganized YouTube preferences into expandable General and Download pages and improved preference loading performance.",
+    "Improved startup so the main window is shown and painted immediately while independent services initialize concurrently, with audio and MPV initialization prioritized.",
+    "Fixed automatic next-file navigation so file names are announced consistently, and hardened selection playback so selection boundaries cannot accidentally advance the playlist.",
+    "Improved the IPTV channel browser by placing channel names in the first column.",
+    "Improved the portable updater so it no longer copies and launches itself from the Windows temporary folder. Portable updates now replace and recover the updater within the application folder.",
+    "Updated the English documentation."
   ]
 }
