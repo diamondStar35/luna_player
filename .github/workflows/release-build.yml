@@ -51,9 +51,16 @@ jobs:
 
           $info = Get-Content -LiteralPath info.json -Raw -Encoding UTF8 | ConvertFrom-Json
           $version = ([string]$info.version).Trim()
+          $tag = "v$version"
           $changes = @($info.changes | ForEach-Object { "* $(([string]$_).Trim())" })
+          $existingTag = @(git ls-remote --tags origin "refs/tags/$tag")
+          if ($LASTEXITCODE -ne 0) {
+            throw "Could not determine whether release tag '$tag' already exists."
+          }
+          $releaseNeeded = $existingTag.Count -eq 0
           "version=$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
-          "tag=v$version" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "tag=$tag" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
+          "release_needed=$($releaseNeeded.ToString().ToLowerInvariant())" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
           "archive=Luna_Player-v-$version.zip" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
           "installer=Luna_Player-v-$version.exe" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
           "changes_md<<EOF" | Out-File -FilePath $env:GITHUB_OUTPUT -Append -Encoding utf8
@@ -106,6 +113,7 @@ jobs:
           }
 
       - name: Create Archive
+        if: steps.release_info.outputs.release_needed == 'true'
         shell: pwsh
         env:
           ARCHIVE_NAME: ${{ steps.release_info.outputs.archive }}
@@ -125,6 +133,7 @@ jobs:
           Compress-Archive -Path "$stageDirectory\*" -DestinationPath $archivePath -CompressionLevel Optimal
 
       - name: Create Installer
+        if: steps.release_info.outputs.release_needed == 'true'
         uses: Minionguyjpro/Inno-Setup-Action@v1.2.9
         with:
           path: src/LunaPlayer.iss
@@ -132,6 +141,7 @@ jobs:
           install_latest: true
 
       - name: Stage
+        if: steps.release_info.outputs.release_needed == 'true'
         shell: pwsh
         env:
           INSTALLER_NAME: ${{ steps.release_info.outputs.installer }}
@@ -143,16 +153,18 @@ jobs:
           Copy-Item -LiteralPath $source -Destination (Join-Path 'release-assets' $env:INSTALLER_NAME)
 
       - name: Tag
+        if: steps.release_info.outputs.release_needed == 'true'
         shell: pwsh
         env:
           RELEASE_TAG: ${{ steps.release_info.outputs.tag }}
         run: |
           git config user.email 'actions@github.com'
           git config user.name 'GitHub Actions'
-          git tag --force --annotate $env:RELEASE_TAG --message "Luna Player $env:RELEASE_TAG"
-          git push origin "refs/tags/$env:RELEASE_TAG" --force
+          git tag --annotate $env:RELEASE_TAG --message "Luna Player $env:RELEASE_TAG"
+          git push origin "refs/tags/$env:RELEASE_TAG"
 
       - name: Release
+        if: steps.release_info.outputs.release_needed == 'true'
         uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.release_info.outputs.tag }}
