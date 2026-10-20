@@ -9,7 +9,8 @@ internal interface IWindowView
     event Action<ActionId>? ActionRequested;
     /// <summary>Asked before a close that can still be cancelled. Every subscriber must agree.</summary>
     event Func<bool>? CloseConfirmationRequested;
-    event Action? CloseRequested;
+    /// <summary>Starts accepted shutdown work. The window remains alive until every returned task ends.</summary>
+    event Func<Task>? CloseRequested;
 
     /// <summary>Asked when Escape is pressed on the main window with no modifier. Returning true means it
     /// was dealt with, and the key goes no further.</summary>

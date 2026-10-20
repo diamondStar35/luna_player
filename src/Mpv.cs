@@ -2027,7 +2027,8 @@ namespace MpvNet
             eventHandle;
         private Thread? eventThread;
         private volatile bool coreShutdown,
-            disposed;
+            disposed,
+            eventLoopStopping;
         private readonly object handlerLock = new object();
         private readonly object signatureLock = new object();
 
@@ -2192,21 +2193,36 @@ namespace MpvNet
             IntPtr h = Interlocked.Exchange(ref handle, IntPtr.Zero);
             if (h == IntPtr.Zero)
                 return;
+
+            // The event loop belongs to a second libmpv client. Detach that client before terminating the
+            // core client: mpv_terminate_destroy waits for the core to shut down, and leaving another client
+            // blocked in mpv_wait_event makes that wait depend on the event thread being scheduled promptly.
+            // Waking and joining it first is deterministic and mirrors libmpv's normal client lifetime.
+            eventLoopStopping = true;
+            IntPtr events = eventHandle;
+            if (events != IntPtr.Zero)
+                Native.mpv_wakeup(events);
             if (Thread.CurrentThread == eventThread)
             {
-                try
-                {
-                    CommandOn(h, "quit");
-                }
-                catch { }
+                // A callback may dispose its owner. It cannot join its own thread, so finish after the
+                // callback returns and the loop has had a chance to detach its event client.
+                ThreadPool.QueueUserWorkItem(_ => FinishDispose(h, waitForEventThread: true));
                 return;
             }
+
+            FinishDispose(h, disposing);
+        }
+
+        private void FinishDispose(IntPtr h, bool waitForEventThread)
+        {
+            if (eventThread is null)
+                DetachEventClient();
+            else if (waitForEventThread && eventThread.IsAlive)
+                // Bounded because it is a background thread. The wake above normally makes this immediate;
+                // the timeout only protects shutdown from a callback outside the wrapper that never returns.
+                eventThread.Join(TimeSpan.FromSeconds(1));
+
             Native.mpv_terminate_destroy(h);
-            if (disposing && eventThread != null && eventThread.IsAlive)
-                // Bounded: the event thread is a background thread and must never hold the process open. It
-                // exits as soon as mpv_terminate_destroy delivers MPV_EVENT_SHUTDOWN; the timeout is only a
-                // guard so a wedged teardown can never block the whole application from exiting.
-                eventThread.Join(TimeSpan.FromSeconds(2));
             foreach (var stream in openStreams.Values)
                 stream.Dispose();
             openStreams.Clear();
@@ -2216,71 +2232,92 @@ namespace MpvNet
 
         private void EventLoop()
         {
-            while (true)
+            try
             {
-                IntPtr p = Native.mpv_wait_event(eventHandle, -1);
-                if (p == IntPtr.Zero)
-                    return;
-                NativeEvent raw = Marshal.PtrToStructure<NativeEvent>(p);
-                if (raw.EventId == MpvEventId.None)
-                    continue;
-                try
+                while (!eventLoopStopping)
                 {
-                    MpvEvent ev = CopyEvent(raw);
-                    Action<MpvEvent>[] callbacks;
-                    lock (handlerLock)
-                    {
-                        if (ev.EventId == MpvEventId.Shutdown)
-                            coreShutdown = true;
-                        callbacks = eventCallbacks.ToArray();
-                    }
-                    foreach (var cb in callbacks)
-                        Safe(() => cb(ev));
-                    if (ev.EventId == MpvEventId.PropertyChange && ev.Data is MpvPropertyEvent prop)
-                    {
-                        Action<string, object?>[] hs;
-                        lock (handlerLock)
-                            hs = propertyHandlers.TryGetValue(prop.Name, out var list)
-                                ? list.ToArray()
-                                : Array.Empty<Action<string, object?>>();
-                        foreach (var h in hs)
-                            Safe(() => h(prop.Name, prop.Value));
-                    }
-                    else if (
-                        ev.EventId == MpvEventId.LogMessage
-                        && ev.Data is MpvLogMessage log
-                        && logHandler != null
-                    )
-                        Safe(() => logHandler(log.Level, log.Prefix, log.Text));
-                    else if (
-                        ev.EventId == MpvEventId.ClientMessage
-                        && ev.Data is MpvClientMessage cm
-                        && cm.Arguments.Count > 0
-                    )
-                    {
-                        Action<string[]>? mh;
-                        lock (handlerLock)
-                            messageHandlers.TryGetValue(cm.Arguments[0], out mh);
-                        if (mh != null)
-                            Safe(() => mh(cm.Arguments.Skip(1).ToArray()));
-                    }
-                    if (ev.EventId == MpvEventId.Shutdown)
-                    {
-                        try
-                        {
-                            Native.mpv_detach_destroy(eventHandle);
-                        }
-                        catch (EntryPointNotFoundException)
-                        {
-                            Native.mpv_destroy(eventHandle);
-                        }
-                        eventHandle = IntPtr.Zero;
+                    IntPtr events = eventHandle;
+                    if (events == IntPtr.Zero)
                         return;
+                    IntPtr p = Native.mpv_wait_event(events, -1);
+                    if (p == IntPtr.Zero || eventLoopStopping)
+                        return;
+                    NativeEvent raw = Marshal.PtrToStructure<NativeEvent>(p);
+                    if (raw.EventId == MpvEventId.None)
+                        continue;
+                    try
+                    {
+                        MpvEvent ev = CopyEvent(raw);
+                        Action<MpvEvent>[] callbacks;
+                        lock (handlerLock)
+                        {
+                            if (ev.EventId == MpvEventId.Shutdown)
+                                coreShutdown = true;
+                            callbacks = eventCallbacks.ToArray();
+                        }
+                        foreach (var cb in callbacks)
+                            Safe(() => cb(ev));
+                        if (ev.EventId == MpvEventId.PropertyChange && ev.Data is MpvPropertyEvent prop)
+                        {
+                            Action<string, object?>[] hs;
+                            lock (handlerLock)
+                                hs = propertyHandlers.TryGetValue(prop.Name, out var list)
+                                    ? list.ToArray()
+                                    : Array.Empty<Action<string, object?>>();
+                            foreach (var h in hs)
+                                Safe(() => h(prop.Name, prop.Value));
+                        }
+                        else if (
+                            ev.EventId == MpvEventId.LogMessage
+                            && ev.Data is MpvLogMessage log
+                            && logHandler != null
+                        )
+                            Safe(() => logHandler(log.Level, log.Prefix, log.Text));
+                        else if (
+                            ev.EventId == MpvEventId.ClientMessage
+                            && ev.Data is MpvClientMessage cm
+                            && cm.Arguments.Count > 0
+                        )
+                        {
+                            Action<string[]>? mh;
+                            lock (handlerLock)
+                                messageHandlers.TryGetValue(cm.Arguments[0], out mh);
+                            if (mh != null)
+                                Safe(() => mh(cm.Arguments.Skip(1).ToArray()));
+                        }
+                        if (ev.EventId == MpvEventId.Shutdown)
+                            return;
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.Error.WriteLine("Exception inside C# mpv event loop: " + ex);
                     }
                 }
-                catch (Exception ex)
+            }
+            finally
+            {
+                DetachEventClient();
+            }
+        }
+
+        private void DetachEventClient()
+        {
+            IntPtr events = Interlocked.Exchange(ref eventHandle, IntPtr.Zero);
+            if (events == IntPtr.Zero)
+                return;
+            try
+            {
+                Native.mpv_detach_destroy(events);
+            }
+            catch (EntryPointNotFoundException)
+            {
+                Native.mpv_destroy(events);
+            }
+            catch (Exception ex)
+            {
+                if (!disposed)
                 {
-                    Console.Error.WriteLine("Exception inside C# mpv event loop: " + ex);
+                    Console.Error.WriteLine("Exception while detaching C# mpv event client: " + ex);
                 }
             }
         }

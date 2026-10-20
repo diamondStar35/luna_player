@@ -93,8 +93,20 @@ internal sealed class SettingsStore
         return written;
     }
 
-    internal bool SaveSession(Settings settings)
-        => !settings.General.SaveOnClose || SaveExplicit(settings);
+    /// <summary>Validates and snapshots the settings on the caller's thread, then performs only the file
+    /// write on a worker. Shortcut validation uses localized action definitions and must remain on the wx
+    /// thread; the disk access is the part that can be delayed by storage or antivirus during shutdown.</summary>
+    internal Task<bool> SaveSessionAsync(Settings settings)
+    {
+        if (!settings.General.SaveOnClose)
+            return Task.FromResult(true);
+        if (_writeBlocked)
+            return Task.FromResult(false);
+        settings.Validate();
+        var content = JsonSerializer.SerializeToUtf8Bytes(
+            settings, SettingsJsonContext.Default.Settings);
+        return Task.Run(() => Write(content));
+    }
 
     internal bool TryRead(string path, out Settings settings)
     {
@@ -129,13 +141,16 @@ internal sealed class SettingsStore
     }
 
     private bool Write(Settings settings)
+        => Write(JsonSerializer.SerializeToUtf8Bytes(settings, SettingsJsonContext.Default.Settings));
+
+    private bool Write(byte[] content)
     {
         try
         {
             Paths.EnsureDirectoryFor(_jsonPath);
             var temporary = Paths.TemporaryFor(_jsonPath);
             using (var stream = File.Create(temporary))
-                JsonSerializer.Serialize(stream, settings, SettingsJsonContext.Default.Settings);
+                stream.Write(content);
             File.Move(temporary, _jsonPath, overwrite: true);
             LastError = string.Empty;
             return true;

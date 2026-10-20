@@ -34,6 +34,7 @@ internal sealed class ApplicationController : IDisposable
     private readonly MediaOverlayPresenter _overlay;
     private string? _selectionPath;
     private int _selectionPlaylistIndex = -1;
+    private Task? _shutdownTask;
     private bool _shutDown;
 
     internal ApplicationController(
@@ -77,7 +78,7 @@ internal sealed class ApplicationController : IDisposable
             () => sessions.CanMovePrevious,
             HandleAction);
         _view.ActionRequested += HandleAction;
-        _view.CloseRequested += Shutdown;
+        _view.CloseRequested += ShutdownAsync;
         _view.EscapePressed += _sessions.HandleEscape;
         _player.CurrentChanged += OnCurrentChanged;
         _player.StateChanged += SyncViewState;
@@ -99,10 +100,10 @@ internal sealed class ApplicationController : IDisposable
             _fileActions.OpenPaths(paths);
     }
 
-    internal void Shutdown()
+    internal Task ShutdownAsync()
     {
-        if (_shutDown)
-            return;
+        if (_shutdownTask is not null)
+            return _shutdownTask;
         _shutDown = true;
         // Nothing after this wants the overlay published again, and the clock would keep firing until the
         // controller is disposed.
@@ -121,19 +122,29 @@ internal sealed class ApplicationController : IDisposable
             _settings.Playback.LastFile = path;
             _settings.Playback.LastPosition = Math.Max(0, _player.Elapsed ?? 0);
         }
-        _settingsStore.SaveSession(_settings);
-        // Tear the player down here, while the frame still exists, rather than leaving it for the host's
-        // disposal after the window is gone. mpv renders into the frame's window handle; if that handle is
-        // destroyed first, terminating mpv afterwards can block on its dead video output and hang the whole
-        // exit - which is what left the process alive and blocked a quick relaunch. Closing it first, like
-        // the reference player does before destroying its window, lets mpv detach cleanly.
-        _player.Dispose();
+        // Snapshot and validate settings on this thread because shortcut validation uses wx localization;
+        // only its disk write runs in the background. It proceeds alongside media shutdown, since storage,
+        // antivirus, network streams and audio/video devices can each be slow on a particular machine.
+        var saveTask = _settingsStore.SaveSessionAsync(_settings);
+        var playerTask = Task.Run(() =>
+        {
+            try
+            {
+                _player.Stop();
+            }
+            finally
+            {
+                _player.Dispose();
+            }
+        });
+        // The frame remains hidden but alive until both tasks finish, preserving the window handle mpv uses.
+        return _shutdownTask = Task.WhenAll(saveTask, playerTask);
     }
 
     public void Dispose()
     {
         _view.ActionRequested -= HandleAction;
-        _view.CloseRequested -= Shutdown;
+        _view.CloseRequested -= ShutdownAsync;
         _player.CurrentChanged -= OnCurrentChanged;
         _player.StateChanged -= SyncViewState;
         _player.SelectionSeekCompleted -= OnSelectionSeekCompleted;
@@ -142,7 +153,7 @@ internal sealed class ApplicationController : IDisposable
         _player.VideoAvailabilityChanged -= OnVideoAvailabilityChanged;
         _player.AudioTracksChanged -= OnAudioTracksChanged;
         _view.EscapePressed -= _sessions.HandleEscape;
-        Shutdown();
+        ShutdownAsync().GetAwaiter().GetResult();
         _overlay.Dispose();
     }
 

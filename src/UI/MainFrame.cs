@@ -24,6 +24,8 @@ internal sealed class MainFrame : IMainView
     private bool _disposed;
     private bool _waitingForCloseKeys;
     private bool _closing;
+    private bool _closeFinished;
+    private Task? _shutdownTask;
     // The title last handed to the frame, so an unchanged one is not set again: every set is a name-change
     // event a screen reader reads out, and repeating the same text would announce it for nothing.
     private string _windowTitle = AppInfo.Name;
@@ -147,7 +149,7 @@ internal sealed class MainFrame : IMainView
         remove => Input.EscapePressed -= value;
     }
     public event Func<bool>? CloseConfirmationRequested;
-    public event Action? CloseRequested;
+    public event Func<Task>? CloseRequested;
 
     public nint NativeHandle => _frame.NativeHandle;
 
@@ -269,6 +271,21 @@ internal sealed class MainFrame : IMainView
 
     private void OnClosing(object? sender, CloseEventArgs args)
     {
+        if (_closing)
+        {
+            if (!_closeFinished && args.CanVeto)
+                args.Veto();
+            else
+            {
+                // A non-vetoable system close must not destroy the video handle under an in-flight mpv
+                // shutdown. Ordinary closes reach here only after CompleteCloseAsync marks it finished.
+                if (!_closeFinished)
+                    WaitForShutdown();
+                args.Skip();
+            }
+            return;
+        }
+
         // Alt+F4 asks the window to close while Alt is commonly still held. Destroying the foreground
         // window before Windows delivers the rest of that chord can leave the newly focused thread with a
         // stale logical modifier state. Keep this window as the keyboard target until the physical keys are
@@ -291,14 +308,83 @@ internal sealed class MainFrame : IMainView
         }
 
         _closing = true;
+        // Disappear as soon as the close is accepted, before settings, media devices and network streams are
+        // released. The native frame is deliberately not destroyed yet: mpv renders into its handle and must
+        // detach while that handle remains valid. This leaves slow device-specific teardown invisible without
+        // racing it against destruction of the video window.
+        _frame.Hide();
+        // Parentless modeless progress windows do not follow the frame when it is hidden and would otherwise
+        // remain visible during teardown. They are views only; their jobs stay owned by the queue.
+        _dialogs?.CloseDownloadProgressWindows();
         // Stop system-wide shortcuts before the close handlers save state and stop playback, so no action can
         // arrive while shutdown is in progress.
         _input?.StopGlobalShortcuts();
-        CloseRequested?.Invoke();
-        // Parentless modeless progress windows would otherwise keep wxWidgets' event loop alive after the
-        // main frame disappears. They are views only; their jobs remain owned by the queue until host disposal.
-        _dialogs?.CloseDownloadProgressWindows();
-        args.Skip();
+        _shutdownTask = RequestShutdownAsync();
+        if (!args.CanVeto)
+        {
+            WaitForShutdown();
+            args.Skip();
+            return;
+        }
+
+        args.Veto();
+        _ = CompleteCloseAsync(_shutdownTask);
+    }
+
+    private async Task RequestShutdownAsync()
+    {
+        if (CloseRequested is null)
+            return;
+        foreach (Func<Task> close in CloseRequested.GetInvocationList())
+            await close().ConfigureAwait(false);
+    }
+
+    private async Task CompleteCloseAsync(Task shutdown)
+    {
+        Exception? failure = null;
+        try
+        {
+            await shutdown.ConfigureAwait(false);
+        }
+        catch (Exception exception)
+        {
+            failure = exception;
+        }
+
+        try
+        {
+            void Finish()
+            {
+                if (_disposed)
+                    return;
+                if (failure is not null)
+                    CrashReport.Report(failure);
+                _closeFinished = true;
+                _frame.Close(force: true);
+            }
+
+            if (_dispatcher is null)
+                Wx.CallAfter(() => CrashReport.Guard(Finish));
+            else
+                _dispatcher.Post(Finish);
+        }
+        catch (InvalidOperationException)
+        {
+            // The event loop has already ended, so there is no frame left to close.
+        }
+    }
+
+    private void WaitForShutdown()
+    {
+        try
+        {
+            _shutdownTask?.GetAwaiter().GetResult();
+        }
+        catch (Exception failure)
+        {
+            CrashReport.Report(failure);
+        }
+        _closeFinished = true;
     }
 
     private bool CanClose()
