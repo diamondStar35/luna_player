@@ -13,6 +13,7 @@ internal sealed class BookmarkManagerDialog : IDisposable
 
     internal BookmarkManagerDialog(Window parent, IReadOnlyList<BookmarkListItem> bookmarks)
     {
+        // Translators: Title of the window used to manage bookmarks for the current file.
         _dialog = new Dialog(parent, title: Tr("Manage bookmarks"), style: DialogStyle.Default | DialogStyle.ResizeBorder);
         _list = new ListCtrl(_dialog, style: ListCtrlStyle.Report | ListCtrlStyle.SingleSelection);
         // Translators: Heading of the bookmark list column holding what each bookmark is called.
@@ -33,7 +34,9 @@ internal sealed class BookmarkManagerDialog : IDisposable
 
         // Translators: Button that moves playing to the chosen bookmark.
         _jump = ActionButton(Tr("Jump"), BookmarkManagementAction.Jump);
+        // Translators: Button that renames the chosen bookmark.
         _edit = ActionButton(Tr("Edit"), BookmarkManagementAction.Rename);
+        // Translators: Button that removes the chosen bookmark.
         _delete = ActionButton(Tr("Delete"), BookmarkManagementAction.Delete);
         _jump.SetDefault();
         // Translators: The button that closes a window.

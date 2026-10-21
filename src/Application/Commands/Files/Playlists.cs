@@ -28,6 +28,7 @@ internal sealed partial class Files
             Tr("Opening playlist"),
             // Translators: Message shown while a playlist is downloaded.
             Tr("Downloading playlist..."),
+            // Translators: Status shown while a playlist download is still running.
             _ => Tr("Downloading playlist..."))
         {
             Proportional = false,
@@ -43,7 +44,9 @@ internal sealed partial class Files
         {
             _view.Dialogs.ShowError(
                 // Translators: Shown when an M3U or M3U8 playlist could not be read. {error} is the reason.
-                TrFormat("Could not open the playlist: {error}", error), Tr("Error"));
+                TrFormat("Could not open the playlist: {error}", error),
+                // Translators: Title of an error shown when a playlist cannot be opened.
+                Tr("Error"));
             return false;
         }
         // An HLS manifest is itself one stream. Its non-comment lines are media chunks and variant
@@ -54,14 +57,18 @@ internal sealed partial class Files
         {
             _view.Dialogs.ShowError(
                 // Translators: Shown when an M3U or M3U8 file contains no usable local files or web links.
-                Tr("The playlist contains no playable entries."), Tr("Error"));
+                Tr("The playlist contains no playable entries."),
+                // Translators: Title of an error shown for an empty or unusable playlist.
+                Tr("Error"));
             return false;
         }
         if (_player.OpenPlaylist(result.Entries))
             return true;
         _view.Dialogs.ShowError(
             // Translators: Shown when the entries in an M3U or M3U8 playlist could not be loaded.
-            Tr("Could not load the playlist entries."), Tr("Error"));
+            Tr("Could not load the playlist entries."),
+            // Translators: Title of an error shown when playlist entries cannot be loaded.
+            Tr("Error"));
         return false;
     }
 }

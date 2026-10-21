@@ -50,8 +50,11 @@ internal sealed class Edit
         var extension = Path.GetExtension(path);
         if (string.IsNullOrWhiteSpace(Path.GetFileNameWithoutExtension(value)))
         {
-            // Translators: Spoken and shown when the user confirms a new file name without typing anything.
-            _view.Dialogs.ShowWarning(Tr("File name cannot be empty."), Tr("Rename File"));
+            _view.Dialogs.ShowWarning(
+                // Translators: Spoken and shown when the user confirms a new file name without typing anything.
+                Tr("File name cannot be empty."),
+                // Translators: Title of the warning shown when a new file name is empty.
+                Tr("Rename File"));
             return;
         }
         if (string.IsNullOrEmpty(Path.GetExtension(value)))
@@ -59,8 +62,11 @@ internal sealed class Edit
         var newPath = Path.Combine(Path.GetDirectoryName(path)!, value);
         if (File.Exists(newPath))
         {
-            // Translators: Spoken and shown when the new name given to a file is already taken by another file in the same folder.
-            _view.Dialogs.ShowWarning(Tr("A file with that name already exists."), Tr("Rename File"));
+            _view.Dialogs.ShowWarning(
+                // Translators: Spoken and shown when a new file name is already used in the same folder.
+                Tr("A file with that name already exists."),
+                // Translators: Title of the warning shown when a new file name is already in use.
+                Tr("Rename File"));
             return;
         }
         if (_player.RenameCurrent(newPath))

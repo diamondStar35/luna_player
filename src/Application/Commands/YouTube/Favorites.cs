@@ -160,7 +160,10 @@ internal sealed class Favorites
     {
         if (_store.LastError.Length == 0)
             return false;
-        _view.Dialogs.ShowError(_store.LastError, Tr("Favorite videos"));
+        _view.Dialogs.ShowError(
+            _store.LastError,
+            // Translators: Title of an error about the saved favorite-video list.
+            Tr("Favorite videos"));
         return true;
     }
 }

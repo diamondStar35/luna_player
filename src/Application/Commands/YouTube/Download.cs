@@ -59,6 +59,7 @@ internal sealed partial class YouTube
         _speech.Speak(
             // Translators: Spoken after a video has been put in the download queue.
             Tr("Added to download queue"),
+            // Translators: Short announcement after a video has been put in the download queue.
             Tr("Added to download queue"));
     }
 

@@ -15,6 +15,7 @@ internal sealed class TextInfoDialog : IDisposable
         var textBox = new TextCtrl(_dialog, value: text, style: TextCtrlStyle.MultiLine | TextCtrlStyle.ReadOnly | TextCtrlStyle.DontWrap);
         textBox.InsertionPoint = 0;
         textBox.ShowPosition(0);
+        // Translators: Button that closes a read-only information window.
         var close = new Button(_dialog, StandardId.Close, Tr("Close"));
         close.Click += (_, _) => _dialog.EndModal(StandardId.Close);
         var sizer = new BoxSizer(Orientation.Vertical);

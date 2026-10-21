@@ -66,6 +66,7 @@ internal static class CrashReport
         }
         catch (OperationCanceledException)
         {
+            // User-requested cancellation is an expected outcome and has already been reported by the operation.
         }
         catch (Exception failure)
         {

@@ -83,6 +83,7 @@ internal sealed class SystemMediaControls : IDisposable
         }
         catch (COMException)
         {
+            // Windows can revoke the media-control session while the application is closing or the shell restarts.
         }
     }
 
@@ -140,6 +141,7 @@ internal sealed class SystemMediaControls : IDisposable
         }
         catch (COMException)
         {
+            // Releasing an already invalidated Windows media-control session is safe to ignore during teardown.
         }
     }
 

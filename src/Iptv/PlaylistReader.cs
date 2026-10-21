@@ -31,6 +31,7 @@ internal static class PlaylistReader
         {
             var bytes = File.ReadAllBytes(path);
             if (bytes.Length > M3uPlaylist.MaximumBytes)
+                // Translators: Shown when a local IPTV playlist exceeds the safe size limit.
                 return M3uPlaylistResult.Failure(Tr("The playlist file is too large."));
             var root = new Uri(Path.GetFullPath(path));
             return parse(M3uPlaylist.Decode(bytes), root, local: true);
@@ -53,6 +54,7 @@ internal static class PlaylistReader
                 .GetAwaiter().GetResult();
             response.EnsureSuccessStatusCode();
             if (response.Content.Headers.ContentLength is > M3uPlaylist.MaximumBytes)
+                // Translators: Shown when an IPTV playlist download exceeds the safe size limit.
                 return M3uPlaylistResult.Failure(Tr("The network playlist is too large."));
             using var stream = response.Content.ReadAsStream(cancellationToken);
             using var memory = new MemoryStream();
@@ -63,6 +65,7 @@ internal static class PlaylistReader
                 var read = stream.Read(buffer, 0, buffer.Length);
                 if (read == 0) break;
                 if (memory.Length + read > M3uPlaylist.MaximumBytes)
+                    // Translators: Shown when an IPTV playlist download grows beyond the safe size limit.
                     return M3uPlaylistResult.Failure(Tr("The network playlist is too large."));
                 memory.Write(buffer, 0, read);
             }
@@ -74,6 +77,7 @@ internal static class PlaylistReader
         }
         catch (OperationCanceledException)
         {
+            // Translators: Shown when downloading an IPTV playlist takes too long.
             return M3uPlaylistResult.Failure(Tr("The playlist request timed out."));
         }
         catch (Exception exception) when (exception is HttpRequestException or IOException

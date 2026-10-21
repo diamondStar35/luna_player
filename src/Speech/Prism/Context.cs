@@ -476,6 +476,7 @@ namespace PrismSharp
             }
             catch
             {
+                // Exceptions cannot cross the unmanaged backend-availability callback.
             }
         }
     }

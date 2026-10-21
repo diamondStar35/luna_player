@@ -46,6 +46,7 @@ internal sealed class AboutDialog : IDisposable
         var website = new HyperlinkCtrl(_dialog, Tr("Visit the Luna Player website"), AppInfo.RepositoryUrl);
 
         // Bound to Cancel so both this button and Escape dismiss the dialog.
+        // Translators: Button that closes the About window.
         var ok = new Button(_dialog, StandardId.Cancel, Tr("OK"));
         ok.SetDefault();
         _dialog.SetEscapeId(StandardId.Cancel);

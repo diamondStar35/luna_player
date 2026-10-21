@@ -453,6 +453,7 @@ namespace PrismSharp
             }
             catch
             {
+                // Exceptions cannot cross the unmanaged destruction callback during native cleanup.
             }
         }
 
@@ -470,6 +471,7 @@ namespace PrismSharp
             }
             catch
             {
+                // Exceptions cannot cross the unmanaged user-data cleanup callback.
             }
         }
 

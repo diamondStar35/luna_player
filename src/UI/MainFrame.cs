@@ -64,6 +64,7 @@ internal sealed class MainFrame : IMainView
         }
         catch (Exception)
         {
+            // A missing or unreadable optional icon must never prevent the main window from opening.
         }
         var menus = new MenuController(_frame, actions, shortcuts, presets, recents);
         _menus = menus;

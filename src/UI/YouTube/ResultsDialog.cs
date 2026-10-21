@@ -355,12 +355,14 @@ internal sealed class ResultsDialog : IDisposable
                 if (!string.IsNullOrEmpty(result.Views))
                     parts.Add(result.Views);
                 if (!string.IsNullOrEmpty(result.PublishedTime))
+                    // Translators: How many videos a channel holds. {count} is a number.
                     parts.Add(TrFormat("contains {count} videos", result.PublishedTime));
                 break;
             default:
                 if (result.Duration is { } duration)
                     parts.Add(FormatDuration(duration));
                 if (result.Author.Length > 0)
+                    // Translators: Names who published a video result. {author} is a channel name.
                     parts.Add(TrFormat("by {author}", result.Author));
                 if (!string.IsNullOrEmpty(result.Views))
                     parts.Add(result.Views);

@@ -75,6 +75,7 @@ internal sealed class SleepTimer : IDisposable
                 // Translators: Spoken when a sleep timer is set to fire after a number of minutes. {minutes} is
                 // that number.
                 TrFormat("Sleep timer set for {minutes} minutes.", minutes),
+                // Translators: Short announcement after a timer is set. {minutes} is the number of minutes; "m" means minutes.
                 TrFormat("Sleep {minutes}m", minutes));
         }
         else
@@ -99,7 +100,9 @@ internal sealed class SleepTimer : IDisposable
         _armed = false;
         _speech.Speak(
             // Translators: Spoken when a running sleep timer is turned off.
-            Tr("Sleep timer cancelled."), Tr("Sleep off"));
+            Tr("Sleep timer cancelled."),
+            // Translators: Short announcement when a running sleep timer is turned off.
+            Tr("Sleep off"));
     }
 
     /// <summary>Speaks how long is left, or that the timer waits on the end of the track, or that none is set.
@@ -167,7 +170,9 @@ internal sealed class SleepTimer : IDisposable
                 _warned = true;
                 _speech.Speak(
                     // Translators: Spoken once, a minute before a sleep timer fires.
-                    Tr("Sleep timer: one minute remaining."), Tr("Sleep 1:00"), interrupt: false);
+                    Tr("Sleep timer: one minute remaining."),
+                    // Translators: Short warning spoken one minute before a sleep timer fires.
+                    Tr("Sleep 1:00"), interrupt: false);
             }
             ApplyFade(remaining);
         }
@@ -216,22 +221,35 @@ internal sealed class SleepTimer : IDisposable
         _tick = null;
     }
 
-    private void AnnounceEndOfTrackArmed()
-        => _speech.Speak(
+    private void AnnounceEndOfTrackArmed() => _speech.Speak(
             // Translators: Spoken when the sleep timer is set to fire at the end of the current track.
-            Tr("Sleep timer set for the end of the current track."), Tr("Sleep: end of track"));
+            Tr("Sleep timer set for the end of the current track."),
+            // Translators: Short announcement when the sleep timer will fire at the end of the track.
+            Tr("Sleep: end of track"));
 
     private void AnnounceFired()
-        => _speech.Speak(
-            _action == SleepTimerAction.Stop
-                // Translators: Spoken when the sleep timer fires and stops playback.
-                ? Tr("Sleep timer: playback stopped.")
-                // Translators: Spoken when the sleep timer fires and pauses playback.
-                : Tr("Sleep timer: playback paused."),
-            _action == SleepTimerAction.Stop ? Tr("Sleep: stopped") : Tr("Sleep: paused"));
+    {
+        if (_action == SleepTimerAction.Stop)
+        {
+            // Translators: Spoken when the sleep timer fires and stops playback.
+            var message = Tr("Sleep timer: playback stopped.");
+            // Translators: Short announcement when the sleep timer stops playback.
+            var brief = Tr("Sleep: stopped");
+            _speech.Speak(message, brief);
+        }
+        else
+        {
+            // Translators: Spoken when the sleep timer fires and pauses playback.
+            var message = Tr("Sleep timer: playback paused.");
+            // Translators: Short announcement when the sleep timer pauses playback.
+            var brief = Tr("Sleep: paused");
+            _speech.Speak(message, brief);
+        }
+    }
 
-    private void AnnounceNotSet()
-        => _speech.Speak(
+    private void AnnounceNotSet() => _speech.Speak(
             // Translators: Spoken when a sleep-timer command is used but no timer is currently set.
-            Tr("No sleep timer is set."), Tr("No sleep timer"));
+            Tr("No sleep timer is set."),
+            // Translators: Short announcement when no sleep timer is set.
+            Tr("No sleep timer"));
 }

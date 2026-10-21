@@ -206,11 +206,11 @@ internal static partial class MainMenuBuilder
         foreach (var preset in presets)
             AddEqualizerItem(menu, commands, items, preset.Id, preset.Name);
         menu.AppendSeparator();
-        // Translators: Item in the Equalizer submenu that opens the preset in use for editing, band by band.
         menu.Append(commandIds[ActionId.EditEqualizerPreset],
+            // Translators: Item in the Equalizer submenu that opens the current preset for editing.
             Label(Tr("Edit current preset..."), ActionId.EditEqualizerPreset, shortcuts));
-        // Translators: Item in the Equalizer submenu that opens the window listing every preset.
         menu.Append(commandIds[ActionId.ManageEqualizerPresets],
+            // Translators: Item in the Equalizer submenu that opens the list of presets.
             Label(Tr("Manage presets..."), ActionId.ManageEqualizerPresets, shortcuts));
     }
 
@@ -267,14 +267,14 @@ internal static partial class MainMenuBuilder
         ShortcutManager shortcuts)
     {
         menu.AppendSeparator();
-        // Translators: Subtitles submenu item that loads a subtitle file from this computer.
         menu.Append(commandIds[ActionId.LoadSubtitleFile],
+            // Translators: Subtitles submenu item that loads a subtitle file from this computer.
             Label(Tr("Load from file..."), ActionId.LoadSubtitleFile, shortcuts));
-        // Translators: Subtitles submenu item that loads a subtitle from a web address.
         menu.Append(commandIds[ActionId.LoadSubtitleUrl],
+            // Translators: Subtitles submenu item that loads a subtitle from a web address.
             Label(Tr("Load from URL..."), ActionId.LoadSubtitleUrl, shortcuts));
-        // Translators: Subtitles submenu tick box that keeps the chosen subtitle selected across the playlist until the player closes.
         return menu.AppendCheckItem(commandIds[ActionId.RememberSubtitle],
+            // Translators: Subtitles submenu item that keeps the chosen subtitle selected until the player closes.
             Label(Tr("Remember subtitle for this session"), ActionId.RememberSubtitle, shortcuts));
     }
 

@@ -129,6 +129,7 @@ internal sealed class MediaConverterDialog : IDisposable
         // Translators: Label of the list that chooses how many channels the converted files have.
         var channelsLabel = new StaticText(_dialog, label: Tr("Channels"));
         _channels = new Choice(_dialog);
+        // Translators: First item in the converter's channel list, meaning the source channel layout is kept.
         _channels.Add(Tr("Preserve original"));
         // Translators: The one-channel choice in the converter's channels list.
         _channels.Add(Tr("Mono"));
@@ -137,6 +138,7 @@ internal sealed class MediaConverterDialog : IDisposable
         // Translators: Label of the list that chooses the audio quality (bitrate) of the converted files.
         _qualityLabel = new StaticText(_dialog, label: Tr("Quality"));
         _quality = new Choice(_dialog);
+        // Translators: First item in the converter's quality list, meaning the source quality is kept.
         _quality.Add(Tr("Preserve original"));
         foreach (var bitrate in Bitrates)
             // Translators: One bitrate in the converter's quality list. {rate} is a number in kilobits per second.
@@ -448,10 +450,10 @@ internal sealed class MediaConverterDialog : IDisposable
             catch (Exception failure) when (failure is IOException or UnauthorizedAccessException
                 or ArgumentException or NotSupportedException or System.Security.SecurityException)
             {
-                Warn(TrFormat(
-                    // Translators: Shown when the chosen destination folder could not be created. {reason} is
-                    // what went wrong, in the language of the system rather than the player.
-                    "{message}\n{reason}", Tr("The destination folder could not be created."), failure.Message));
+                // Translators: Shown when the chosen destination folder could not be created.
+                var message = Tr("The destination folder could not be created.");
+                // Translators: Adds {reason}, the system's explanation, below a destination-folder error.
+                Warn(TrFormat("{message}\n{reason}", message, failure.Message));
                 return;
             }
         }

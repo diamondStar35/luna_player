@@ -75,6 +75,7 @@ namespace PrismSharp.Speech
             }
             catch (ObjectDisposedException)
             {
+                // Disposal can win the race after the check above; the dropped speech request is no longer relevant.
             }
         }
 
@@ -152,6 +153,7 @@ namespace PrismSharp.Speech
                         }
                         catch
                         {
+                            // Screen-reader shutdown is best effort and must not prevent dispatcher teardown.
                         }
 
                         return 0;
@@ -159,6 +161,7 @@ namespace PrismSharp.Speech
                 }
                 catch
                 {
+                    // The dispatcher may already be gone; disposal has no further recovery work to perform.
                 }
             }
         }
@@ -238,6 +241,7 @@ namespace PrismSharp.Speech
                         }
                         catch
                         {
+                            // A faulty screen-reader operation is isolated so later queued speech can still run.
                         }
                     });
                 }
@@ -295,6 +299,7 @@ namespace PrismSharp.Speech
                 }
                 catch
                 {
+                    // Closing a third-party screen-reader backend is best effort during worker shutdown.
                 }
             }
         }

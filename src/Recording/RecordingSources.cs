@@ -77,6 +77,7 @@ internal sealed class RecordingSources
             // Translators: Shown when the chosen file format cannot be written at the chosen sample rate
             // and channel count - MP3 at 96000 Hz, for instance, which no encoder on Windows will do.
             RecordingFailure.Unsupported =>
+                // Translators: Shown when the recording format does not support the selected sample rate and channel count.
                 Tr("This format cannot be recorded at the chosen sample rate and channel count."),
             // Translators: Shown when recording went wrong in a way the player cannot explain more precisely.
             _ => Tr("Could not record."),
@@ -131,6 +132,7 @@ internal sealed class RecordingSources
             _ => source.CaptureOthers
                 // Translators: How a source that captures everything except one program is described.
                 ? TrFormat("everything except {program}; PID: {pid}", source.ProcessName, source.ProcessId)
+                // Translators: How a source that captures one program is described. {program} is its name and {pid} its process number.
                 : TrFormat("program {program}; PID: {pid}", source.ProcessName, source.ProcessId),
         };
         // Translators: One row of the recording sources list. {name} is what the user called the source,

@@ -71,8 +71,14 @@ internal sealed class DownloadDialog : IDisposable
             Math.Max(0, Array.IndexOf(VideoQualities, defaults.VideoQuality)));
         // Translators: Label of the list that chooses the file type a downloaded video is saved as.
         _containerLabel = new StaticText(_dialog, label: Tr("Video format"));
-        // Translators: The two video container formats. "MP4" and "MKV" are format names and are not translated.
-        _container = Choice(_dialog, [Tr("MP4"), Tr("MKV")], Math.Max(0, Array.IndexOf(Containers, defaults.Container)));
+        _container = Choice(_dialog,
+            [
+                // Translators: MP4 video-container choice. "MP4" is a format name.
+                Tr("MP4"),
+                // Translators: Matroska video-container choice. "MKV" is a format name.
+                Tr("MKV")
+            ],
+            Math.Max(0, Array.IndexOf(Containers, defaults.Container)));
         // Translators: Label of the list that chooses the file type a downloaded audio track is saved as.
         _audioFormatLabel = new StaticText(_dialog, label: Tr("Audio format"));
         // The audio formats are their own names, not translated.

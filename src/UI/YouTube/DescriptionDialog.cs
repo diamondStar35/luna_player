@@ -122,6 +122,7 @@ internal sealed partial class DescriptionDialog : IDisposable
 
     private void OnExportText()
     {
+        // Translators: File-type filter for exporting a video description as plain text.
         if (ChooseSavePath(".txt", Tr("Text files (*.txt)|*.txt")) is string path)
             Save(path, _raw);
         _text.Focus();
@@ -129,6 +130,7 @@ internal sealed partial class DescriptionDialog : IDisposable
 
     private void OnExportHtml()
     {
+        // Translators: File-type filter for exporting a video description as a web page.
         if (ChooseSavePath(".html", Tr("Web pages (*.html)|*.html")) is string path)
             Save(path, BuildHtml());
         _text.Focus();

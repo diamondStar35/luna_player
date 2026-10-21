@@ -68,9 +68,11 @@ internal sealed class ViewStatePresenter
         if (!_player.HasVideo && _view.IsFullScreen)
         {
             _view.SetFullScreen(false);
-            // Translators: Spoken when full-screen mode ends on its own because the video stopped playing.
-            // Translators: The short advanced-verbosity wording for the same automatic end of full-screen mode.
-            _speech.Speak(Tr("Full-screen mode off."), Tr("Full-screen off"));
+            _speech.Speak(
+                // Translators: Spoken when full-screen mode ends on its own because the video stopped playing.
+                Tr("Full-screen mode off."),
+                // Translators: Short announcement when full-screen mode ends because the video stopped.
+                Tr("Full-screen off"));
         }
         _view.SetSilenceRemovalChecked(_player.IsSilenceRemovalEnabled);
     }

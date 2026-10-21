@@ -64,6 +64,7 @@ internal sealed class IptvSourceEditDialog : IDisposable
         _kind.SelectedIndex = Math.Max(0, Array.IndexOf(Kinds, value.Kind));
 
         // The address label is set for the chosen kind by Refresh; it starts with the web-address wording.
+        // Translators: Initial label of the box holding an IPTV source's web address.
         _addressLabel = new StaticText(_dialog, label: Tr("Web address"));
         _address = new TextCtrl(_dialog, value: value.Url);
         _browseLabel = new StaticText(_dialog, label: string.Empty);
@@ -177,13 +178,14 @@ internal sealed class IptvSourceEditDialog : IDisposable
 
     private void ChooseFile()
     {
+        // Translators: File-type name for M3U and M3U8 IPTV playlists.
+        var playlists = Tr("Playlists");
+        // Translators: File-type name for the entry that shows every file in a picker.
+        var allFiles = Tr("All Files");
         using var dialog = new FileDialog(
             _dialog,
             message: "",
-            wildcard:
-                // Translators: The two names in the file picker's type list for choosing a playlist file. The
-                // patterns beside them are literal and must not be translated.
-                $"{Tr("Playlists")} (*.m3u;*.m3u8)|*.m3u;*.m3u8|{Tr("All Files")} (*.*)|*.*",
+            wildcard: $"{playlists} (*.m3u;*.m3u8)|*.m3u;*.m3u8|{allFiles} (*.*)|*.*",
             style: FileDialogStyle.DefaultOpen);
         if (dialog.ShowModal() == StandardId.Ok)
             _address.Value = dialog.Path;

@@ -384,7 +384,9 @@ internal sealed class ApplicationHost : IDisposable
         _downloadQueue = downloadQueue;
         downloadQueue.AllCompleted += () => _dispatcher.Post(() =>
             _view.Dialogs.ShowNotification(
+                // Translators: Title of the notification shown when every queued download has finished.
                 Tr("Downloads completed"),
+                // Translators: Body of the notification shown when every queued download has finished.
                 Tr("All items in the download queue have completed.")));
         // Shared by the favourites actions and the results window's Ctrl+Space add, so both write the same store.
         var favorites = features.Favorites;
@@ -453,7 +455,9 @@ internal sealed class ApplicationHost : IDisposable
         if (_settingsError.Length > 0)
         {
             _dispatcher.Post(() => _view.Dialogs.ShowError(
+                // Translators: Shown when settings could not be read. {error} is the underlying file or data error.
                 TrFormat("The settings file could not be loaded. Default settings will be used, and the existing file will not be overwritten. Import a valid settings file or reset the settings to replace it.\n\n{error}", _settingsError),
+                // Translators: Title of the message shown when settings could not be read.
                 Tr("Settings error")));
         }
         // Posted rather than run here so a refusal is reported over a window the user can already see.

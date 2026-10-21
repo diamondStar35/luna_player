@@ -45,6 +45,7 @@ internal sealed class SleepTimerDialog : IDisposable
 
     internal SleepTimerDialog(Window parent, SleepTimerRequest initial, bool armed, string? statusText)
     {
+        // Translators: Title of the window used to configure the sleep timer.
         _dialog = new Dialog(parent, title: Tr("Sleep timer"), style: DialogStyle.Default | DialogStyle.ResizeBorder);
 
         StaticText? status = null;
@@ -233,7 +234,9 @@ internal sealed class SleepTimerDialog : IDisposable
         {
             Wx.MessageBox(
                 // Translators: Shown when a timed sleep timer is set to a length of zero.
-                Tr("Choose a length of at least one minute."), Tr("Sleep timer"),
+                Tr("Choose a length of at least one minute."),
+                // Translators: Title of a warning about an invalid sleep-timer length.
+                Tr("Sleep timer"),
                 MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
             return;
         }

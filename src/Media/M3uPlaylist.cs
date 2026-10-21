@@ -33,6 +33,7 @@ internal static class M3uPlaylist
         {
             var bytes = File.ReadAllBytes(path);
             if (bytes.Length > MaximumBytes)
+                // Translators: Shown when a local M3U playlist exceeds the safe size limit.
                 return M3uPlaylistResult.Failure(Tr("The playlist file is too large."));
             var root = new Uri(Path.GetFullPath(path));
             return ParseText(Decode(bytes), root, local: true);
@@ -52,6 +53,7 @@ internal static class M3uPlaylist
                 .GetAwaiter().GetResult();
             response.EnsureSuccessStatusCode();
             if (response.Content.Headers.ContentLength is > MaximumBytes)
+                // Translators: Shown when an M3U playlist download exceeds the safe size limit.
                 return M3uPlaylistResult.Failure(Tr("The network playlist is too large."));
             using var stream = response.Content.ReadAsStream(cancellationToken);
             using var memory = new MemoryStream();
@@ -62,6 +64,7 @@ internal static class M3uPlaylist
                 var read = stream.Read(buffer, 0, buffer.Length);
                 if (read == 0) break;
                 if (memory.Length + read > MaximumBytes)
+                    // Translators: Shown when an M3U playlist download grows beyond the safe size limit.
                     return M3uPlaylistResult.Failure(Tr("The network playlist is too large."));
                 memory.Write(buffer, 0, read);
             }
@@ -73,6 +76,7 @@ internal static class M3uPlaylist
         }
         catch (OperationCanceledException)
         {
+            // Translators: Shown when downloading an M3U playlist takes too long.
             return M3uPlaylistResult.Failure(Tr("The playlist request timed out."));
         }
         catch (Exception exception) when (exception is HttpRequestException or IOException

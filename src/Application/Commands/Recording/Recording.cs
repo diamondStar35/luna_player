@@ -186,10 +186,11 @@ internal sealed class Recording
         catch (Exception failure) when (failure is IOException or UnauthorizedAccessException
             or ArgumentException or NotSupportedException or System.ComponentModel.Win32Exception)
         {
+            // Translators: Shown when the folder recordings are saved into could not be opened.
+            var message = Tr("Could not open the recordings folder.");
             _view.Dialogs.ShowError(
-                // Translators: Shown when the folder recordings are saved into could not be opened.
-                // {reason} is what went wrong, in the language of the system rather than the player.
-                TrFormat("{message}\n{reason}", Tr("Could not open the recordings folder."), failure.Message),
+                // Translators: Combines a recording-folder error with {reason}, the system's explanation.
+                TrFormat("{message}\n{reason}", message, failure.Message),
                 Title);
         }
     }

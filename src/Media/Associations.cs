@@ -50,6 +50,7 @@ internal sealed class FileAssociations
     {
         if (!OperatingSystem.IsWindows())
         {
+            // Translators: Shown when removing file associations is attempted on a non-Windows system.
             error = Tr("File associations are available only on Windows.");
             return false;
         }

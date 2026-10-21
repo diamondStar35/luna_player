@@ -68,7 +68,11 @@ internal sealed class MarkedFiles
                 ? Tr("Marked files copied to clipboard.")
                 // Translators: Spoken when the marked files could not be copied to the clipboard.
                 : Tr("Unable to copy marked files to clipboard."),
-            copied ? Tr("Copied.") : Tr("Copy failed."));
+            copied
+                // Translators: Short announcement after copying marked files to the clipboard succeeds.
+                ? Tr("Copied.")
+                // Translators: Short announcement after copying marked files to the clipboard fails.
+                : Tr("Copy failed."));
     }
 
     private void Delete()
@@ -78,6 +82,7 @@ internal sealed class MarkedFiles
         if (!_view.Dialogs.Confirm(
             // Translators: Asks the user to confirm deleting the marked files. {count} is how many are marked.
             TrPluralFormat("Delete {count} marked file?", "Delete {count} marked files?", marked.Count, marked.Count),
+            // Translators: Title of the dialog that confirms deletion of marked files.
             Tr("Confirm Delete"))) return;
         var current = _player.CurrentPath;
         _player.Stop();
@@ -94,7 +99,9 @@ internal sealed class MarkedFiles
                 Tr("Delete Complete"));
             _speech.Speak(
                 // Translators: Spoken once the marked files have been deleted.
-                Tr("Marked files deleted."), Tr("Deleted."));
+                Tr("Marked files deleted."),
+                // Translators: Short announcement once marked files have been deleted.
+                Tr("Deleted."));
         }
         else if (result.Succeeded.Count > 0)
         {
@@ -102,6 +109,7 @@ internal sealed class MarkedFiles
                 // Translators: Shown when only some of the marked files could be deleted.
                 // {deleted} is how many were deleted and {failed} how many could not be.
                 TrFormat("Deleted {deleted} files. Failed to delete {failed} files.", result.Succeeded.Count, result.Failed.Count),
+                // Translators: Title of the result shown after deleting marked files.
                 Tr("Delete Complete"));
             _speech.Speak(
                 // Translators: Spoken when only some of the marked files could be deleted.
@@ -109,14 +117,23 @@ internal sealed class MarkedFiles
                 // Translators: The short wording spoken when only some of the marked files could be deleted.
                 Tr("Partial delete."));
         }
-        // Translators: Spoken when none of the marked files could be deleted.
-        else _speech.Speak(Tr("Could not delete marked files."), Tr("Delete failed."));
+        else
+            _speech.Speak(
+                // Translators: Spoken when none of the marked files could be deleted.
+                Tr("Could not delete marked files."),
+                // Translators: Short announcement when no marked file could be deleted.
+                Tr("Delete failed."));
     }
 
     private IReadOnlyList<string> GetMarked()
     {
         var marked = _player.MarkedFiles;
-        if (marked.Count == 0) _speech.Speak(Tr("No marked files."), Tr("No marks."));
+        if (marked.Count == 0)
+            _speech.Speak(
+                // Translators: Spoken when an action needs marked files but none are marked.
+                Tr("No marked files."),
+                // Translators: Short announcement when no files are marked.
+                Tr("No marks."));
         return marked;
     }
 
@@ -147,6 +164,7 @@ internal sealed class MarkedFiles
                 move
                     // Translators: The short wording spoken once the marked files have been moved into the chosen folder.
                     ? Tr("Moved.")
+                    // Translators: The short wording spoken once the marked files have been copied into the chosen folder.
                     : Tr("Copied."));
         }
         else if (result.Succeeded.Count > 0)
@@ -155,6 +173,7 @@ internal sealed class MarkedFiles
                 // Translators: Shown when only some of the marked files could be copied or moved.
                 // {processed} is how many were dealt with and {failed} how many could not be.
                 TrFormat("Processed {processed} files. Failed for {failed} files.", result.Succeeded.Count, result.Failed.Count),
+                // Translators: Title of a partial-success result for copying or moving marked files.
                 Tr("Operation Complete"));
             _speech.Speak(
                 // Translators: Spoken when copying or moving the marked files worked for some of them but not all.

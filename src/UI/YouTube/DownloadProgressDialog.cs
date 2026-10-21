@@ -34,6 +34,7 @@ internal sealed class DownloadProgressDialog : IDisposable
         // Translators: Title of the window shown while a video is being downloaded.
         _dialog = new Dialog(
             parent: null,
+            // Translators: Title of the window showing progress for one YouTube download.
             title: Tr("Downloading"),
             size: new Size(520, 300),
             style: DialogStyle.Default | DialogStyle.ResizeBorder);
@@ -133,30 +134,33 @@ internal sealed class DownloadProgressDialog : IDisposable
             return;
         }
 
+        // Translators: Title of the progress window while a YouTube file is downloading.
         _dialog.Title = Tr("Downloading");
+        var total = item.TotalBytes > 0
+            ? Size(item.TotalBytes)
+            // Translators: Shown for the total download size before yt-dlp reports it.
+            : Tr("unknown");
+        var speed = item.Speed > 0
+            // Translators: Download speed. {size} is a file size and "/s" means per second.
+            ? TrFormat("{size}/s", Size((long)item.Speed))
+            // Translators: Shown for download speed before enough data exists to measure it.
+            : Tr("calculating…");
+        var eta = item.Eta > 0
+            ? FormatDuration(TimeSpan.FromSeconds(item.Eta))
+            // Translators: Shown for estimated time left before enough data exists to calculate it.
+            : Tr("calculating…");
         _text.Value = string.Join(Environment.NewLine,
             // Translators: How much of the file has downloaded. {done} and {total} are sizes such as "4.2 MB".
             TrFormat("Downloaded: {done} of {total}",
                 Size(item.DownloadedBytes),
-                item.TotalBytes > 0
-                    ? Size(item.TotalBytes)
-                    // Translators: Shown for the total size before yt-dlp has reported it.
-                    : Tr("unknown")),
+                total),
             // Translators: How far the download has got. {percent} is a whole number.
             TrFormat("Percentage: {percent}%", (int)Math.Round(item.Percent)),
             // Translators: The current download speed. {speed} is a size per second such as "1.3 MB/s".
-            TrFormat("Speed: {speed}",
-                item.Speed > 0
-                    ? TrFormat("{size}/s", Size((long)item.Speed))
-                    // Translators: Shown for the speed before enough has downloaded to measure it.
-                    : Tr("calculating…")),
+            TrFormat("Speed: {speed}", speed),
             // Translators: A guess at the time left. {time} is a clock such as 3:20, or the word for a guess
             // not yet worth making.
-            TrFormat("Estimated time left: {time}",
-                item.Eta > 0
-                    ? FormatDuration(TimeSpan.FromSeconds(item.Eta))
-                    // Translators: Shown for the estimated time left before enough is done to guess it.
-                    : Tr("calculating…")));
+            TrFormat("Estimated time left: {time}", eta));
     }
 
     private static string PostProcessText(string processor, string status)

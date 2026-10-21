@@ -222,7 +222,10 @@ internal sealed class PreferencesDialog : IDisposable
         {
             var error = page.Validate();
             if (string.IsNullOrEmpty(error)) continue;
-            Wx.MessageBox(error, Tr("Preferences"), MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
+            Wx.MessageBox(
+                error,
+                // Translators: Title of an error caused by an invalid preference value.
+                Tr("Preferences"), MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
             return;
         }
         foreach (var page in _pages.Values) page.Apply();

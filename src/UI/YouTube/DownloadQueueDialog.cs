@@ -273,14 +273,25 @@ internal sealed class DownloadQueueDialog : IDisposable
         {
             var queuedFailure = snapshot.Items.FirstOrDefault(item =>
                 item.Status == Downloads.QueueItemStatus.Failed && item.Error.Length > 0);
-            return string.IsNullOrEmpty(queuedFailure.Error)
-                ? Tr("Ready to download.")
-                // Translators: Technical reason supplied by yt-dlp for a failed queue item.
-                : string.Join(Environment.NewLine,
-                    Tr("Ready to download."), TrFormat("Error: {details}", queuedFailure.Error));
+            // Translators: Queue status when no download is running and unfinished items are waiting.
+            var ready = Tr("Ready to download.");
+            if (string.IsNullOrEmpty(queuedFailure.Error))
+                return ready;
+            // Translators: Technical reason supplied by yt-dlp for a failed queue item.
+            var error = TrFormat("Error: {details}", queuedFailure.Error);
+            return string.Join(Environment.NewLine, ready, error);
         }
 
         var current = snapshot.Items[snapshot.CurrentIndex];
+        var speed = snapshot.Speed > 0
+            // Translators: Combined queue speed. {size} is a file size and "/s" means per second.
+            ? TrFormat("{size}/s", Size((long)snapshot.Speed))
+            // Translators: Shown for queue speed before enough data exists to measure it.
+            : Tr("calculating…");
+        var estimated = snapshot.EstimatedSeconds > 0
+            ? FormatDuration(TimeSpan.FromSeconds(snapshot.EstimatedSeconds))
+            // Translators: Shown for queue time remaining before enough data exists to calculate it.
+            : Tr("calculating…");
 
         var lines = new List<string>
         {
@@ -290,13 +301,9 @@ internal sealed class DownloadQueueDialog : IDisposable
             // Translators: Aggregate progress through all videos in the download queue.
             TrFormat("Total percentage: {percent}%", (int)Math.Round(snapshot.TotalPercent)),
             // Translators: Combined download speed of all active queue items.
-            TrFormat("Speed: {speed}", snapshot.Speed > 0
-                ? TrFormat("{size}/s", Size((long)snapshot.Speed))
-                : Tr("calculating…")),
+            TrFormat("Speed: {speed}", speed),
             // Translators: Estimated time left for all unfinished queue items.
-            TrFormat("Estimated time left: {time}", snapshot.EstimatedSeconds > 0
-                ? FormatDuration(TimeSpan.FromSeconds(snapshot.EstimatedSeconds))
-                : Tr("calculating…")),
+            TrFormat("Estimated time left: {time}", estimated),
         };
         var failed = snapshot.Items.FirstOrDefault(item =>
             item.Status == Downloads.QueueItemStatus.Failed && item.Error.Length > 0);
@@ -308,10 +315,15 @@ internal sealed class DownloadQueueDialog : IDisposable
 
     private static string StatusLabel(Downloads.QueueItemStatus status) => status switch
     {
+        // Translators: Status of a queue item while it is downloading.
         Downloads.QueueItemStatus.Downloading => Tr("Downloading"),
+        // Translators: Status after media bytes are downloaded but finishing work may remain.
         Downloads.QueueItemStatus.Downloaded => Tr("Downloaded"),
+        // Translators: Status of a queue item that finished successfully.
         Downloads.QueueItemStatus.Completed => Tr("Completed"),
+        // Translators: Status of a queue item whose download failed.
         Downloads.QueueItemStatus.Failed => Tr("Failed"),
+        // Translators: Status of a queue item waiting to start.
         _ => Tr("In queue"),
     };
 
@@ -353,6 +365,7 @@ internal sealed class DownloadQueueLinksDialog : IDisposable
     internal DownloadQueueLinksDialog(Window parent, Func<IReadOnlyList<string>, string?> addLinks)
     {
         _addLinks = addLinks;
+        // Translators: Title of the window used to add YouTube links to the download queue.
         _dialog = new Dialog(parent, title: Tr("Add links to download queue"),
             style: DialogStyle.Default | DialogStyle.ResizeBorder);
         // Translators: Label above the multi-line box used to add links to the download queue.
@@ -404,6 +417,7 @@ internal sealed class DownloadQueueLinksDialog : IDisposable
             Wx.MessageBox(
                 // Translators: Shown when Add is pressed without entering any links.
                 Tr("Enter at least one YouTube video link."),
+                // Translators: Title of a warning shown in the queue link-entry window.
                 Tr("Add links to download queue"),
                 MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
             _links.Focus();
@@ -412,7 +426,10 @@ internal sealed class DownloadQueueLinksDialog : IDisposable
         var error = _addLinks(links);
         if (!string.IsNullOrEmpty(error))
         {
-            Wx.MessageBox(error, Tr("Invalid YouTube link"),
+            Wx.MessageBox(
+                error,
+                // Translators: Title of a warning shown for an invalid YouTube link.
+                Tr("Invalid YouTube link"),
                 MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
             _links.Focus();
             return;

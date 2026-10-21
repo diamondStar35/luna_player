@@ -168,10 +168,8 @@ internal sealed class SaveSelectionsDialog : IDisposable
         catch (Exception failure) when (failure is IOException or UnauthorizedAccessException
             or ArgumentException or NotSupportedException or System.Security.SecurityException)
         {
-            Warn(TrFormat(
-                // Translators: Warning when the selection folder cannot be created. {message} is the
-                // operating system's explanation.
-                "The folder could not be created.\n{message}", failure.Message));
+            // Translators: Warning when the selection folder cannot be created. {message} is the operating system's explanation.
+            Warn(TrFormat("The folder could not be created.\n{message}", failure.Message));
             return;
         }
         var formatIndex = _format.SelectedIndex;

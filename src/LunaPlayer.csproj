@@ -161,6 +161,12 @@
     <Exec Command="python &quot;$(RepositoryRoot)docs\render_docs.py&quot;" />
   </Target>
 
+  <Target Name="ValidateTranslatorComments"
+          BeforeTargets="Build;Publish"
+          Condition="'$(DesignTimeBuild)' != 'true'">
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(RepositoryRoot)scripts\check-translator-comments.ps1&quot;" />
+  </Target>
+
   <Target Name="CompileTranslations"
           BeforeTargets="Build;Publish"
           Condition="'$(DesignTimeBuild)' != 'true' and '@(TranslationPo)' != '' and '$(SkipTranslationCompilation)' != 'true'"

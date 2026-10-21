@@ -127,12 +127,22 @@ internal sealed class Playlist
             return;
         var enabled = _player.ToggleShuffle();
         _view.SetShuffleChecked(enabled);
-        _speech.Speak(enabled
-                // Translators: Spoken once the player has started playing the files in a random order.
-                ? Tr("Shuffle on")
-                // Translators: Spoken once the player has gone back to playing the files in their listed order.
-                : Tr("Shuffle off"),
-            enabled ? Tr("Shuffle on") : Tr("Shuffle off"));
+        if (enabled)
+        {
+            // Translators: Spoken once the player has started playing files in a random order.
+            var message = Tr("Shuffle on");
+            // Translators: Short announcement once shuffle has been enabled.
+            var brief = Tr("Shuffle on");
+            _speech.Speak(message, brief);
+        }
+        else
+        {
+            // Translators: Spoken once the player has returned to playing files in their listed order.
+            var message = Tr("Shuffle off");
+            // Translators: Short announcement once shuffle has been disabled.
+            var brief = Tr("Shuffle off");
+            _speech.Speak(message, brief);
+        }
     }
 
     private void ToggleRepeatFile()
@@ -141,12 +151,22 @@ internal sealed class Playlist
             return;
         var enabled = _player.ToggleRepeatFile();
         _view.SetRepeatFileChecked(enabled);
-        _speech.Speak(enabled
-                // Translators: Spoken once the player has started playing the same file over and over.
-                ? Tr("Repeat on")
-                // Translators: Spoken once the player has stopped playing the same file over and over.
-                : Tr("Repeat off"),
-            enabled ? Tr("Repeat on") : Tr("Repeat off"));
+        if (enabled)
+        {
+            // Translators: Spoken once the player has started playing the same file repeatedly.
+            var message = Tr("Repeat on");
+            // Translators: Short announcement once repeating the current file has been enabled.
+            var brief = Tr("Repeat on");
+            _speech.Speak(message, brief);
+        }
+        else
+        {
+            // Translators: Spoken once the player has stopped playing the same file repeatedly.
+            var message = Tr("Repeat off");
+            // Translators: Short announcement once repeating the current file has been disabled.
+            var brief = Tr("Repeat off");
+            _speech.Speak(message, brief);
+        }
     }
 
     private void SetSwitched(bool moved, bool announce)

@@ -101,11 +101,13 @@ internal sealed class Service
             Tr("Downloading YouTube components"),
             // Translators: First message shown while the extra programs for yt-dlp are being fetched.
             Tr("Contacting the download site..."),
-            update => TrFormat(
+            update =>
+            {
                 // Translators: Progress heading while an extra program is being fetched. {name} is the
                 // program and its version, {step} which one it is and {total} how many there are.
-                "Downloading {name}, {step} of {total}", update.Name, update.Found, steps)
-                + "\n" + Sizes(update)) { Detailed = true };
+                return TrFormat("Downloading {name}, {step} of {total}", update.Name, update.Found, steps)
+                    + "\n" + Sizes(update);
+            }) { Detailed = true };
         BackgroundProgress.Start(_view, _dispatcher, prompt,
             (report, token) => Run(channel, report, token),
             outcome =>
@@ -118,12 +120,15 @@ internal sealed class Service
                     finished?.Invoke(true);
                     return;
                 }
+                // Translators: Shown when the extra programs needed for YouTube playback could not be installed.
+                var installError = Tr("Could not install YouTube components.");
                 _view.Dialogs.ShowError(
                     // Translators: Shown when the extra programs for yt-dlp could not be fetched. {reason}
                     // is what went wrong, in the language of the system rather than the player.
                     outcome.Error.Length > 0
-                        ? TrFormat("{message}\n{reason}", Tr("Could not install YouTube components."), outcome.Error)
-                        : Tr("Could not install YouTube components."),
+                        // Translators: Adds {reason}, the system's explanation, below the YouTube component error in {message}.
+                        ? TrFormat("{message}\n{reason}", installError, outcome.Error)
+                        : installError,
                     Title);
                 finished?.Invoke(false);
             });

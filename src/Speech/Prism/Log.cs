@@ -145,6 +145,7 @@ namespace PrismSharp
             }
             catch
             {
+                // Logging failures cannot be allowed to cross the unmanaged callback boundary.
             }
         }
     }

@@ -54,11 +54,14 @@ internal sealed class BackupPreferences : PreferencesPage
 
     private void ExportSettings(object? sender, CommandEventArgs args)
     {
+        // Translators: Title of the file picker used to export settings.
         var path = SavePath(Tr("Export settings"), _operations.SettingsPath);
         if (path is null) return;
         ShowResult(_operations.ExportSettings(path),
             // Translators: Message shown once the settings have been saved to the chosen file.
-            Tr("Settings exported successfully."), Tr("Export settings"),
+            Tr("Settings exported successfully."),
+            // Translators: Title of the message shown after settings are exported.
+            Tr("Export settings"),
             // Translators: Message shown when the settings could not be saved to the chosen file.
             Tr("Could not export settings."),
             // Translators: Title of the message shown when the settings could not be saved to the chosen file.
@@ -67,6 +70,7 @@ internal sealed class BackupPreferences : PreferencesPage
 
     private void ImportSettings(object? sender, CommandEventArgs args)
     {
+        // Translators: Title of the file picker used to import settings.
         var path = OpenPath(Tr("Import settings"), _operations.SettingsPath);
         if (path is null) return;
         var settings = _operations.ImportSettings(path);
@@ -79,37 +83,53 @@ internal sealed class BackupPreferences : PreferencesPage
         else
         {
             _replaceSettings(settings);
-            // Translators: Message shown once settings have been loaded from the chosen file.
-            ShowResult(true, Tr("Settings imported successfully."), Tr("Import settings"), "", Tr("Import error"));
+            ShowResult(true,
+                // Translators: Message shown once settings have been loaded from the chosen file.
+                Tr("Settings imported successfully."),
+                // Translators: Title of the message shown after settings are imported.
+                Tr("Import settings"), "",
+                // Translators: Title of an error shown when settings cannot be imported.
+                Tr("Import error"));
         }
     }
 
     private void ExportBookmarks(object? sender, CommandEventArgs args)
     {
+        // Translators: Title of the file picker used to export bookmarks.
         var path = SavePath(Tr("Export bookmarks"), _operations.BookmarksPath);
         if (path is null) return;
         ShowResult(_operations.ExportBookmarks(path),
             // Translators: Message shown once the bookmarks have been saved to the chosen file.
-            Tr("Bookmarks exported successfully."), Tr("Export bookmarks"),
+            Tr("Bookmarks exported successfully."),
+            // Translators: Title of the message shown after bookmarks are exported.
+            Tr("Export bookmarks"),
             // Translators: Message shown when the bookmarks could not be saved to the chosen file.
-            Tr("Could not export bookmarks."), Tr("Export error"));
+            Tr("Could not export bookmarks."),
+            // Translators: Title of an error shown when bookmarks cannot be exported.
+            Tr("Export error"));
     }
 
     private void ImportBookmarks(object? sender, CommandEventArgs args)
     {
+        // Translators: Title of the file picker used to import bookmarks.
         var path = OpenPath(Tr("Import bookmarks"), _operations.BookmarksPath);
         if (path is null) return;
         ShowResult(_operations.ImportBookmarks(path),
             // Translators: Message shown once bookmarks have been loaded from the chosen file.
-            Tr("Bookmarks imported successfully."), Tr("Import bookmarks"),
+            Tr("Bookmarks imported successfully."),
+            // Translators: Title of the message shown after bookmarks are imported.
+            Tr("Import bookmarks"),
             // Translators: Message shown when the chosen file does not hold bookmarks the player can read.
-            Tr("The selected bookmarks file is invalid or could not be imported."), Tr("Import error"));
+            Tr("The selected bookmarks file is invalid or could not be imported."),
+            // Translators: Title of an error shown when bookmarks cannot be imported.
+            Tr("Import error"));
     }
 
     private void ResetSettings(object? sender, CommandEventArgs args)
     {
         // Translators: Question asked before every setting is put back the way it started.
         if (Wx.MessageBox(Tr("Are you sure you want to reset all settings to defaults?\nThis action cannot be undone."),
+            // Translators: Title of the confirmation shown before resetting every setting.
             Tr("Reset settings"), MessageBoxStyle.YesNo | MessageBoxStyle.NoDefault | MessageBoxStyle.IconWarning, Window) != MessageBoxStyle.Yes) return;
         var settings = _operations.ResetSettings();
         if (settings is null)
@@ -121,8 +141,13 @@ internal sealed class BackupPreferences : PreferencesPage
         else
         {
             _replaceSettings(settings);
-            // Translators: Message shown once every setting has been put back the way it started.
-            ShowResult(true, Tr("Settings were reset to defaults."), Tr("Reset settings"), "", Tr("Reset error"));
+            ShowResult(true,
+                // Translators: Message shown once every setting has been put back the way it started.
+                Tr("Settings were reset to defaults."),
+                // Translators: Title of the message shown after resetting every setting.
+                Tr("Reset settings"), "",
+                // Translators: Title of an error shown when settings cannot be reset.
+                Tr("Reset error"));
         }
     }
 
@@ -145,6 +170,7 @@ internal sealed class BackupPreferences : PreferencesPage
     private string? OpenPath(string title, string source)
     {
         using var dialog = new FileDialog(Window, title, Path.GetDirectoryName(source) ?? "", Path.GetFileName(source),
+            // Translators: File types offered when opening a settings or bookmarks backup. Translate only the two names.
             Tr("JSON files (*.json)|*.json|All files (*.*)|*.*"), FileDialogStyle.DefaultOpen);
         return dialog.ShowModal() == StandardId.Ok ? dialog.Path : null;
     }

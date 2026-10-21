@@ -19,6 +19,7 @@ internal sealed class GoToTimeDialog : IDisposable
         _hasHours = _duration >= 3600;
         _hasMinutes = _duration >= 60;
         _dialog = new Dialog(parent,
+            // Translators: Title of the window for moving to a precise time in the current file.
             title: Tr("Go to time"), style: DialogStyle.Default | DialogStyle.ResizeBorder);
 
         // Create every label immediately before its control. Windows uses native child order to infer the
@@ -110,7 +111,9 @@ internal sealed class GoToTimeDialog : IDisposable
         {
             Wx.MessageBox(
                 // Translators: Shown when the point in the file the user typed lies past the end of the file.
-                Tr("The selected time exceeds the file duration."), Tr("Go to time"),
+                Tr("The selected time exceeds the file duration."),
+                // Translators: Title of an error about a time entered in the Go to time window.
+                Tr("Go to time"),
                 MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
             return;
         }

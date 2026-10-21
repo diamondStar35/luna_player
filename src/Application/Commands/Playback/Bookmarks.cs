@@ -42,7 +42,9 @@ internal sealed class Bookmarks
         var defaultName = TrFormat("Bookmark {time}", PlaybackTimeFormatter.Format(position) ?? "00:00:00");
         var name = _view.Dialogs.PromptText(
             // Translators: Asks the user what the new bookmark should be called.
-            Tr("Enter bookmark name"), Tr("Add a new bookmark"), defaultName);
+            Tr("Enter bookmark name"),
+            // Translators: Title of the dialog used to name a new bookmark.
+            Tr("Add a new bookmark"), defaultName);
         if (name is null)
             return;
         name = name.Trim();
@@ -50,7 +52,9 @@ internal sealed class Bookmarks
         {
             _view.Dialogs.ShowWarning(
                 // Translators: Shown when the user confirms a bookmark name without typing anything.
-                Tr("Bookmark name cannot be empty."), Tr("Bookmarks"));
+                Tr("Bookmark name cannot be empty."),
+                // Translators: Title of a warning about an invalid bookmark name.
+                Tr("Bookmarks"));
             return;
         }
         if (_store.Add(path, name, position) is null)
@@ -80,7 +84,9 @@ internal sealed class Bookmarks
             {
                 _view.Dialogs.ShowInfo(
                     // Translators: Shown when the user opens the bookmark list but the current file has none.
-                    Tr("No bookmarks found for the current file."), Tr("Bookmarks"));
+                    Tr("No bookmarks found for the current file."),
+                    // Translators: Title of a message about bookmarks for the current file.
+                    Tr("Bookmarks"));
                 return;
             }
             var request = _view.Dialogs.ManageBookmarks(bookmarks.Select(ToListItem).ToArray());
@@ -117,7 +123,9 @@ internal sealed class Bookmarks
                         {
                             _view.Dialogs.ShowInfo(
                                 // Translators: Shown once the last bookmark of the current file has been removed.
-                                Tr("All bookmarks for this file were removed."), Tr("Bookmarks"));
+                                Tr("All bookmarks for this file were removed."),
+                                // Translators: Title of a message about bookmarks for the current file.
+                                Tr("Bookmarks"));
                             return;
                         }
                     }
@@ -130,13 +138,17 @@ internal sealed class Bookmarks
     {
         var name = _view.Dialogs.PromptText(
             // Translators: Asks the user for the new name of a bookmark they are renaming.
-            Tr("Edit bookmark name"), Tr("Manage bookmarks"), bookmark.Name);
+            Tr("Edit bookmark name"),
+            // Translators: Title of the dialog used to rename an existing bookmark.
+            Tr("Manage bookmarks"), bookmark.Name);
         if (name is null)
             return;
         name = name.Trim();
         if (name.Length == 0)
         {
-            _view.Dialogs.ShowWarning(Tr("Bookmark name cannot be empty."),
+            _view.Dialogs.ShowWarning(
+                // Translators: Shown when the user confirms a bookmark name without typing anything.
+                Tr("Bookmark name cannot be empty."),
                 // Translators: Title of a message telling the user that something went wrong.
                 Tr("Error"));
             return;

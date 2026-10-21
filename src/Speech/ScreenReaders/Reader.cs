@@ -245,6 +245,7 @@ namespace PrismSharp.Speech.ScreenReaders
                 }
                 catch
                 {
+                    // Unsupported or disappearing backend volume controls leave the existing volume unchanged.
                 }
             }
         }
@@ -275,6 +276,7 @@ namespace PrismSharp.Speech.ScreenReaders
                 }
                 catch
                 {
+                    // Unsupported or disappearing backend rate controls leave the existing rate unchanged.
                 }
             }
         }
@@ -509,6 +511,7 @@ namespace PrismSharp.Speech.ScreenReaders
             }
             catch
             {
+                // A subscriber failure must not unwind through Prism's unmanaged availability callback.
             }
         }
 
@@ -547,6 +550,7 @@ namespace PrismSharp.Speech.ScreenReaders
             }
             catch
             {
+                // A backend may reject a saved voice after its voices change; the backend default remains usable.
             }
         }
 

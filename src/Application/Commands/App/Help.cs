@@ -31,6 +31,7 @@ internal sealed class Help
                 path,
                 // Translators: Shown when Windows cannot open the installed HTML user guide.
                 Tr("The user guide could not be opened."),
+                // Translators: Title of an error about opening the user guide.
                 Tr("User guide"));
             return;
         }
@@ -38,6 +39,7 @@ internal sealed class Help
         _view.Dialogs.ShowError(
             // Translators: Shown when no local user-guide HTML file was included with the application.
             Tr("The user guide is not installed."),
+            // Translators: Title of an error about the user guide.
             Tr("User guide"));
     }
 
@@ -48,6 +50,7 @@ internal sealed class Help
             $"{AppInfo.RepositoryUrl}/releases/tag/v{version}",
             // Translators: Shown when Windows cannot open the release page in a web browser.
             Tr("The release notes could not be opened."),
+            // Translators: Title of an error about opening the release notes.
             Tr("Release notes"));
     }
 

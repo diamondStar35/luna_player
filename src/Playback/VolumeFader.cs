@@ -94,6 +94,7 @@ internal sealed class VolumeFader : IDisposable
         }
         catch (OperationCanceledException)
         {
+            // A new fade or immediate volume change cancels the previous transition by design.
         }
         finally
         {

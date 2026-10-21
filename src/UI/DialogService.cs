@@ -55,6 +55,7 @@ internal sealed class DialogService : IDialogService, IDisposable
         using var dialog = new FileDialog(DialogParent,
             // Translators: Title of the window that picks a subtitle file to load, and its file-type filter.
             message: Tr("Load subtitle"),
+            // Translators: File-type filter for supported subtitle files, followed by all files.
             wildcard: Tr("Subtitle files (*.srt;*.ass;*.ssa;*.vtt;*.sub)|*.srt;*.ass;*.ssa;*.vtt;*.sub|All files (*.*)|*.*"),
             style: FileDialogStyle.Open | FileDialogStyle.FileMustExist);
         return dialog.ShowModal() == StandardId.Ok ? dialog.Path : null;
@@ -62,8 +63,11 @@ internal sealed class DialogService : IDialogService, IDisposable
 
     public string? PromptSubtitleUrl()
     {
-        // Translators: Prompt, then title, of the box asking for a subtitle's web address.
-        var url = PromptText(Tr("Enter the web address of a subtitle file:"), Tr("Load subtitle from URL"));
+        // Translators: Prompt asking for a subtitle file's web address.
+        var prompt = Tr("Enter the web address of a subtitle file:");
+        // Translators: Title of the box asking for a subtitle file's web address.
+        var title = Tr("Load subtitle from URL");
+        var url = PromptText(prompt, title);
         return string.IsNullOrWhiteSpace(url) ? null : url.Trim();
     }
     public string? ChooseFolder(string initialDirectory, string message = "")

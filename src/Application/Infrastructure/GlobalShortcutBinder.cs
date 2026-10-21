@@ -29,6 +29,9 @@ internal static class GlobalShortcutBinder
         if (speech is not null)
             speech.Speak(Failure, Failure);
         else
-            view.Dialogs.ShowWarning(Failure, Tr("Global Shortcuts"));
+            view.Dialogs.ShowWarning(
+                Failure,
+                // Translators: Title of a warning shown when global shortcuts could not be registered.
+                Tr("Global Shortcuts"));
     }
 }

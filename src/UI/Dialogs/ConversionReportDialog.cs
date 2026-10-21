@@ -20,6 +20,7 @@ internal sealed class ConversionReportDialog : IDisposable
             style: TextCtrlStyle.MultiLine | TextCtrlStyle.ReadOnly | TextCtrlStyle.DontWrap);
         detailsBox.InsertionPoint = 0;
         detailsBox.ShowPosition(0);
+        // Translators: Button that closes the media conversion report.
         var close = new Button(_dialog, StandardId.Close, Tr("Close"));
         close.Click += (_, _) => _dialog.EndModal(StandardId.Close);
 

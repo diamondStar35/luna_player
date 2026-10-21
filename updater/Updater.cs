@@ -168,9 +168,11 @@ internal static partial class Program
             }
             catch (IOException)
             {
+                // Staging is temporary; a locked file can be left for Windows to reclaim without failing an installed update.
             }
             catch (UnauthorizedAccessException)
             {
+                // The update is already installed, so inability to remove temporary staging must not report a false failure.
             }
         }
     }

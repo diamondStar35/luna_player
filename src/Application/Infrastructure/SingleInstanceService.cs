@@ -68,7 +68,9 @@ internal sealed class SingleInstanceService : IDisposable
         listener?.Start();
     }
 
-    internal void ForwardPaths(IEnumerable<string> paths)
+    /// <summary>Tries to hand a launch request to the primary instance. False means the caller must keep
+    /// running and open the request itself rather than silently losing it.</summary>
+    internal bool ForwardPaths(IEnumerable<string> paths)
     {
         var values = paths.Where(static path => !string.IsNullOrWhiteSpace(path)).ToArray();
         try
@@ -82,16 +84,21 @@ internal sealed class SingleInstanceService : IDisposable
             // which another process acquired the mutex but has not painted its frame and started the server.
             pipe.Connect(500);
             WritePayload(pipe, values);
+            return true;
         }
         catch (TimeoutException)
         {
+            // The primary process did not finish opening its listener in time. The caller opens a new window.
         }
         catch (IOException)
         {
+            // The pipe disappeared or rejected the payload. The caller opens a new window with the paths.
         }
         catch (UnauthorizedAccessException)
         {
+            // Access to the other process's pipe was denied. Keep the requested files in this process.
         }
+        return false;
     }
 
     public void Dispose()
@@ -115,6 +122,7 @@ internal sealed class SingleInstanceService : IDisposable
             }
             catch (ApplicationException)
             {
+                // The mutex was not owned any more; disposal still has to release the remaining resources.
             }
         }
         _mutex?.Dispose();
@@ -139,6 +147,7 @@ internal sealed class SingleInstanceService : IDisposable
             }
             catch (IOException) when (!_stopping)
             {
+                // A client can disconnect while sending. The listener remains available for the next launch.
             }
             catch (UnauthorizedAccessException) when (!_stopping)
             {
@@ -217,9 +226,11 @@ internal sealed class SingleInstanceService : IDisposable
         }
         catch (TimeoutException)
         {
+            // The listener is between pipe instances; it is a background thread and needs no synchronous wake.
         }
         catch (IOException)
         {
+            // The listener already closed its pipe, so there is nothing left to wake during disposal.
         }
     }
 }

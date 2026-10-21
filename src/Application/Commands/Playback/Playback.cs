@@ -134,6 +134,7 @@ internal sealed partial class Playback
         _view.SetPlaying(isPlaying);
         if (_settings.General.Verbosity == SpeechVerbosity.Beginner)
             _speech.SpeakText(isPlaying
+                // Translators: Spoken when playing starts or carries on again.
                 ? Tr("Play")
                 // Translators: Spoken when playing is held where it is.
                 : Tr("Pause"));
@@ -191,7 +192,9 @@ internal sealed partial class Playback
     {
         if (_player.Duration is not double duration || duration <= 0)
         {
-            _view.Dialogs.ShowWarning(Tr("Time is not available for the current file."),
+            _view.Dialogs.ShowWarning(
+                // Translators: Shown when the player cannot determine the current file's duration.
+                Tr("Time is not available for the current file."),
                 // Translators: Title of the window that asks the user which point in the file to move to.
                 Tr("Go to time"));
             return;
@@ -209,12 +212,23 @@ internal sealed partial class Playback
             return;
         var enable = !_view.IsFullScreen;
         _view.SetFullScreen(enable);
-        _speech.Speak(
-            // Translators: Spoken when full-screen mode is turned on. The beginner form names the F11 key so the
-            // user knows how to leave it again.
-            enable ? Tr("Full-screen mode on. Press F11 again to turn it off.") : Tr("Full-screen mode off."),
-            // Translators: The short advanced-verbosity wording spoken when full-screen mode is turned on or off.
-            enable ? Tr("Full-screen on") : Tr("Full-screen off"));
+        string beginner;
+        string advanced;
+        if (enable)
+        {
+            // Translators: Spoken when full-screen mode is turned on. The beginner form names the F11 key so the user knows how to leave it again.
+            beginner = Tr("Full-screen mode on. Press F11 again to turn it off.");
+            // Translators: The short advanced-verbosity wording spoken when full-screen mode is turned on.
+            advanced = Tr("Full-screen on");
+        }
+        else
+        {
+            // Translators: Spoken when full-screen mode is turned off.
+            beginner = Tr("Full-screen mode off.");
+            // Translators: The short advanced-verbosity wording spoken when full-screen mode is turned off.
+            advanced = Tr("Full-screen off");
+        }
+        _speech.Speak(beginner, advanced);
     }
 
     private void ChangeVolume(double delta) => AnnounceVolumeValue(_player.ChangeVolume(delta));
@@ -249,8 +263,11 @@ internal sealed partial class Playback
     {
         if (_player.Duration is not double duration || duration <= 0 || _player.Elapsed is not double elapsed)
         {
-            // Translators: Spoken when the player cannot work out how far through the file it is.
-            _speech.Speak(Tr("Percentage not available"), Tr("Unavailable"));
+            _speech.Speak(
+                // Translators: Spoken when the player cannot work out how far through the file it is.
+                Tr("Percentage not available"),
+                // Translators: Short announcement when playback progress cannot be calculated.
+                Tr("Unavailable"));
             return;
         }
         var percent = Math.Clamp((int)(elapsed / duration * 100), 0, 100);
@@ -268,6 +285,7 @@ internal sealed partial class Playback
     {
         var speed = _player.SetSpeed(value);
         _settings.Audio.Speed = speed;
+        // Translators: Spoken after playback speed changes. {speed} is the multiplier, where 1 is normal; "x" means "times".
         _speech.SpeakText(TrFormat("{speed}x", FormatSpeed(speed)));
     }
 
@@ -367,12 +385,23 @@ internal sealed partial class Playback
         _settings.Silence.Enabled = enabled;
         _settingsStore.SaveExplicit(_settings);
         _view.SetSilenceRemovalChecked(enabled);
-        _speech.Speak(enabled
-                // Translators: Spoken once the player has started trimming the silent parts out.
-                ? Tr("Silence removal on")
-                // Translators: Spoken once the player has stopped trimming the silent parts out.
-                : Tr("Silence removal off"),
-            enabled ? Tr("Silence removal on") : Tr("Silence removal off"));
+        string beginner;
+        string advanced;
+        if (enabled)
+        {
+            // Translators: Spoken once the player has started trimming silent parts out.
+            beginner = Tr("Silence removal on");
+            // Translators: Short announcement once the player has started trimming silent parts out.
+            advanced = Tr("Silence removal on");
+        }
+        else
+        {
+            // Translators: Spoken once the player has stopped trimming silent parts out.
+            beginner = Tr("Silence removal off");
+            // Translators: Short announcement once the player has stopped trimming silent parts out.
+            advanced = Tr("Silence removal off");
+        }
+        _speech.Speak(beginner, advanced);
     }
 
     private void JumpToPercent(int percent)
@@ -385,6 +414,7 @@ internal sealed partial class Playback
             _player.SeekToEnd();
         else
             _player.SeekAbsolute(duration * percent / 100.0);
+        // Translators: Spoken after seeking by percentage. {percent} is a number from 0 to 100.
         _speech.Speak(TrFormat("{percent} percent", percent), $"{percent}%");
     }
 

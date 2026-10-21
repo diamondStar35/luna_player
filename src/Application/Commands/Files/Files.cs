@@ -162,7 +162,9 @@ internal sealed partial class Files
         if (!_player.OpenStream(url))
             _view.Dialogs.ShowError(
                 // Translators: Shown when the stream at the address typed into Open Link could not be played.
-                Tr("Could not open the link."), Tr("Error"));
+                Tr("Could not open the link."),
+                // Translators: Title of an error shown when a web link cannot be opened.
+                Tr("Error"));
     }
 
     private void OpenFolderFromDialog()
@@ -191,7 +193,11 @@ internal sealed partial class Files
                 Tr("Close failed."));
         else
             // Translators: Spoken once the current file has been taken out of the playlist.
-            _speech.Speak(Tr("File closed."), Tr("File closed."));
+            _speech.Speak(
+                // Translators: Spoken once the current file has been removed from the playlist.
+                Tr("File closed."),
+                // Translators: Short announcement once the current file has been removed from the playlist.
+                Tr("File closed."));
     }
 
     private void CloseAllFiles()
@@ -206,7 +212,11 @@ internal sealed partial class Files
                 Tr("Close failed."));
         else
             // Translators: Spoken once every file has been taken out of the playlist.
-            _speech.Speak(Tr("All files closed."), Tr("All files closed."));
+            _speech.Speak(
+                // Translators: Spoken once every file has been removed from the playlist.
+                Tr("All files closed."),
+                // Translators: Short announcement once every file has been removed from the playlist.
+                Tr("All files closed."));
     }
 
     private void TryStart(ProcessStartInfo startInfo, string failure)

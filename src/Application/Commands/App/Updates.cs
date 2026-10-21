@@ -70,6 +70,7 @@ internal sealed class Updates : IDisposable
             Tr("Checking for app updates"),
             // Translators: Initial message shown while contacting the application update server.
             Tr("Checking for updates..."),
+            // Translators: Status shown while the application update check is still running.
             _ => Tr("Checking for updates...")) { Proportional = false };
         BackgroundProgress.Start(
             _view,
@@ -107,6 +108,7 @@ internal sealed class Updates : IDisposable
                     // Translators: Shown when a manual application update check fails. {reason} is the
                     // network or data error reported by the system.
                     TrFormat("Could not check for updates.\n\n{reason}", outcome.Error),
+                    // Translators: Title of an error raised while checking for an application update.
                     Tr("Application update"));
             }
             return;
@@ -116,7 +118,10 @@ internal sealed class Updates : IDisposable
             if (showLatest)
             {
                 // Translators: Shown after a manual check finds no newer Luna Player release.
-                _view.Dialogs.ShowInfo(Tr("You are using the latest version."), Tr("No update"));
+                var message = Tr("You are using the latest version.");
+                // Translators: Title of the message shown when no newer application release exists.
+                var title = Tr("No update");
+                _view.Dialogs.ShowInfo(message, title);
             }
             return;
         }
@@ -128,6 +133,7 @@ internal sealed class Updates : IDisposable
                     // Translators: Shown when info.json announces a newer application release before its
                     // installer, portable archive, or checksum file has finished being published.
                     Tr("A new version has been announced, but its download is not available yet. Please try again later."),
+                    // Translators: Title of a message about an unavailable application update package.
                     Tr("Application update"));
             }
             return;
@@ -207,6 +213,7 @@ internal sealed class Updates : IDisposable
                     // Translators: Shown when an application's downloaded update does not match the
                     // SHA-256 checksum published with the release, or that checksum cannot be obtained.
                     Tr("The downloaded update failed its integrity check. This may indicate malicious activity on the network or an internet problem. The updater was not started. Please try downloading the update again."),
+                    // Translators: Title of an application update integrity error.
                     Tr("Application update"));
             }
             else
@@ -215,6 +222,7 @@ internal sealed class Updates : IDisposable
                     // Translators: Shown when the application update package cannot be downloaded. {reason}
                     // is the network or file error reported by the system.
                     TrFormat("Could not download update.\n\n{reason}", outcome.Error),
+                    // Translators: Title of an error raised while downloading an application update.
                     Tr("Application update"));
             }
             return;
@@ -229,6 +237,7 @@ internal sealed class Updates : IDisposable
                 // Translators: Shown when the downloaded update cannot be handed to Updater.exe. {reason}
                 // is the error reported by the system.
                 TrFormat("Could not start the updater.\n\n{reason}", failure.Message),
+                // Translators: Title of an error raised while starting the application updater.
                 Tr("Application update"));
             return;
         }

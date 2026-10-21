@@ -496,6 +496,7 @@ namespace PrismSharp
                     }
                     catch
                     {
+                        // A backend that is already failing may reject stop; it still must be freed below.
                     }
                 }
 
@@ -621,6 +622,7 @@ namespace PrismSharp
             }
             catch
             {
+                // Exceptions cannot cross this unmanaged audio callback; the failed chunk is simply discarded.
             }
         }
     }

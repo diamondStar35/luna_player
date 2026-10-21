@@ -36,7 +36,10 @@ internal sealed partial class YouTube
                     return;
                 if (found.Text is null)
                 {
-                    ShowError(Utils.Describe(found.Failure, found.Detail), Tr("YouTube"));
+                    ShowError(
+                        Utils.Describe(found.Failure, found.Detail),
+                        // Translators: Title of an error shown while loading YouTube video details.
+                        Tr("YouTube"));
                     return;
                 }
                 var text = found.Text.Trim().Length > 0

@@ -110,12 +110,14 @@ internal sealed class Iptv
         _lastSourceId = source.Id;
         // Chosen here, on the UI thread, because the loader runs on a worker thread where the translation
         // lookup must not be touched.
+        // Translators: Category name used for IPTV channels whose source provides no category.
         var uncategorized = Tr("Uncategorized");
         var prompt = new ProgressPrompt(
             // Translators: Title of the progress window shown while an IPTV source's channels are loaded.
             Tr("Opening IPTV source"),
             // Translators: Message shown while an IPTV source's channels are loaded.
             Tr("Loading channels..."),
+            // Translators: Status shown while an IPTV source's channels are still loading.
             _ => Tr("Loading channels..."))
         {
             Proportional = false,
@@ -145,7 +147,9 @@ internal sealed class Iptv
         {
             _view.Dialogs.ShowError(
                 // Translators: Shown when an IPTV source loaded but holds no channels to play.
-                Tr("This source holds no channels."), Tr("IPTV"));
+                Tr("This source holds no channels."),
+                // Translators: Title of an error about an IPTV source.
+                Tr("IPTV"));
             return;
         }
         var chosen = _view.Dialogs.BrowseChannels(new ChannelBrowserPrompt(
@@ -179,7 +183,9 @@ internal sealed class Iptv
         }
         _view.Dialogs.ShowError(
             // Translators: Shown when a chosen channel carries no address and none could be worked out.
-            Tr("This channel cannot be played."), Tr("IPTV"));
+            Tr("This channel cannot be played."),
+            // Translators: Title of an error about an IPTV channel.
+            Tr("IPTV"));
     }
 
     /// <summary>Resolves a Stalker channel's short-lived address behind a progress window, then plays it.</summary>
@@ -190,6 +196,7 @@ internal sealed class Iptv
             Tr("Opening channel"),
             // Translators: Message shown while a Stalker channel's short-lived play address is worked out.
             Tr("Preparing the channel..."),
+            // Translators: Status shown while an IPTV channel address is still being prepared.
             _ => Tr("Preparing the channel..."))
         {
             Proportional = false,
@@ -203,7 +210,9 @@ internal sealed class Iptv
                 else
                     _view.Dialogs.ShowError(
                         // Translators: Shown when a Stalker channel's play address could not be worked out.
-                        Tr("Could not open the channel."), Tr("IPTV"));
+                        Tr("Could not open the channel."),
+                        // Translators: Title of an error about opening an IPTV channel.
+                        Tr("IPTV"));
             });
     }
 
@@ -212,7 +221,9 @@ internal sealed class Iptv
         if (!_player.OpenStream(url, title: name))
             _view.Dialogs.ShowError(
                 // Translators: Shown when a chosen IPTV channel could not be played.
-                Tr("Could not open the channel."), Tr("IPTV"));
+                Tr("Could not open the channel."),
+                // Translators: Title of an error about opening an IPTV channel.
+                Tr("IPTV"));
     }
 
     /// <summary>The id of what was saved, or null when nothing was.</summary>
@@ -269,7 +280,10 @@ internal sealed class Iptv
     {
         if (_store.LastError.Length == 0)
             return false;
-        _view.Dialogs.ShowError(_store.LastError, Tr("IPTV"));
+        _view.Dialogs.ShowError(
+            _store.LastError,
+            // Translators: Title of an error about saved IPTV sources.
+            Tr("IPTV"));
         return true;
     }
 }

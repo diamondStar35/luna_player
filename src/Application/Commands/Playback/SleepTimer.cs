@@ -62,6 +62,7 @@ internal sealed class Sleep
                 // Translators: Shown when the sleep timer is set to stop at the end of the current track but
                 // nothing is playing.
                 Tr("Open a file before setting the timer to stop at the end of the current track."),
+                // Translators: Title of a message about setting the sleep timer.
                 Tr("Sleep timer"));
             return;
         }

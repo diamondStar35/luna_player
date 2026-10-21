@@ -47,6 +47,7 @@ internal sealed class OpenedFilesDialog : IDisposable
         var information = new Button(_dialog, InformationId, Tr("Playlist info"));
         // Translators: Button that starts playing the file chosen in the list.
         var jump = new Button(_dialog, StandardId.Ok, Tr("Jump to selected"));
+        // Translators: Button that closes the Opened Files window without taking action.
         var cancel = new Button(_dialog, StandardId.Cancel, Tr("Cancel"));
         jump.SetDefault();
         information.Click += (_, _) => End(OpenedFilesAction.Information);

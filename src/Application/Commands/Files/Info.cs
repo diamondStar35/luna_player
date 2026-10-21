@@ -143,7 +143,11 @@ internal sealed partial class Files
                         ? Tr("File path copied to clipboard.")
                         // Translators: Spoken when the full location of the current file could not be copied to the clipboard.
                         : Tr("Unable to copy to clipboard."),
-                    copied ? Tr("Copied.") : Tr("Copy failed."));
+                    copied
+                        // Translators: Short announcement after copying the current file path succeeds.
+                        ? Tr("Copied.")
+                        // Translators: Short announcement after copying the current file path fails.
+                        : Tr("Copy failed."));
                 _fileInfoPressCount = 0;
                 break;
         }

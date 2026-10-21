@@ -47,6 +47,7 @@ namespace PrismSharp.Speech
                 }
                 catch
                 {
+                    // Fire-and-forget speech must not let a failed screen-reader callback terminate the process.
                 }
             });
         }

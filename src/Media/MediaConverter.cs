@@ -340,14 +340,19 @@ internal sealed class MediaConverter
     private static string TranslateError(string? detail)
     {
         if (string.IsNullOrWhiteSpace(detail))
+            // Translators: Shown when media conversion fails without a more specific reason.
             return Tr("The file could not be converted.");
         if (Mentions(detail, "Invalid data found", "could not find codec", "does not contain any stream"))
+            // Translators: Shown when the converter cannot read the input media format.
             return Tr("Unsupported file type.");
         if (Mentions(detail, "No such file", "does not exist"))
+            // Translators: Shown when a file selected for conversion no longer exists.
             return Tr("The file could not be found.");
         if (Mentions(detail, "Permission denied"))
+            // Translators: Shown when the converter lacks permission to read or write a file.
             return Tr("Access to the file was denied.");
         if (Mentions(detail, "No space left"))
+            // Translators: Shown when media conversion runs out of disk space.
             return Tr("There is not enough free disk space.");
         return detail;
     }

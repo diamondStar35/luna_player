@@ -19,15 +19,24 @@ internal static class Program
             var hasPaths = args.Any(static value => !string.IsNullOrWhiteSpace(value));
             if (!hasPaths || SettingsStore.PeekOpenFilesInExistingWindow(Paths.SettingsFile))
             {
-                using (singleInstance)
-                    singleInstance.ForwardPaths(args);
-                return 0;
-            }
+                if (singleInstance.ForwardPaths(args))
+                {
+                    singleInstance.Dispose();
+                    return 0;
+                }
 
-            // This launch was explicitly configured to own a separate window. It neither receives paths
-            // intended for the original window nor competes for that window's pipe and mutex.
-            singleInstance.Dispose();
-            singleInstance = new SingleInstanceService(independent: true);
+                // The primary process owns the mutex but could not receive the request. Keep this process
+                // alive as an independent instance so an Explorer-opened file is never silently discarded.
+                singleInstance.Dispose();
+                singleInstance = new SingleInstanceService(independent: true);
+            }
+            else
+            {
+                // This launch was explicitly configured to own a separate window. It neither receives paths
+                // intended for the original window nor competes for that window's pipe and mutex.
+                singleInstance.Dispose();
+                singleInstance = new SingleInstanceService(independent: true);
+            }
         }
 
         // Before anything registers with the shell on this process's behalf: the media transport session
