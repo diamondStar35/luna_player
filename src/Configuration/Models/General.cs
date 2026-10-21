@@ -16,6 +16,7 @@ internal sealed class GeneralSettings
     public bool SpeakFileOnNavigation { get; set; }
     public bool CheckUpdatesOnStartup { get; set; } = true;
     public bool SaveOnClose { get; set; } = true;
+    public bool OpenFilesInExistingWindow { get; set; } = true;
 
     /// <summary>Whether the player stays out of the system's media controls entirely: the Windows overlay
     /// for the volume keys and lock screen, and mpv's own media-key and transport-control integration.</summary>
@@ -56,6 +57,7 @@ internal sealed class GeneralSettings
         SpeakFileOnNavigation = source.SpeakFileOnNavigation;
         CheckUpdatesOnStartup = source.CheckUpdatesOnStartup;
         SaveOnClose = source.SaveOnClose;
+        OpenFilesInExistingWindow = source.OpenFilesInExistingWindow;
         DisableMediaControls = source.DisableMediaControls;
         SpeakWindowTitle = source.SpeakWindowTitle;
         SubtitleInterrupt = source.SubtitleInterrupt;

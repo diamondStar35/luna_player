@@ -23,7 +23,6 @@ internal sealed class ApplicationHost : IDisposable
     private readonly SingleInstanceService _singleInstance;
     private readonly IApplicationDispatcher _dispatcher;
     private readonly MainFrame _view;
-    private readonly PathRequestQueue _pathQueue;
     private readonly IReadOnlyList<string> _initialPaths;
     private readonly List<IReadOnlyList<string>> _pendingPathRequests = [];
     private readonly Lock _startupGate = new();
@@ -74,9 +73,6 @@ internal sealed class ApplicationHost : IDisposable
         // dispose one already in flight, without leaving the frame visible until every feature is ready.
         _view.CloseRequested += StopStartupAsync;
         _view.CloseConfirmationRequested += ConfirmClose;
-        // Construct the request queue now, but do not start its listener thread until Show has synchronously
-        // presented the shell. A request arriving while services start is held and replayed when ready.
-        _pathQueue = new PathRequestQueue(HandleExternalPaths, _dispatcher);
         // mpv/audio startup depends only on the normalized playback settings and the already-created native
         // handle. Always dispatch the coordinator itself: calling an async method here used to run its setup
         // synchronously whenever settings happened to finish early, delaying Show on only some launches.
@@ -92,9 +88,9 @@ internal sealed class ApplicationHost : IDisposable
             return;
         _shown = true;
         _view.Show();
-        // Thread creation is allowed to follow the forced first repaint. A second instance retries its pipe
-        // connection, so no request is lost during this short interval.
-        _singleInstance.StartListening(_pathQueue.Enqueue);
+        // Only after the shell has been painted: creating the pipe is background work and must never extend
+        // the primary instance's process-entry-to-window path.
+        _singleInstance.StartListening(paths => _dispatcher.Post(() => HandleExternalPaths(paths)));
         _shellReady = true;
         TryInitializeWindowResources();
     }
@@ -493,7 +489,6 @@ internal sealed class ApplicationHost : IDisposable
         _view.CloseConfirmationRequested -= ConfirmClose;
         _view.CloseRequested -= StopStartupAsync;
         _singleInstance.Dispose();
-        _pathQueue.Dispose();
         _pendingStartupResources?.Dispose(disposeSpeech: false);
         _pendingStartupResources = null;
         _controller?.Dispose();
@@ -529,9 +524,13 @@ internal sealed class ApplicationHost : IDisposable
 
     private void HandleExternalPaths(IReadOnlyList<string> paths)
     {
-        _view.RestoreAndRaise();
         if (paths.Count == 0)
+        {
+            // Starting Luna itself while it is already running activates that window. A shell-opened file is
+            // different: hand it to the existing controller without changing the window's focus or state.
+            _view.RestoreAndRaise();
             return;
+        }
         if (!_ready || _tools is null || _controller is null)
         {
             _pendingPathRequests.Add(paths.ToArray());

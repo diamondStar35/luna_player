@@ -14,6 +14,7 @@ internal sealed class GeneralPreferences : PreferencesPage
     private readonly CheckBox _checkUpdates;
     private readonly CheckBox _rememberPosition;
     private readonly CheckBox _saveOnClose;
+    private readonly CheckBox _openFilesInExistingWindow;
     private readonly CheckBox _disableMediaControls;
     private readonly CheckBox _speakWindowTitle;
     private readonly CheckBox _subtitleInterrupt;
@@ -53,6 +54,11 @@ internal sealed class GeneralPreferences : PreferencesPage
         _checkUpdates = new CheckBox(panel, label: Tr("Check for app updates on startup")) { Checked = settings.CheckUpdatesOnStartup };
         // Translators: Tick box on the General settings page: keep changes such as volume and speed when the player closes.
         _saveOnClose = new CheckBox(panel, label: Tr("Save settings on close")) { Checked = settings.SaveOnClose };
+        // Translators: Tick box on the General settings page: send a file opened from Windows to the Luna window that is already running.
+        _openFilesInExistingWindow = new CheckBox(panel, label: Tr("Open files in the existing window when Luna is already running"))
+        {
+            Checked = settings.OpenFilesInExistingWindow,
+        };
         // Translators: Tick box on the General settings page: keep the player out of the system's media controls entirely.
         _disableMediaControls = new CheckBox(panel, label: Tr("Disable system media controls")) { Checked = settings.DisableMediaControls };
         // Translators: Tick box on the General settings page: show the playing track in the window title.
@@ -108,6 +114,8 @@ internal sealed class GeneralPreferences : PreferencesPage
         sizer.Add(_speakNavigation, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         sizer.Add(_checkUpdates, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         sizer.Add(_saveOnClose, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
+        sizer.Add(_openFilesInExistingWindow,
+            flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         sizer.Add(_disableMediaControls, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         sizer.Add(_speakWindowTitle, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         sizer.Add(_subtitleInterrupt, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
@@ -142,6 +150,10 @@ internal sealed class GeneralPreferences : PreferencesPage
             // Translators: Help text for the tick box that keeps changes such as volume and speed when the player closes.
             Tr("Writes changes made during the session when Luna exits, including volume and speed. " +
             "Clear this option if those changes should last only until the window closes."));
+        Help(_openFilesInExistingWindow,
+            // Translators: Help text for the tick box that chooses whether a file opened from Windows uses the running Luna window.
+            Tr("When selected, opening a media file from Windows sends it to the Luna window that is already open. " +
+            "Clear this option to open the file in a separate Luna window."));
         Help(_disableMediaControls,
             // Translators: Help text for the tick box that keeps the player out of the system's media controls.
             Tr("Keeps Luna out of the system media controls and the play, pause and track keys on a keyboard or headset. " +
@@ -178,6 +190,7 @@ internal sealed class GeneralPreferences : PreferencesPage
         _settings.SpeakFileOnNavigation = _speakNavigation.Checked;
         _settings.CheckUpdatesOnStartup = _checkUpdates.Checked;
         _settings.SaveOnClose = _saveOnClose.Checked;
+        _settings.OpenFilesInExistingWindow = _openFilesInExistingWindow.Checked;
         _settings.DisableMediaControls = _disableMediaControls.Checked;
         _settings.SpeakWindowTitle = _speakWindowTitle.Checked;
         _settings.SubtitleInterrupt = _subtitleInterrupt.Checked;
@@ -195,6 +208,7 @@ internal sealed class GeneralPreferences : PreferencesPage
         _speakNavigation.Checked = _settings.SpeakFileOnNavigation;
         _checkUpdates.Checked = _settings.CheckUpdatesOnStartup;
         _saveOnClose.Checked = _settings.SaveOnClose;
+        _openFilesInExistingWindow.Checked = _settings.OpenFilesInExistingWindow;
         _disableMediaControls.Checked = _settings.DisableMediaControls;
         _speakWindowTitle.Checked = _settings.SpeakWindowTitle;
         _subtitleInterrupt.Checked = _settings.SubtitleInterrupt;

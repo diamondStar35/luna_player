@@ -10,15 +10,24 @@ internal sealed class SingleInstanceService : IDisposable
     private const string MutexName = $"Local\\{AppInfo.Identifier}.MainInstance";
     private const string PipeName = $"{AppInfo.Identifier}.OpenPaths";
 
+    private readonly Lock _sync = new();
     private readonly Mutex? _mutex;
     private readonly bool _ownsMutex;
+    private readonly bool _independent;
     private Thread? _listenerThread;
     private Action<IReadOnlyList<string>>? _receiver;
     private volatile bool _stopping;
     private bool _disposed;
 
-    internal SingleInstanceService()
+    internal SingleInstanceService(bool independent = false)
     {
+        if (independent)
+        {
+            _independent = true;
+            IsPrimary = true;
+            return;
+        }
+
         try
         {
             _mutex = new Mutex(initiallyOwned: true, MutexName, out _ownsMutex);
@@ -38,40 +47,50 @@ internal sealed class SingleInstanceService : IDisposable
 
     internal void StartListening(Action<IReadOnlyList<string>> receiver)
     {
-        if (!IsPrimary || _listenerThread is not null)
-            return;
-        _receiver = receiver;
-        _listenerThread = new Thread(Listen)
+        Thread? listener = null;
+        lock (_sync)
         {
-            IsBackground = true,
-            Name = PipeName,
-        };
-        _listenerThread.Start();
+            if (_disposed || !IsPrimary || _independent)
+                return;
+            _receiver = receiver;
+            if (_listenerThread is null)
+            {
+                listener = new Thread(Listen)
+                {
+                    IsBackground = true,
+                    Name = PipeName,
+                };
+                _listenerThread = listener;
+            }
+        }
+        // Server construction belongs to this background thread. In particular, named-pipe setup never sits
+        // between process entry and the first painted frame.
+        listener?.Start();
     }
 
     internal void ForwardPaths(IEnumerable<string> paths)
     {
         var values = paths.Where(static path => !string.IsNullOrWhiteSpace(path)).ToArray();
-        for (var attempt = 0; attempt < 20; attempt++)
+        try
         {
-            try
-            {
-                using var pipe = new NamedPipeClientStream(
-                    ".",
-                    PipeName,
-                    PipeDirection.Out,
-                    PipeOptions.CurrentUserOnly);
-                pipe.Connect(100);
-                WritePayload(pipe, values);
-                return;
-            }
-            catch (TimeoutException)
-            {
-            }
-            catch (IOException)
-            {
-            }
-            Thread.Sleep(50);
+            using var pipe = new NamedPipeClientStream(
+                ".",
+                PipeName,
+                PipeDirection.Out,
+                PipeOptions.CurrentUserOnly);
+            // An established instance connects immediately. The timeout only covers the uncommon race in
+            // which another process acquired the mutex but has not painted its frame and started the server.
+            pipe.Connect(500);
+            WritePayload(pipe, values);
+        }
+        catch (TimeoutException)
+        {
+        }
+        catch (IOException)
+        {
+        }
+        catch (UnauthorizedAccessException)
+        {
         }
     }
 
@@ -81,6 +100,10 @@ internal sealed class SingleInstanceService : IDisposable
             return;
         _disposed = true;
         _stopping = true;
+        lock (_sync)
+        {
+            _receiver = null;
+        }
         // Release the single-instance lock first, before tearing anything else down. A relaunch is gated on
         // this mutex: freeing it up front lets the user reopen the player immediately, even while the rest of
         // this process is still shutting down (the media backend in particular takes a moment to close).
@@ -98,9 +121,6 @@ internal sealed class SingleInstanceService : IDisposable
         if (_listenerThread is not null)
         {
             TryWakeListener();
-            // Bounded: the listener is a background thread that cannot keep the process alive, so a wake that
-            // loses the race with it must not block shutdown for longer than a moment.
-            _listenerThread.Join(TimeSpan.FromMilliseconds(500));
             _listenerThread = null;
         }
     }
@@ -111,25 +131,40 @@ internal sealed class SingleInstanceService : IDisposable
         {
             try
             {
-                using var pipe = new NamedPipeServerStream(
-                    PipeName,
-                    PipeDirection.In,
-                    1,
-                    PipeTransmissionMode.Byte,
-                    PipeOptions.CurrentUserOnly);
+                using var pipe = CreateServer();
                 pipe.WaitForConnection();
                 if (_stopping)
                     return;
-                _receiver?.Invoke(ReadPayload(pipe));
+                Deliver(ReadPayload(pipe));
             }
             catch (IOException) when (!_stopping)
             {
             }
             catch (UnauthorizedAccessException) when (!_stopping)
             {
+                return;
             }
         }
     }
+
+    private void Deliver(IReadOnlyList<string> paths)
+    {
+        Action<IReadOnlyList<string>>? receiver;
+        lock (_sync)
+        {
+            if (_disposed)
+                return;
+            receiver = _receiver;
+        }
+        receiver?.Invoke(paths);
+    }
+
+    private static NamedPipeServerStream CreateServer() => new(
+        PipeName,
+        PipeDirection.In,
+        1,
+        PipeTransmissionMode.Byte,
+        PipeOptions.CurrentUserOnly);
 
     private static void WritePayload(Stream stream, IReadOnlyList<string> paths)
     {
@@ -176,7 +211,9 @@ internal sealed class SingleInstanceService : IDisposable
                 PipeName,
                 PipeDirection.Out,
                 PipeOptions.CurrentUserOnly);
-            pipe.Connect(100);
+            // Disposal must never wait for the listener. It is a background thread, so if it is between
+            // pipe instances the process can simply finish without waking it.
+            pipe.Connect(0);
         }
         catch (TimeoutException)
         {

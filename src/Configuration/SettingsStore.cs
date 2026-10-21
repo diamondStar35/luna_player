@@ -43,6 +43,28 @@ internal sealed class SettingsStore
         return AppTheme.SystemDefault;
     }
 
+    /// <summary>Reads only the setting that decides where a shell-opened file goes. A secondary process
+    /// needs this before constructing the application, so loading and validating the complete settings
+    /// object would both do unnecessary work and require wxWidgets to be initialized.</summary>
+    internal static bool PeekOpenFilesInExistingWindow(string jsonPath)
+    {
+        try
+        {
+            if (!File.Exists(jsonPath))
+                return true;
+            using var stream = File.OpenRead(jsonPath);
+            using var document = JsonDocument.Parse(stream);
+            if (document.RootElement.TryGetProperty("general", out var general)
+                && general.TryGetProperty("openFilesInExistingWindow", out var value)
+                && value.ValueKind is JsonValueKind.True or JsonValueKind.False)
+                return value.GetBoolean();
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
+        {
+        }
+        return true;
+    }
+
     internal Settings Load() => Load(normalize: true);
 
     /// <summary>Reads and structurally validates settings on a worker during application startup. The host

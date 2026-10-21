@@ -13,17 +13,27 @@ internal static class Program
         // Before anything at all, so a failure in the setting up below is still reported.
         CrashReport.Install();
 
-        // Before anything else registers with the shell on this process's behalf: the media transport
-        // session reads the identity once, when it is created, and never looks again.
-        ProcessIdentity.Apply();
-
         var singleInstance = new SingleInstanceService();
         if (!singleInstance.IsPrimary)
         {
-            using (singleInstance)
-                singleInstance.ForwardPaths(args);
-            return 0;
+            var hasPaths = args.Any(static value => !string.IsNullOrWhiteSpace(value));
+            if (!hasPaths || SettingsStore.PeekOpenFilesInExistingWindow(Paths.SettingsFile))
+            {
+                using (singleInstance)
+                    singleInstance.ForwardPaths(args);
+                return 0;
+            }
+
+            // This launch was explicitly configured to own a separate window. It neither receives paths
+            // intended for the original window nor competes for that window's pipe and mutex.
+            singleInstance.Dispose();
+            singleInstance = new SingleInstanceService(independent: true);
         }
+
+        // Before anything registers with the shell on this process's behalf: the media transport session
+        // reads the identity once, when it is created, and never looks again. A forwarding-only process
+        // never reaches this work.
+        ProcessIdentity.Apply();
 
         NativeLibraryBootstrap.Initialize();
 
