@@ -1,5 +1,13 @@
 namespace LunaPlayer.Media;
 
+/// <summary>The three kinds of item the player opens.</summary>
+internal enum MediaKind
+{
+    Audio,
+    Video,
+    Playlist,
+}
+
 internal static class MediaLibrary
 {
     // Audio and video are kept apart so a file can be classified by extension alone. This is only a

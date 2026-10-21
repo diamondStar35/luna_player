@@ -1,5 +1,18 @@
 namespace LunaPlayer.YouTube;
 
+/// <summary>Whether a YouTube operation worked and what to tell the user when it did not.</summary>
+internal readonly record struct YouTubeOutcome(bool Success, string Error = "")
+{
+    internal static YouTubeOutcome Ok { get; } = new(true);
+}
+
+/// <summary>A source of search or channel results that can be drawn from a batch at a time.</summary>
+internal interface IResultPage
+{
+    bool HasMore { get; }
+    Task<IReadOnlyList<YouTubeResult>> Take(int count, CancellationToken token);
+}
+
 /// <summary>What a result row stands for: a video to play, or a playlist or channel to browse into.</summary>
 internal enum YouTubeItemType
 {

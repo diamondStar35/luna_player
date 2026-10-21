@@ -8,3 +8,10 @@ internal interface IApplicationDispatcher
     /// <summary>Runs an action on the UI thread on a repeating interval until the result is disposed.</summary>
     IDisposable Repeat(TimeSpan interval, Action action);
 }
+
+internal interface IClipboardService
+{
+    bool SetText(string text);
+    bool SetFiles(IReadOnlyList<string> paths);
+    IReadOnlyList<string> GetPaths();
+}
