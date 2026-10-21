@@ -116,27 +116,22 @@ internal sealed class ApplicationController : IDisposable
         _settings.Audio.Speed = _player.Speed;
         _settings.Audio.Pitch = _player.Pitch;
         _settings.Audio.Pan = _player.Pan;
-        _player.SavePosition();
-        if (_settings.General.RememberLastPosition && _player.CurrentPath is string path && File.Exists(path))
+        var path = _player.CurrentPath;
+        var elapsed = _player.Elapsed;
+        // Stop before touching the filesystem: saving a position or checking a path on slow storage can
+        // stall, but neither operation needs playback to remain active once its values have been captured.
+        _player.Stop();
+        _player.SavePosition(path, elapsed);
+        if (_settings.General.RememberLastPosition && path is not null && File.Exists(path))
         {
             _settings.Playback.LastFile = path;
-            _settings.Playback.LastPosition = Math.Max(0, _player.Elapsed ?? 0);
+            _settings.Playback.LastPosition = Math.Max(0, elapsed ?? 0);
         }
         // Snapshot and validate settings on this thread because shortcut validation uses wx localization;
         // only its disk write runs in the background. It proceeds alongside media shutdown, since storage,
         // antivirus, network streams and audio/video devices can each be slow on a particular machine.
         var saveTask = _settingsStore.SaveSessionAsync(_settings);
-        var playerTask = Task.Run(() =>
-        {
-            try
-            {
-                _player.Stop();
-            }
-            finally
-            {
-                _player.Dispose();
-            }
-        });
+        var playerTask = Task.Run(_player.Dispose);
         // The frame remains hidden but alive until both tasks finish, preserving the window handle mpv uses.
         return _shutdownTask = Task.WhenAll(saveTask, playerTask);
     }

@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using LunaPlayer.Actions;
 using WxSharp;
 
@@ -6,18 +5,11 @@ namespace LunaPlayer.UI;
 
 /// <summary>Turns keys into requests on the main window: accelerators, global shortcuts, menu clicks, and
 /// Escape. Resolves menu ids through the MenuController and raises the window's input events.</summary>
-internal sealed partial class WindowInput : IDisposable
+internal sealed class WindowInput : IDisposable
 {
     private readonly Frame _frame;
     private readonly MenuController _menus;
     private readonly GlobalShortcuts _globalShortcuts;
-
-    private const int VirtualKeyShift = 0x10;
-    private const int VirtualKeyControl = 0x11;
-    private const int VirtualKeyAlt = 0x12;
-    private const int VirtualKeyLeftWindows = 0x5B;
-    private const int VirtualKeyRightWindows = 0x5C;
-    private const int VirtualKeyF4 = 0x73;
 
     internal WindowInput(Frame frame, MenuController menus, ShortcutManager shortcuts)
     {
@@ -106,18 +98,4 @@ internal sealed partial class WindowInput : IDisposable
         }
         args.Skip();
     }
-
-    /// <summary>Whether any key of a window-closing chord is down, to hold an Alt+F4 close until released.</summary>
-    internal bool CloseChordIsDown()
-        => IsKeyDown(VirtualKeyShift)
-            || IsKeyDown(VirtualKeyControl)
-            || IsKeyDown(VirtualKeyAlt)
-            || IsKeyDown(VirtualKeyLeftWindows)
-            || IsKeyDown(VirtualKeyRightWindows)
-            || IsKeyDown(VirtualKeyF4);
-
-    private static bool IsKeyDown(int virtualKey) => (GetAsyncKeyState(virtualKey) & 0x8000) != 0;
-
-    [LibraryImport("user32.dll")]
-    private static partial short GetAsyncKeyState(int virtualKey);
 }

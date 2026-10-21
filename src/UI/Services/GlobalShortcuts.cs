@@ -122,7 +122,7 @@ internal sealed partial class GlobalShortcuts : IDisposable
             _combinations.Clear();
             ClearKeyState();
         }
-        StopListener();
+        StopListener(waitForExit: false);
         Pressed = null;
     }
 
@@ -155,7 +155,7 @@ internal sealed partial class GlobalShortcuts : IDisposable
             return _hook != 0;
     }
 
-    private void StopListener()
+    private void StopListener(bool waitForExit = true)
     {
         Thread? listener;
         uint threadId;
@@ -168,9 +168,10 @@ internal sealed partial class GlobalShortcuts : IDisposable
             return;
         if (threadId != 0)
             PostThreadMessageW(threadId, StopMessage, 0, 0);
-        if (listener != Thread.CurrentThread)
-            // Bounded: the listener is a background thread, so even if the stop message is somehow missed it
-            // cannot keep the process alive. The timeout stops a missed wake from hanging shutdown.
+        if (waitForExit && listener != Thread.CurrentThread)
+            // Reconfiguration waits until the old listener is gone so a later Apply can safely start a new
+            // one. Disposal does not: _disposed already prevents callbacks, and this background thread cannot
+            // keep the process alive while it removes its hook in response to the posted message.
             listener.Join(TimeSpan.FromSeconds(1));
     }
 
@@ -253,7 +254,17 @@ internal sealed partial class GlobalShortcuts : IDisposable
             }
         }
         if (action.HasValue)
-            Wx.CallAfter(() => Dispatch(action.Value));
+        {
+            try
+            {
+                Wx.CallAfter(() => Dispatch(action.Value));
+            }
+            catch (InvalidOperationException)
+            {
+                // The application can finish between the hook matching a key and this background callback
+                // posting it. Shutdown has already made the action irrelevant.
+            }
+        }
         return CallNextHookEx(0, code, message, data);
     }
 

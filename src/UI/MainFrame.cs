@@ -22,7 +22,6 @@ internal sealed class MainFrame : IMainView
     private LunaPlayer.Recording.AudioCatalog? _catalog;
     private DialogService? _dialogs;
     private bool _disposed;
-    private bool _waitingForCloseKeys;
     private bool _closing;
     private bool _closeFinished;
     private Task? _shutdownTask;
@@ -286,21 +285,6 @@ internal sealed class MainFrame : IMainView
             return;
         }
 
-        // Alt+F4 asks the window to close while Alt is commonly still held. Destroying the foreground
-        // window before Windows delivers the rest of that chord can leave the newly focused thread with a
-        // stale logical modifier state. Keep this window as the keyboard target until the physical keys are
-        // up, then issue a fresh close on the UI thread. No synthetic key events are sent.
-        if (!_closing && args.CanVeto && _input?.CloseChordIsDown() == true)
-        {
-            args.Veto();
-            if (!_waitingForCloseKeys)
-            {
-                _waitingForCloseKeys = true;
-                _ = CloseAfterKeysAreReleasedAsync();
-            }
-            return;
-        }
-
         if (!_closing && args.CanVeto && !CanClose())
         {
             args.Veto();
@@ -313,13 +297,16 @@ internal sealed class MainFrame : IMainView
         // detach while that handle remains valid. This leaves slow device-specific teardown invisible without
         // racing it against destruction of the video window.
         _frame.Hide();
+        // Request shutdown before releasing peripheral services. The controller stops playback synchronously
+        // before its returned task begins waiting for file writes and native teardown, so audio stops in the
+        // same close-event dispatch that Windows initiated.
+        _shutdownTask = RequestShutdownAsync();
         // Parentless modeless progress windows do not follow the frame when it is hidden and would otherwise
         // remain visible during teardown. They are views only; their jobs stay owned by the queue.
         _dialogs?.CloseDownloadProgressWindows();
-        // Stop system-wide shortcuts before the close handlers save state and stop playback, so no action can
-        // arrive while shutdown is in progress.
+        // The listener marks itself inactive before asking its background message loop to exit. It therefore
+        // cannot dispatch another action even though shutdown does not wait for that thread to finish.
         _input?.StopGlobalShortcuts();
-        _shutdownTask = RequestShutdownAsync();
         if (!args.CanVeto)
         {
             WaitForShutdown();
@@ -395,23 +382,6 @@ internal sealed class MainFrame : IMainView
             if (!confirm())
                 return false;
         return true;
-    }
-
-    private async Task CloseAfterKeysAreReleasedAsync()
-    {
-        while (!_disposed && _input?.CloseChordIsDown() == true)
-            await Task.Delay(10).ConfigureAwait(false);
-
-        if (_disposed)
-            return;
-
-        _dispatcher!.Post(() =>
-        {
-            if (_disposed)
-                return;
-            _waitingForCloseKeys = false;
-            _frame.Close();
-        });
     }
 
     private WindowInput Input

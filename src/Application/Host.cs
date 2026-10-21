@@ -26,6 +26,7 @@ internal sealed class ApplicationHost : IDisposable
     private readonly PathRequestQueue _pathQueue;
     private readonly IReadOnlyList<string> _initialPaths;
     private readonly List<IReadOnlyList<string>> _pendingPathRequests = [];
+    private readonly Lock _startupGate = new();
     private SettingsStore _settingsStore = null!;
     private Settings _settings = null!;
     private ShortcutManager _shortcuts = null!;
@@ -49,13 +50,14 @@ internal sealed class ApplicationHost : IDisposable
     private Tools? _tools;
     private Files? _fileActions;
     private StartupResources? _pendingStartupResources;
+    private Task? _nativeInitializationTask;
     private bool _shown;
     private bool _shellReady;
     private bool _settingsReady;
     private bool _windowInitializationStarted;
     private bool _windowInitialized;
     private bool _ready;
-    private bool _closeWhenReady;
+    private bool _stopping;
     private bool _startupFailed;
     private bool _disposed;
 
@@ -68,8 +70,9 @@ internal sealed class ApplicationHost : IDisposable
         var settingsTask = Task.Run(LoadStartupSettings);
         _dispatcher = new WxDispatcher();
         _view = new MainFrame();
-        // A close while mpv is still attaching to the window must wait for that short initialization to
-        // finish; destroying the native handle underneath it can leave the backend unable to unwind.
+        // Registered before startup begins so closing can prevent a pending mpv attachment, or await and
+        // dispose one already in flight, without leaving the frame visible until every feature is ready.
+        _view.CloseRequested += StopStartupAsync;
         _view.CloseConfirmationRequested += ConfirmClose;
         // Construct the request queue now, but do not start its listener thread until Show has synchronously
         // presented the shell. A request arriving while services start is held and replayed when ready.
@@ -110,12 +113,15 @@ internal sealed class ApplicationHost : IDisposable
             PostStartupFailure(failure);
             return;
         }
-        if (_disposed)
-            return;
-
-        // Start the sound path first. Its dedicated worker cannot be held behind optional feature work in
-        // the thread-pool queue, and it starts whether or not Windows has painted the shell yet.
-        _ = InitializeBackgroundServicesAsync(nativeHandle, startup.Settings);
+        lock (_startupGate)
+        {
+            if (_disposed || _stopping)
+                return;
+            // Start the sound path first. Its dedicated worker cannot be held behind optional feature work in
+            // the thread-pool queue, and it starts whether or not Windows has painted the shell yet. Publishing
+            // the task under the same lock as the close flag makes attachment and close mutually ordered.
+            _nativeInitializationTask = InitializeBackgroundServicesAsync(nativeHandle, startup.Settings);
+        }
         try
         {
             _dispatcher.Post(() => OnStartupSettingsReady(startup));
@@ -128,7 +134,7 @@ internal sealed class ApplicationHost : IDisposable
 
     private void OnStartupSettingsReady(StartupSettings startup)
     {
-        if (_disposed || _startupFailed)
+        if (_disposed || _stopping || _startupFailed)
             return;
         _settingsStore = startup.Store;
         _settings = startup.Settings;
@@ -139,7 +145,7 @@ internal sealed class ApplicationHost : IDisposable
 
     private void TryInitializeWindowResources()
     {
-        if (_disposed || _startupFailed || !_shellReady || !_settingsReady
+        if (_disposed || _stopping || _startupFailed || !_shellReady || !_settingsReady
             || _windowInitializationStarted)
             return;
         _windowInitializationStarted = true;
@@ -261,7 +267,7 @@ internal sealed class ApplicationHost : IDisposable
         LunaPlayer.Equalizer.Library equalizerLibrary,
         RecentsStore recents)
     {
-        if (_disposed || _startupFailed)
+        if (_disposed || _stopping || _startupFailed)
             return;
         try
         {
@@ -281,7 +287,7 @@ internal sealed class ApplicationHost : IDisposable
 
     private void OnNativeServicesReady(StartupResources resources)
     {
-        if (_disposed || _startupFailed)
+        if (_disposed || _stopping || _startupFailed)
         {
             resources.Dispose(disposeSpeech: false);
             return;
@@ -315,7 +321,7 @@ internal sealed class ApplicationHost : IDisposable
 
     private void CompleteStartup(StartupResources resources)
     {
-        if (_disposed || _startupFailed)
+        if (_disposed || _stopping || _startupFailed)
         {
             resources.Dispose(disposeSpeech: false);
             return;
@@ -330,11 +336,6 @@ internal sealed class ApplicationHost : IDisposable
             InitializeFeatures(_speech, _player, mediaControls, features);
             mediaControls = null;
             _ready = true;
-            if (_closeWhenReady)
-            {
-                _view.Close();
-                return;
-            }
             QueuePostStartupWork();
         }
         catch (Exception failure)
@@ -490,6 +491,7 @@ internal sealed class ApplicationHost : IDisposable
             return;
         _disposed = true;
         _view.CloseConfirmationRequested -= ConfirmClose;
+        _view.CloseRequested -= StopStartupAsync;
         _singleInstance.Dispose();
         _pathQueue.Dispose();
         _pendingStartupResources?.Dispose(disposeSpeech: false);
@@ -512,15 +514,17 @@ internal sealed class ApplicationHost : IDisposable
     }
 
     private bool ConfirmClose()
-    {
-        if (!_ready && !_startupFailed)
-        {
-            _closeWhenReady = true;
-            return false;
-        }
-        return _downloadQueue is null
+        => _downloadQueue is null
             || !_downloadQueue.HasUnfinishedItems
             || _view.Dialogs.ConfirmCloseWithDownloads();
+
+    private Task StopStartupAsync()
+    {
+        lock (_startupGate)
+        {
+            _stopping = true;
+            return _nativeInitializationTask ?? Task.CompletedTask;
+        }
     }
 
     private void HandleExternalPaths(IReadOnlyList<string> paths)
@@ -555,7 +559,7 @@ internal sealed class ApplicationHost : IDisposable
 
     private void HandleStartupFailure(Exception failure)
     {
-        if (_disposed || _startupFailed)
+        if (_disposed || _stopping || _startupFailed)
             return;
         _startupFailed = true;
         CrashReport.Report(failure);
