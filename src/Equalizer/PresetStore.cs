@@ -109,14 +109,12 @@ internal sealed class PresetStore
     {
         try
         {
-            Directory.CreateDirectory(Path.GetDirectoryName(_path) ?? Paths.RootDirectory);
-            using (var stream = File.Create(_path))
-                JsonSerializer.Serialize(stream, document, PresetJsonContext.Default.PresetDocument);
-            LastError = string.Empty;
-            return true;
+            var written = AtomicFile.WriteJson(
+                _path, document, PresetJsonContext.Default.PresetDocument, out var error);
+            LastError = error;
+            return written;
         }
-        catch (Exception exception)
-            when (exception is IOException or UnauthorizedAccessException or JsonException)
+        catch (JsonException exception)
         {
             LastError = exception.Message;
             return false;

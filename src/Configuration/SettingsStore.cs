@@ -167,21 +167,9 @@ internal sealed class SettingsStore
 
     private bool Write(byte[] content)
     {
-        try
-        {
-            Paths.EnsureDirectoryFor(_jsonPath);
-            var temporary = Paths.TemporaryFor(_jsonPath);
-            using (var stream = File.Create(temporary))
-                stream.Write(content);
-            File.Move(temporary, _jsonPath, overwrite: true);
-            LastError = string.Empty;
-            return true;
-        }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
-        {
-            LastError = exception.Message;
-            return false;
-        }
+        var written = AtomicFile.WriteBytes(_jsonPath, content, out var error);
+        LastError = error;
+        return written;
     }
 
 }

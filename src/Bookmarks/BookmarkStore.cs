@@ -163,23 +163,7 @@ internal sealed class BookmarkStore
         => Report(SaveTo(_path, document, out var error), error);
 
     private static bool SaveTo(string path, BookmarkDocument document, out string error)
-    {
-        error = string.Empty;
-        try
-        {
-            Paths.EnsureDirectoryFor(path);
-            var temporaryPath = Paths.TemporaryFor(path);
-            using (var stream = File.Create(temporaryPath))
-                JsonSerializer.Serialize(stream, document, BookmarkJsonContext.Default.BookmarkDocument);
-            File.Move(temporaryPath, path, overwrite: true);
-            return true;
-        }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
-        {
-            error = exception.Message;
-            return false;
-        }
-    }
+        => AtomicFile.WriteJson(path, document, BookmarkJsonContext.Default.BookmarkDocument, out error);
 
     private static IReadOnlyList<Bookmark> Sort(IEnumerable<Bookmark> bookmarks)
         => bookmarks.OrderBy(value => value.Position)

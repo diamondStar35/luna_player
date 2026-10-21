@@ -108,19 +108,8 @@ internal sealed class RecentsStore
 
     private bool Save()
     {
-        try
-        {
-            Paths.EnsureDirectoryFor(_path);
-            var temporary = Paths.TemporaryFor(_path);
-            using (var stream = File.Create(temporary))
-                JsonSerializer.Serialize(stream, _document, RecentsJsonContext.Default.RecentsDocument);
-            File.Move(temporary, _path, overwrite: true);
-            return true;
-        }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
-        {
-            return false;
-        }
+        return AtomicFile.WriteJson(
+            _path, _document, RecentsJsonContext.Default.RecentsDocument, out _);
     }
 }
 

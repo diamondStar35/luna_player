@@ -221,19 +221,9 @@ internal sealed class IptvSourceStore
 
     private bool Save(IptvSourceDocument document)
     {
-        try
-        {
-            Paths.EnsureDirectoryFor(_path);
-            var temporaryPath = Paths.TemporaryFor(_path);
-            using (var stream = File.Create(temporaryPath))
-                JsonSerializer.Serialize(stream, Protected(document), IptvJsonContext.Default.IptvSourceDocument);
-            File.Move(temporaryPath, _path, overwrite: true);
-            return Report(true, string.Empty);
-        }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
-        {
-            return Report(false, exception.Message);
-        }
+        var written = AtomicFile.WriteJson(
+            _path, Protected(document), IptvJsonContext.Default.IptvSourceDocument, out var error);
+        return Report(written, error);
     }
 
     /// <summary>A copy of the document with credential fields protected for writing, leaving the in-memory

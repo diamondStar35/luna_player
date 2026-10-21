@@ -248,18 +248,8 @@ internal sealed class FavoriteStore
     /// previous contents rather than a truncated file.</summary>
     private bool Save(FavoriteDocument document)
     {
-        try
-        {
-            Paths.EnsureDirectoryFor(_path);
-            var temporaryPath = Paths.TemporaryFor(_path);
-            using (var stream = File.Create(temporaryPath))
-                JsonSerializer.Serialize(stream, document, FavoriteJsonContext.Default.FavoriteDocument);
-            File.Move(temporaryPath, _path, overwrite: true);
-            return Report(true, string.Empty);
-        }
-        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
-        {
-            return Report(false, exception.Message);
-        }
+        var written = AtomicFile.WriteJson(
+            _path, document, FavoriteJsonContext.Default.FavoriteDocument, out var error);
+        return Report(written, error);
     }
 }
