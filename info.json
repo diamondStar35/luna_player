@@ -1,7 +1,10 @@
 {
-  "version": "0.7.1",
+  "version": "0.7.2",
   "changes": [
+    "More optimizations during app close and startup. Startup is noticeably faster again.",
     "Attempt to fix slow closing of the app on some devices.",
+    "Added volume fading during seek, pausing or resuming playback, or at the start or end of the file. These can be enabled independently.",
+    "Reorganize the audio preferences page.",
     "Added a full-featured sleep timer with duration presets, end-of-track mode, pause or stop actions, an optional fade-out, and commands to cancel the timer or announce the remaining time.",
     "Added full-screen video playback, multi-audio-track selection, and an audio-track dialog.",
     "Added accessible subtitle reading for embedded subtitles, local subtitle files, and subtitle URLs, including options to remember a subtitle language and control whether new lines interrupt speech.",
