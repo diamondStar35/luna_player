@@ -342,6 +342,7 @@ internal sealed class AppUpdateService : IDisposable
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
+            // Cleanup is best-effort and must not replace the update result with a temporary-file error.
         }
     }
 }

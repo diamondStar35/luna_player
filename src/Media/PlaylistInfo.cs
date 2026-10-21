@@ -37,7 +37,10 @@ internal sealed class PlaylistInfoService
             cancellationToken.ThrowIfCancellationRequested();
             var path = files[index];
             try { totalSize += new FileInfo(path).Length; }
-            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException) { }
+            catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+            {
+                // An inaccessible size does not prevent the file's duration from contributing to the totals.
+            }
             // What is playing already knows its own length; asking mpv beats reading the file again.
             durations[index] = string.Equals(path, currentPath, StringComparison.Ordinal) && currentDuration is > 0
                 ? currentDuration
@@ -127,7 +130,10 @@ internal sealed class PlaylistInfoService
                 finally
                 {
                     try { _probe?.Command("stop"); }
-                    catch (Exception exception) when (exception is MpvException or InvalidOperationException) { }
+                    catch (Exception exception) when (exception is MpvException or InvalidOperationException)
+                    {
+                        // The probe is disposable and will be recreated or released even if mpv already stopped.
+                    }
                 }
             }
         }

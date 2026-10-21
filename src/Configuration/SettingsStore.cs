@@ -39,6 +39,7 @@ internal sealed class SettingsStore
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
         {
+            // Theme probing is best-effort; the complete settings load reports malformed or unreadable data.
         }
         return AppTheme.SystemDefault;
     }
@@ -61,6 +62,7 @@ internal sealed class SettingsStore
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
         {
+            // A secondary launch falls back to the safe default and still attempts to contact the main window.
         }
         return true;
     }

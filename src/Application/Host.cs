@@ -23,6 +23,8 @@ internal sealed class ApplicationHost : IDisposable
     private readonly IReadOnlyList<string> _initialPaths;
     private readonly List<IReadOnlyList<string>> _pendingPathRequests = [];
     private readonly Lock _startupGate = new();
+    private readonly TaskCompletionSource _shellPainted = new(
+        TaskCreationOptions.RunContinuationsAsynchronously);
     private SettingsStore _settingsStore = null!;
     private Settings _settings = null!;
     private ShortcutManager _shortcuts = null!;
@@ -86,6 +88,9 @@ internal sealed class ApplicationHost : IDisposable
             return;
         _shown = true;
         _view.Show();
+        // DLL discovery, persistence reads, and recursive folder enumeration can delay the first frame through
+        // resource contention even from workers. Release that work only after Update has painted the shell.
+        _shellPainted.TrySetResult();
         // Only after the shell has been painted: creating the pipe is background work and must never extend
         // the primary instance's process-entry-to-window path.
         _singleInstance.StartListening(paths => _dispatcher.Post(() => HandleExternalPaths(paths)));
@@ -114,21 +119,29 @@ internal sealed class ApplicationHost : IDisposable
             // Start the sound path first. Its dedicated worker cannot be held behind optional feature work in
             // the thread-pool queue, and it starts whether or not Windows has painted the shell yet. Publishing
             // the task under the same lock as the close flag makes attachment and close mutually ordered.
+            _nativeInitializationTask = InitializeBackgroundServicesAsync(
+                nativeHandle, startup.Settings, _shellPainted.Task);
+        }
+        // Do not let a recursive launch scan compete with creation and painting of the shell. It still gets
+        // a dedicated worker, so it begins immediately after the first frame and cannot wait behind optional
+        // feature work in the thread pool.
+        await _shellPainted.Task.ConfigureAwait(false);
+        lock (_startupGate)
+        {
+            if (_disposed || _stopping)
+                return;
             _initialLaunchTask = _initialPaths.Count == 0
                 ? Task.FromResult(new PreparedLaunch(false, [], null, null, null))
                 : Task.Factory.StartNew(
-                    () =>
-                    {
-                        Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
-                        return Startup.PrepareLaunch(_initialPaths, startup.Settings);
-                    },
+                    () => Startup.PrepareLaunch(_initialPaths, startup.Settings),
                     CancellationToken.None,
                     TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach,
                     TaskScheduler.Default);
-            _nativeInitializationTask = InitializeBackgroundServicesAsync(nativeHandle, startup.Settings);
         }
         try
         {
+            // Posting settings only after the launch task has been published keeps later command wiring from
+            // observing a half-prepared startup while still leaving every expensive operation off this thread.
             _dispatcher.Post(() => OnStartupSettingsReady(startup));
         }
         catch (InvalidOperationException)
@@ -171,12 +184,16 @@ internal sealed class ApplicationHost : IDisposable
         }
     }
 
-    private async Task InitializeBackgroundServicesAsync(nint nativeHandle, Settings settings)
+    private async Task InitializeBackgroundServicesAsync(
+        nint nativeHandle,
+        Settings settings,
+        Task shellPainted)
     {
         StartupResources resources;
         try
         {
-            resources = await Startup.CreateServicesAsync(nativeHandle, settings).ConfigureAwait(false);
+            resources = await Startup.CreateServicesAsync(
+                nativeHandle, settings, shellPainted).ConfigureAwait(false);
         }
         catch (Exception failure)
         {

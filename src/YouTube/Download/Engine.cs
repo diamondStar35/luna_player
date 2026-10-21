@@ -161,6 +161,7 @@ internal sealed class Engine
         }
         catch (Exception exception) when (exception is InvalidOperationException or NotSupportedException)
         {
+            // The process already exited or cannot be killed on this platform, so there is nothing else to stop.
         }
     }
 

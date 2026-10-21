@@ -20,8 +20,13 @@ internal static class Startup
         return new StartupSettings(store, settings, store.LastError);
     }
 
-    internal static async Task<StartupResources> CreateServicesAsync(nint nativeHandle, Settings settings)
+    internal static async Task<StartupResources> CreateServicesAsync(
+        nint nativeHandle,
+        Settings settings,
+        Task shellPainted)
     {
+        // MPV is the one service allowed to overlap the first frame. Starting it here preserves immediate
+        // audio initialization without letting unrelated DLL loading and persistence reads delay the shell.
         var playerTask = Task.Factory.StartNew(
             () =>
             {
@@ -33,6 +38,11 @@ internal static class Startup
             CancellationToken.None,
             TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach,
             TaskScheduler.Default);
+
+        // Speech backend discovery, media controls, and feature stores are needed before command wiring, not
+        // before a window can exist. Waiting here prevents those jobs from competing with wxWidgets while it
+        // creates and paints the lightweight shell.
+        await shellPainted.ConfigureAwait(false);
         var speechTask = Task.Run<ISpeechOutput>(() => new SpeechOutput(settings));
         var mediaControlsTask = Task.Run(() => new SystemMediaControls());
         var featuresTask = Task.Run(() => FeatureResources.Create(settings));
