@@ -50,16 +50,13 @@ internal sealed partial class Sessions : IDisposable
     private readonly Settings _settings;
     private readonly ISpeechOutput _speech;
     private readonly IApplicationDispatcher _dispatcher;
-    private readonly Metadata.Client _client;
-    private readonly Backend _backend;
     private readonly ResolveCache _cache;
     private readonly Action<string, string> _directDownload;
     private readonly Action<string, string> _download;
     private readonly Action<string, string> _queueDownload;
     private readonly Action<string> _copy;
     private readonly Action<string> _browse;
-    private readonly FavoriteStore _favorites;
-    private readonly Components.Service _components;
+    private readonly Browsing _browsing;
     private Session? _session;
     private PendingMove? _pending;
 
@@ -90,16 +87,14 @@ internal sealed partial class Sessions : IDisposable
         _settings = settings;
         _speech = speech;
         _dispatcher = dispatcher;
-        _client = client;
-        _backend = backend;
         _cache = cache;
         _directDownload = directDownload;
         _download = download;
         _queueDownload = queueDownload;
         _copy = copy;
         _browse = browse;
-        _favorites = favorites;
-        _components = components;
+        _browsing = new Browsing(
+            view, settings, speech, dispatcher, client, backend, cache, favorites, components, Show);
     }
 
     /// <summary>The address of the video playing now, or null when what is playing is not one.</summary>
@@ -124,199 +119,11 @@ internal sealed partial class Sessions : IDisposable
     /// video opened from a bare link carries no channel. Used by the video commands that open the channel.</summary>
     internal string ActiveChannelUrl => _activeChannelUrl;
 
-    /// <summary>Searches YouTube and shows what it finds.</summary>
-    ///
-    /// <remarks>
-    /// The first video is resolved before the window opens, which is worth doing: it means the row the list
-    /// opens on plays the instant it is chosen, and it puts the first
-    /// sign of a rate limit or a broken network in the progress window the user is already looking at
-    /// rather than in a message box after they have picked something.
-    /// </remarks>
-    /// <param name="filter">The kind of result the user asked for in the search dialog, 0-5. It decides
-    /// which YouTube search is run and whether the rows are videos, playlists, or channels.</param>
-    internal void Search(string query, int filter)
-    {
-        var videoQuality = (int)_settings.YouTube.VideoQuality;
-        var audioQuality = (int)_settings.YouTube.AudioQuality;
-        var count = _settings.YouTube.SearchResultCount;
-        // Read here and carried into the job: Tr may only be called on the thread that owns the windows,
-        // and the job does not run on it.
-        // Translators: Message shown while the first video of a search is being made ready to play.
-        var fetching = Tr("Fetching first stream...");
-        var prompt = new ProgressPrompt(
-            // Translators: Title of the window shown while a YouTube search is running.
-            Tr("Searching YouTube"),
-            // Translators: First message shown while a YouTube search is running.
-            Tr("Searching videos..."),
-            update => update.Name) { Proportional = false };
-        BackgroundProgress.Start(_view, _dispatcher, prompt,
-            (report, token) => RunSearch(query, filter, count, videoQuality, audioQuality, fetching, report, token),
-            found =>
-            {
-                if (found.Failure is ResolveFailure.Cancelled)
-                    return;
-                if (found.Failure is not ResolveFailure.None)
-                {
-                    ShowError(Utils.Describe(found.Failure, found.Detail,
-                        // Translators: Shown when a YouTube search failed and nothing said why.
-                        Tr("Could not complete YouTube search.")));
-                    return;
-                }
-                if (found.Items.Count == 0)
-                {
-                    ShowError(
-                        // Translators: Shown when a YouTube search found nothing at all.
-                        Tr("No videos were found for this search."));
-                    return;
-                }
-                Show(new Session(
-                    SessionKind.Search,
-                    found.Items,
-                    videoQuality,
-                    audioQuality,
-                    found.Page));
-            });
-    }
+    internal void Search(string query, int filter) => _browsing.Search(query, filter);
 
-    /// <summary>Opens every video in a playlist and shows the list.</summary>
-    internal void OpenPlaylist(string link)
-    {
-        if (!LinkValidator.Parse(link).HasPlaylist)
-        {
-            ShowError(
-                // Translators: Shown when an address looked like a YouTube link but names no playlist.
-                Tr("This link does not include a YouTube playlist."));
-            return;
-        }
-        var videoQuality = (int)_settings.YouTube.VideoQuality;
-        var audioQuality = (int)_settings.YouTube.AudioQuality;
-        var prompt = new ProgressPrompt(
-            // Translators: Title of the window shown while a YouTube playlist is being read.
-            Tr("Loading YouTube link"),
-            // Translators: First message shown while the videos in a YouTube playlist are being listed.
-            Tr("Loading playlist items..."),
-            update => update.Name) { Proportional = false };
-        BackgroundProgress.Start(_view, _dispatcher, prompt,
-            (_, token) => RunPlaylist(link, token),
-            found =>
-            {
-                if (found.Failure is ResolveFailure.Cancelled)
-                    return;
-                if (found.Failure is not ResolveFailure.None)
-                {
-                    ShowError(Utils.Describe(found.Failure, found.Detail,
-                        // Translators: Shown when a YouTube address could not be read and nothing said why.
-                        Tr("Could not read YouTube link data.")));
-                    return;
-                }
-                if (found.Items.Count == 0)
-                {
-                    ShowError(
-                        // Translators: Shown when a YouTube playlist address opened nothing playable.
-                        Tr("No videos were found in this playlist."));
-                    return;
-                }
-                Show(new Session(SessionKind.Playlist, found.Items, videoQuality, audioQuality));
-            });
-    }
+    internal void OpenPlaylist(string link) => _browsing.OpenPlaylist(link);
 
-    /// <summary>Opens a channel in the tabbed browser: its videos, shorts, streams, playlists and the rest,
-    /// each paged as the user scrolls.</summary>
-    /// <remarks>
-    /// The browser is backed by yt-dlp, not PyYt, so it is gated on the programs being installed the same
-    /// way a download is: when they are missing the offer is made and the channel opened again once they
-    /// arrive. It opens on the videos tab; switching tabs, playing a video with next and previous, drilling
-    /// into a playlist row and saving a row all flow through the same session machinery a search uses.
-    /// </remarks>
-    private void OpenChannel(YouTubeResult channel)
-    {
-        if (!Backend.HasComponents
-            && _components.Ensure(_settings.YouTube.Channel, () => OpenChannel(channel))
-                is not Components.Service.ComponentsState.Ready)
-            return;
-        var videoQuality = (int)_settings.YouTube.VideoQuality;
-        var audioQuality = (int)_settings.YouTube.AudioQuality;
-        var channelBase = Client.Tabs.Normalise(channel.Url.Length > 0 ? channel.Url : channel.ChannelUrl);
-        var tabIndex = Client.Tabs.DefaultIndex;
-        var tabKey = Client.Tabs.Keys[tabIndex];
-        var title = channel.Title;
-        var prompt = new ProgressPrompt(
-            // Translators: Title of the window shown while a YouTube channel is being opened.
-            Tr("Loading channel"),
-            // Translators: First message shown while a YouTube channel is being opened.
-            Tr("Loading channel videos..."),
-            update => update.Name) { Proportional = false };
-        BackgroundProgress.Start(_view, _dispatcher, prompt,
-            (_, token) => _backend.OpenChannelTab(channelBase, tabKey, token),
-            found =>
-            {
-                if (found.Failure is ResolveFailure.Cancelled)
-                    return;
-                if (found.Failure is not ResolveFailure.None)
-                {
-                    ShowError(Utils.Describe(found.Failure, found.Detail,
-                        // Translators: Shown when a YouTube channel could not be read.
-                        Tr("Could not read this YouTube channel.")));
-                    return;
-                }
-                // A channel whose videos tab is empty is still worth opening: the user can switch to a tab
-                // that has something. Only a real failure stops it.
-                Show(new Session(
-                    SessionKind.Channel, found.Items, videoQuality, audioQuality,
-                    found.Page, channelBase, tabIndex, title));
-            });
-    }
-
-    /// <summary>Adds a results row to the favourites, or removes it when it is already saved, saying which
-    /// way it went.</summary>
-    /// <remarks>
-    /// The shared store, so it turns up in the favourites manager and survives a restart. A playlist row is
-    /// saved as a playlist; everything else as a video, which is what a channel row's contents would be
-    /// played as anyway. A row already saved - matched by its address - is taken back out, so the same key
-    /// adds and removes. Success and failure are spoken rather than shown, because the results window is
-    /// still up and a message box over it would take the caret off the row.
-    /// </remarks>
-    internal void ToggleFavorite(YouTubeResult item)
-    {
-        if (_favorites.FindByLink(item.Url) is Favorite existing)
-        {
-            if (_favorites.Delete(existing.Id))
-            {
-                _speech.Speak(
-                    // Translators: Spoken once a video has been taken back out of the favourites from the results list.
-                    Tr("Removed from favorites."),
-                    // Translators: The short wording spoken once a video has been removed from the favourites.
-                    Tr("Removed from favorites."));
-                return;
-            }
-            var removeError = _favorites.LastError.Length > 0
-                ? _favorites.LastError
-                // Translators: Spoken when a video could not be removed from the favourites.
-                : Tr("Could not remove from favorites.");
-            _speech.Speak(removeError, removeError);
-            return;
-        }
-        var kind = item.ItemType is YouTubeItemType.Playlist ? FavoriteKind.Playlist : FavoriteKind.Video;
-        if (_favorites.Add(item.Title, kind, item.Url) is not null)
-        {
-            _speech.Speak(
-                // Translators: Spoken once a video has been added to the favourites from the results list.
-                Tr("Added to favorites."),
-                // Translators: The short wording spoken once a video has been added to the favourites.
-                Tr("Added to favorites."));
-            return;
-        }
-        var message = _favorites.LastError.Length > 0
-            ? _favorites.LastError
-            // Translators: Spoken when a video could not be added to the favourites.
-            : Tr("Could not add to favorites.");
-        _speech.Speak(message, message);
-    }
-
-    /// <summary>Opens a video's channel in the player's own channel browser, from the channel address a row
-    /// carried. The in-player counterpart of opening the channel in the web browser.</summary>
-    internal void GoToChannel(string channelUrl, string title)
-        => OpenChannel(new YouTubeResult(string.Empty, title, title, null, channelUrl, channelUrl));
+    internal void GoToChannel(string channelUrl, string title) => _browsing.OpenChannel(channelUrl, title);
 
     /// <summary>Plays one video, named by a link rather than chosen from a list.</summary>
     /// <remarks>There is no session: nothing follows a single video, so there is no next and Escape has
@@ -490,7 +297,7 @@ internal sealed partial class Sessions : IDisposable
             }
             if (item.ItemType is YouTubeItemType.Channel)
             {
-                OpenChannel(item);
+                _browsing.OpenChannel(item);
                 return;
             }
             // A video already resolved starts here and now, with no window in between. That is what the
@@ -544,5 +351,9 @@ internal sealed partial class Sessions : IDisposable
             (_, waitToken) => _cache.Wait(watchUrl, item, audioOnly, quality, token, waitToken),
             completed);
     }
+
+    private void ShowError(string message) =>
+        // Translators: Title of an error shown while resolving or playing a YouTube video.
+        _view.Dialogs.ShowError(message, Tr("YouTube"));
 
 }

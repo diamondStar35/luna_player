@@ -76,9 +76,9 @@ internal sealed partial class Sessions
         });
 
         public bool IsFavorite(int index) =>
-            Peek(index) is YouTubeResult item && _owner._favorites.FindByLink(item.Url) is not null;
+            Peek(index) is YouTubeResult item && _owner._browsing.IsFavorite(item);
 
-        public void ToggleFavorite(int index) => On(index, item => _owner.ToggleFavorite(item));
+        public void ToggleFavorite(int index) => On(index, _owner._browsing.ToggleFavorite);
 
         /// <summary>Reads one row without making it the current selection - a query the context menu runs
         /// before it opens, which must not move the caret the way acting on a row does.</summary>
@@ -169,7 +169,7 @@ internal sealed partial class Sessions
             var channelBase = _session.ChannelBase;
             var tabKey = Client.Tabs.Keys[tabIndex];
             var token = _session.Token;
-            _ = Task.Run(() => _owner._backend.OpenChannelTab(channelBase, tabKey, token), token).ContinueWith(
+            _ = Task.Run(() => _owner._browsing.OpenChannelTab(channelBase, tabKey, token), token).ContinueWith(
                 finished => _owner._dispatcher.Post(() => Switched(tabIndex, finished, replaced)),
                 CancellationToken.None,
                 TaskContinuationOptions.None,
