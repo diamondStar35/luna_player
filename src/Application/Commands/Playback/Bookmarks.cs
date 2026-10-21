@@ -9,7 +9,7 @@ namespace LunaPlayer.Application.Commands.Playback;
 internal sealed class Bookmarks
 {
     private readonly IMainView _view;
-    private readonly MediaPlayer _player;
+    private readonly Player _player;
     private readonly ISpeechOutput _speech;
     private readonly BookmarkStore _store;
     private readonly SelectionSlots _selections;
@@ -17,7 +17,7 @@ internal sealed class Bookmarks
     internal Bookmarks(
         ActionRouter router,
         IMainView view,
-        MediaPlayer player,
+        Player player,
         ISpeechOutput speech,
         BookmarkStore store,
         SelectionSlots selections)

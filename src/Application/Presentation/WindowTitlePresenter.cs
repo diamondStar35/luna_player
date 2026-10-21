@@ -18,11 +18,11 @@ namespace LunaPlayer.Application.Presentation;
 internal sealed class WindowTitlePresenter
 {
     private readonly IMainView _view;
-    private readonly MediaPlayer _player;
+    private readonly Player _player;
     private readonly Settings _settings;
     private readonly MediaTagsCache _tags;
 
-    internal WindowTitlePresenter(IMainView view, MediaPlayer player, Settings settings, MediaTagsCache tags)
+    internal WindowTitlePresenter(IMainView view, Player player, Settings settings, MediaTagsCache tags)
     {
         _view = view;
         _player = player;

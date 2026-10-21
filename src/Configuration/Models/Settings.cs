@@ -80,6 +80,11 @@ internal sealed class Settings
         Require(Audio.SeekStepKey is { Length: 1 }
             && "1234567890-".Contains(Audio.SeekStepKey, StringComparison.Ordinal), "audio.seekStepKey");
         Require(Enum.IsDefined(Audio.EndBehavior), "audio.endBehavior");
+        Require(Audio.FadeIntervalMilliseconds is >= 0 and <= AudioSettings.MaximumFadeIntervalMilliseconds,
+            "audio.fadeIntervalMilliseconds");
+        Require(Audio.SeekFadeIntervalMilliseconds is >= 1 and <= AudioSettings.MaximumFadeIntervalMilliseconds,
+            "audio.seekFadeIntervalMilliseconds");
+        Require(Enum.IsDefined(Audio.GaplessPlayback), "audio.gaplessPlayback");
 
         Require(Playback.LastFile is not null, "playback.lastFile");
         Require(double.IsFinite(Playback.LastPosition) && Playback.LastPosition >= 0,
@@ -155,6 +160,10 @@ internal sealed class Settings
         Audio.PanStep = Math.Clamp(Audio.PanStep, 1, 100);
         Audio.SpeedStep = Precision.Normalize(Audio.SpeedStep > 0 ? Audio.SpeedStep : 0.1);
         Audio.CustomSeekStep = Precision.Normalize(Audio.CustomSeekStep > 0 ? Audio.CustomSeekStep : 5);
+        Audio.FadeIntervalMilliseconds = Math.Clamp(
+            Audio.FadeIntervalMilliseconds, 0, AudioSettings.MaximumFadeIntervalMilliseconds);
+        Audio.SeekFadeIntervalMilliseconds = Math.Clamp(
+            Audio.SeekFadeIntervalMilliseconds, 1, AudioSettings.MaximumFadeIntervalMilliseconds);
         Audio.SeekStepKey = Audio.SeekStepKey.Length == 1 && "1234567890-".Contains(Audio.SeekStepKey, StringComparison.Ordinal)
             ? Audio.SeekStepKey : "2";
         YouTube.SearchResultCount = Math.Clamp(YouTube.SearchResultCount, 5, 100);

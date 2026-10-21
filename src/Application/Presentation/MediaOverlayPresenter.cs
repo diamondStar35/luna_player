@@ -16,7 +16,7 @@ namespace LunaPlayer.Application.Presentation;
 /// </remarks>
 internal sealed class MediaOverlayPresenter : IDisposable
 {
-    private readonly MediaPlayer _player;
+    private readonly Player _player;
     private readonly Settings _settings;
     private readonly IApplicationDispatcher _dispatcher;
     private readonly MediaTagsCache _tags;
@@ -26,7 +26,7 @@ internal sealed class MediaOverlayPresenter : IDisposable
     private IDisposable? _clock;
 
     internal MediaOverlayPresenter(
-        MediaPlayer player,
+        Player player,
         Settings settings,
         IApplicationDispatcher dispatcher,
         MediaTagsCache tags,

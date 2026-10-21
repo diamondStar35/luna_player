@@ -19,7 +19,7 @@ namespace LunaPlayer.Application.Commands.Playback;
 internal sealed class Subtitles : IDisposable
 {
     private readonly IMainView _view;
-    private readonly MediaPlayer _player;
+    private readonly Player _player;
     private readonly ISpeechOutput _speech;
     private readonly Settings _settings;
     private readonly IApplicationDispatcher _dispatcher;
@@ -35,7 +35,7 @@ internal sealed class Subtitles : IDisposable
     internal Subtitles(
         ActionRouter router,
         IMainView view,
-        MediaPlayer player,
+        Player player,
         ISpeechOutput speech,
         Settings settings,
         IApplicationDispatcher dispatcher)

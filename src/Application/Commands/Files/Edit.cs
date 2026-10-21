@@ -8,13 +8,13 @@ namespace LunaPlayer.Application.Commands.Files;
 internal sealed class Edit
 {
     private readonly IMainView _view;
-    private readonly MediaPlayer _player;
+    private readonly Player _player;
     private readonly ISpeechOutput _speech;
     private readonly IClipboardService _clipboard;
     private readonly Files _fileActions;
     private readonly MediaGuard _guard;
 
-    internal Edit(ActionRouter router, IMainView view, MediaPlayer player, ISpeechOutput speech,
+    internal Edit(ActionRouter router, IMainView view, Player player, ISpeechOutput speech,
         IClipboardService clipboard, Files fileActions)
     {
         _view = view;

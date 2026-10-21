@@ -15,7 +15,7 @@ namespace LunaPlayer.Application.Commands.YouTube;
 internal sealed class Favorites
 {
     private readonly IMainView _view;
-    private readonly MediaPlayer _player;
+    private readonly Player _player;
     private readonly ISpeechOutput _speech;
     private readonly FavoriteStore _store;
     private readonly Sessions _sessions;
@@ -23,7 +23,7 @@ internal sealed class Favorites
     internal Favorites(
         ActionRouter router,
         IMainView view,
-        MediaPlayer player,
+        Player player,
         ISpeechOutput speech,
         FavoriteStore store,
         Sessions sessions)

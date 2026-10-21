@@ -17,10 +17,10 @@ namespace LunaPlayer.Application.Commands;
 /// </remarks>
 internal sealed class MediaGuard
 {
-    private readonly MediaPlayer _player;
+    private readonly Player _player;
     private readonly ISpeechOutput _speech;
 
-    internal MediaGuard(MediaPlayer player, ISpeechOutput speech)
+    internal MediaGuard(Player player, ISpeechOutput speech)
     {
         _player = player;
         _speech = speech;

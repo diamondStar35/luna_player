@@ -145,6 +145,35 @@ internal sealed class PlaylistState
     internal bool MovePrevious(bool wrap)
         => IsShuffleEnabled ? MovePreviousShuffled(wrap) : MovePreviousSequential(wrap);
 
+    /// <summary>The item Next would choose without changing the current item.</summary>
+    internal string? PeekNext(bool wrap)
+    {
+        if (_files.Count < 2)
+            return null;
+        if (IsShuffleEnabled)
+        {
+            SyncShufflePosition();
+            if (_shufflePosition < 0)
+                return _files[_shuffleOrder[0]];
+            var position = _shufflePosition + 1;
+            if (position >= _shuffleOrder.Count)
+            {
+                if (!wrap)
+                    return null;
+                position = 0;
+            }
+            return _files[_shuffleOrder[position]];
+        }
+        var index = _currentIndex + 1;
+        if (index >= _files.Count)
+        {
+            if (!wrap)
+                return null;
+            index = 0;
+        }
+        return index >= 0 && index < _files.Count ? _files[index] : null;
+    }
+
     internal bool GoToFirst() => GoToIndex(0);
 
     internal bool GoToLast() => GoToIndex(_files.Count - 1);

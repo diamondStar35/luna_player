@@ -19,13 +19,13 @@ namespace LunaPlayer.Application.Commands.YouTube;
 /// which this hands to and otherwise leaves alone.
 ///
 /// The three commands that act on the video playing take its address from
-/// <see cref="MediaPlayer.CurrentSource"/> rather than from its path. The path is a signed stream address
+/// <see cref="Player.CurrentSource"/> rather than from its path. The path is a signed stream address
 /// that expires and names no video a person could look at; the source is the watch page it came from.
 /// </remarks>
 internal sealed partial class YouTube
 {
     private readonly IMainView _view;
-    private readonly MediaPlayer _player;
+    private readonly Player _player;
     private readonly Settings _settings;
     private readonly ISpeechOutput _speech;
     private readonly IClipboardService _clipboard;
@@ -39,7 +39,7 @@ internal sealed partial class YouTube
     internal YouTube(
         ActionRouter router,
         IMainView view,
-        MediaPlayer player,
+        Player player,
         Settings settings,
         ISpeechOutput speech,
         IClipboardService clipboard,

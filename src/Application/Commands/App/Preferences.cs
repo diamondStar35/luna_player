@@ -19,7 +19,7 @@ internal sealed class Preferences
         SettingsStore store,
         BackupService backup,
         FileAssociations associations,
-        MediaPlayer player,
+        Player player,
         ShortcutManager shortcuts,
         ShortcutManager globalShortcuts,
         ISpeechOutput speech,
@@ -31,6 +31,7 @@ internal sealed class Preferences
             settings.Apply(source);
             player.TrackPositions(settings.Audio.SaveFilePositions);
             player.SetEndBehavior(settings.Audio.EndBehavior);
+            player.ConfigurePlaybackEffects(settings.Audio);
             player.ConfigureSilence(settings.Silence);
             if (!player.SetNormalization(settings.Audio.NormalizeAudio))
                 view.Dialogs.ShowError(

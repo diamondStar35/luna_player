@@ -17,7 +17,7 @@ namespace LunaPlayer.Application;
 internal sealed class ApplicationController : IDisposable
 {
     private readonly IMainView _view;
-    private readonly MediaPlayer _player;
+    private readonly Player _player;
     private readonly Settings _settings;
     private readonly SettingsStore _settingsStore;
     private readonly IApplicationDispatcher _dispatcher;
@@ -39,7 +39,7 @@ internal sealed class ApplicationController : IDisposable
 
     internal ApplicationController(
         IMainView view,
-        MediaPlayer player,
+        Player player,
         Settings settings,
         SettingsStore settingsStore,
         IApplicationDispatcher dispatcher,
@@ -219,17 +219,35 @@ internal sealed class ApplicationController : IDisposable
     private void OnAudioTracksChanged()
         => _dispatcher.Post(SyncViewState);
 
-    private void OnPlaybackEnded(PlaybackEndReason reason)
+    private void OnPlaybackEnded(EndReason reason)
         => _dispatcher.Post(() => HandlePlaybackEnded(reason));
 
-    private void HandlePlaybackEnded(PlaybackEndReason reason)
+    private void HandlePlaybackEnded(EndReason reason)
     {
-        if (_shutDown
-            || reason is not (PlaybackEndReason.EndOfFile or PlaybackEndReason.Error))
+        if (_shutDown)
+            return;
+        if (reason == EndReason.GaplessAdvance)
+        {
+            if (!_player.AcceptGaplessAdvance())
+            {
+                _player.Stop();
+                SyncViewState();
+                return;
+            }
+            _sessions.AcceptGaplessAdvance();
+            if (_sleepTimer.OnTrackEnded())
+            {
+                SyncViewState();
+                return;
+            }
+            AnnounceAutomaticNavigation();
+            return;
+        }
+        if (reason is not (EndReason.EndOfFile or EndReason.Error))
             return;
         if (_player.CurrentPath is null)
             return;
-        if (reason == PlaybackEndReason.Error && _selections.PlaybackActive)
+        if (reason == EndReason.Error && _selections.PlaybackActive)
         {
             _player.ClearSelectionRange();
             _selections.DeactivatePlayback();

@@ -12,7 +12,7 @@ internal sealed partial class Playback
 {
     private const double DefaultSeekStep = 5;
     private readonly IMainView _view;
-    private readonly MediaPlayer _player;
+    private readonly Player _player;
     private readonly Settings _settings;
     private readonly SettingsStore _settingsStore;
     private readonly ISpeechOutput _speech;
@@ -24,7 +24,7 @@ internal sealed partial class Playback
     internal Playback(
         ActionRouter router,
         IMainView view,
-        MediaPlayer player,
+        Player player,
         Settings settings,
         SettingsStore settingsStore,
         ISpeechOutput speech,

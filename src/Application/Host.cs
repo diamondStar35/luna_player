@@ -35,7 +35,7 @@ internal sealed class ApplicationHost : IDisposable
     private RecentsStore _recents = null!;
     private string _settingsError = string.Empty;
     private ISpeechOutput? _speech;
-    private MediaPlayer? _player;
+    private Player? _player;
     private ApplicationController? _controller;
     private Commands.Playback.Equalizer? _equalizer;
     private Subtitles? _subtitles;
@@ -214,12 +214,12 @@ internal sealed class ApplicationHost : IDisposable
         return new StartupSettings(store, settings, store.LastError);
     }
 
-    private static MediaPlayer CreatePlayer(nint nativeHandle, Settings settings)
+    private static Player CreatePlayer(nint nativeHandle, Settings settings)
     {
-        var engine = new MpvPlaybackEngine(nativeHandle, !settings.General.DisableMediaControls);
+        var engine = new Engine(nativeHandle, !settings.General.DisableMediaControls);
         try
         {
-            var player = new MediaPlayer(engine, new PositionStore(Paths.PositionsFile));
+            var player = new Player(engine, new PositionStore(Paths.PositionsFile));
             ConfigurePlayer(player, settings);
             return player;
         }
@@ -347,7 +347,7 @@ internal sealed class ApplicationHost : IDisposable
 
     private void InitializeFeatures(
         ISpeechOutput speech,
-        MediaPlayer player,
+        Player player,
         SystemMediaControls mediaControls,
         FeatureResources features)
     {
@@ -564,13 +564,14 @@ internal sealed class ApplicationHost : IDisposable
 
     private sealed record StartupSettings(SettingsStore Store, Settings Settings, string Error);
 
-    private static void ConfigurePlayer(MediaPlayer player, Settings settings)
+    private static void ConfigurePlayer(Player player, Settings settings)
     {
         player.SetVolume(settings.Audio.Volume);
         settings.Audio.Pitch = player.SetPitch(settings.Audio.Pitch);
         player.SetSpeed(settings.Audio.Speed);
         player.TrackPositions(settings.Audio.SaveFilePositions);
         player.SetEndBehavior(settings.Audio.EndBehavior);
+        player.ConfigurePlaybackEffects(settings.Audio);
         player.ConfigureSilence(settings.Silence);
         player.SetNormalization(settings.Audio.NormalizeAudio);
         player.SetMono(settings.Audio.MonoAudio);
@@ -587,12 +588,12 @@ internal sealed class ApplicationHost : IDisposable
     /// worker startup to the UI thread. Taking one transfers its lifetime to the application host.</summary>
     private sealed class StartupResources(
         ISpeechOutput speech,
-        MediaPlayer player,
+        Player player,
         SystemMediaControls mediaControls,
         FeatureResources features)
     {
         private ISpeechOutput? _speech = speech;
-        private MediaPlayer? _player = player;
+        private Player? _player = player;
         private SystemMediaControls? _mediaControls = mediaControls;
         private FeatureResources? _features = features;
 
@@ -600,7 +601,7 @@ internal sealed class ApplicationHost : IDisposable
             => Interlocked.Exchange(ref _speech, null)
                 ?? throw new InvalidOperationException("Speech startup resources were already transferred.");
 
-        internal MediaPlayer TakePlayer()
+        internal Player TakePlayer()
             => Interlocked.Exchange(ref _player, null)
                 ?? throw new InvalidOperationException("Playback startup resources were already transferred.");
 

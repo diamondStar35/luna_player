@@ -10,10 +10,10 @@ namespace LunaPlayer.Application.Presentation;
 internal sealed class ViewStatePresenter
 {
     private readonly IMainView _view;
-    private readonly MediaPlayer _player;
+    private readonly Player _player;
     private readonly ISpeechOutput _speech;
 
-    internal ViewStatePresenter(IMainView view, MediaPlayer player, ISpeechOutput speech)
+    internal ViewStatePresenter(IMainView view, Player player, ISpeechOutput speech)
     {
         _view = view;
         _player = player;

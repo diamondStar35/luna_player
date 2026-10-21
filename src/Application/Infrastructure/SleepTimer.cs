@@ -16,7 +16,7 @@ namespace LunaPlayer.Application;
 /// <see cref="OnTrackEnded"/>, which the controller calls when a track ends; a tick runs then only to carry out
 /// the fade over the track's final seconds.
 ///
-/// The fade touches only <see cref="MediaPlayer.SetVolume"/>, never the saved <c>audio.volume</c>. The user's
+/// The fade touches only <see cref="Player.SetVolume"/>, never the saved <c>audio.volume</c>. The user's
 /// volume is captured the moment the fade starts (so a change made during the countdown is respected) and put
 /// back on firing, cancelling, or disposal. The controller disposes this before it reads the player volume into
 /// settings at shutdown, so a faded-down value is never saved as the user's own.
@@ -24,7 +24,7 @@ namespace LunaPlayer.Application;
 internal sealed class SleepTimer : IDisposable
 {
     private readonly IApplicationDispatcher _dispatcher;
-    private readonly MediaPlayer _player;
+    private readonly Player _player;
     private readonly ISpeechOutput _speech;
 
     private bool _armed;
@@ -37,7 +37,7 @@ internal sealed class SleepTimer : IDisposable
     private double? _originalVolume;
     private bool _warned;
 
-    internal SleepTimer(IApplicationDispatcher dispatcher, MediaPlayer player, ISpeechOutput speech)
+    internal SleepTimer(IApplicationDispatcher dispatcher, Player player, ISpeechOutput speech)
     {
         _dispatcher = dispatcher;
         _player = player;

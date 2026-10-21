@@ -19,7 +19,7 @@ namespace LunaPlayer.Application.Commands.Playback;
 internal sealed class Equalizer
 {
     private readonly IMainView _view;
-    private readonly MediaPlayer _player;
+    private readonly Player _player;
     private readonly Settings _settings;
     private readonly SettingsStore _settingsStore;
     private readonly ISpeechOutput _speech;
@@ -28,7 +28,7 @@ internal sealed class Equalizer
     internal Equalizer(
         ActionRouter router,
         IMainView view,
-        MediaPlayer player,
+        Player player,
         Settings settings,
         SettingsStore settingsStore,
         ISpeechOutput speech,

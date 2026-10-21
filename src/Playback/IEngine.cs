@@ -1,35 +1,11 @@
-using LunaPlayer.Equalizer;
-using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
+using LunaPlayer.Equalizer;
 
 namespace LunaPlayer.Playback;
 
-internal enum PlaybackEndReason
+internal interface IEngine : IDisposable
 {
-    EndOfFile,
-    Error,
-}
-
-internal readonly record struct AudioDevice(string Name, string Description);
-
-/// <param name="Id">mpv's own track id, the value written to <c>aid</c> to select it.</param>
-/// <param name="Title">The track's own title from the file, or null when it carries none.</param>
-/// <param name="Language">The raw language code (such as "eng"), or null when the track names none.
-/// Turned into a readable name for the user at the point it is shown.</param>
-/// <param name="Channels">How many channels the track carries, or 0 when mpv has not said.</param>
-/// <param name="Selected">Whether this is the track currently playing.</param>
-internal readonly record struct AudioTrack(int Id, string? Title, string? Language, int Channels, bool Selected);
-
-/// <param name="Id">mpv's own track id, the value written to <c>sid</c> to select it.</param>
-/// <param name="Title">The track's own title from the file, or null when it carries none.</param>
-/// <param name="Language">The raw language code (such as "eng"), or null when the track names none.
-/// Turned into a readable name for the user at the point it is shown.</param>
-/// <param name="Selected">Whether this is the subtitle track currently being read.</param>
-internal readonly record struct SubtitleTrack(int Id, string? Title, string? Language, bool Selected);
-
-internal interface IPlaybackEngine : IDisposable
-{
-    event Action<PlaybackEndReason>? Ended;
+    event Action<EndReason>? Ended;
 
     /// <summary>Raised when a one-shot selection reaches its boundary. This is deliberately separate from
     /// <see cref="Ended"/> so a selection boundary can never enter the file-advance path.</summary>
@@ -57,7 +33,14 @@ internal interface IPlaybackEngine : IDisposable
     /// <param name="audioFile">A separate stream carrying the sound, played alongside
     /// <paramref name="path"/>. Null for anything that carries its own sound, which is everything but a
     /// YouTube video above 360p.</param>
-    bool Load(string path, double? startPosition = null, bool paused = false, string? audioFile = null, bool noVideo = false);
+    bool Load(string path, double? startPosition = null, bool paused = false, string? audioFile = null,
+        bool noVideo = false, bool fadeTransition = false);
+    /// <summary>Appends the next item to mpv's internal playlist so its audio can start without waiting for
+    /// the application to react to end-of-file. Returns false when the item cannot be queued safely.</summary>
+    bool QueueNext(string path, double? startPosition = null, string? audioFile = null, bool noVideo = false);
+    void ClearQueuedNext();
+    void ConfigurePlaybackEffects(AudioSettings settings);
+    void SetRepeatFile(bool enabled);
     void Stop();
     bool TogglePause();
     void Play();
@@ -99,14 +82,14 @@ internal interface IPlaybackEngine : IDisposable
     /// moment a file opens - see <see cref="AudioTracksChanged"/>.</summary>
     IReadOnlyList<AudioTrack> GetAudioTracks();
 
-    /// <summary>Switches the playing audio track to the one with this mpv track id.</summary>
+    /// <summary>Switches the playing audio track to the one with this mpv track ID.</summary>
     bool SetAudioTrack(int id);
 
     /// <summary>The subtitle tracks the current file carries, empty when nothing is open. Not settled the
     /// moment a file opens - see <see cref="SubtitleTracksChanged"/>.</summary>
     IReadOnlyList<SubtitleTrack> GetSubtitleTracks();
 
-    /// <summary>Selects the subtitle track with this mpv track id, so its lines are announced as they come.</summary>
+    /// <summary>Selects the subtitle track with this mpv track ID, so its lines are announced as they come.</summary>
     bool SetSubtitleTrack(int id);
 
     /// <summary>Turns subtitle reading off, selecting no subtitle track.</summary>
@@ -120,13 +103,8 @@ internal interface IPlaybackEngine : IDisposable
     bool SetMono(bool enabled);
     bool SetSilenceRemoval(bool enabled, string graph);
 
-    /// <summary>Puts a preset's curve into the equalizer, or flattens it when <paramref name="preset"/>
-    /// is null.</summary>
-    /// <remarks>
-    /// Off flattens rather than removing the filter. The filter is built once and stays in the chain for
-    /// the life of the engine, because taking a filter out of a running graph is audible and switching
-    /// the equalizer off should not be.
-    /// </remarks>
+    /// <summary>Puts a preset's curve into the equalizer, or removes the equalizer when
+    /// <paramref name="preset"/> is null.</summary>
     bool SetEqualizer(Preset? preset);
 
     void SetEndBehavior(EndBehavior behavior);

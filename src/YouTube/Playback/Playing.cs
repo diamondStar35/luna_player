@@ -26,6 +26,9 @@ internal sealed partial class Sessions
         var adjacent = index + Math.Sign(direction);
         if (adjacent >= 0 && adjacent < session.Items.Count)
             Prefetch(session, adjacent, 1);
+        var successor = index + 1;
+        if (successor < session.Items.Count)
+            PrepareGaplessSuccessor(session, index, successor);
         return true;
     }
 
@@ -176,6 +179,56 @@ internal sealed partial class Sessions
     private Resolved? Ready(Session session, YouTubeResult item)
         => _cache.TryTake(
             _cache.Key(item.Url, Session.AudioFor(session.Mode), session.QualityFor(session.Mode)));
+
+    /// <summary>Hands the next resolved stream to mpv while the current video is still playing. Resolution
+    /// remains best-effort: a failed or late online request simply leaves the ordinary end-of-file path.</summary>
+    private void PrepareGaplessSuccessor(Session session, int current, int next)
+    {
+        if (_settings.Audio.GaplessPlayback == GaplessPlaybackMode.Disabled
+            || next < 0 || next >= session.Items.Count)
+            return;
+        var item = session.Items[next];
+        if (item.ItemType is not YouTubeItemType.Video)
+            return;
+        var audioOnly = Session.AudioFor(session.Mode);
+        var task = _cache.Start(
+            _cache.Key(item.Url, audioOnly, session.QualityFor(session.Mode)),
+            item.Url, item, audioOnly, session.QualityFor(session.Mode), session.Token);
+        _ = task.ContinueWith(finished =>
+        {
+            if (!finished.IsCompletedSuccessfully || finished.Result.Value is not Resolved ready)
+                return;
+            _dispatcher.Post(() => QueueGaplessSuccessor(session, current, ready, audioOnly));
+        }, CancellationToken.None, TaskContinuationOptions.None, TaskScheduler.Default);
+    }
+
+    private void QueueGaplessSuccessor(Session session, int current, Resolved ready, bool audioOnly)
+    {
+        if (!ReferenceEquals(_session, session)
+            || CurrentWatchUrl is not string playing
+            || session.IndexOf(playing) != current)
+            return;
+        _player.QueueSessionStream(
+            playing, ready.Url, ready.Item.Title, ready.Item.Url, ready.AudioUrl, audioOnly);
+    }
+
+    /// <summary>Updates the session after mpv starts a preloaded video and begins preparing its successor.</summary>
+    internal void AcceptGaplessAdvance()
+    {
+        if (_session is not Session session)
+            return;
+        var index = CurrentSessionIndex();
+        if (index < 0)
+            return;
+        session.Selected = index;
+        _activeChannelUrl = session.Items[index].ChannelUrl;
+        var next = index + 1;
+        if (next < session.Items.Count)
+        {
+            Prefetch(session, next, 1);
+            PrepareGaplessSuccessor(session, index, next);
+        }
+    }
 
     /// <summary>A move to an adjacent video that is waiting on a resolve.</summary>
     private sealed record PendingMove(Session Session, int From, int To, string WatchUrl, int Direction);

@@ -12,7 +12,7 @@ namespace LunaPlayer.Application.Commands.YouTube;
 internal sealed class Playlist
 {
     private readonly IMainView _view;
-    private readonly MediaPlayer _player;
+    private readonly Player _player;
     private readonly Settings _settings;
     private readonly ISpeechOutput _speech;
     private readonly MediaGuard _guard;
@@ -21,7 +21,7 @@ internal sealed class Playlist
     internal Playlist(
         ActionRouter router,
         IMainView view,
-        MediaPlayer player,
+        Player player,
         Settings settings,
         ISpeechOutput speech,
         Sessions sessions)

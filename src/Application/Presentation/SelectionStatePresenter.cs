@@ -8,7 +8,7 @@ namespace LunaPlayer.Application.Presentation;
 /// their copies from drifting apart when another selection action is added.</summary>
 internal static class SelectionStatePresenter
 {
-    internal static void Sync(IMainView view, MediaPlayer player, SelectionSlots selections)
+    internal static void Sync(IMainView view, Player player, SelectionSlots selections)
     {
         var available = player.IsLoaded;
         var canSave = available

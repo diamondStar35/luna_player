@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 using LunaPlayer.Actions;
 using Windows.Media;
 
-// This file's MediaPlayer is the Windows Runtime one, not the player in this namespace.
+// Keep the Windows Runtime player distinct from Luna's Player in this namespace.
 using SessionPlayer = Windows.Media.Playback.MediaPlayer;
 
 namespace LunaPlayer.Playback;

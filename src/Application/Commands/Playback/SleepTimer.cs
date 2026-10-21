@@ -19,7 +19,7 @@ namespace LunaPlayer.Application.Commands.Playback;
 internal sealed class Sleep
 {
     private readonly IMainView _view;
-    private readonly MediaPlayer _player;
+    private readonly Player _player;
     private readonly SleepTimer _timer;
     private readonly Settings _settings;
     private readonly SettingsStore _settingsStore;
@@ -27,7 +27,7 @@ internal sealed class Sleep
     internal Sleep(
         ActionRouter router,
         IMainView view,
-        MediaPlayer player,
+        Player player,
         SleepTimer timer,
         Settings settings,
         SettingsStore settingsStore)

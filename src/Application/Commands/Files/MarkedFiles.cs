@@ -11,14 +11,14 @@ namespace LunaPlayer.Application.Commands.Files;
 internal sealed class MarkedFiles
 {
     private readonly IMainView _view;
-    private readonly MediaPlayer _player;
+    private readonly Player _player;
     private readonly Settings _settings;
     private readonly ISpeechOutput _speech;
     private readonly IClipboardService _clipboard;
     private readonly IApplicationDispatcher _dispatcher;
     private readonly MarkedFileService _files = new();
 
-    internal MarkedFiles(ActionRouter router, IMainView view, MediaPlayer player, Settings settings,
+    internal MarkedFiles(ActionRouter router, IMainView view, Player player, Settings settings,
         ISpeechOutput speech, IClipboardService clipboard, IApplicationDispatcher dispatcher)
     {
         _view = view; _player = player; _settings = settings; _speech = speech; _clipboard = clipboard;

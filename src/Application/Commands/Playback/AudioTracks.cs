@@ -10,10 +10,10 @@ namespace LunaPlayer.Application.Commands.Playback;
 internal sealed class AudioTracks
 {
     private readonly IMainView _view;
-    private readonly MediaPlayer _player;
+    private readonly Player _player;
     private readonly ISpeechOutput _speech;
 
-    internal AudioTracks(ActionRouter router, IMainView view, MediaPlayer player, ISpeechOutput speech)
+    internal AudioTracks(ActionRouter router, IMainView view, Player player, ISpeechOutput speech)
     {
         _view = view;
         _player = player;

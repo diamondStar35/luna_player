@@ -14,7 +14,7 @@ internal sealed partial class Files
 {
     private const long FileInfoResetMilliseconds = 300;
     private readonly IMainView _view;
-    private readonly MediaPlayer _player;
+    private readonly Player _player;
     private readonly Settings _settings;
     private readonly ISpeechOutput _speech;
     private readonly IClipboardService _clipboard;
@@ -28,7 +28,7 @@ internal sealed partial class Files
     internal Files(
         ActionRouter router,
         IMainView view,
-        MediaPlayer player,
+        Player player,
         Settings settings,
         ISpeechOutput speech,
         IClipboardService clipboard,

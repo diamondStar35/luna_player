@@ -16,14 +16,14 @@ namespace LunaPlayer.Application.Commands.Iptv;
 /// once the channels have arrived - so opening a source ends the manager rather than looping back into it, the
 /// browser being what comes next.
 ///
-/// A chosen channel plays through <see cref="MediaPlayer.OpenStream"/>, the generic-stream path mpv opens a
+/// A chosen channel plays through <see cref="Player.OpenStream"/>, the generic-stream path mpv opens a
 /// transport stream or an HLS manifest through directly. The YouTube session mechanism is deliberately not
 /// used: IPTV channels are picked one at a time and are live, not a sequence to auto-advance.
 /// </remarks>
 internal sealed class Iptv
 {
     private readonly IMainView _view;
-    private readonly MediaPlayer _player;
+    private readonly Player _player;
     private readonly ISpeechOutput _speech;
     private readonly IApplicationDispatcher _dispatcher;
     private readonly IptvSourceStore _store;
@@ -35,7 +35,7 @@ internal sealed class Iptv
     internal Iptv(
         ActionRouter router,
         IMainView view,
-        MediaPlayer player,
+        Player player,
         ISpeechOutput speech,
         IApplicationDispatcher dispatcher,
         IptvSourceStore store)

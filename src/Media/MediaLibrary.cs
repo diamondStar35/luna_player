@@ -3,7 +3,7 @@ namespace LunaPlayer.Media;
 internal static class MediaLibrary
 {
     // Audio and video are kept apart so a file can be classified by extension alone. This is only a
-    // container-level guess; mpv decides whether a picture is really there (IPlaybackEngine.HasVideo).
+    // container-level guess; mpv decides whether a picture is really there (IEngine.HasVideo).
     private static readonly HashSet<string> AudioExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
         ".aac", ".ac3", ".aiff", ".alac", ".ape", ".au", ".dts", ".eac3",
@@ -39,7 +39,7 @@ internal static class MediaLibrary
 
     /// <summary>Classifies a path by extension alone: playlist, video, or audio (the fallback, including
     /// unknown extensions). A container-level guess for lists and menus, not the authority on whether a
-    /// picture is really playing - that is <see cref="Playback.IPlaybackEngine.HasVideo"/>.</summary>
+    /// picture is really playing - that is <see cref="Playback.IEngine.HasVideo"/>.</summary>
     internal static MediaKind KindOf(string path)
     {
         if (IsPlaylist(path))

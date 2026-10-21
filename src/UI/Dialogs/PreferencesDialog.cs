@@ -45,8 +45,12 @@ internal sealed class PreferencesDialog : IDisposable
         var generalLabel = Tr("General");
         // Translators: Name of the settings category for saving a copy of the settings and bookmarks and putting them back.
         var backupLabel = Tr("Backup and restore");
-        // Translators: Name of the settings category holding the loudness, speed and seeking settings.
+        // Translators: Name of the expandable settings category containing general and playback audio pages.
         var audioLabel = Tr("Audio");
+        // Translators: Name of the general settings page inside the Audio category.
+        var audioGeneralLabel = Tr("General");
+        // Translators: Name of the playback settings page inside the Audio category.
+        var audioPlaybackLabel = Tr("Playback");
         // Translators: Name of the settings category for trimming the silent parts out of what is played.
         var silenceLabel = Tr("Silence removal");
         // Translators: Name of the expandable settings category containing the general and download pages for YouTube.
@@ -69,7 +73,9 @@ internal sealed class PreferencesDialog : IDisposable
         var generalItem = AddPage(root, generalLabel,
             () => new GeneralPreferences(_book, settings.General, operations));
         AddPage(root, backupLabel, () => new BackupPreferences(_book, operations, ReplaceSettings));
-        AddPage(root, audioLabel, () => new AudioPreferences(_book, settings.Audio));
+        var audioItem = _tree.Add(root, audioLabel);
+        AddPage(audioItem, audioGeneralLabel, () => new Audio.GeneralPreferences(_book, settings.Audio));
+        AddPage(audioItem, audioPlaybackLabel, () => new Audio.PlaybackPreferences(_book, settings.Audio));
         AddPage(root, silenceLabel, () => new SilencePreferences(_book, settings.Silence));
         var youTubeItem = _tree.Add(root, youTubeLabel);
         AddPage(youTubeItem, youTubeGeneralLabel,
@@ -85,9 +91,10 @@ internal sealed class PreferencesDialog : IDisposable
 
         // A parent with children can otherwise retain expansion state assigned by the native control while
         // items are inserted. Preferences always opens with every optional branch closed.
+        _tree.Expand(audioItem, expand: false);
         _tree.Expand(youTubeItem, expand: false);
         SizeTreeToLabels([
-            generalLabel, backupLabel, audioLabel, silenceLabel, youTubeLabel,
+            generalLabel, backupLabel, audioLabel, audioGeneralLabel, audioPlaybackLabel, silenceLabel, youTubeLabel,
             youTubeGeneralLabel, youTubeDownloadLabel, recordingLabel, shortcutsLabel, globalsLabel]);
 
         _tree.SelectionChanged += OnTreeChanged;

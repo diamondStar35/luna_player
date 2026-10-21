@@ -23,7 +23,7 @@ The two editions use the same user settings folder. The built-in updater recogni
 
 ### Starting Luna Player
 
-You can start Luna Player directly, open a supported file with it from Windows, or pass files and folders to it on the command line. Luna runs as a single instance: opening more media while it is already running sends that media to the existing window.
+You can start Luna Player directly, open a supported file with it from Windows, or pass files and folders to it on the command line. By default, opening more media while Luna is already running sends that media to the existing window. Clear **Open files in the existing window when Luna is already running** on the General Preferences page if each file opened from Windows should use a separate Luna window.
 
 If **Remember last file position** is enabled, starting Luna without another file restores the last local file and its last playback position when that file is still available.
 
@@ -726,6 +726,7 @@ Press <kbd>F1</kbd> while a setting has focus to hear a detailed explanation of 
 | Speak file name when navigating | Announces the item reached with Previous or Next. |
 | Check for app updates on startup | Checks quietly after startup and prompts only for a ready, newer release. |
 | Save settings on close | Saves session changes such as volume and speed when Luna exits. Explicitly accepted Preferences changes are still saved immediately. |
+| Open files in the existing window when Luna is already running | Sends files opened from Windows to the current Luna window. Clear it to open each request in a separate window. |
 | Disable system media controls | Removes Luna from the Windows media overlay and ignores hardware media keys. |
 | Show the playing track in the window title | Shows the current item and whether it is paused in Luna's title bar. This is off by default to avoid repeated screen-reader announcements. |
 | Interrupt the current line when a new subtitle appears | Lets a new spoken subtitle cut off the preceding one to keep pace with the picture. |

@@ -46,7 +46,7 @@ internal sealed partial class Sessions : IDisposable
     private const int BrowsingPrefetch = 2;
 
     private readonly IMainView _view;
-    private readonly MediaPlayer _player;
+    private readonly Player _player;
     private readonly Settings _settings;
     private readonly ISpeechOutput _speech;
     private readonly IApplicationDispatcher _dispatcher;
@@ -70,7 +70,7 @@ internal sealed partial class Sessions : IDisposable
     /// they are not yet installed.</param>
     internal Sessions(
         IMainView view,
-        MediaPlayer player,
+        Player player,
         Settings settings,
         ISpeechOutput speech,
         IApplicationDispatcher dispatcher,
