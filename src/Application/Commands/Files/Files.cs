@@ -91,6 +91,38 @@ internal sealed partial class Files
             RecordRecent(RecentKind.File, files[0]);
     }
 
+    /// <summary>Opens launch-time paths whose folder enumeration already ran during application startup.
+    /// Falls back to the ordinary path flow for playlists and file-only requests.</summary>
+    internal void OpenPrepared(PreparedLaunch launch)
+    {
+        if (launch.Files is null)
+        {
+            OpenPaths(launch.Paths);
+            return;
+        }
+        if (launch.Files.Count == 0)
+        {
+            _speech.Speak(
+                // Translators: Spoken when a launch-time folder holds nothing this player can play.
+                Tr("No audio files found in that folder."),
+                // Translators: Short announcement when a launch-time folder holds no playable files.
+                Tr("No audio files."));
+            return;
+        }
+        if (!_player.OpenFiles(launch.Files, launch.PreferredPath))
+            return;
+        if (launch.SourceFolder is string folder)
+        {
+            _settings.General.LastDirectory = folder;
+            RecordRecent(RecentKind.Folder, folder);
+        }
+        else if (launch.PreferredPath is string path)
+        {
+            _settings.General.LastDirectory = Path.GetDirectoryName(path) ?? string.Empty;
+            RecordRecent(RecentKind.File, path);
+        }
+    }
+
     internal bool OpenLocalPath(string path)
     {
         if (Directory.Exists(path))

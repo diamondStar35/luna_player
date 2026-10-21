@@ -7,11 +7,8 @@ using LunaPlayer.Application.Commands.YouTube;
 using LunaPlayer.Application.Commands.Recording;
 using LunaPlayer.Application.Commands.Iptv;
 using LunaPlayer.Application.Commands.App;
-using LunaPlayer.Bookmarks;
-using LunaPlayer.Favorites;
 using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
-using LunaPlayer.Iptv;
 using LunaPlayer.Playback;
 using LunaPlayer.UI;
 using LunaPlayer.Media;
@@ -50,6 +47,7 @@ internal sealed class ApplicationHost : IDisposable
     private Files? _fileActions;
     private StartupResources? _pendingStartupResources;
     private Task? _nativeInitializationTask;
+    private Task<PreparedLaunch>? _initialLaunchTask;
     private bool _shown;
     private bool _shellReady;
     private bool _settingsReady;
@@ -66,7 +64,7 @@ internal sealed class ApplicationHost : IDisposable
         _initialPaths = initialPaths.ToArray();
         // Configuration parsing and value normalization do not use wxWidgets. Begin them before even the
         // shell frame is constructed so disk access overlaps native window creation instead of following it.
-        var settingsTask = Task.Run(LoadStartupSettings);
+        var settingsTask = Task.Run(Startup.LoadSettings);
         _dispatcher = new WxDispatcher();
         _view = new MainFrame();
         // Registered before startup begins so closing can prevent a pending mpv attachment, or await and
@@ -116,6 +114,17 @@ internal sealed class ApplicationHost : IDisposable
             // Start the sound path first. Its dedicated worker cannot be held behind optional feature work in
             // the thread-pool queue, and it starts whether or not Windows has painted the shell yet. Publishing
             // the task under the same lock as the close flag makes attachment and close mutually ordered.
+            _initialLaunchTask = _initialPaths.Count == 0
+                ? Task.FromResult(new PreparedLaunch(false, [], null, null, null))
+                : Task.Factory.StartNew(
+                    () =>
+                    {
+                        Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
+                        return Startup.PrepareLaunch(_initialPaths, startup.Settings);
+                    },
+                    CancellationToken.None,
+                    TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach,
+                    TaskScheduler.Default);
             _nativeInitializationTask = InitializeBackgroundServicesAsync(nativeHandle, startup.Settings);
         }
         try
@@ -164,39 +173,16 @@ internal sealed class ApplicationHost : IDisposable
 
     private async Task InitializeBackgroundServicesAsync(nint nativeHandle, Settings settings)
     {
-        var playerTask = Task.Factory.StartNew(
-            () =>
-            {
-                // This is a dedicated startup thread, so raising it cannot starve the thread pool. Audio is
-                // the only background service on the launch critical path; optional feature construction
-                // remains at normal priority and may not delay mpv when the machine is busy.
-                Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
-                return CreatePlayer(nativeHandle, settings);
-            },
-            CancellationToken.None,
-            TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach,
-            TaskScheduler.Default);
-        var speechTask = Task.Run<ISpeechOutput>(() => new SpeechOutput(settings));
-        var mediaControlsTask = Task.Run(() => new SystemMediaControls());
-        var featuresTask = Task.Run(() => FeatureResources.Create(settings));
+        StartupResources resources;
         try
         {
-            await Task.WhenAll(speechTask, playerTask, mediaControlsTask, featuresTask).ConfigureAwait(false);
+            resources = await Startup.CreateServicesAsync(nativeHandle, settings).ConfigureAwait(false);
         }
         catch (Exception failure)
         {
-            if (speechTask.Status == TaskStatus.RanToCompletion)
-                speechTask.Result.Dispose();
-            if (playerTask.Status == TaskStatus.RanToCompletion)
-                playerTask.Result.Dispose();
-            if (mediaControlsTask.Status == TaskStatus.RanToCompletion)
-                mediaControlsTask.Result.Dispose();
             PostStartupFailure(failure);
             return;
         }
-
-        var resources = new StartupResources(
-            speechTask.Result, playerTask.Result, mediaControlsTask.Result, featuresTask.Result);
         try
         {
             _dispatcher.Post(() => OnNativeServicesReady(resources));
@@ -209,38 +195,12 @@ internal sealed class ApplicationHost : IDisposable
         }
     }
 
-    private static StartupSettings LoadStartupSettings()
-    {
-        var store = new SettingsStore(Paths.SettingsFile);
-        var settings = store.LoadForStartup();
-        return new StartupSettings(store, settings, store.LastError);
-    }
-
-    private static Player CreatePlayer(nint nativeHandle, Settings settings)
-    {
-        var engine = new Engine(nativeHandle, !settings.General.DisableMediaControls);
-        try
-        {
-            var player = new Player(engine, new PositionStore(Paths.PositionsFile));
-            ConfigurePlayer(player, settings);
-            return player;
-        }
-        catch
-        {
-            engine.Dispose();
-            throw;
-        }
-    }
-
     private async Task InitializeWindowResourcesAsync()
     {
-        var catalogTask = Task.Run(() => new LunaPlayer.Recording.AudioCatalog());
-        var equalizerTask = Task.Run(() => new LunaPlayer.Equalizer.Library(
-            _settings, _settingsStore, new LunaPlayer.Equalizer.PresetStore(Paths.EqualizerFile)));
-        var recentsTask = Task.Run(() => new RecentsStore(Paths.RecentsFile));
+        WindowResources resources;
         try
         {
-            await Task.WhenAll(catalogTask, equalizerTask, recentsTask).ConfigureAwait(false);
+            resources = await Startup.LoadWindowResourcesAsync(_settings, _settingsStore).ConfigureAwait(false);
         }
         catch (Exception failure)
         {
@@ -250,7 +210,7 @@ internal sealed class ApplicationHost : IDisposable
         try
         {
             _dispatcher.Post(() => OnWindowResourcesReady(
-                catalogTask.Result, equalizerTask.Result, recentsTask.Result));
+                resources.Catalog, resources.Equalizer, resources.Recents));
         }
         catch (InvalidOperationException)
         {
@@ -467,15 +427,29 @@ internal sealed class ApplicationHost : IDisposable
         // The application check is also quiet at startup: only a newer release opens a window.
         _dispatcher.Post(updates.CheckAtStartup);
 
-        if (_initialPaths.Count > 0)
+        if (_initialPaths.Count > 0 && _initialLaunchTask is { } launchTask)
         {
-            // Windows Explorer's "Convert with Luna" verb launches the player with --convert and the file or
-            // folder, which opens the converter rather than playing anything. Everything else is opened to
-            // play as before.
-            if (IsConvertRequest(_initialPaths, out var convertFiles))
-                _dispatcher.Post(() => tools.OpenFor(convertFiles));
+            void OpenPrepared(Task<PreparedLaunch> completed)
+            {
+                if (!completed.IsCompletedSuccessfully || _disposed || _stopping)
+                    return;
+                var launch = completed.Result;
+                _dispatcher.Post(() =>
+                {
+                    if (launch.Convert)
+                        tools.OpenFor(launch.Files ?? []);
+                    else
+                        fileActions.OpenPrepared(launch);
+                });
+            }
+            if (launchTask.IsCompleted)
+                OpenPrepared(launchTask);
             else
-                _dispatcher.Post(() => controller.OpenPaths(_initialPaths));
+                _ = launchTask.ContinueWith(
+                    OpenPrepared,
+                    CancellationToken.None,
+                    TaskContinuationOptions.ExecuteSynchronously,
+                    TaskScheduler.Default);
         }
         else if (_settings.General.RememberLastPosition && File.Exists(_settings.Playback.LastFile))
             _dispatcher.Post(() => fileActions.RestoreSession(_settings.Playback.LastFile, _settings.Playback.LastPosition));
@@ -567,104 +541,6 @@ internal sealed class ApplicationHost : IDisposable
         _startupFailed = true;
         CrashReport.Report(failure);
         _view.Close();
-    }
-
-    private sealed record StartupSettings(SettingsStore Store, Settings Settings, string Error);
-
-    private static void ConfigurePlayer(Player player, Settings settings)
-    {
-        player.SetVolume(settings.Audio.Volume);
-        settings.Audio.Pitch = player.SetPitch(settings.Audio.Pitch);
-        player.SetSpeed(settings.Audio.Speed);
-        player.TrackPositions(settings.Audio.SaveFilePositions);
-        player.SetEndBehavior(settings.Audio.EndBehavior);
-        player.ConfigurePlaybackEffects(settings.Audio);
-        player.ConfigureSilence(settings.Silence);
-        player.SetNormalization(settings.Audio.NormalizeAudio);
-        player.SetMono(settings.Audio.MonoAudio);
-        player.SetPan(settings.Audio.Pan);
-        player.SetSilenceRemoval(settings.Silence.Enabled);
-        settings.Audio.NormalizeAudio = player.IsNormalizationEnabled;
-        settings.Audio.MonoAudio = player.IsMonoEnabled;
-        settings.Silence.Enabled = player.IsSilenceRemovalEnabled;
-        if (!string.IsNullOrWhiteSpace(settings.Audio.Device))
-            player.SetAudioDevice(settings.Audio.Device);
-    }
-
-    /// <summary>Owns the playback, speech, Windows-media and managed feature resources while they cross from
-    /// worker startup to the UI thread. Taking one transfers its lifetime to the application host.</summary>
-    private sealed class StartupResources(
-        ISpeechOutput speech,
-        Player player,
-        SystemMediaControls mediaControls,
-        FeatureResources features)
-    {
-        private ISpeechOutput? _speech = speech;
-        private Player? _player = player;
-        private SystemMediaControls? _mediaControls = mediaControls;
-        private FeatureResources? _features = features;
-
-        internal ISpeechOutput TakeSpeech()
-            => Interlocked.Exchange(ref _speech, null)
-                ?? throw new InvalidOperationException("Speech startup resources were already transferred.");
-
-        internal Player TakePlayer()
-            => Interlocked.Exchange(ref _player, null)
-                ?? throw new InvalidOperationException("Playback startup resources were already transferred.");
-
-        internal SystemMediaControls TakeMediaControls()
-            => Interlocked.Exchange(ref _mediaControls, null)
-                ?? throw new InvalidOperationException("Media controls startup resources were already transferred.");
-
-        internal FeatureResources TakeFeatures()
-            => Interlocked.Exchange(ref _features, null)
-                ?? throw new InvalidOperationException("Feature startup resources were already transferred.");
-
-        internal void Dispose(bool disposeSpeech = true)
-        {
-            Interlocked.Exchange(ref _mediaControls, null)?.Dispose();
-            Interlocked.Exchange(ref _player, null)?.Dispose();
-            _ = Interlocked.Exchange(ref _features, null);
-            var remainingSpeech = Interlocked.Exchange(ref _speech, null);
-            if (disposeSpeech)
-                remainingSpeech?.Dispose();
-        }
-    }
-
-    /// <summary>Managed foundations for features added after the original player startup path. Their
-    /// constructors neither create windows nor translate text, so they can be prepared together on a worker
-    /// while wxWidgets builds the visible interface.</summary>
-    private sealed record FeatureResources(
-        PlaybackSelection Selection,
-        SelectionSlots Selections,
-        BookmarkStore Bookmarks,
-        FavoriteStore Favorites,
-        IptvSourceStore IptvSources,
-        LunaPlayer.Recording.RecordingSources RecordingSources,
-        LunaPlayer.YouTube.Client.Resolver Resolver,
-        LunaPlayer.YouTube.Client.Updater Updater,
-        LunaPlayer.YouTube.Metadata.Client Metadata,
-        LunaPlayer.YouTube.Backend YouTube,
-        LunaPlayer.YouTube.Components.Installer Installer)
-    {
-        internal static FeatureResources Create(Settings settings)
-        {
-            var runner = new LunaPlayer.YouTube.Client.Runner(settings);
-            var channels = new LunaPlayer.YouTube.Client.Channels(runner);
-            var metadata = new LunaPlayer.YouTube.Metadata.Client();
-            return new FeatureResources(
-                new PlaybackSelection(),
-                new SelectionSlots(),
-                new BookmarkStore(Paths.BookmarksFile),
-                new FavoriteStore(Paths.FavoritesFile),
-                new IptvSourceStore(Paths.IptvSourcesFile),
-                new LunaPlayer.Recording.RecordingSources(settings.Recording),
-                new LunaPlayer.YouTube.Client.Resolver(runner),
-                new LunaPlayer.YouTube.Client.Updater(runner),
-                metadata,
-                new LunaPlayer.YouTube.Backend(metadata, channels),
-                new LunaPlayer.YouTube.Components.Installer());
-        }
     }
 
     /// <summary>Whether a set of launch arguments is a "Convert with Luna" request, and if so the files it
