@@ -34,6 +34,7 @@ internal sealed class MenuController
     private readonly Menu _recentFilesMenu;
     private readonly Menu _recentFoldersMenu;
     private readonly Menu _recentPlaylistsMenu;
+    private RecentMenuState _recents;
     private readonly MenuBar _menuBar;
     private readonly int _bookmarksMenuIndex;
     private readonly int _selectionMenuIndex;
@@ -58,6 +59,7 @@ internal sealed class MenuController
         RecentMenuState recents)
     {
         _shortcuts = shortcuts;
+        _recents = recents;
         BuildCommandIds(actions);
         var menu = MainMenuBuilder.Build(_commandIds, shortcuts, presets, recents);
         _menuBar = menu.MenuBar;
@@ -90,6 +92,8 @@ internal sealed class MenuController
         _recentFilesMenu = menu.RecentFilesMenu;
         _recentFoldersMenu = menu.RecentFoldersMenu;
         _recentPlaylistsMenu = menu.RecentPlaylistsMenu;
+        foreach (var command in menu.RecentCommands)
+            _recentCommands[command.Key] = command.Value;
         _markCurrentItem = menu.MarkCurrentItem;
         _markAllItem = menu.MarkAllItem;
         _shuffleItem = menu.ShuffleItem;
@@ -208,23 +212,17 @@ internal sealed class MenuController
         IReadOnlyList<RecentMenuEntry> folders,
         IReadOnlyList<RecentMenuEntry> playlists)
     {
-        // One shared command map for all three submenus, cleared once and refilled with fresh ids.
-        _recentCommands.Clear();
-        Clear(_recentFilesMenu);
-        Clear(_recentFoldersMenu);
-        Clear(_recentPlaylistsMenu);
-        MainMenuBuilder.FillRecentsMenus(
+        var recents = new RecentMenuState(files, folders, playlists);
+        // Rebuilding attached menus triggers native layout and accessibility updates for every deletion and
+        // insertion. Keep existing rows and command ids, changing only the entries whose content changed.
+        MainMenuBuilder.UpdateRecentsMenus(
             _recentFilesMenu,
             _recentFoldersMenu,
             _recentPlaylistsMenu,
-            new RecentMenuState(files, folders, playlists),
+            _recents,
+            recents,
             _recentCommands);
-    }
-
-    private static void Clear(Menu menu)
-    {
-        while (menu.Count > 0)
-            menu.Delete(menu[0]);
+        _recents = recents;
     }
 
     internal void SetMediaLoaded(bool loaded)

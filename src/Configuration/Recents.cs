@@ -26,17 +26,22 @@ internal sealed class RecentsStore
 
     /// <summary>Records a path at the top of its kind, moving an existing entry up rather than duplicating it
     /// (case-insensitively), and dropping the oldest once the kind holds more than 32.</summary>
-    internal void Add(RecentKind kind, string path)
+    internal bool Add(RecentKind kind, string path)
     {
         var absolute = Paths.Absolute((path ?? string.Empty).Trim());
         if (absolute.Length == 0)
-            return;
+            return false;
         var list = List(kind);
+        // Restoring the last file usually selects the first recent entry again. There is no change to save
+        // or announce to native menus in that case, and both operations can delay playback on slow systems.
+        if (list.Count > 0 && string.Equals(list[0], absolute, StringComparison.Ordinal))
+            return false;
         list.RemoveAll(existing => string.Equals(existing, absolute, StringComparison.OrdinalIgnoreCase));
         list.Insert(0, absolute);
         if (list.Count > MaxPerKind)
             list.RemoveRange(MaxPerKind, list.Count - MaxPerKind);
         Save();
+        return true;
     }
 
     /// <summary>Removes one path from a kind - used when a recent turns out to be gone.</summary>

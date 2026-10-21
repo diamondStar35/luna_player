@@ -36,8 +36,8 @@ internal static partial class MainMenuBuilder
         fileMenu.AppendSeparator();
         // The recently opened files, folders and playlists, each kind its own submenu. Filled from
         // recents.json and rebuilt as things open; entries carry no fixed ActionId (which recents exist
-        // changes), so they are routed by command id like the equalizer and subtitle entries, and rebuilt
-        // with fresh ids so no reserved id is ever deleted and reused.
+        // changes), so they are routed by command id like the equalizer and subtitle entries. Existing rows
+        // keep their ids when the list changes; newly inserted rows always receive fresh ids.
         var recentCommands = new Dictionary<int, RecentCommand>();
         var recentMenu = new Menu();
         var recentFilesMenu = new Menu();
@@ -79,18 +79,27 @@ internal static partial class MainMenuBuilder
         Menu playlistsMenu,
         RecentMenuState recents,
         IDictionary<int, RecentCommand> commands)
+        => UpdateRecentsMenus(filesMenu, foldersMenu, playlistsMenu, null, recents, commands);
+
+    internal static void UpdateRecentsMenus(
+        Menu filesMenu,
+        Menu foldersMenu,
+        Menu playlistsMenu,
+        RecentMenuState? previous,
+        RecentMenuState recents,
+        IDictionary<int, RecentCommand> commands)
     {
-        FillRecentsSubmenu(filesMenu, RecentKind.File, recents.Files,
+        UpdateRecentsSubmenu(filesMenu, RecentKind.File, previous?.Files, recents.Files,
             // Translators: Shown in the Recent files submenu when no files have been opened yet.
             Tr("No recent files"),
             // Translators: Recent files submenu item that empties the list of recently opened files.
             Tr("Clear recent files"), commands);
-        FillRecentsSubmenu(foldersMenu, RecentKind.Folder, recents.Folders,
+        UpdateRecentsSubmenu(foldersMenu, RecentKind.Folder, previous?.Folders, recents.Folders,
             // Translators: Shown in the Recent folders submenu when no folders have been opened yet.
             Tr("No recent folders"),
             // Translators: Recent folders submenu item that empties the list of recently opened folders.
             Tr("Clear recent folders"), commands);
-        FillRecentsSubmenu(playlistsMenu, RecentKind.Playlist, recents.Playlists,
+        UpdateRecentsSubmenu(playlistsMenu, RecentKind.Playlist, previous?.Playlists, recents.Playlists,
             // Translators: Shown in the Recent playlists submenu when no playlists have been opened yet.
             Tr("No recent playlists"),
             // Translators: Recent playlists submenu item that empties the list of recently opened playlists.
@@ -99,15 +108,48 @@ internal static partial class MainMenuBuilder
 
     /// <summary>Fills one Recents submenu: a numbered item per entry (routed by command id), then a
     /// separator and the kind's Clear command - or a single disabled placeholder when the kind is empty.
-    /// Everything uses a fresh id each rebuild, so no reserved action id is deleted and reused.</summary>
-    internal static void FillRecentsSubmenu(
+    /// Existing rows keep their ids; only new rows reserve a new id.</summary>
+    private static void UpdateRecentsSubmenu(
         Menu menu,
         RecentKind kind,
+        IReadOnlyList<RecentMenuEntry>? previous,
         IReadOnlyList<RecentMenuEntry> entries,
         string emptyLabel,
         string clearLabel,
         IDictionary<int, RecentCommand> commands)
     {
+        if (previous is not null && previous.SequenceEqual(entries))
+            return;
+        if (previous is { Count: > 0 } && entries.Count > 0)
+        {
+            // The separator and Clear command remain at the bottom. Shrink from the end or insert before
+            // them, then relabel surviving rows instead of deleting and recreating the entire submenu.
+            for (var index = previous.Count - 1; index >= entries.Count; index--)
+            {
+                var item = menu[index];
+                commands.Remove(item.Id);
+                menu.Delete(item);
+            }
+            for (var index = 0; index < entries.Count; index++)
+            {
+                var entry = entries[index];
+                var item = index < previous.Count
+                    ? menu[index]
+                    : menu.Insert(index, IdManager.NewId(), entry.Label);
+                if (index < previous.Count && previous[index].Label != entry.Label)
+                    item.Label = entry.Label;
+                commands[item.Id] = new RecentCommand(RecentAction.Open, kind, entry.Path);
+            }
+            return;
+        }
+        // Switching between a placeholder and a populated list changes the menu structure. Discard only
+        // this kind's commands, leaving the other two submenus and their command mappings intact.
+        while (menu.Count > 0)
+        {
+            var item = menu[0];
+            commands.Remove(item.Id);
+            menu.Delete(item);
+        }
         if (entries.Count == 0)
         {
             menu.Append(IdManager.NewId(), emptyLabel).Enabled = false;

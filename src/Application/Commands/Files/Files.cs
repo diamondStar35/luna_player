@@ -348,8 +348,8 @@ internal sealed partial class Files
 
     private void RecordRecent(RecentKind kind, string path)
     {
-        _recents.Add(kind, path);
-        RefreshRecents();
+        if (_recents.Add(kind, path))
+            RefreshRecents();
     }
 
     private static List<string> NormalizePaths(IEnumerable<string> rawPaths)
