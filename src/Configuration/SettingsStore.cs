@@ -69,7 +69,7 @@ internal sealed class SettingsStore
 
     internal Settings Load() => Load(normalize: true);
 
-    /// <summary>Reads and structurally validates settings on a worker during application startup. The host
+    /// <summary>Reads and structurally validates settings on a worker during application startup. Startup
     /// normalizes only shortcuts after it has initialized localization on the UI thread, because shortcut
     /// normalization builds the translated action table.</summary>
     internal Settings LoadForStartup()

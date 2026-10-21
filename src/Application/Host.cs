@@ -1,479 +1,111 @@
-using LunaPlayer.Accessibility;
-using LunaPlayer.Actions;
-using LunaPlayer.Application.Commands;
-using LunaPlayer.Application.Commands.Files;
-using LunaPlayer.Application.Commands.Playback;
-using LunaPlayer.Application.Commands.YouTube;
-using LunaPlayer.Application.Commands.Recording;
-using LunaPlayer.Application.Commands.Iptv;
-using LunaPlayer.Application.Commands.App;
-using LunaPlayer.Configuration;
-using LunaPlayer.Configuration.Models;
-using LunaPlayer.Playback;
 using LunaPlayer.UI;
-using LunaPlayer.Media;
 
 namespace LunaPlayer.Application;
 
+/// <summary>Owns the main window and hands launch requests to the running application. Startup staging
+/// and feature ownership have separate lifetimes so the host does not construct individual commands.</summary>
 internal sealed class ApplicationHost : IDisposable
 {
     private readonly SingleInstanceService _singleInstance;
     private readonly IApplicationDispatcher _dispatcher;
     private readonly MainFrame _view;
-    private readonly IReadOnlyList<string> _initialPaths;
+    private readonly Startup _startup;
     private readonly List<IReadOnlyList<string>> _pendingPathRequests = [];
-    private readonly Lock _startupGate = new();
-    private readonly TaskCompletionSource _shellPainted = new(
-        TaskCreationOptions.RunContinuationsAsynchronously);
-    private SettingsStore _settingsStore = null!;
-    private Settings _settings = null!;
-    private ShortcutManager _shortcuts = null!;
-    private ShortcutManager _globalShortcuts = null!;
-    private LunaPlayer.Equalizer.Library _equalizerLibrary = null!;
-    private LunaPlayer.Recording.AudioCatalog _catalog = null!;
-    private RecentsStore _recents = null!;
-    private string _settingsError = string.Empty;
-    private ISpeechOutput? _speech;
-    private Player? _player;
-    private ApplicationController? _controller;
-    private Commands.Playback.Equalizer? _equalizer;
-    private Subtitles? _subtitles;
-    private LunaPlayer.YouTube.Playback.ResolveCache? _resolveCache;
-    private LunaPlayer.YouTube.Components.Service? _components;
-    private Updates? _appUpdates;
-    private LunaPlayer.Recording.RecordingSources? _recordingSources;
-    private LunaPlayer.Recording.RecordingEngine? _recorder;
-    private LunaPlayer.YouTube.Playback.Sessions? _sessions;
-    private LunaPlayer.YouTube.Download.DownloadQueue? _downloadQueue;
-    private Tools? _tools;
-    private Files? _fileActions;
-    private StartupResources? _pendingStartupResources;
-    private Task? _nativeInitializationTask;
-    private Task<PreparedLaunch>? _initialLaunchTask;
+    private Features? _features;
     private bool _shown;
-    private bool _shellReady;
-    private bool _settingsReady;
-    private bool _windowInitializationStarted;
-    private bool _windowInitialized;
-    private bool _ready;
     private bool _stopping;
-    private bool _startupFailed;
     private bool _disposed;
 
     internal ApplicationHost(SingleInstanceService singleInstance, IReadOnlyList<string> initialPaths)
     {
         _singleInstance = singleInstance;
-        _initialPaths = initialPaths.ToArray();
-        // Configuration parsing and value normalization do not use wxWidgets. Begin them before even the
-        // shell frame is constructed so disk access overlaps native window creation instead of following it.
-        var settingsTask = Task.Run(Startup.LoadSettings);
+        // Begin settings before constructing even the shell, preserving overlap with native window creation.
+        var settingsTask = Task.Run(Resources.LoadSettings);
         _dispatcher = new WxDispatcher();
         _view = new MainFrame();
-        // Registered before startup begins so closing can prevent a pending mpv attachment, or await and
-        // dispose one already in flight, without leaving the frame visible until every feature is ready.
+        _startup = new Startup(_view, _dispatcher, initialPaths, CompleteStartup);
+        // Register close handling before the first background service can be attached.
         _view.CloseRequested += StopStartupAsync;
         _view.CloseConfirmationRequested += ConfirmClose;
-        // mpv/audio startup depends only on the normalized playback settings and the already-created native
-        // handle. Always dispatch the coordinator itself: calling an async method here used to run its setup
-        // synchronously whenever settings happened to finish early, delaying Show on only some launches.
-        var nativeHandle = _view.NativeHandle;
-        _ = Task.Run(() => BeginBackgroundInitializationAsync(nativeHandle, settingsTask));
+        _startup.Start(settingsTask);
     }
 
-    /// <summary>Shows the inexpensive shell while configuration and native services continue on workers.
-    /// Only localization, native controls and command wiring return to the UI thread.</summary>
     internal void Show()
     {
         if (_shown || _disposed)
             return;
         _shown = true;
         _view.Show();
-        // DLL discovery, persistence reads, and recursive folder enumeration can delay the first frame through
-        // resource contention even from workers. Release that work only after Update has painted the shell.
-        _shellPainted.TrySetResult();
-        // Only after the shell has been painted: creating the pipe is background work and must never extend
-        // the primary instance's process-entry-to-window path.
+        _startup.ShellPainted();
+        // Named-pipe construction stays on its own thread and starts only after the shell is painted.
         _singleInstance.StartListening(paths => _dispatcher.Post(() => HandleExternalPaths(paths)));
-        _shellReady = true;
-        TryInitializeWindowResources();
+        _startup.WindowShown();
     }
 
-    private async Task BeginBackgroundInitializationAsync(
-        nint nativeHandle,
-        Task<StartupSettings> settingsTask)
+    private void CompleteStartup(StartupResult result)
     {
-        StartupSettings startup;
-        try
-        {
-            startup = await settingsTask.ConfigureAwait(false);
-        }
-        catch (Exception failure)
-        {
-            PostStartupFailure(failure);
-            return;
-        }
-        lock (_startupGate)
-        {
-            if (_disposed || _stopping)
-                return;
-            // Start the sound path first. Its dedicated worker cannot be held behind optional feature work in
-            // the thread-pool queue, and it starts whether or not Windows has painted the shell yet. Publishing
-            // the task under the same lock as the close flag makes attachment and close mutually ordered.
-            _nativeInitializationTask = InitializeBackgroundServicesAsync(
-                nativeHandle, startup.Settings, _shellPainted.Task);
-        }
-        // Do not let a recursive launch scan compete with creation and painting of the shell. It still gets
-        // a dedicated worker, so it begins immediately after the first frame and cannot wait behind optional
-        // feature work in the thread pool.
-        await _shellPainted.Task.ConfigureAwait(false);
-        lock (_startupGate)
-        {
-            if (_disposed || _stopping)
-                return;
-            _initialLaunchTask = _initialPaths.Count == 0
-                ? Task.FromResult(new PreparedLaunch(false, [], null, null, null))
-                : Task.Factory.StartNew(
-                    () => Startup.PrepareLaunch(_initialPaths, startup.Settings),
-                    CancellationToken.None,
-                    TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach,
-                    TaskScheduler.Default);
-        }
-        try
-        {
-            // Posting settings only after the launch task has been published keeps later command wiring from
-            // observing a half-prepared startup while still leaving every expensive operation off this thread.
-            _dispatcher.Post(() => OnStartupSettingsReady(startup));
-        }
-        catch (InvalidOperationException)
-        {
-            // The application closed before the settings read completed.
-        }
-    }
-
-    private void OnStartupSettingsReady(StartupSettings startup)
-    {
-        if (_disposed || _stopping || _startupFailed)
-            return;
-        _settingsStore = startup.Store;
-        _settings = startup.Settings;
-        _settingsError = startup.Error;
-        _settingsReady = true;
-        TryInitializeWindowResources();
-    }
-
-    private void TryInitializeWindowResources()
-    {
-        if (_disposed || _stopping || _startupFailed || !_shellReady || !_settingsReady
-            || _windowInitializationStarted)
-            return;
-        _windowInitializationStarted = true;
-        try
-        {
-            // Shortcut normalization builds translated action definitions. Keep only that localization-bound
-            // part on the wx thread; all ordinary setting values were normalized on the settings worker.
-            Localization.Initialize(_settings.General.Language);
-            _settings.NormalizeShortcuts();
-            // Preset names are translated too. Materialize the shipped table here; the worker below can then
-            // merge user presets without ever calling wxWidgets from outside its owning thread.
-            _ = LunaPlayer.Equalizer.Presets.All;
-            _ = InitializeWindowResourcesAsync();
-        }
-        catch (Exception failure)
-        {
-            HandleStartupFailure(failure);
-        }
-    }
-
-    private async Task InitializeBackgroundServicesAsync(
-        nint nativeHandle,
-        Settings settings,
-        Task shellPainted)
-    {
-        StartupResources resources;
-        try
-        {
-            resources = await Startup.CreateServicesAsync(
-                nativeHandle, settings, shellPainted).ConfigureAwait(false);
-        }
-        catch (Exception failure)
-        {
-            PostStartupFailure(failure);
-            return;
-        }
-        try
-        {
-            _dispatcher.Post(() => OnNativeServicesReady(resources));
-        }
-        catch (InvalidOperationException)
-        {
-            // The event loop has already gone away. Dispose mpv, but let process termination release speech
-            // without sending a global stop command after focus has moved to another application.
-            resources.Dispose(disposeSpeech: false);
-        }
-    }
-
-    private async Task InitializeWindowResourcesAsync()
-    {
-        WindowResources resources;
-        try
-        {
-            resources = await Startup.LoadWindowResourcesAsync(_settings, _settingsStore).ConfigureAwait(false);
-        }
-        catch (Exception failure)
-        {
-            PostStartupFailure(failure);
-            return;
-        }
-        try
-        {
-            _dispatcher.Post(() => OnWindowResourcesReady(
-                resources.Catalog, resources.Equalizer, resources.Recents));
-        }
-        catch (InvalidOperationException)
-        {
-            // The application closed before its menu data had finished loading.
-        }
-    }
-
-    private void OnWindowResourcesReady(
-        LunaPlayer.Recording.AudioCatalog catalog,
-        LunaPlayer.Equalizer.Library equalizerLibrary,
-        RecentsStore recents)
-    {
-        if (_disposed || _stopping || _startupFailed)
-            return;
-        try
-        {
-            InitializeWindow(catalog, equalizerLibrary, recents);
-            _windowInitialized = true;
-            if (_pendingStartupResources is { } resources)
-            {
-                _pendingStartupResources = null;
-                CompleteStartup(resources);
-            }
-        }
-        catch (Exception failure)
-        {
-            HandleStartupFailure(failure);
-        }
-    }
-
-    private void OnNativeServicesReady(StartupResources resources)
-    {
-        if (_disposed || _stopping || _startupFailed)
-        {
-            resources.Dispose(disposeSpeech: false);
-            return;
-        }
-        // Creating native menus can pump Windows messages. If this callback arrives re-entrantly while the
-        // frame is still being filled in, hold the services until InitializeWindow has installed its input
-        // and menu controllers rather than exposing a half-initialized view to feature constructors.
-        if (!_windowInitialized)
-        {
-            _pendingStartupResources = resources;
-            return;
-        }
-        CompleteStartup(resources);
-    }
-
-    private void InitializeWindow(
-        LunaPlayer.Recording.AudioCatalog catalog,
-        LunaPlayer.Equalizer.Library equalizerLibrary,
-        RecentsStore recents)
-    {
-        _shortcuts = new ShortcutManager(ActionRegistry.All);
-        _shortcuts.Apply(_settings.Shortcuts.Primary, _settings.Shortcuts.Secondary);
-        _globalShortcuts = new ShortcutManager(GlobalActions.All);
-        _catalog = catalog;
-        _equalizerLibrary = equalizerLibrary;
-        _recents = recents;
-        var recentMenu = Files.BuildRecentMenu(_recents);
-        _view.Initialize(
-            _shortcuts, ActionRegistry.All, _dispatcher, _catalog, _equalizerLibrary.All, recentMenu);
-    }
-
-    private void CompleteStartup(StartupResources resources)
-    {
-        if (_disposed || _stopping || _startupFailed)
-        {
-            resources.Dispose(disposeSpeech: false);
-            return;
-        }
-        SystemMediaControls? mediaControls = null;
-        try
-        {
-            _speech = resources.TakeSpeech();
-            _player = resources.TakePlayer();
-            mediaControls = resources.TakeMediaControls();
-            var features = resources.TakeFeatures();
-            InitializeFeatures(_speech, _player, mediaControls, features);
-            mediaControls = null;
-            _ready = true;
-            QueuePostStartupWork();
-        }
-        catch (Exception failure)
-        {
-            mediaControls?.Dispose();
-            resources.Dispose();
-            HandleStartupFailure(failure);
-        }
-    }
-
-    private void InitializeFeatures(
-        ISpeechOutput speech,
-        Player player,
-        SystemMediaControls mediaControls,
-        FeatureResources features)
-    {
-        var clipboard = new WxClipboardService();
-        // Now that there is a toolkit, the crash window can offer to copy.
-        CrashReport.SetClipboard(clipboard);
-        var selection = features.Selection;
-        var selections = features.Selections;
-        var router = new ActionRouter();
-        _ = new Help(router, _view);
-        var appUpdates = new Updates(router, _view, _settings, _dispatcher, speech);
-        _appUpdates = appUpdates;
-        var fileActions = new Files(router, _view, player, _settings, speech, clipboard, _dispatcher, _recents);
-        _fileActions = fileActions;
-        _ = new Commands.Playback.Playback(
-            router, _view, player, _settings, _settingsStore, speech, selection, selections, _dispatcher);
-
-        _ = new Edit(router, _view, player, speech, clipboard, fileActions);
-        _ = new MarkedFiles(router, _view, player, _settings, speech, clipboard, _dispatcher);
-        var bookmarks = features.Bookmarks;
-        _ = new Commands.Playback.Bookmarks(router, _view, player, speech, bookmarks, selections);
-        _ = new Devices(router, _view, player, _settings, _settingsStore, speech);
-        _ = new AudioTracks(router, _view, player, speech);
-        _subtitles = new Subtitles(router, _view, player, speech, _settings, _dispatcher);
-        _equalizer = new Commands.Playback.Equalizer(
-            router, _view, player, _settings, _settingsStore, speech, _equalizerLibrary);
-        var resolver = features.Resolver;
-        var updater = features.Updater;
-        var metadata = features.Metadata;
-        var youTube = features.YouTube;
-        var resolveCache = new LunaPlayer.YouTube.Playback.ResolveCache(resolver);
-        _resolveCache = resolveCache;
-        var components = new LunaPlayer.YouTube.Components.Service(
-            _view, _settings, speech, _dispatcher, updater, features.Installer);
-        _components = components;
-        var downloadQueue = new LunaPlayer.YouTube.Download.DownloadQueue(_settings);
-        _downloadQueue = downloadQueue;
-        downloadQueue.AllCompleted += () => _dispatcher.Post(() =>
-            _view.Dialogs.ShowNotification(
-                // Translators: Title of the notification shown when every queued download has finished.
-                Tr("Downloads completed"),
-                // Translators: Body of the notification shown when every queued download has finished.
-                Tr("All items in the download queue have completed.")));
-        // Shared by the favourites actions and the results window's Ctrl+Space add, so both write the same store.
-        var favorites = features.Favorites;
-        // Sessions need the related YouTube actions. Callbacks avoid giving either object access to the other's
-        // unrelated responsibilities.
-        Commands.YouTube.YouTube? youTubeActions = null;
-        var sessions = new LunaPlayer.YouTube.Playback.Sessions(
-            _view, player, _settings, speech, _dispatcher, metadata, youTube, resolveCache,
-            (url, title) => youTubeActions!.DirectDownloadTo(url, title),
-            (url, title) => youTubeActions!.DownloadTo(url, title),
-            (url, title) => youTubeActions!.AddToDownloadQueue(url, title),
-            url => youTubeActions!.CopyToClipboard(url),
-            url => youTubeActions!.OpenInBrowser(url),
-            favorites,
-            components);
-        _sessions = sessions;
-        youTubeActions = new Commands.YouTube.YouTube(
-            router, _view, player, _settings, speech, clipboard, youTube, sessions, components, _dispatcher,
-            downloadQueue);
-        _ = new Commands.YouTube.Favorites(router, _view, player, speech, favorites, sessions);
-        _ = new Commands.YouTube.Playlist(router, _view, player, _settings, speech, sessions);
-        _ = new Commands.App.Preferences(router, _view, _settings, _settingsStore,
-            new BackupService(_settingsStore, bookmarks), new FileAssociations(), player, _shortcuts,
-            _globalShortcuts, speech, youTube, components);
-        var recordingSources = features.RecordingSources;
-        _recordingSources = recordingSources;
-        var recorder = new LunaPlayer.Recording.RecordingEngine(_catalog);
-        _recorder = recorder;
-        _ = new Commands.Recording.Recording(
-            router, _view, _settings, speech, _dispatcher, _catalog, recordingSources, recorder);
-        var tools = new Tools(router, _view);
-        _tools = tools;
-        _ = new Commands.Iptv.Iptv(router, _view, player, speech, _dispatcher,
-            features.IptvSources);
-        var sleepTimer = new SleepTimer(_dispatcher, player, speech);
-        _ = new Sleep(router, _view, player, sleepTimer, _settings, _settingsStore);
-        router.EnsureComplete(ActionRegistry.All);
-        var controller = new ApplicationController(
-            _view,
-            player,
-            _settings,
-            _settingsStore,
-            _dispatcher,
-            router,
-            fileActions,
-            selection,
-            selections,
-            sessions,
-            sleepTimer,
-            speech,
-            mediaControls);
-        _controller = controller;
-        // After the controller, which sets the rest of the audio state up from the same settings.
-        _equalizer.Restore();
-    }
-
-    private void QueuePostStartupWork()
-    {
-        var speech = _speech!;
-        var components = _components!;
-        var updates = _appUpdates!;
-        var fileActions = _fileActions!;
-        var controller = _controller!;
-        var tools = _tools!;
-
-        if (_settingsError.Length > 0)
-        {
-            _dispatcher.Post(() => _view.Dialogs.ShowError(
-                // Translators: Shown when settings could not be read. {error} is the underlying file or data error.
-                TrFormat("The settings file could not be loaded. Default settings will be used, and the existing file will not be overwritten. Import a valid settings file or reset the settings to replace it.\n\n{error}", _settingsError),
-                // Translators: Title of the message shown when settings could not be read.
-                Tr("Settings error")));
-        }
-        // Posted rather than run here so a refusal is reported over a window the user can already see.
-        _dispatcher.Post(() => GlobalShortcutBinder.Apply(_view, _globalShortcuts, _settings, speech));
-        // Looks for a newer yt-dlp only when the setting asks for it, and says nothing unless there is one.
-        _dispatcher.Post(components.CheckForUpdateInBackground);
-        // The application check is also quiet at startup: only a newer release opens a window.
-        _dispatcher.Post(updates.CheckAtStartup);
-
-        if (_initialPaths.Count > 0 && _initialLaunchTask is { } launchTask)
-        {
-            void OpenPrepared(Task<PreparedLaunch> completed)
-            {
-                if (!completed.IsCompletedSuccessfully || _disposed || _stopping)
-                    return;
-                var launch = completed.Result;
-                _dispatcher.Post(() =>
-                {
-                    if (launch.Convert)
-                        tools.OpenFor(launch.Files ?? []);
-                    else
-                        fileActions.OpenPrepared(launch);
-                });
-            }
-            if (launchTask.IsCompleted)
-                OpenPrepared(launchTask);
-            else
-                _ = launchTask.ContinueWith(
-                    OpenPrepared,
-                    CancellationToken.None,
-                    TaskContinuationOptions.ExecuteSynchronously,
-                    TaskScheduler.Default);
-        }
-        else if (_settings.General.RememberLastPosition && File.Exists(_settings.Playback.LastFile))
-            _dispatcher.Post(() => fileActions.RestoreSession(_settings.Playback.LastFile, _settings.Playback.LastPosition));
+        _features = Features.Create(_view, _dispatcher, result);
+        _features.QueueStartupWork();
+        if (result.Launch is { } launch)
+            QueueInitialPaths(launch);
+        else
+            _features.RestoreSession();
 
         foreach (var paths in _pendingPathRequests)
             _dispatcher.Post(() => HandleExternalPaths(paths));
         _pendingPathRequests.Clear();
+    }
+
+    private void QueueInitialPaths(Task<PreparedLaunch> launch)
+    {
+        void OpenPrepared(Task<PreparedLaunch> completed)
+        {
+            if (!completed.IsCompletedSuccessfully || _disposed || _stopping)
+                return;
+            try
+            {
+                _dispatcher.Post(() =>
+                {
+                    if (!_disposed && !_stopping)
+                        _features!.OpenPrepared(completed.Result);
+                });
+            }
+            catch (InvalidOperationException)
+            {
+                // A launch scan can finish after wx has already shut down.
+            }
+        }
+        if (launch.IsCompleted)
+            OpenPrepared(launch);
+        else
+            _ = launch.ContinueWith(OpenPrepared, CancellationToken.None,
+                TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+    }
+
+    private void HandleExternalPaths(IReadOnlyList<string> paths)
+    {
+        if (_disposed || _stopping)
+            return;
+        if (paths.Count == 0)
+        {
+            // A plain launch activates the existing window; opening a file leaves its focus and state alone.
+            _view.RestoreAndRaise();
+            return;
+        }
+        if (_features is null)
+        {
+            _pendingPathRequests.Add(paths.ToArray());
+            return;
+        }
+        _features.OpenPaths(paths);
+    }
+
+    private bool ConfirmClose() => _features?.ConfirmClose() ?? true;
+
+    private Task StopStartupAsync()
+    {
+        _stopping = true;
+        return _startup.StopAsync();
     }
 
     public void Dispose()
@@ -484,114 +116,8 @@ internal sealed class ApplicationHost : IDisposable
         _view.CloseConfirmationRequested -= ConfirmClose;
         _view.CloseRequested -= StopStartupAsync;
         _singleInstance.Dispose();
-        _pendingStartupResources?.Dispose(disposeSpeech: false);
-        _pendingStartupResources = null;
-        _controller?.Dispose();
-        // Unsubscribes from the player's subtitle events before the player itself goes below.
-        _subtitles?.Dispose();
-        // Before the player goes: a recording still running has a file to close, and the engine waits for
-        // the encoder to flush its last block rather than leaving a truncated one behind.
-        _recorder?.Dispose();
-        _sessions?.Dispose();
-        _resolveCache?.Dispose();
-        _downloadQueue?.Dispose();
-        _appUpdates?.Dispose();
-        _player?.Dispose();
-        // Closing a screen-reader backend sends a global stop command. Focus has already moved to the next
-        // application here, so doing that would cancel its focus announcement. Process termination releases
-        // the remaining speech resources without sending that command.
+        _startup.Dispose();
+        _features?.Dispose();
         _view.Dispose();
-    }
-
-    private bool ConfirmClose()
-        => _downloadQueue is null
-            || !_downloadQueue.HasUnfinishedItems
-            || _view.Dialogs.ConfirmCloseWithDownloads();
-
-    private Task StopStartupAsync()
-    {
-        lock (_startupGate)
-        {
-            _stopping = true;
-            return _nativeInitializationTask ?? Task.CompletedTask;
-        }
-    }
-
-    private void HandleExternalPaths(IReadOnlyList<string> paths)
-    {
-        if (paths.Count == 0)
-        {
-            // Starting Luna itself while it is already running activates that window. A shell-opened file is
-            // different: hand it to the existing controller without changing the window's focus or state.
-            _view.RestoreAndRaise();
-            return;
-        }
-        if (!_ready || _tools is null || _controller is null)
-        {
-            _pendingPathRequests.Add(paths.ToArray());
-            return;
-        }
-        // A second launch carrying "Convert with Luna" opens the converter for its files rather than playing
-        // them, the same as the first launch does.
-        if (IsConvertRequest(paths, out var convertFiles))
-            _tools.OpenFor(convertFiles);
-        else
-            _controller.OpenPaths(paths);
-    }
-
-    private void PostStartupFailure(Exception failure)
-    {
-        try
-        {
-            _dispatcher.Post(() => HandleStartupFailure(failure));
-        }
-        catch (InvalidOperationException)
-        {
-            // The application has already closed, so there is no UI left in which to report startup.
-        }
-    }
-
-    private void HandleStartupFailure(Exception failure)
-    {
-        if (_disposed || _stopping || _startupFailed)
-            return;
-        _startupFailed = true;
-        CrashReport.Report(failure);
-        _view.Close();
-    }
-
-    /// <summary>Whether a set of launch arguments is a "Convert with Luna" request, and if so the files it
-    /// names with any folder among them expanded to the supported files under it.</summary>
-    /// <remarks>
-    /// The verb passes --convert and one path; several files selected in Explorer launch the player once
-    /// each, and those launches are gathered into one list before they reach here, so the flag can arrive
-    /// beside any number of paths.
-    /// </remarks>
-    private static bool IsConvertRequest(IReadOnlyList<string> paths, out IReadOnlyList<string> files)
-    {
-        var convert = false;
-        var targets = new List<string>();
-        foreach (var path in paths)
-        {
-            if (path.Equals("--convert", StringComparison.OrdinalIgnoreCase))
-                convert = true;
-            else
-                targets.Add(path);
-        }
-        if (!convert)
-        {
-            files = [];
-            return false;
-        }
-        var collected = new List<string>();
-        foreach (var target in targets)
-        {
-            if (Directory.Exists(target))
-                collected.AddRange(MediaLibrary.CollectFiles(target, recursive: true));
-            else if (File.Exists(target))
-                collected.Add(target);
-        }
-        files = collected;
-        return true;
     }
 }

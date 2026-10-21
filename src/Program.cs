@@ -49,7 +49,7 @@ internal static class Program
         // Apply the saved theme before the App is created: wxWidgets reads the msw.dark-mode system option
         // as it initializes. Only the theme is read here, with a light-weight peek - the full settings load
         // validates settings, which builds the translated action tables and so needs a running App, so it
-        // stays in ApplicationHost.
+        // stays in the background startup pipeline.
         LunaPlayer.UI.ThemeService.Apply(SettingsStore.PeekTheme(Paths.SettingsFile));
 
         try

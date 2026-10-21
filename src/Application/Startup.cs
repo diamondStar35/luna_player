@@ -1,254 +1,277 @@
-using LunaPlayer.Accessibility;
-using LunaPlayer.Bookmarks;
+using LunaPlayer.Actions;
+using LunaPlayer.Application.Commands.Files;
 using LunaPlayer.Configuration;
-using LunaPlayer.Configuration.Models;
-using LunaPlayer.Favorites;
-using LunaPlayer.Iptv;
-using LunaPlayer.Media;
-using LunaPlayer.Playback;
+using LunaPlayer.UI;
 
 namespace LunaPlayer.Application;
 
-/// <summary>Creates the settings, native services, and managed data needed during application startup.
-/// None of these methods owns windows or decides when startup results are attached to the UI.</summary>
-internal static class Startup
+/// <summary>Stages settings, background services, and window initialization without changing their thread
+/// ownership. The host receives one completed startup only after menus and input handlers are installed.</summary>
+internal sealed class Startup : IDisposable
 {
-    internal static StartupSettings LoadSettings()
+    private readonly MainFrame _view;
+    private readonly IApplicationDispatcher _dispatcher;
+    private readonly IReadOnlyList<string> _initialPaths;
+    private readonly Action<StartupResult> _complete;
+    private readonly Lock _gate = new();
+    private readonly TaskCompletionSource _shellPainted = new(
+        TaskCreationOptions.RunContinuationsAsynchronously);
+    private StartupSettings? _settings;
+    private WindowResources? _window;
+    private StartupResources? _services;
+    private ShortcutManager _shortcuts = null!;
+    private ShortcutManager _globalShortcuts = null!;
+    private Task? _nativeTask;
+    private Task<PreparedLaunch>? _launchTask;
+    private bool _shellReady;
+    private bool _windowInitializationStarted;
+    private bool _windowInitialized;
+    private bool _stopping;
+    private bool _failed;
+    private bool _disposed;
+
+    internal Startup(
+        MainFrame view,
+        IApplicationDispatcher dispatcher,
+        IReadOnlyList<string> initialPaths,
+        Action<StartupResult> complete)
     {
-        var store = new SettingsStore(Paths.SettingsFile);
-        var settings = store.LoadForStartup();
-        return new StartupSettings(store, settings, store.LastError);
+        _view = view;
+        _dispatcher = dispatcher;
+        _initialPaths = initialPaths.ToArray();
+        _complete = complete;
     }
 
-    internal static async Task<StartupResources> CreateServicesAsync(
-        nint nativeHandle,
-        Settings settings,
-        Task shellPainted)
+    internal void Start(Task<StartupSettings> settingsTask)
     {
-        // MPV is the one service allowed to overlap the first frame. Starting it here preserves immediate
-        // audio initialization without letting unrelated DLL loading and persistence reads delay the shell.
-        var playerTask = Task.Factory.StartNew(
-            () =>
-            {
-                // Audio is the only background service on the launch critical path. Give it a dedicated,
-                // higher-priority thread so optional feature construction cannot hold it in the pool queue.
-                Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
-                return CreatePlayer(nativeHandle, settings);
-            },
-            CancellationToken.None,
-            TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach,
-            TaskScheduler.Default);
+        var nativeHandle = _view.NativeHandle;
+        // Always queue this entry point. If settings finished early, an inline async call would run service
+        // setup synchronously on the UI thread before Show.
+        _ = Task.Run(() => BeginAsync(nativeHandle, settingsTask));
+    }
 
-        // Speech backend discovery, media controls, and feature stores are needed before command wiring, not
-        // before a window can exist. Waiting here prevents those jobs from competing with wxWidgets while it
-        // creates and paints the lightweight shell.
-        await shellPainted.ConfigureAwait(false);
-        var speechTask = Task.Run<ISpeechOutput>(() => new SpeechOutput(settings));
-        var mediaControlsTask = Task.Run(() => new SystemMediaControls());
-        var featuresTask = Task.Run(() => FeatureResources.Create(settings));
+    internal void ShellPainted() => _shellPainted.TrySetResult();
+
+    internal void WindowShown()
+    {
+        _shellReady = true;
+        TryInitializeWindow();
+    }
+
+    private async Task BeginAsync(nint nativeHandle, Task<StartupSettings> settingsTask)
+    {
+        StartupSettings settings;
         try
         {
-            await Task.WhenAll(speechTask, playerTask, mediaControlsTask, featuresTask).ConfigureAwait(false);
-            return new StartupResources(
-                speechTask.Result, playerTask.Result, mediaControlsTask.Result, featuresTask.Result);
+            settings = await settingsTask.ConfigureAwait(false);
         }
-        catch
+        catch (Exception failure)
         {
-            if (speechTask.Status == TaskStatus.RanToCompletion)
-                speechTask.Result.Dispose();
-            if (playerTask.Status == TaskStatus.RanToCompletion)
-                playerTask.Result.Dispose();
-            if (mediaControlsTask.Status == TaskStatus.RanToCompletion)
-                mediaControlsTask.Result.Dispose();
-            throw;
+            PostFailure(failure);
+            return;
         }
-    }
-
-    internal static async Task<WindowResources> LoadWindowResourcesAsync(
-        Settings settings,
-        SettingsStore store)
-    {
-        var catalogTask = Task.Run(() => new Recording.AudioCatalog());
-        var equalizerTask = Task.Run(() => new Equalizer.Library(
-            settings, store, new Equalizer.PresetStore(Paths.EqualizerFile)));
-        var recentsTask = Task.Run(() => new RecentsStore(Paths.RecentsFile));
-        await Task.WhenAll(catalogTask, equalizerTask, recentsTask).ConfigureAwait(false);
-        return new WindowResources(catalogTask.Result, equalizerTask.Result, recentsTask.Result);
-    }
-
-    /// <summary>Resolves launch paths before command wiring is ready. Folder walking is the expensive part,
-    /// so it starts beside audio initialization instead of waiting behind every application feature.</summary>
-    internal static PreparedLaunch PrepareLaunch(IReadOnlyList<string> arguments, Settings settings)
-    {
-        var convert = arguments.Any(path => path.Equals("--convert", StringComparison.OrdinalIgnoreCase));
-        var paths = new List<string>();
-        foreach (var argument in arguments)
+        lock (_gate)
         {
-            if (argument.Equals("--convert", StringComparison.OrdinalIgnoreCase))
-                continue;
-            var value = argument.Trim().Trim('"');
-            if (value.Length > 0 && Paths.TryAbsolute(value, out var absolute)
-                && (File.Exists(absolute) || Directory.Exists(absolute)))
-                paths.Add(absolute);
+            if (_disposed || _stopping)
+                return;
+            // Start audio first, on its dedicated worker. Publish its lifetime under the close gate so a
+            // close cannot release the native window while MPV is still being created against its handle.
+            _nativeTask = CreateServicesAsync(nativeHandle, settings);
         }
-        if (paths.Count == 0)
-            return new PreparedLaunch(convert, [], null, null, null);
-
-        if (convert)
+        // Optional DLL discovery, stores, and folder walking wait for the first paint. Folder walking keeps
+        // its dedicated normal-priority worker so it cannot be held behind optional pool work or starve audio.
+        await _shellPainted.Task.ConfigureAwait(false);
+        lock (_gate)
         {
-            var files = new List<string>();
-            foreach (var path in paths)
-            {
-                if (Directory.Exists(path))
-                    files.AddRange(MediaLibrary.CollectFiles(path, recursive: true));
-                else
-                    files.Add(path);
-            }
-            return new PreparedLaunch(true, paths, files, null, null);
+            if (_disposed || _stopping)
+                return;
+            _launchTask = _initialPaths.Count == 0
+                ? Task.FromResult(new PreparedLaunch(false, [], null, null, null))
+                : Task.Factory.StartNew(
+                    () => Resources.PrepareLaunch(_initialPaths, settings.Settings),
+                    CancellationToken.None,
+                    TaskCreationOptions.LongRunning | TaskCreationOptions.DenyChildAttach,
+                    TaskScheduler.Default);
         }
-
-        var first = paths[0];
-        if (Directory.Exists(first))
-        {
-            var recursive = settings.General.OpenFilesMode == OpenFilesMode.MainAndSubfolders;
-            var files = MediaLibrary.CollectFiles(first, recursive);
-            return new PreparedLaunch(false, paths, files, null, first);
-        }
-        if (File.Exists(first) && !MediaLibrary.IsPlaylist(first)
-            && settings.General.OpenFilesMode != OpenFilesMode.FileOnly)
-        {
-            var folder = Path.GetDirectoryName(first);
-            if (!string.IsNullOrEmpty(folder))
-            {
-                var recursive = settings.General.OpenFilesMode == OpenFilesMode.MainAndSubfolders;
-                var files = MediaLibrary.CollectFiles(folder, recursive);
-                return new PreparedLaunch(false, paths, files, first, null);
-            }
-        }
-        return new PreparedLaunch(false, paths, null, null, null);
-    }
-
-    private static Player CreatePlayer(nint nativeHandle, Settings settings)
-    {
-        var engine = new Engine(nativeHandle, !settings.General.DisableMediaControls);
         try
         {
-            var player = new Player(engine, new PositionStore(Paths.PositionsFile));
-            ConfigurePlayer(player, settings);
-            return player;
+            // The prepared launch task must be published before UI callbacks can finish command wiring.
+            _dispatcher.Post(() => OnSettingsReady(settings));
         }
-        catch
+        catch (InvalidOperationException)
         {
-            engine.Dispose();
-            throw;
+            // The application closed before its settings could be attached.
         }
     }
 
-    private static void ConfigurePlayer(Player player, Settings settings)
+    private void OnSettingsReady(StartupSettings settings)
     {
-        player.SetVolume(settings.Audio.Volume);
-        settings.Audio.Pitch = player.SetPitch(settings.Audio.Pitch);
-        player.SetSpeed(settings.Audio.Speed);
-        player.TrackPositions(settings.Audio.SaveFilePositions);
-        player.SetEndBehavior(settings.Audio.EndBehavior);
-        player.ConfigurePlaybackEffects(settings.Audio);
-        player.ConfigureSilence(settings.Silence);
-        player.SetNormalization(settings.Audio.NormalizeAudio);
-        player.SetMono(settings.Audio.MonoAudio);
-        player.SetPan(settings.Audio.Pan);
-        player.SetSilenceRemoval(settings.Silence.Enabled);
-        settings.Audio.NormalizeAudio = player.IsNormalizationEnabled;
-        settings.Audio.MonoAudio = player.IsMonoEnabled;
-        settings.Silence.Enabled = player.IsSilenceRemovalEnabled;
-        if (!string.IsNullOrWhiteSpace(settings.Audio.Device))
-            player.SetAudioDevice(settings.Audio.Device);
+        if (_disposed || _stopping || _failed)
+            return;
+        _settings = settings;
+        TryInitializeWindow();
     }
-}
 
-internal sealed record StartupSettings(SettingsStore Store, Settings Settings, string Error);
-
-internal sealed record WindowResources(
-    Recording.AudioCatalog Catalog,
-    Equalizer.Library Equalizer,
-    RecentsStore Recents);
-
-internal sealed record PreparedLaunch(
-    bool Convert,
-    IReadOnlyList<string> Paths,
-    IReadOnlyList<string>? Files,
-    string? PreferredPath,
-    string? SourceFolder);
-
-/// <summary>Owns worker-created services until the application host transfers each one to its final owner.
-/// </summary>
-internal sealed class StartupResources(
-    ISpeechOutput speech,
-    Player player,
-    SystemMediaControls mediaControls,
-    FeatureResources features)
-{
-    private ISpeechOutput? _speech = speech;
-    private Player? _player = player;
-    private SystemMediaControls? _mediaControls = mediaControls;
-    private FeatureResources? _features = features;
-
-    internal ISpeechOutput TakeSpeech()
-        => Interlocked.Exchange(ref _speech, null)
-            ?? throw new InvalidOperationException("Speech startup resources were already transferred.");
-
-    internal Player TakePlayer()
-        => Interlocked.Exchange(ref _player, null)
-            ?? throw new InvalidOperationException("Playback startup resources were already transferred.");
-
-    internal SystemMediaControls TakeMediaControls()
-        => Interlocked.Exchange(ref _mediaControls, null)
-            ?? throw new InvalidOperationException("Media controls startup resources were already transferred.");
-
-    internal FeatureResources TakeFeatures()
-        => Interlocked.Exchange(ref _features, null)
-            ?? throw new InvalidOperationException("Feature startup resources were already transferred.");
-
-    internal void Dispose(bool disposeSpeech = true)
+    private void TryInitializeWindow()
     {
-        Interlocked.Exchange(ref _mediaControls, null)?.Dispose();
-        Interlocked.Exchange(ref _player, null)?.Dispose();
-        _ = Interlocked.Exchange(ref _features, null);
-        var remainingSpeech = Interlocked.Exchange(ref _speech, null);
-        if (disposeSpeech)
-            remainingSpeech?.Dispose();
+        if (_disposed || _stopping || _failed || !_shellReady || _settings is null
+            || _windowInitializationStarted)
+            return;
+        _windowInitializationStarted = true;
+        try
+        {
+            // Only the localization-bound work belongs here. The ordinary settings values were normalized
+            // on the settings worker; action labels and shipped preset names require the wx thread.
+            Localization.Initialize(_settings.Settings.General.Language);
+            _settings.Settings.NormalizeShortcuts();
+            _ = LunaPlayer.Equalizer.Presets.All;
+            _ = LoadWindowAsync(_settings);
+        }
+        catch (Exception failure)
+        {
+            Fail(failure);
+        }
     }
-}
 
-/// <summary>Managed feature foundations that are safe to construct away from the wxWidgets thread.</summary>
-internal sealed record FeatureResources(
-    PlaybackSelection Selection,
-    SelectionSlots Selections,
-    BookmarkStore Bookmarks,
-    FavoriteStore Favorites,
-    IptvSourceStore IptvSources,
-    Recording.RecordingSources RecordingSources,
-    YouTube.Client.Resolver Resolver,
-    YouTube.Client.Updater Updater,
-    YouTube.Metadata.Client Metadata,
-    YouTube.Backend YouTube,
-    YouTube.Components.Installer Installer)
-{
-    internal static FeatureResources Create(Settings settings)
+    private async Task CreateServicesAsync(nint nativeHandle, StartupSettings settings)
     {
-        var runner = new YouTube.Client.Runner(settings);
-        var channels = new YouTube.Client.Channels(runner);
-        var metadata = new YouTube.Metadata.Client();
-        return new FeatureResources(
-            new PlaybackSelection(),
-            new SelectionSlots(),
-            new BookmarkStore(Paths.BookmarksFile),
-            new FavoriteStore(Paths.FavoritesFile),
-            new IptvSourceStore(Paths.IptvSourcesFile),
-            new Recording.RecordingSources(settings.Recording),
-            new YouTube.Client.Resolver(runner),
-            new YouTube.Client.Updater(runner),
-            metadata,
-            new YouTube.Backend(metadata, channels),
-            new YouTube.Components.Installer());
+        StartupResources services;
+        try
+        {
+            services = await Resources.CreateServicesAsync(
+                nativeHandle, settings.Settings, _shellPainted.Task).ConfigureAwait(false);
+        }
+        catch (Exception failure)
+        {
+            PostFailure(failure);
+            return;
+        }
+        try
+        {
+            _dispatcher.Post(() => OnServicesReady(services));
+        }
+        catch (InvalidOperationException)
+        {
+            // wx has already shut down. Release MPV without interrupting another app's speech.
+            services.Dispose(disposeSpeech: false);
+        }
+    }
+
+    private async Task LoadWindowAsync(StartupSettings settings)
+    {
+        WindowResources window;
+        try
+        {
+            window = await Resources.LoadWindowResourcesAsync(
+                settings.Settings, settings.Store).ConfigureAwait(false);
+        }
+        catch (Exception failure)
+        {
+            PostFailure(failure);
+            return;
+        }
+        try
+        {
+            _dispatcher.Post(() => OnWindowReady(window));
+        }
+        catch (InvalidOperationException)
+        {
+            // The application closed before its menu data had finished loading.
+        }
+    }
+
+    private void OnWindowReady(WindowResources window)
+    {
+        if (_disposed || _stopping || _failed)
+            return;
+        try
+        {
+            var settings = _settings!.Settings;
+            _shortcuts = new ShortcutManager(ActionRegistry.All);
+            _shortcuts.Apply(settings.Shortcuts.Primary, settings.Shortcuts.Secondary);
+            _globalShortcuts = new ShortcutManager(GlobalActions.All);
+            _window = window;
+            _view.Initialize(_shortcuts, ActionRegistry.All, _dispatcher, window.Catalog,
+                window.Equalizer.All, Files.BuildRecentMenu(window.Recents));
+            _windowInitialized = true;
+            TryComplete();
+        }
+        catch (Exception failure)
+        {
+            Fail(failure);
+        }
+    }
+
+    private void OnServicesReady(StartupResources services)
+    {
+        if (_disposed || _stopping || _failed)
+        {
+            services.Dispose(disposeSpeech: false);
+            return;
+        }
+        _services = services;
+        TryComplete();
+    }
+
+    private void TryComplete()
+    {
+        // Native menu creation can pump messages and deliver the service callback re-entrantly. Hold its
+        // resources until Initialize has returned and input/menu controllers can safely receive commands.
+        if (_disposed || _stopping || _failed || !_windowInitialized || _services is not { } services)
+            return;
+        _services = null;
+        try
+        {
+            _complete(new StartupResult(_settings!, _window!, services, _shortcuts, _globalShortcuts,
+                _initialPaths.Count > 0 ? _launchTask : null));
+        }
+        catch (Exception failure)
+        {
+            services.Dispose();
+            Fail(failure);
+        }
+    }
+
+    internal Task StopAsync()
+    {
+        lock (_gate)
+        {
+            _stopping = true;
+            return _nativeTask ?? Task.CompletedTask;
+        }
+    }
+
+    public void Dispose()
+    {
+        lock (_gate)
+        {
+            if (_disposed)
+                return;
+            _disposed = true;
+            _stopping = true;
+        }
+        _services?.Dispose(disposeSpeech: false);
+        _services = null;
+    }
+
+    private void PostFailure(Exception failure)
+    {
+        try
+        {
+            _dispatcher.Post(() => Fail(failure));
+        }
+        catch (InvalidOperationException)
+        {
+            // wx has already shut down, leaving no window in which to report startup.
+        }
+    }
+
+    private void Fail(Exception failure)
+    {
+        if (_disposed || _stopping || _failed)
+            return;
+        _failed = true;
+        CrashReport.Report(failure);
+        _view.Close();
     }
 }
