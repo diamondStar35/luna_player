@@ -63,6 +63,7 @@
     <Compile Include="Media\**\*.cs" />
     <Compile Include="Playback\**\*.cs" />
     <Compile Include="Playlist\**\*.cs" />
+    <Compile Include="Radio\**\*.cs" />
     <Compile Include="Recording\**\*.cs" />
     <Compile Include="Update\**\*.cs" />
     <Compile Include="UI\**\*.cs" />
