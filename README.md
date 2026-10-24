@@ -143,10 +143,16 @@ other languages are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md).
 Requires the .NET 10 SDK and Visual Studio Build Tools with the MSVC x64 toolchain.
 
 ```
-git clone --recurse-submodules https://github.com/diamondStar35/luna_player
+git clone https://github.com/diamondStar35/luna_player
 cd luna_player
+git submodule update --init third-party/WxSharp
 dotnet build src/LunaPlayer.csproj
 ```
+
+Spotify playback runs in Luna Player and uses the same mpv audio controls as local
+music. No separate Spotify engine is required. The managed protocol code follows
+the [librespot implementation](https://github.com/librespot-org/librespot); see
+[NOTICE](NOTICE) for attribution.
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for full build instructions and known issues.
 

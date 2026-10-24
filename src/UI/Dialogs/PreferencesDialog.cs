@@ -29,7 +29,7 @@ internal sealed class PreferencesDialog : IDisposable
     /// accept and must not do that on the thread drawing this window.</param>
     internal PreferencesDialog(Window parent, Settings settings, PrefsOps operations, Action<string> speakHelp,
         LunaPlayer.Application.IApplicationDispatcher dispatcher, LunaPlayer.Recording.AudioCatalog catalog,
-        GlobalShortcuts? globalShortcuts = null)
+        GlobalShortcuts? globalShortcuts = null, bool openSpotifyCredentials = false)
     {
         _settings = settings;
         _operations = operations;
@@ -82,6 +82,9 @@ internal sealed class PreferencesDialog : IDisposable
             () => new YouTube.GeneralPreferences(_book, settings.YouTube, operations));
         AddPage(youTubeItem, youTubeDownloadLabel,
             () => new YouTube.DownloadPreferences(_book, settings.YouTube.Download));
+        // Translators: Name of the Spotify credentials and audio-quality category in Preferences. Keep Spotify unchanged.
+        var spotifyLabel = Tr("Spotify");
+        var spotifyItem = AddPage(root, spotifyLabel, () => new Spotify.CredentialsPreferences(_book, settings.Spotify));
         AddPage(root, recordingLabel,
             () => new RecordingPreferences(_book, settings.Recording, dispatcher, catalog));
         AddPage(root, shortcutsLabel,
@@ -101,8 +104,9 @@ internal sealed class PreferencesDialog : IDisposable
         _dialog.Bind(WxEvents.CharHook, OnCharHook);
 
         // Only the first page is built now; the rest build the first time their category is chosen.
-        ShowPage(generalItem);
-        _tree.Selection = generalItem;
+        var initialItem = openSpotifyCredentials ? spotifyItem : generalItem;
+        ShowPage(initialItem);
+        _tree.Selection = initialItem;
 
         var body = new BoxSizer(Orientation.Horizontal);
         body.Add(_tree, flags: SizerFlags.All | SizerFlags.Expand, border: 8);

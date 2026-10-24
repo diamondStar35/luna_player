@@ -70,7 +70,11 @@ internal sealed partial class Player
     internal bool CloseAll()
     {
         SavePosition();
-        if (!_playlist.ClearAll())
+        // Closing all files also discards the playlist hidden by YouTube or Spotify. It must
+        // never reappear when that session ends, including a session still loading its first track.
+        var hadSession = _suspendedPlaylist is not null;
+        _suspendedPlaylist = null;
+        if (!_playlist.ClearAll() && !hadSession)
             return false;
         StopEngine();
         CurrentChanged?.Invoke();

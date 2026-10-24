@@ -1,4 +1,5 @@
 using LunaPlayer.Application;
+using LunaPlayer.Actions;
 using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
 using LunaPlayer.Media;
@@ -23,6 +24,7 @@ internal sealed class DialogService : IDialogService, IDisposable
     private readonly IApplicationDispatcher _dispatcher;
     private readonly LunaPlayer.Recording.AudioCatalog _catalog;
     private readonly GlobalShortcuts _globalShortcuts;
+    private readonly Action<ActionId> _requestAction;
     private readonly HashSet<YouTube.DownloadProgressDialog> _downloadProgressDialogs = [];
     private bool? _toastNotificationsAvailable;
 
@@ -34,15 +36,31 @@ internal sealed class DialogService : IDialogService, IDisposable
 
     internal DialogService(
         Frame frame, IApplicationDispatcher dispatcher,
-        LunaPlayer.Recording.AudioCatalog catalog, GlobalShortcuts globalShortcuts)
+        LunaPlayer.Recording.AudioCatalog catalog, GlobalShortcuts globalShortcuts,
+        Action<ActionId> requestAction)
     {
         _frame = frame;
         _dispatcher = dispatcher;
         _catalog = catalog;
         _globalShortcuts = globalShortcuts;
+        _requestAction = requestAction;
     }
 
     private Window DialogParent => Wx.GetActiveWindow() ?? _frame;
+
+    public Spotify.DialogOutcome ShowSpotifyPreview(LunaPlayer.Spotify.Catalog catalog,
+        LunaPlayer.Spotify.Auth auth, SpotifySettings settings)
+    {
+        if (string.IsNullOrWhiteSpace(settings.ClientId))
+        {
+            using var prompt = new Spotify.CredentialsPrompt(DialogParent);
+            if (prompt.Show())
+                Wx.CallAfter(() => _requestAction(ActionId.OpenSpotifyCredentials));
+            return new Spotify.DialogOutcome();
+        }
+        using var dialog = new Spotify.BrowserDialog(DialogParent, catalog, auth, settings);
+        return dialog.Show();
+    }
 
     public FileSelection? ChooseFile(string initialDirectory)
     {
@@ -273,8 +291,9 @@ internal sealed class DialogService : IDialogService, IDisposable
     { using var dialog = new ConversionProgressDialog(DialogParent, _dispatcher, work); return dialog.Show(); }
     public void ShowConversionReport(string title, string message, string details)
     { using var dialog = new ConversionReportDialog(DialogParent, title, message, details); dialog.Show(); }
-    public Settings? EditPreferences(Settings settings, PrefsOps operations, Action<string> speakHelp)
-    { var editable = settings.Copy(); using var dialog = new PreferencesDialog(DialogParent, editable, operations, speakHelp, _dispatcher, _catalog, _globalShortcuts); return dialog.Show() ? editable : null; }
+    public Settings? EditPreferences(Settings settings, PrefsOps operations, Action<string> speakHelp,
+        bool openSpotifyCredentials = false)
+    { var editable = settings.Copy(); using var dialog = new PreferencesDialog(DialogParent, editable, operations, speakHelp, _dispatcher, _catalog, _globalShortcuts, openSpotifyCredentials); return dialog.Show() ? editable : null; }
 
     /// <summary>Tears down the reused results window. Called before the frame is destroyed, since that window
     /// is a child of it.</summary>

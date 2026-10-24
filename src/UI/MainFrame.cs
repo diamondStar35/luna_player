@@ -197,7 +197,7 @@ internal sealed class MainFrame : IMainView
 
     /// <summary>Dialogs, built lazily and parented to this window.</summary>
     public IDialogService Dialogs => _dialogs ??= new DialogService(
-        _frame, _dispatcher!, _catalog!, Input.GlobalShortcuts);
+        _frame, _dispatcher!, _catalog!, Input.GlobalShortcuts, Input.Request);
 
     public bool ApplyGlobalShortcuts(ShortcutManager shortcuts) => Input.ApplyGlobalShortcuts(shortcuts);
 

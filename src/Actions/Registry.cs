@@ -49,5 +49,5 @@ internal static class ActionRegistry
     [.. MediaActions.All, .. PlaybackActions.All, .. YouTubeActions.All,
         .. HelpActions.All, .. UpdateActions.All,
         .. RecordingActions.All, .. ToolsActions.All, .. IptvActions.All,
-        .. SleepTimerActions.All];
+        .. SleepTimerActions.All, .. SpotifyPreviewActions.All];
 }
