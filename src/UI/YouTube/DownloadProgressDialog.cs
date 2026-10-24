@@ -31,13 +31,13 @@ internal sealed class DownloadProgressDialog : IDisposable
         _dispatcher = dispatcher;
         _queue = queue;
         _itemId = itemId;
-        // Translators: Title of the window shown while a video is being downloaded.
+        // A null parent alone lets wxWidgets choose the main window as the native owner.
         _dialog = new Dialog(
             parent: null,
             // Translators: Title of the window showing progress for one YouTube download.
             title: Tr("Downloading"),
             size: new Size(520, 300),
-            style: DialogStyle.Default | DialogStyle.ResizeBorder);
+            style: DialogStyle.Default | DialogStyle.ResizeBorder | DialogStyle.NoParent);
 
         var sizer = new BoxSizer(Orientation.Vertical);
         _text = new TextCtrl(
