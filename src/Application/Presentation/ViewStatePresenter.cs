@@ -12,12 +12,16 @@ internal sealed class ViewStatePresenter
     private readonly IMainView _view;
     private readonly Player _player;
     private readonly ISpeechOutput _speech;
+    private readonly LunaPlayer.Spotify.PlaybackHost _spotify;
+    private bool _wasSpotifyActive;
 
-    internal ViewStatePresenter(IMainView view, Player player, ISpeechOutput speech)
+    internal ViewStatePresenter(IMainView view, Player player, ISpeechOutput speech,
+        LunaPlayer.Spotify.PlaybackHost spotify)
     {
         _view = view;
         _player = player;
         _speech = speech;
+        _spotify = spotify;
     }
 
     /// <summary>The starting state, before anything is open.</summary>
@@ -43,10 +47,10 @@ internal sealed class ViewStatePresenter
 
     internal void Sync()
     {
-        var loaded = _player.CurrentPath is not null;
-        var local = _player.CurrentPath is string path && File.Exists(path);
+        var loaded = _player.CurrentPath is not null || _spotify.IsActive;
+        var local = !_spotify.IsActive && _player.CurrentPath is string path && File.Exists(path);
         _view.SetMediaLoaded(loaded);
-        _view.SetPlaying(_player.IsPlaying);
+        _view.SetPlaying(_spotify.IsActive ? _spotify.IsPlaying : _player.IsPlaying);
         _view.SetEditState(local, loaded);
         _view.SetBookmarkState(local);
         _view.SetMarkState(_player.IsCurrentMarked, _player.AreAllMarked);
@@ -62,7 +66,7 @@ internal sealed class ViewStatePresenter
         _view.SetAudioTrackControlsEnabled(_player.GetAudioTracks().Count > 1);
         // The Subtitles menu is open whenever a file is - embedded subtitles or not - because one can always
         // be loaded from a file or a URL; it is only shut when nothing is loaded to attach one to.
-        _view.SetSubtitleControlsEnabled(loaded);
+        _view.SetSubtitleControlsEnabled(loaded && !_spotify.IsActive);
         // Leave full screen when the current item stops being a video; once out, IsFullScreen is false so it
         // will not fire again. Moving between two videos keeps HasVideo true and stays silent.
         if (!_player.HasVideo && _view.IsFullScreen)
@@ -75,5 +79,13 @@ internal sealed class ViewStatePresenter
                 Tr("Full-screen off"));
         }
         _view.SetSilenceRemovalChecked(_player.IsSilenceRemovalEnabled);
+        if (_spotify.IsActive || _wasSpotifyActive)
+        {
+            // Only Spotify and its return to the interrupted source need extra updates.
+            // Ordinary local and YouTube state changes retain their existing menu behavior.
+            _view.SetShuffleChecked(_spotify.IsActive ? _spotify.IsShuffleEnabled : _player.IsShuffleEnabled);
+            _view.SetRepeatFileChecked(_spotify.IsActive ? _spotify.IsRepeatCurrentEnabled : _player.IsRepeatFileEnabled);
+        }
+        _wasSpotifyActive = _spotify.IsActive;
     }
 }

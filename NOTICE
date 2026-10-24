@@ -11,6 +11,24 @@ below. Each remains under its own licence, which Luna Player's licence neither
 replaces nor modifies. The root LICENSE file and the licence texts under
 third-party/licenses are installed alongside the program.
 
+-------------------------------------------------------------------------------
+Librespot protocol reference                          LunaPlayer.exe
+-------------------------------------------------------------------------------
+
+Copyright (c) 2015 Paul Lietar and the librespot contributors.
+
+  Revision:  1599145bf2c98660d35b17817b3386767a7e4b42
+  Source:    https://github.com/librespot-org/librespot
+  Licence:   MIT (third-party/licenses/librespot-LICENSE.txt)
+
+Luna Player's managed Spotify playback follows the librespot protocol flow.
+The managed Shannon cipher implementation is adapted from the MIT-licensed
+shannon 0.2.0 Rust crate used by librespot.
+
+Shannon cipher port: Copyright (c) 2016 Paul Lietar.
+  Source:    https://crates.io/crates/shannon/0.2.0
+  Licence:   MIT (third-party/licenses/shannon-LICENSE.txt)
+
 
 -------------------------------------------------------------------------------
 mpv                                                                    mpv.dll

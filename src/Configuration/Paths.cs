@@ -49,6 +49,10 @@ internal static partial class Paths
     /// builds up through use rather than configuration.</summary>
     internal static string RecentsFile { get; } = Path.Combine(RootDirectory, "recents.json");
 
+    /// <summary>Search terms entered in Spotify, kept in the existing preview file for continuity.</summary>
+    internal static string SpotifyPreviewSearchesFile { get; } = Path.Combine(RootDirectory, "spotify-preview-searches.txt");
+    internal static string SpotifyTokenFile { get; } = Path.Combine(RootDirectory, "spotify-token.dat");
+
     /// <summary>What a path is compared and stored under, so that two spellings of one file - a relative
     /// path and an absolute one, or two different cases - are recognised as the same file.</summary>
     ///

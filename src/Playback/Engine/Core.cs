@@ -162,6 +162,8 @@ internal sealed partial class Engine : IEngine
         _videoParamsRegistration.Dispose();
         _trackListRegistration.Dispose();
         _subTextRegistration.Dispose();
+        foreach (var pending in _spotifyAudio)
+            if (_spotifyAudio.TryRemove(pending.Key, out var unused)) unused.Dispose();
         _mpv.Dispose();
     }
 

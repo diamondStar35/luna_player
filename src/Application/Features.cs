@@ -14,7 +14,7 @@ namespace LunaPlayer.Application;
 
 /// <summary>Wires application commands and owns the services used by the running window. Startup workers
 /// hand their resources over here only after the window's menus and input handling are ready.</summary>
-internal sealed class Features : IDisposable
+internal sealed partial class Features : IDisposable
 {
     private readonly IMainView _view;
     private readonly IApplicationDispatcher _dispatcher;
@@ -81,16 +81,25 @@ internal sealed class Features : IDisposable
         var clipboard = new WxClipboardService();
         // Now that there is a toolkit, the crash window can offer to copy.
         CrashReport.SetClipboard(clipboard);
+        _spotifyPlayback = new LunaPlayer.Spotify.PlaybackHost(_settings.Spotify, player, _dispatcher);
+        _spotifyPlayback.ConfigurePlayback(_settings.Audio, player.ReadSavedPosition, player.WriteSavedPosition);
+        _spotifyPlayback.CommandFailed += OnSpotifyCommandFailed;
+        _spotifyPlayback.TrackChanged += OnSpotifyTrackChanged;
+        _spotifyPlayback.Navigated += OnSpotifyNavigated;
+        _spotifyPlayback.PlayingChanged += OnSpotifyPlayingChanged;
+        _player.CurrentChanged += OnSpotifyCurrentChanged;
+        _view.CloseRequested += CancelSpotifyStart;
         var selection = features.Selection;
         var selections = features.Selections;
         var router = new ActionRouter();
         _ = new Help(router, _view);
         var appUpdates = new Updates(router, _view, _settings, _dispatcher, speech);
         _appUpdates = appUpdates;
-        var fileActions = new Files(router, _view, player, _settings, speech, clipboard, _dispatcher, window.Recents);
+        var fileActions = new Files(router, _view, player, _settings, speech, clipboard, _dispatcher,
+            window.Recents, _spotifyPlayback, CancelPendingSpotifyStart);
         _fileActions = fileActions;
         _ = new Commands.Playback.Playback(
-            router, _view, player, _settings, _settingsStore, speech, selection, selections, _dispatcher);
+            router, _view, player, _settings, _settingsStore, speech, selection, selections, _dispatcher, _spotifyPlayback);
 
         _ = new Edit(router, _view, player, speech, clipboard, fileActions);
         _ = new MarkedFiles(router, _view, player, _settings, speech, clipboard, _dispatcher);
@@ -137,10 +146,10 @@ internal sealed class Features : IDisposable
             router, _view, player, _settings, speech, clipboard, youTube, sessions, components, _dispatcher,
             downloadQueue);
         _ = new Commands.YouTube.Favorites(router, _view, player, speech, favorites, sessions);
-        _ = new Commands.YouTube.Playlist(router, _view, player, _settings, speech, sessions);
+        _ = new Commands.YouTube.Playlist(router, _view, player, _settings, speech, sessions, _spotifyPlayback);
         _ = new Commands.App.Preferences(router, _view, _settings, _settingsStore,
             new BackupService(_settingsStore, bookmarks), new FileAssociations(), player, shortcuts,
-            globalShortcuts, speech, youTube, components);
+            globalShortcuts, speech, youTube, components, RestartSpotifyForQuality);
         var recordingSources = features.RecordingSources;
         var recorder = new LunaPlayer.Recording.RecordingEngine(window.Catalog);
         _recorder = recorder;
@@ -150,7 +159,10 @@ internal sealed class Features : IDisposable
         _tools = tools;
         _ = new Commands.Iptv.Iptv(router, _view, player, speech, _dispatcher,
             features.IptvSources);
-        var sleepTimer = new SleepTimer(_dispatcher, player, speech);
+        var spotifyCatalog = new LunaPlayer.Spotify.Catalog(() => SpotifyAuth, _settings.Spotify);
+        router.Register(ActionId.OpenSpotifyPreview, () => OpenSpotify(spotifyCatalog));
+        var sleepTimer = new SleepTimer(_dispatcher, player, speech, _spotifyPlayback, CancelPendingSpotifyStart);
+        _spotifyPlayback.BeforeTrackEnd = sleepTimer.OnTrackEnded;
         _ = new Sleep(router, _view, player, sleepTimer, _settings, _settingsStore);
         router.EnsureComplete(ActionRegistry.All);
         var controller = new ApplicationController(
@@ -166,7 +178,8 @@ internal sealed class Features : IDisposable
             sessions,
             sleepTimer,
             speech,
-            mediaControls);
+            mediaControls,
+            _spotifyPlayback);
         _controller = controller;
         // After the controller, which sets the rest of the audio state up from the same settings.
         equalizer.Restore();
@@ -207,7 +220,15 @@ internal sealed class Features : IDisposable
 
     internal void RestoreSession()
     {
-        if (_settings.General.RememberLastPosition && File.Exists(_settings.Playback.LastFile))
+        if (_settings.General.RememberLastPosition
+            && LunaPlayer.Spotify.PlaybackHost.IsTrack(_settings.Playback.LastSpotifyUri))
+        {
+            var track = new LunaPlayer.Spotify.Track(_settings.Playback.LastSpotifyName,
+                _settings.Playback.LastSpotifyArtists, _settings.Playback.LastSpotifyUri,
+                _settings.Playback.LastSpotifyDurationMs);
+            _dispatcher.Post(() => StartSpotify(track, [track], _settings.Playback.LastSpotifyPosition));
+        }
+        else if (_settings.General.RememberLastPosition && File.Exists(_settings.Playback.LastFile))
             _dispatcher.Post(() => _fileActions.RestoreSession(
                 _settings.Playback.LastFile, _settings.Playback.LastPosition));
     }
@@ -222,7 +243,24 @@ internal sealed class Features : IDisposable
         if (_disposed)
             return;
         _disposed = true;
+        _view.CloseRequested -= CancelSpotifyStart;
+        _spotifyStart?.Cancel();
         _controller?.Dispose();
+        _spotifyStart?.Dispose();
+        _player.CurrentChanged -= OnSpotifyCurrentChanged;
+        if (_spotifyPlayback is not null)
+        {
+            _spotifyPlayback.CommandFailed -= OnSpotifyCommandFailed;
+            _spotifyPlayback.TrackChanged -= OnSpotifyTrackChanged;
+            _spotifyPlayback.Navigated -= OnSpotifyNavigated;
+            _spotifyPlayback.PlayingChanged -= OnSpotifyPlayingChanged;
+            _spotifyPlayback.Dispose();
+        }
+        if (_spotifyAuth is not null)
+        {
+            _spotifyAuth.SignedOut -= OnSpotifySignedOut;
+            _spotifyAuth.Dispose();
+        }
         // Unsubscribe subtitle handlers before the player is released.
         _subtitles?.Dispose();
         // A running recording still has an encoder to flush before its engine goes away.

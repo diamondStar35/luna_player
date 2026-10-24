@@ -37,9 +37,41 @@ internal sealed partial class Files
 
     private void OpenedFiles()
     {
+        if (_spotify.IsActive)
+        {
+            ShowSpotifyTracks(_spotify.CurrentIndex);
+            return;
+        }
         if (!_guard.RequireAnyFile())
             return;
         ShowOpenedFiles(_player.CurrentIndex);
+    }
+
+    private void ShowSpotifyTracks(int selected)
+    {
+        while (_spotify.IsActive)
+        {
+            var tracks = _spotify.CurrentQueue;
+            if (tracks.Count == 0) return;
+            var request = _view.Dialogs.ChooseOpenedFile(tracks.Count,
+                index => index >= 0 && index < tracks.Count
+                    ? tracks[index].Name + " - " + tracks[index].Artists : string.Empty,
+                selected);
+            if (request is null) return;
+            if (request.Value.Action == OpenedFilesAction.Jump)
+            {
+                _spotify.GoToIndex(request.Value.SelectedIndex);
+                return;
+            }
+            var duration = tracks.Sum(track => (long)Math.Max(0, track.DurationMs)) / 1000.0;
+            // Translators: Title of the information dialog for the current Spotify queue.
+            _view.Dialogs.ShowTextInfo(Tr("Playlist Info"), string.Join(Environment.NewLine,
+                // Translators: Spotify playlist summary. {count} is the number of tracks in the queue.
+                TrFormat("Number of tracks: {count}", tracks.Count),
+                // Translators: Line in the Spotify queue information dialog. {value} is the formatted combined playing time.
+                TrFormat("Total duration: {value}", PlaybackTimeFormatter.Format(duration))));
+            selected = request.Value.SelectedIndex;
+        }
     }
 
     /// <summary>Shows the list of loaded files. Written as a step rather than a loop because asking for the
@@ -117,7 +149,7 @@ internal sealed partial class Files
 
     private void AnnounceFileInfo()
     {
-        if (!_guard.RequireFile(out var path))
+        if (!_spotify.IsActive && !_guard.RequireFile(out _))
             return;
 
         var now = Environment.TickCount64;
@@ -129,18 +161,31 @@ internal sealed partial class Files
         switch (_fileInfoPressCount)
         {
             case 1:
+                if (_spotify.IsActive)
+                {
+                    if (_spotify.CurrentTitle is { } spotifyTitle) _speech.Speak(spotifyTitle, spotifyTitle);
+                    break;
+                }
+                var path = _player.CurrentPath!;
                 var name = _player.CurrentName ?? MediaLibrary.DisplayName(path);
                 _speech.Speak(name, name);
                 break;
             case 2:
-                _speech.Speak(path, path);
+                var link = _spotify.IsActive ? _spotify.CurrentLink : _player.CurrentPath;
+                if (link is not null) _speech.Speak(link, link);
                 break;
             default:
-                var copied = _clipboard.SetText(path);
+                var location = _spotify.IsActive ? _spotify.CurrentLink : _player.CurrentPath;
+                if (location is null) break;
+                var copied = _clipboard.SetText(location);
                 _speech.Speak(
                     copied
-                        // Translators: Spoken once the full location of the current file has been copied to the clipboard.
-                        ? Tr("File path copied to clipboard.")
+                        // Translators: Spoken once the Spotify track link has been copied to the clipboard.
+                        ? (_spotify.IsActive
+                            // Translators: Spoken confirmation after copying a Spotify track's public web address.
+                            ? Tr("Track link copied to clipboard.")
+                            // Translators: Spoken confirmation after copying the current file's location.
+                            : Tr("File path copied to clipboard."))
                         // Translators: Spoken when the full location of the current file could not be copied to the clipboard.
                         : Tr("Unable to copy to clipboard."),
                     copied
@@ -155,6 +200,11 @@ internal sealed partial class Files
 
     private void AnnounceTitle()
     {
+        if (_spotify.IsActive)
+        {
+            if (_spotify.CurrentTitle is { } spotifyTitle) _speech.Speak(spotifyTitle, spotifyTitle);
+            return;
+        }
         if (!_guard.RequireFile(out _))
             return;
         if (_player.CurrentTitle is { Length: > 0 } title)
