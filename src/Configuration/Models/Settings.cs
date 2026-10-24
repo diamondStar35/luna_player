@@ -19,6 +19,7 @@ internal sealed class Settings
     public EqualizerSettings Equalizer { get; set; } = new();
     public ShortcutSettings Shortcuts { get; set; } = new();
     public YouTubeSettings YouTube { get; set; } = new();
+    public SpotifySettings Spotify { get; set; } = new();
     public RecordingSettings Recording { get; set; } = new();
     public SleepTimerSettings SleepTimer { get; set; } = new();
 
@@ -32,6 +33,7 @@ internal sealed class Settings
         Equalizer = Equalizer.Copy(),
         Shortcuts = Shortcuts.Copy(),
         YouTube = YouTube.Copy(),
+        Spotify = Spotify.Copy(),
         Recording = Recording.Copy(),
         SleepTimer = SleepTimer.Copy(),
     };
@@ -46,6 +48,7 @@ internal sealed class Settings
         Equalizer.Apply(source.Equalizer);
         Shortcuts.Apply(source.Shortcuts);
         YouTube.Apply(source.YouTube);
+        Spotify.Apply(source.Spotify);
         Recording.Apply(source.Recording);
         SleepTimer.Apply(source.SleepTimer);
         Validate();
@@ -55,7 +58,7 @@ internal sealed class Settings
     internal void ValidateStored()
     {
         if (General is null || Audio is null || Playback is null || Silence is null
-            || Shortcuts is null || YouTube is null || Recording is null || Equalizer is null
+            || Shortcuts is null || YouTube is null || Spotify is null || Recording is null || Equalizer is null
             || SleepTimer is null)
             throw new JsonException("The settings file is missing a required section.");
 
@@ -92,6 +95,11 @@ internal sealed class Settings
         Require(Playback.LastFile is not null, "playback.lastFile");
         Require(double.IsFinite(Playback.LastPosition) && Playback.LastPosition >= 0,
             "playback.lastPosition");
+        Require(Playback.LastSpotifyUri is not null && Playback.LastSpotifyName is not null
+            && Playback.LastSpotifyArtists is not null, "playback.lastSpotifyTrack");
+        Require(Playback.LastSpotifyDurationMs >= 0, "playback.lastSpotifyDurationMs");
+        Require(double.IsFinite(Playback.LastSpotifyPosition) && Playback.LastSpotifyPosition >= 0,
+            "playback.lastSpotifyPosition");
 
         Require(Silence.StartPeriods >= 0, "silence.startPeriods");
         Require(double.IsFinite(Silence.StartDuration) && Silence.StartDuration >= 0,
@@ -173,6 +181,9 @@ internal sealed class Settings
             ? Audio.SeekStepKey : "2";
         YouTube.SearchResultCount = Math.Clamp(YouTube.SearchResultCount, 5, 100);
         YouTube.CookiesPath ??= string.Empty;
+        Spotify.ClientId = (Spotify.ClientId ?? string.Empty).Trim();
+        Spotify.AudioQuality = Spotify.AudioQuality is "NORMAL" or "HIGH" or "VERY_HIGH"
+            ? Spotify.AudioQuality : "VERY_HIGH";
         YouTube.Download ??= new();
         // Keep the default implicit. Resolving the user's Downloads known folder calls into the shell and
         // is only needed when a download is actually requested.
@@ -196,6 +207,11 @@ internal sealed class Settings
         SleepTimer.FadeSeconds = Math.Clamp(
             SleepTimer.FadeSeconds, SleepTimerSettings.MinimumFadeSeconds, SleepTimerSettings.MaximumFadeSeconds);
         Playback.LastPosition = Precision.Normalize(Math.Max(0, Playback.LastPosition));
+        Playback.LastSpotifyUri ??= string.Empty;
+        Playback.LastSpotifyName ??= string.Empty;
+        Playback.LastSpotifyArtists ??= string.Empty;
+        Playback.LastSpotifyDurationMs = Math.Max(0, Playback.LastSpotifyDurationMs);
+        Playback.LastSpotifyPosition = Precision.Normalize(Math.Max(0, Playback.LastSpotifyPosition));
         Silence.StartPeriods = Math.Max(0, Silence.StartPeriods);
         Silence.StartDuration = Precision.Normalize(Math.Max(0, Silence.StartDuration));
         Silence.Threshold = Precision.Normalize(Silence.Threshold);

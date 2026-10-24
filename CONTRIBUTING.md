@@ -16,19 +16,14 @@ fix, open an issue first to discuss the approach before writing code.
 ## Building
 
 ```
-git clone --recurse-submodules https://github.com/diamondStar35/luna_player
+git clone https://github.com/diamondStar35/luna_player
 cd luna_player
+git submodule update --init third-party/WxSharp
 python -m pip install --requirement docs/requirements.txt
 dotnet build src/LunaPlayer.csproj
 ```
 
 The build output is written to `src/bin/<Configuration>/net10.0-windows10.0.19041.0/win-x64/`.
-
-If the repository was cloned without submodules, run:
-
-```
-git submodule update --init --recursive
-```
 
 Enable the repository's version-consistency check once per clone:
 
@@ -85,6 +80,15 @@ The normal build runs the same renderer, so Python and the packages from `docs/r
 must be installed even when documentation is not the focus of the change.
 
 ## Testing changes
+
+Run the automated playback and Spotify regression checks from the repository root:
+
+```powershell
+dotnet run --project tests/Regression/Regression.csproj -c Release -p:NativeAotBuildInvocation=true
+```
+
+These checks use fake HTTP responses and views; they do not require a Spotify account or replace
+the interactive playback and accessibility checks below.
 
 Test your changes before submitting:
 
@@ -145,9 +149,9 @@ After changing any string, rebuild the template and update the catalogues:
 ./scripts/update-pot.ps1
 ```
 
-This needs the GNU gettext tools on `PATH`. It rewrites `locale/LunaPlayer.pot`, merges it into
-every `locale/<language>/LC_MESSAGES/LunaPlayer.po`, and accepts `-Language <code>` to start a new
-catalogue.
+This needs the GNU gettext tools on `PATH`. It rewrites `locale/LunaPlayer.pot` without changing
+the language catalogues. Use `-Language <code>` to merge the template into that language's
+catalogue or start a new catalogue.
 
 Normal builds run `scripts/compile-translations.ps1` to compile every catalogue and fail if a
 translation changes the named placeholders in its source message. The build copies the resulting

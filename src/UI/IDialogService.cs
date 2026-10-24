@@ -150,5 +150,9 @@ internal interface IDialogService
     /// <summary>Shows a read-only report of a batch that mostly worked: a summary line, then a scrollable list
     /// of the files that failed with their reasons.</summary>
     void ShowConversionReport(string title, string message, string details);
-    Settings? EditPreferences(Settings settings, PrefsOps operations, Action<string> speakHelp);
+    LunaPlayer.UI.Spotify.DialogOutcome ShowSpotifyPreview(
+        LunaPlayer.Spotify.Catalog catalog, LunaPlayer.Spotify.Auth auth,
+        SpotifySettings settings);
+    Settings? EditPreferences(Settings settings, PrefsOps operations, Action<string> speakHelp,
+        bool openSpotifyCredentials = false);
 }

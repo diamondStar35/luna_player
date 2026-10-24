@@ -64,9 +64,9 @@ internal static class BackgroundProgress
     private static readonly HashSet<object> Running = [];
 
     /// <summary>Starts <paramref name="work"/> and returns immediately. <paramref name="completed"/> runs on
-    /// the UI thread once the job has finished, and not at all if the user aborted it.</summary>
+    /// the UI thread when the job completes successfully, including a cancellation race.</summary>
     /// <param name="work">The job. It is handed something to report progress to and a token that is set when
-    /// the user aborts; it may either return early or throw <see cref="OperationCanceledException"/>.</param>
+    /// the user aborts; throw <see cref="OperationCanceledException"/> to cancel without a result.</param>
     internal static void Start<TResult>(
         IMainView view,
         IApplicationDispatcher dispatcher,

@@ -20,6 +20,7 @@ internal sealed partial class Files
     private readonly IClipboardService _clipboard;
     private readonly IApplicationDispatcher _dispatcher;
     private readonly MediaGuard _guard;
+    private readonly LunaPlayer.Spotify.PlaybackHost _spotify;
     private int _fileInfoPressCount;
     private long _fileInfoLastPress;
     private readonly PlaylistInfoService _playlistInfo = new();
@@ -33,7 +34,8 @@ internal sealed partial class Files
         ISpeechOutput speech,
         IClipboardService clipboard,
         IApplicationDispatcher dispatcher,
-        RecentsStore recents)
+        RecentsStore recents,
+        LunaPlayer.Spotify.PlaybackHost spotify)
     {
         _view = view;
         _player = player;
@@ -42,6 +44,7 @@ internal sealed partial class Files
         _clipboard = clipboard;
         _dispatcher = dispatcher;
         _recents = recents;
+        _spotify = spotify;
         _guard = new MediaGuard(player, speech);
         router.Register(ActionId.OpenFile, OpenFileFromDialog);
         router.Register(ActionId.OpenLink, OpenLink);
@@ -215,6 +218,16 @@ internal sealed partial class Files
 
     private void CloseFile()
     {
+        if (_spotify.IsActive)
+        {
+            _spotify.Stop();
+            _speech.Speak(
+                // Translators: Full or short spoken confirmation after closing the current Spotify session.
+                Tr("File closed."),
+                // Translators: Full or short spoken confirmation after closing the current Spotify session.
+                Tr("File closed."));
+            return;
+        }
         if (_player.CurrentPath is null)
             _guard.ReportNoFile();
         else if (!_player.CloseCurrent())
@@ -234,9 +247,11 @@ internal sealed partial class Files
 
     private void CloseAllFiles()
     {
-        if (_player.Count == 0)
+        var hadSpotify = _spotify.IsActive;
+        if (hadSpotify) _spotify.Stop(restoreSession: false);
+        if (!hadSpotify && _player.Count == 0)
             _guard.ReportNoFile();
-        else if (!_player.CloseAll())
+        else if (!_player.CloseAll() && !hadSpotify)
             _speech.Speak(
                 // Translators: Spoken when the loaded files could not be taken out of the playlist.
                 Tr("Could not close files."),
