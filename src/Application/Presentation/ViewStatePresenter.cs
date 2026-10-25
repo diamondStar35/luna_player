@@ -12,16 +12,16 @@ internal sealed class ViewStatePresenter
     private readonly IMainView _view;
     private readonly Player _player;
     private readonly ISpeechOutput _speech;
-    private readonly LunaPlayer.Spotify.Playback _spotify;
+    private readonly Func<LunaPlayer.Spotify.Playback?> _getSpotify;
     private readonly PlaybackSessions _sessions;
 
     internal ViewStatePresenter(IMainView view, Player player, ISpeechOutput speech, PlaybackSessions sessions,
-        LunaPlayer.Spotify.Playback spotify)
+        Func<LunaPlayer.Spotify.Playback?> getSpotify)
     {
         _view = view;
         _player = player;
         _speech = speech;
-        _spotify = spotify;
+        _getSpotify = getSpotify;
         _sessions = sessions;
     }
 
@@ -48,10 +48,11 @@ internal sealed class ViewStatePresenter
 
     internal void Sync()
     {
-        var loaded = _player.CurrentPath is not null || _sessions.Radio.IsActive || _spotify.HasSession;
-        var local = !_spotify.HasSession && _player.CurrentPath is string path && File.Exists(path);
+        var spotify = _getSpotify();
+        var loaded = _player.CurrentPath is not null || _sessions.Radio.IsActive || spotify?.HasSession == true;
+        var local = spotify?.HasSession != true && _player.CurrentPath is string path && File.Exists(path);
         _view.SetMediaLoaded(loaded);
-        _view.SetPlaying(_spotify.IsActive ? _spotify.IsPlaying : _player.IsPlaying);
+        _view.SetPlaying(spotify?.IsActive == true ? spotify.IsPlaying : _player.IsPlaying);
         _view.SetEditState(local, loaded);
         _view.SetBookmarkState(local);
         _view.SetMarkState(_player.IsCurrentMarked, _player.AreAllMarked);
@@ -67,7 +68,7 @@ internal sealed class ViewStatePresenter
         _view.SetAudioTrackControlsEnabled(_player.GetAudioTracks().Count > 1);
         // The Subtitles menu is open whenever a file is - embedded subtitles or not - because one can always
         // be loaded from a file or a URL; it is only shut when nothing is loaded to attach one to.
-        _view.SetSubtitleControlsEnabled(loaded && !_spotify.HasSession);
+        _view.SetSubtitleControlsEnabled(loaded && spotify?.HasSession != true);
         // Leave full screen when the current item stops being a video; once out, IsFullScreen is false so it
         // will not fire again. Moving between two videos keeps HasVideo true and stays silent.
         if (!_player.HasVideo && _view.IsFullScreen)
@@ -80,7 +81,7 @@ internal sealed class ViewStatePresenter
                 Tr("Full-screen off"));
         }
         _view.SetSilenceRemovalChecked(_player.IsSilenceRemovalEnabled);
-        _view.SetShuffleChecked(_spotify.IsActive ? _spotify.IsShuffleEnabled : _sessions.IsShuffleEnabled);
-        _view.SetRepeatFileChecked(_spotify.IsActive ? _spotify.IsRepeatCurrentEnabled : _player.IsRepeatFileEnabled);
+        _view.SetShuffleChecked(spotify?.IsActive == true ? spotify.IsShuffleEnabled : _sessions.IsShuffleEnabled);
+        _view.SetRepeatFileChecked(spotify?.IsActive == true ? spotify.IsRepeatCurrentEnabled : _player.IsRepeatFileEnabled);
     }
 }

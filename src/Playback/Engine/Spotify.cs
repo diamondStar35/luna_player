@@ -7,10 +7,11 @@ namespace LunaPlayer.Playback;
 
 internal sealed partial class Engine
 {
-    private readonly ConcurrentDictionary<string, AudioDecryptStream> _spotifyAudio = new(StringComparer.Ordinal);
+    private ConcurrentDictionary<string, AudioDecryptStream>? _spotifyAudio;
     private bool _spotifyProtocolRegistered;
     internal string RegisterSpotifyAudio(AudioDecryptStream audio)
     {
+        var streams = _spotifyAudio ??= new(StringComparer.Ordinal);
         if (!_spotifyProtocolRegistered)
         {
             // Optional Spotify initialization must not affect ordinary player startup.
@@ -18,9 +19,9 @@ internal sealed partial class Engine
             _spotifyProtocolRegistered = true;
         }
         var id = Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture);
-        foreach (var pending in _spotifyAudio)
-            if (_spotifyAudio.TryRemove(pending.Key, out var unused)) unused.Dispose();
-        _spotifyAudio[id] = audio;
+        foreach (var pending in streams)
+            if (streams.TryRemove(pending.Key, out var unused)) unused.Dispose();
+        streams[id] = audio;
         return "luna-spotify://" + id;
     }
 
@@ -28,14 +29,15 @@ internal sealed partial class Engine
     {
         const string prefix = "luna-spotify://";
         if (url.StartsWith(prefix, StringComparison.Ordinal)
-            && _spotifyAudio.TryRemove(url[prefix.Length..], out var pending)) pending.Dispose();
+            && _spotifyAudio is { } streams
+            && streams.TryRemove(url[prefix.Length..], out var pending)) pending.Dispose();
     }
 
     private IMpvStream OpenSpotifyStream(string uri)
     {
         const string prefix = "luna-spotify://";
-        if (!uri.StartsWith(prefix, StringComparison.Ordinal)
-            || !_spotifyAudio.TryRemove(uri[prefix.Length..], out var audio))
+        if (!uri.StartsWith(prefix, StringComparison.Ordinal) || _spotifyAudio is not { } streams
+            || !streams.TryRemove(uri[prefix.Length..], out var audio))
             throw new InvalidDataException();
         return new AudioStream(audio);
     }

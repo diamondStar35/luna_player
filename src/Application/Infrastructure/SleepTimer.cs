@@ -27,7 +27,7 @@ internal sealed class SleepTimer : IDisposable
     private readonly IApplicationDispatcher _dispatcher;
     private readonly Player _player;
     private readonly ISpeechOutput _speech;
-    private readonly SpotifyPlayback? _spotify;
+    private readonly Func<SpotifyPlayback?>? _getSpotify;
     private readonly Action? _cancelSpotifyStart;
 
     private bool _armed;
@@ -41,12 +41,12 @@ internal sealed class SleepTimer : IDisposable
     private bool _warned;
 
     internal SleepTimer(IApplicationDispatcher dispatcher, Player player, ISpeechOutput speech,
-        SpotifyPlayback? spotify = null, Action? cancelSpotifyStart = null)
+        Func<SpotifyPlayback?>? getSpotify = null, Action? cancelSpotifyStart = null)
     {
         _dispatcher = dispatcher;
         _player = player;
         _speech = speech;
-        _spotify = spotify;
+        _getSpotify = getSpotify;
         _cancelSpotifyStart = cancelSpotifyStart;
     }
 
@@ -139,25 +139,26 @@ internal sealed class SleepTimer : IDisposable
     /// </summary>
     internal bool OnTrackEnded()
     {
+        var spotify = _getSpotify?.Invoke();
         if (!_armed || _mode != SleepTimerMode.EndOfTrack)
             return false;
         StopTick();
         RestoreVolume();
         // On pause there is nothing to do: mpv's keep-open already holds the finished file paused, and the
         // controller syncs the view. On stop the file is unloaded.
-        if (_spotify?.HasSession == true && !_spotify.IsActive)
+        if (spotify is { HasSession: true, IsActive: false })
         {
             // A timer that fires during authorization must not allow the pending start
             // to begin playing later. The interrupted file returns paused.
             _cancelSpotifyStart?.Invoke();
-            _spotify.Stop();
+            spotify.Stop();
         }
         else if (_action == SleepTimerAction.Stop)
         {
-            if (_spotify?.IsActive == true) _spotify.Stop();
+            if (spotify?.IsActive == true) spotify.Stop();
             else _player.Stop();
         }
-        else if (_spotify?.IsActive == true) _spotify.Pause();
+        else if (spotify?.IsActive == true) spotify.Pause();
         _armed = false;
         _player.HoldAutomaticAdvance(false, prepare: false);
         AnnounceFired();
@@ -217,19 +218,20 @@ internal sealed class SleepTimer : IDisposable
 
     private void Fire()
     {
+        var spotify = _getSpotify?.Invoke();
         StopTick();
         RestoreVolume();
-        if (_spotify?.HasSession == true && !_spotify.IsActive)
+        if (spotify is { HasSession: true, IsActive: false })
         {
             _cancelSpotifyStart?.Invoke();
-            _spotify.Stop();
+            spotify.Stop();
         }
         else if (_action == SleepTimerAction.Stop)
         {
-            if (_spotify?.IsActive == true) _spotify.Stop();
+            if (spotify?.IsActive == true) spotify.Stop();
             else _player.Stop();
         }
-        else if (_spotify?.IsActive == true) _spotify.Pause();
+        else if (spotify?.IsActive == true) spotify.Pause();
         else if (_player.IsPlaying) _player.TogglePause();
         _armed = false;
         AnnounceFired();

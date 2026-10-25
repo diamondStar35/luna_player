@@ -17,7 +17,7 @@ internal sealed class Playlist
     private readonly ISpeechOutput _speech;
     private readonly MediaGuard _guard;
     private readonly PlaybackSessions _sessions;
-    private LunaPlayer.Spotify.Playback Spotify => _sessions.Spotify;
+    private LunaPlayer.Spotify.Playback? Spotify => _sessions.Spotify;
 
     internal Playlist(
         ActionRouter router,
@@ -73,7 +73,7 @@ internal sealed class Playlist
             case NavigationOutcome.Pending:
                 return;
             case NavigationOutcome.Exhausted:
-                if (!Spotify.HasSession) SetSwitched(false, announce: true);
+                if (Spotify?.HasSession != true) SetSwitched(false, announce: true);
                 return;
         }
         if (!_player.Next(_settings.Audio.WrapPlaylist))
@@ -82,22 +82,25 @@ internal sealed class Playlist
     }
     private void MoveFirst()
     {
-        if (Spotify.IsActive) { Spotify.GoToIndex(0); return; }
+        var spotify = Spotify;
+        if (spotify?.IsActive == true) { spotify.GoToIndex(0); return; }
         SetSwitched(_sessions.Radio.IsActive
             ? _sessions.Radio.GoToIndex(0) == NavigationOutcome.Advanced : _player.First(), announce: true);
     }
     private void MoveLast()
     {
-        if (Spotify.IsActive) { Spotify.GoToIndex(Spotify.CurrentQueue.Count - 1); return; }
+        var spotify = Spotify;
+        if (spotify?.IsActive == true) { spotify.GoToIndex(spotify.CurrentQueue.Count - 1); return; }
         SetSwitched(_sessions.Radio.IsActive
             ? _sessions.Radio.GoToIndex(_sessions.Radio.Count - 1) == NavigationOutcome.Advanced : _player.Last(), announce: true);
     }
 
     private void GoToFile()
     {
+        var spotify = Spotify;
         var radio = _sessions.Radio.IsActive;
-        var count = Spotify.IsActive ? Spotify.CurrentQueue.Count : radio ? _sessions.Radio.Count : _player.Count;
-        var index = Spotify.IsActive ? Spotify.CurrentIndex : radio ? _sessions.Radio.CurrentIndex : _player.CurrentIndex;
+        var count = spotify?.IsActive == true ? spotify.CurrentQueue.Count : radio ? _sessions.Radio.Count : _player.Count;
+        var index = spotify?.IsActive == true ? spotify.CurrentIndex : radio ? _sessions.Radio.CurrentIndex : _player.CurrentIndex;
         if (count <= 1)
         {
             _speech.Speak(
@@ -132,16 +135,17 @@ internal sealed class Playlist
                 Tr("Out of range."));
             return;
         }
-        if (Spotify.IsActive) Spotify.GoToIndex(number - 1);
+        if (spotify?.IsActive == true) spotify.GoToIndex(number - 1);
         else SetSwitched(radio ? _sessions.Radio.GoToIndex(number - 1) == NavigationOutcome.Advanced
             : _player.GoToIndex(number - 1), announce: true);
     }
 
     private void ToggleShuffle()
     {
-        if (!Spotify.IsActive && !_sessions.Radio.IsActive && !_guard.RequireFile(out _))
+        var spotify = Spotify;
+        if (spotify?.IsActive != true && !_sessions.Radio.IsActive && !_guard.RequireFile(out _))
             return;
-        var enabled = Spotify.IsActive ? Spotify.ToggleShuffle() : _sessions.ToggleShuffle();
+        var enabled = spotify?.IsActive == true ? spotify.ToggleShuffle() : _sessions.ToggleShuffle();
         _view.SetShuffleChecked(enabled);
         if (enabled)
         {
@@ -163,9 +167,10 @@ internal sealed class Playlist
 
     private void ToggleRepeatFile()
     {
-        if (!Spotify.IsActive && !_guard.RequireFile(out _))
+        var spotify = Spotify;
+        if (spotify?.IsActive != true && !_guard.RequireFile(out _))
             return;
-        var enabled = Spotify.IsActive ? Spotify.ToggleRepeatCurrent() : _player.ToggleRepeatFile();
+        var enabled = spotify?.IsActive == true ? spotify.ToggleRepeatCurrent() : _player.ToggleRepeatFile();
         _view.SetRepeatFileChecked(enabled);
         if (enabled)
         {

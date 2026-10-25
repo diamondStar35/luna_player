@@ -32,7 +32,7 @@ internal sealed class ApplicationController : IDisposable
     private readonly ViewStatePresenter _viewState;
     private readonly WindowTitlePresenter _title;
     private readonly MediaOverlayPresenter _overlay;
-    private readonly LunaPlayer.Spotify.Playback _spotify;
+    private readonly Func<LunaPlayer.Spotify.Playback?> _getSpotify;
     private string? _selectionPath;
     private int _selectionPlaylistIndex = -1;
     private Task? _shutdownTask;
@@ -52,7 +52,7 @@ internal sealed class ApplicationController : IDisposable
         SleepTimer sleepTimer,
         ISpeechOutput speech,
         SystemMediaControls mediaControls,
-        LunaPlayer.Spotify.Playback spotify)
+        Func<LunaPlayer.Spotify.Playback?> getSpotify)
     {
         _view = view;
         _player = player;
@@ -66,11 +66,11 @@ internal sealed class ApplicationController : IDisposable
         _sessions = sessions;
         _sleepTimer = sleepTimer;
         _speech = speech;
-        _spotify = spotify;
+        _getSpotify = getSpotify;
         _selectionPath = player.CurrentPath;
         _selectionPlaylistIndex = player.CurrentIndex;
-        _viewState = new ViewStatePresenter(view, player, speech, sessions, spotify);
-        _title = new WindowTitlePresenter(view, player, settings, _tags, spotify);
+        _viewState = new ViewStatePresenter(view, player, speech, sessions, getSpotify);
+        _title = new WindowTitlePresenter(view, player, settings, _tags, getSpotify);
         _overlay = new MediaOverlayPresenter(
             player,
             settings,
@@ -108,6 +108,7 @@ internal sealed class ApplicationController : IDisposable
         if (_shutdownTask is not null)
             return _shutdownTask;
         _shutDown = true;
+        var spotify = _getSpotify();
         // Nothing after this wants the overlay published again, and the clock would keep firing until the
         // controller is disposed.
         _overlay.StopClock();
@@ -125,7 +126,7 @@ internal sealed class ApplicationController : IDisposable
         // stall, but neither operation needs playback to remain active once its values have been captured.
         var radioTask = _sessions.Radio.ShutdownAsync();
         _player.Stop();
-        if (!_spotify.IsActive) _player.SavePosition(path, elapsed);
+        if (spotify?.IsActive != true) _player.SavePosition(path, elapsed);
         if (_settings.General.RememberLastPosition && path is not null && File.Exists(path))
         {
             _settings.Playback.LastFile = path;
@@ -134,7 +135,7 @@ internal sealed class ApplicationController : IDisposable
         // Snapshot and validate settings on this thread because shortcut validation uses wx localization;
         // only its disk write runs in the background. It proceeds alongside media shutdown, since storage,
         // antivirus, network streams and audio/video devices can each be slow on a particular machine.
-        _spotify.Stop(restoreSession: false);
+        spotify?.Stop(restoreSession: false);
         var saveTask = _settingsStore.SaveSessionAsync(_settings);
         var playerTask = Task.Run(_player.Dispose);
         // The frame remains hidden but alive until shutdown finishes, preserving the window handle mpv uses.
@@ -224,13 +225,13 @@ internal sealed class ApplicationController : IDisposable
 
     private void OnPlaybackEnded(EndReason reason)
     {
-        var spotifyEnd = _spotify.IsActive;
-        var generation = _spotify.CurrentLoadGeneration;
+        var spotify = _getSpotify() is { IsActive: true } current ? current : null;
+        var generation = spotify?.CurrentLoadGeneration ?? 0;
         _dispatcher.Post(() =>
         {
-            if (spotifyEnd)
+            if (spotify is not null)
             {
-                _spotify.HandleEnded(reason, generation);
+                spotify.HandleEnded(reason, generation);
                 SyncViewState();
                 return;
             }
@@ -259,7 +260,7 @@ internal sealed class ApplicationController : IDisposable
             return;
         if (_player.CurrentPath is null)
             return;
-        if (_spotify.IsActive) return;
+        if (_getSpotify()?.IsActive == true) return;
         if (reason == EndReason.Error && _selections.PlaybackActive)
         {
             _player.ClearSelectionRange();

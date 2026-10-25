@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-10-25 17:54+0300\n"
+"POT-Creation-Date: 2026-10-25 18:19+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1037,7 +1037,7 @@ msgstr ""
 #. Translators: The short wording spoken once the marked files have been copied into the chosen folder.
 #. Translators: The short wording spoken once the address of a video has been copied.
 #: Application/Commands/Files/Edit.cs:125
-#: Application/Commands/Files/Info.cs:198
+#: Application/Commands/Files/Info.cs:200
 #: Application/Commands/Files/MarkedFiles.cs:73
 #: Application/Commands/Files/MarkedFiles.cs:168
 #: Application/Commands/YouTube/CurrentVideo.cs:101
@@ -1049,7 +1049,7 @@ msgstr ""
 #. Translators: Short announcement after copying marked files to the clipboard fails.
 #. Translators: The short wording spoken when the address of a video could not be copied.
 #: Application/Commands/Files/Edit.cs:127
-#: Application/Commands/Files/Info.cs:200
+#: Application/Commands/Files/Info.cs:202
 #: Application/Commands/Files/MarkedFiles.cs:75
 #: Application/Commands/YouTube/CurrentVideo.cs:107
 msgid "Copy failed."
@@ -1161,7 +1161,7 @@ msgstr[1] ""
 #. Translators: Spoken when the folder and the folders inside it hold nothing this player can play.
 #: Application/Commands/Files/Files.cs:116
 #: Application/Commands/Files/Files.cs:220
-#: Application/Commands/Files/Files.cs:374
+#: Application/Commands/Files/Files.cs:376
 msgid "No audio files found in that folder."
 msgstr ""
 
@@ -1170,7 +1170,7 @@ msgstr ""
 #. Translators: The short wording spoken when a folder holds nothing this player can play.
 #: Application/Commands/Files/Files.cs:118
 #: Application/Commands/Files/Files.cs:222
-#: Application/Commands/Files/Files.cs:376
+#: Application/Commands/Files/Files.cs:378
 msgid "No audio files."
 msgstr ""
 
@@ -1217,8 +1217,8 @@ msgstr ""
 #: Application/Commands/Files/Playlists.cs:62
 #: Application/Commands/Files/Playlists.cs:71
 #: Application/Commands/Playback/Bookmarks.cs:153
-#: Application/Commands/YouTube/Download.cs:121 Application/Spotify.cs:115
-#: Application/Spotify.cs:169 UI/Spotify/Browsing.cs:279
+#: Application/Commands/YouTube/Download.cs:121 Application/Spotify.cs:137
+#: Application/Spotify.cs:192 UI/Spotify/Browsing.cs:279
 #: UI/Spotify/SearchResultsDialog.cs:164 UI/Spotify/TracksDialog.cs:161
 msgid "Error"
 msgstr ""
@@ -1228,58 +1228,58 @@ msgstr ""
 #. Translators: Spoken after closing a radio session and restoring the original playlist paused.
 #. Translators: Spoken once the current file has been removed from the playlist.
 #. Translators: Short announcement once the current file has been removed from the playlist.
-#: Application/Commands/Files/Files.cs:233
-#: Application/Commands/Files/Files.cs:235
-#: Application/Commands/Files/Files.cs:242
-#: Application/Commands/Files/Files.cs:257
-#: Application/Commands/Files/Files.cs:259
+#: Application/Commands/Files/Files.cs:234
+#: Application/Commands/Files/Files.cs:236
+#: Application/Commands/Files/Files.cs:243
+#: Application/Commands/Files/Files.cs:258
+#: Application/Commands/Files/Files.cs:260
 msgid "File closed."
 msgstr ""
 
 #. Translators: Spoken when the current file could not be taken out of the playlist.
-#: Application/Commands/Files/Files.cs:250
+#: Application/Commands/Files/Files.cs:251
 msgid "Could not close the file."
 msgstr ""
 
 #. Translators: The short wording spoken when a file could not be closed.
 #. Translators: The short wording spoken when the files could not be closed.
-#: Application/Commands/Files/Files.cs:252
-#: Application/Commands/Files/Files.cs:275
+#: Application/Commands/Files/Files.cs:253
+#: Application/Commands/Files/Files.cs:277
 msgid "Close failed."
 msgstr ""
 
 #. Translators: Spoken when the loaded files could not be taken out of the playlist.
-#: Application/Commands/Files/Files.cs:273
+#: Application/Commands/Files/Files.cs:275
 msgid "Could not close files."
 msgstr ""
 
 #. Translators: Spoken once every file has been removed from the playlist.
 #. Translators: Short announcement once every file has been removed from the playlist.
-#: Application/Commands/Files/Files.cs:280
 #: Application/Commands/Files/Files.cs:282
+#: Application/Commands/Files/Files.cs:284
 msgid "All files closed."
 msgstr ""
 
 #. Translators: The short wording spoken when Windows could not be asked to open a folder.
 #. Translators: The short wording spoken when Windows could not show a file's properties.
-#: Application/Commands/Files/Files.cs:290
+#: Application/Commands/Files/Files.cs:292
 #: Application/Commands/Files/Info.cs:35
 msgid "Open failed."
 msgstr ""
 
 #. Translators: Title of the progress window shown while a folder and the folders inside it are being searched for media.
-#: Application/Commands/Files/Files.cs:354
+#: Application/Commands/Files/Files.cs:356
 msgid "Opening files"
 msgstr ""
 
 #. Translators: First message in the progress window, before any file has been found.
-#: Application/Commands/Files/Files.cs:356
+#: Application/Commands/Files/Files.cs:358
 msgid "Loading files from folder and subfolders..."
 msgstr ""
 
 #. Translators: Progress message while a folder is being searched. {found} is how many media files
 #. have been found so far.
-#: Application/Commands/Files/Files.cs:359
+#: Application/Commands/Files/Files.cs:361
 msgid "Opening files... {found} media files found"
 msgstr ""
 
@@ -1305,81 +1305,81 @@ msgstr ""
 
 #. Translators: Title of the information dialog for the current Spotify queue.
 #. Translators: Title of the window listing details of every file in the playlist.
-#: Application/Commands/Files/Info.cs:73
-#: Application/Commands/Files/Info.cs:127
+#: Application/Commands/Files/Info.cs:74
+#: Application/Commands/Files/Info.cs:128
 msgid "Playlist Info"
 msgstr ""
 
 #. Translators: Spotify playlist summary. {count} is the number of tracks in the queue.
-#: Application/Commands/Files/Info.cs:75
+#: Application/Commands/Files/Info.cs:76
 msgid "Number of tracks: {count}"
 msgstr ""
 
 #. Translators: Line in the Spotify queue information dialog. {value} is the formatted combined playing time.
 #. Translators: The playlist summary. {value} is a duration as hours:minutes:seconds.
-#: Application/Commands/Files/Info.cs:77
-#: Application/Commands/Files/Info.cs:140
+#: Application/Commands/Files/Info.cs:78
+#: Application/Commands/Files/Info.cs:141
 msgid "Total duration: {value}"
 msgstr ""
 
 #. Translators: Title of the progress window shown while details of every file in the playlist are being read.
-#: Application/Commands/Files/Info.cs:108
+#: Application/Commands/Files/Info.cs:109
 msgid "Loading playlist info"
 msgstr ""
 
 #. Translators: First message in the progress window, shown before the first file has been read.
-#: Application/Commands/Files/Info.cs:110
+#: Application/Commands/Files/Info.cs:111
 msgid "Preparing..."
 msgstr ""
 
 #. Translators: Progress message naming the file being read right now. {name} is the file name.
-#: Application/Commands/Files/Info.cs:112
+#: Application/Commands/Files/Info.cs:113
 msgid "Reading: {name}"
 msgstr ""
 
 #. Translators: The playlist summary. {count} is how many files are loaded.
-#: Application/Commands/Files/Info.cs:136
+#: Application/Commands/Files/Info.cs:137
 msgid "Number of files: {count}"
 msgstr ""
 
 #. Translators: The playlist summary. {value} is a size such as "12.5 MB".
-#: Application/Commands/Files/Info.cs:138
+#: Application/Commands/Files/Info.cs:139
 msgid "Total size: {value}"
 msgstr ""
 
 #. Translators: The playlist summary: how much of the whole playlist has already played.
-#: Application/Commands/Files/Info.cs:142
+#: Application/Commands/Files/Info.cs:143
 msgid "Elapsed: {value}"
 msgstr ""
 
 #. Translators: The playlist summary: how much of the whole playlist is left to play.
-#: Application/Commands/Files/Info.cs:144
+#: Application/Commands/Files/Info.cs:145
 msgid "Remaining: {value}"
 msgstr ""
 
 #. Translators: Spoken confirmation after copying a Spotify track's public web address.
-#: Application/Commands/Files/Info.cs:191
+#: Application/Commands/Files/Info.cs:193
 msgid "Track link copied to clipboard."
 msgstr ""
 
 #. Translators: Spoken confirmation after copying the current file's location.
-#: Application/Commands/Files/Info.cs:193
+#: Application/Commands/Files/Info.cs:195
 msgid "File path copied to clipboard."
 msgstr ""
 
 #. Translators: Spoken when the full location of the current file could not be copied to the clipboard.
 #. Translators: Spoken when a radio station name or stream URL could not be copied.
-#: Application/Commands/Files/Info.cs:195 UI/Radio/Actions.cs:121
+#: Application/Commands/Files/Info.cs:197 UI/Radio/Actions.cs:121
 msgid "Unable to copy to clipboard."
 msgstr ""
 
 #. Translators: Spoken when the current media file contains no title metadata.
-#: Application/Commands/Files/Info.cs:220
+#: Application/Commands/Files/Info.cs:223
 msgid "The current file has no title."
 msgstr ""
 
 #. Translators: Short announcement when the current media file contains no title metadata.
-#: Application/Commands/Files/Info.cs:222
+#: Application/Commands/Files/Info.cs:225
 msgid "No title."
 msgstr ""
 
@@ -1698,7 +1698,7 @@ msgstr ""
 #. Translators: Short announcement when playback progress cannot be calculated.
 #. Translators: Radio Browser's latest check did not find the station available.
 #: Application/Commands/MediaGuard.cs:108
-#: Application/Commands/Playback/Playback.cs:308 UI/Radio/DetailsDialog.cs:43
+#: Application/Commands/Playback/Playback.cs:314 UI/Radio/DetailsDialog.cs:43
 msgid "Unavailable"
 msgstr ""
 
@@ -1863,8 +1863,8 @@ msgstr ""
 #. Translators: Shown when the player cannot determine the current file's duration.
 #. Translators: Shown when the player cannot offer exact time fields for the current item.
 #: Application/Commands/Playback/Bookmarks.cs:199
-#: Application/Commands/Playback/Playback.cs:221
-#: Application/Commands/Playback/Playback.cs:234
+#: Application/Commands/Playback/Playback.cs:226
+#: Application/Commands/Playback/Playback.cs:239
 #: Application/Commands/Playback/SelectionPoints.cs:206
 msgid "Time is not available for the current file."
 msgstr ""
@@ -1957,9 +1957,9 @@ msgstr ""
 #. Translators: Radio station context-menu action that starts playback.
 #. Translators: Button in a Spotify collection window that plays the selected track.
 #. Translators: Button that plays the video chosen in the list of results.
-#: Application/Commands/Playback/Playback.cs:125
-#: Application/Commands/Playback/Playback.cs:144
-#: Application/Commands/Playback/Playback.cs:153
+#: Application/Commands/Playback/Playback.cs:126
+#: Application/Commands/Playback/Playback.cs:145
+#: Application/Commands/Playback/Playback.cs:154
 #: UI/Iptv/ChannelBrowserDialog.cs:118 UI/MainFrame.cs:99 UI/MainFrame.cs:180
 #: UI/Radio/BrowserDialog.cs:120 UI/Radio/BrowserDialog.cs:148
 #: UI/Spotify/TracksDialog.cs:48 UI/YouTube/ResultsDialog.cs:196
@@ -1974,8 +1974,8 @@ msgstr ""
 #. Translators: Recording menu item that holds a recording where it is, or starts it again.
 #. Translators: Button that holds a recording where it is, and starts it again when pressed a second time.
 #. Translators: Button that holds a recording where it is.
-#: Application/Commands/Playback/Playback.cs:127
-#: Application/Commands/Playback/Playback.cs:155
+#: Application/Commands/Playback/Playback.cs:128
+#: Application/Commands/Playback/Playback.cs:156
 #: UI/Dialogs/SleepTimerDialog.cs:85 UI/MainFrame.cs:178
 #: UI/MenuController.cs:272 UI/Menus/RecordingMenu.cs:23
 #: UI/Recording/RecordingDialog.cs:169 UI/Recording/RecordingDialog.cs:625
@@ -1986,129 +1986,129 @@ msgstr ""
 #. Translators: Title of the window that asks the user which point in the file to move to.
 #. Translators: Title of the window for moving to a precise time in the current file.
 #. Translators: Title of an error about a time entered in the Go to time window.
-#: Application/Commands/Playback/Playback.cs:223
-#: Application/Commands/Playback/Playback.cs:236
+#: Application/Commands/Playback/Playback.cs:228
+#: Application/Commands/Playback/Playback.cs:241
 #: UI/Dialogs/GoToTimeDialog.cs:23 UI/Dialogs/GoToTimeDialog.cs:116
 msgid "Go to time"
 msgstr ""
 
 #. Translators: Spoken when full-screen mode is turned on. The beginner form names the F11 key so the user knows how to leave it again.
-#: Application/Commands/Playback/Playback.cs:257
+#: Application/Commands/Playback/Playback.cs:262
 msgid "Full-screen mode on. Press F11 again to turn it off."
 msgstr ""
 
 #. Translators: The short advanced-verbosity wording spoken when full-screen mode is turned on.
-#: Application/Commands/Playback/Playback.cs:259
+#: Application/Commands/Playback/Playback.cs:264
 msgid "Full-screen on"
 msgstr ""
 
 #. Translators: Spoken when full-screen mode is turned off.
 #. Translators: Spoken when full-screen mode ends on its own because the video stopped playing.
-#: Application/Commands/Playback/Playback.cs:264
-#: Application/Presentation/ViewStatePresenter.cs:78
+#: Application/Commands/Playback/Playback.cs:269
+#: Application/Presentation/ViewStatePresenter.cs:79
 msgid "Full-screen mode off."
 msgstr ""
 
 #. Translators: The short advanced-verbosity wording spoken when full-screen mode is turned off.
 #. Translators: Short announcement when full-screen mode ends because the video stopped.
-#: Application/Commands/Playback/Playback.cs:266
-#: Application/Presentation/ViewStatePresenter.cs:80
+#: Application/Commands/Playback/Playback.cs:271
+#: Application/Presentation/ViewStatePresenter.cs:81
 msgid "Full-screen off"
 msgstr ""
 
 #. Translators: Spoken after the loudness has been changed. {volume} is the new loudness as a number out of a hundred.
-#: Application/Commands/Playback/Playback.cs:280
+#: Application/Commands/Playback/Playback.cs:285
 msgid "Volume {volume} percent"
 msgstr ""
 
 #. Translators: Spoken when the user asks how loud the sound is. {percent} is the loudness as a number out of a hundred.
-#: Application/Commands/Playback/Playback.cs:287
+#: Application/Commands/Playback/Playback.cs:292
 msgid "Volume is {percent}%"
 msgstr ""
 
 #. Translators: Spoken when the player cannot work out how far through the file it is.
-#: Application/Commands/Playback/Playback.cs:306
+#: Application/Commands/Playback/Playback.cs:312
 msgid "Percentage not available"
 msgstr ""
 
 #. Translators: Spoken playback position. {percent} is a number from 0 to 100.
-#: Application/Commands/Playback/Playback.cs:314
-#: Application/Commands/Playback/Playback.cs:456
-#: Application/Commands/Playback/Playback.cs:471
+#: Application/Commands/Playback/Playback.cs:320
+#: Application/Commands/Playback/Playback.cs:463
+#: Application/Commands/Playback/Playback.cs:478
 msgid "{percent} percent"
 msgstr ""
 
 #. Translators: Short spoken playback position. {percent} is the percentage; retain a percent sign.
-#: Application/Commands/Playback/Playback.cs:316
-#: Application/Commands/Playback/Playback.cs:458
-#: Application/Commands/Playback/Playback.cs:473
+#: Application/Commands/Playback/Playback.cs:322
+#: Application/Commands/Playback/Playback.cs:465
+#: Application/Commands/Playback/Playback.cs:480
 msgid "{percent}%"
 msgstr ""
 
 #. Translators: Spoken when the user asks how fast the file is playing. {speed} is the speed, where 1 is the normal
 #. speed; "x" is short for "times" and is usually left as it is.
 #. Translators: Spoken after playback speed changes. {speed} is the multiplier, where 1 is normal; "x" means "times".
-#: Application/Commands/Playback/Playback.cs:321
-#: Application/Commands/Playback/Playback.cs:330
+#: Application/Commands/Playback/Playback.cs:327
+#: Application/Commands/Playback/Playback.cs:336
 msgid "{speed}x"
 msgstr ""
 
 #. Translators: Short announcement of pitch in advanced mode. {pitch} is a signed number such as
 #. +1, -2, or +0.25, or zero when pitch is normal.
-#: Application/Commands/Playback/Playback.cs:360
+#: Application/Commands/Playback/Playback.cs:366
 msgid "{pitch} semitones"
 msgstr ""
 
 #. Translators: Spoken when audio is playing at its original pitch.
-#: Application/Commands/Playback/Playback.cs:364
+#: Application/Commands/Playback/Playback.cs:370
 msgid "Pitch normal"
 msgstr ""
 
 #. Translators: Spoken after audio pitch changes or when it is requested. {pitch} is a signed
 #. number of semitones, such as +1, -2, or +0.25.
-#: Application/Commands/Playback/Playback.cs:369
+#: Application/Commands/Playback/Playback.cs:375
 msgid "Pitch {pitch} semitones"
 msgstr ""
 
 #. Translators: Spoken after audio panning changes or when it is requested. Negative values are
 #. toward the left, positive values are toward the right, and zero is centered.
-#: Application/Commands/Playback/Playback.cs:392
+#: Application/Commands/Playback/Playback.cs:398
 msgid "Pan {pan}%"
 msgstr ""
 
 #. Translators: Spoken when the user switches to whole, clearly worded messages. It should read the same as
 #. the "Beginner" entry in the Verbosity list on the General settings page.
-#: Application/Commands/Playback/Playback.cs:402
+#: Application/Commands/Playback/Playback.cs:408
 msgid "Beginner mode"
 msgstr ""
 
 #. Translators: Spoken when the user switches to short messages. It should read the same as the "Advanced"
 #. entry in the Verbosity list on the General settings page.
-#: Application/Commands/Playback/Playback.cs:409
+#: Application/Commands/Playback/Playback.cs:415
 msgid "Advanced mode"
 msgstr ""
 
 #. Translators: Spoken when trimming the silent parts out could not be switched on or off.
-#: Application/Commands/Playback/Playback.cs:421
+#: Application/Commands/Playback/Playback.cs:427
 msgid "Could not change silence removal filter."
 msgstr ""
 
 #. Translators: The short wording spoken when trimming the silent parts out could not be switched on or off.
-#: Application/Commands/Playback/Playback.cs:423
+#: Application/Commands/Playback/Playback.cs:429
 msgid "Filter failed."
 msgstr ""
 
 #. Translators: Spoken once the player has started trimming silent parts out.
 #. Translators: Short announcement once the player has started trimming silent parts out.
-#: Application/Commands/Playback/Playback.cs:434
-#: Application/Commands/Playback/Playback.cs:436
+#: Application/Commands/Playback/Playback.cs:440
+#: Application/Commands/Playback/Playback.cs:442
 msgid "Silence removal on"
 msgstr ""
 
 #. Translators: Spoken once the player has stopped trimming silent parts out.
 #. Translators: Short announcement once the player has stopped trimming silent parts out.
-#: Application/Commands/Playback/Playback.cs:441
-#: Application/Commands/Playback/Playback.cs:443
+#: Application/Commands/Playback/Playback.cs:447
+#: Application/Commands/Playback/Playback.cs:449
 msgid "Silence removal off"
 msgstr ""
 
@@ -2690,70 +2690,70 @@ msgid "Remove favorite '{name}' ({kind})?"
 msgstr ""
 
 #. Translators: Spoken when the user asks to jump to another file but only one is loaded.
-#: Application/Commands/YouTube/Playlist.cs:105
+#: Application/Commands/YouTube/Playlist.cs:108
 msgid "No other files are loaded."
 msgstr ""
 
 #. Translators: The short wording spoken when only one file is loaded.
-#: Application/Commands/YouTube/Playlist.cs:107
+#: Application/Commands/YouTube/Playlist.cs:110
 msgid "No other files."
 msgstr ""
 
 #. Translators: Asks the user which file in the playlist to move to. {count} is how many files are loaded.
-#: Application/Commands/YouTube/Playlist.cs:112
+#: Application/Commands/YouTube/Playlist.cs:115
 msgid "Enter file number (1-{count})"
 msgstr ""
 
 #. Translators: Title of the window that asks which file in the playlist to move to.
-#: Application/Commands/YouTube/Playlist.cs:114
+#: Application/Commands/YouTube/Playlist.cs:117
 msgid "Go To File"
 msgstr ""
 
 #. Translators: Spoken when what the user typed as a file number is not a number.
-#: Application/Commands/YouTube/Playlist.cs:121
+#: Application/Commands/YouTube/Playlist.cs:124
 msgid "Invalid file number."
 msgstr ""
 
 #. Translators: The short wording spoken when what was typed as a file number is not a number.
-#: Application/Commands/YouTube/Playlist.cs:123
+#: Application/Commands/YouTube/Playlist.cs:126
 msgid "Invalid number."
 msgstr ""
 
 #. Translators: Spoken when the file number the user typed is higher or lower than the playlist holds.
-#: Application/Commands/YouTube/Playlist.cs:130
+#: Application/Commands/YouTube/Playlist.cs:133
 msgid "File number out of range."
 msgstr ""
 
 #. Translators: The short wording spoken when the file number typed is outside the playlist.
-#: Application/Commands/YouTube/Playlist.cs:132
+#: Application/Commands/YouTube/Playlist.cs:135
 msgid "Out of range."
 msgstr ""
 
 #. Translators: Spoken once the player has started playing files in a random order.
 #. Translators: Short announcement once shuffle has been enabled.
-#: Application/Commands/YouTube/Playlist.cs:149
-#: Application/Commands/YouTube/Playlist.cs:151
+#: Application/Commands/YouTube/Playlist.cs:153
+#: Application/Commands/YouTube/Playlist.cs:155
 msgid "Shuffle on"
 msgstr ""
 
 #. Translators: Spoken once the player has returned to playing files in their listed order.
 #. Translators: Short announcement once shuffle has been disabled.
-#: Application/Commands/YouTube/Playlist.cs:157
-#: Application/Commands/YouTube/Playlist.cs:159
+#: Application/Commands/YouTube/Playlist.cs:161
+#: Application/Commands/YouTube/Playlist.cs:163
 msgid "Shuffle off"
 msgstr ""
 
 #. Translators: Spoken once the player has started playing the same file repeatedly.
 #. Translators: Short announcement once repeating the current file has been enabled.
-#: Application/Commands/YouTube/Playlist.cs:173
-#: Application/Commands/YouTube/Playlist.cs:175
+#: Application/Commands/YouTube/Playlist.cs:178
+#: Application/Commands/YouTube/Playlist.cs:180
 msgid "Repeat on"
 msgstr ""
 
 #. Translators: Spoken once the player has stopped playing the same file repeatedly.
 #. Translators: Short announcement once repeating the current file has been disabled.
-#: Application/Commands/YouTube/Playlist.cs:181
-#: Application/Commands/YouTube/Playlist.cs:183
+#: Application/Commands/YouTube/Playlist.cs:186
+#: Application/Commands/YouTube/Playlist.cs:188
 msgid "Repeat off"
 msgstr ""
 
@@ -2808,17 +2808,17 @@ msgid "No YouTube video."
 msgstr ""
 
 #. Translators: Title of the notification shown when every queued download has finished.
-#: Application/Features.cs:133
+#: Application/Features.cs:126
 msgid "Downloads completed"
 msgstr ""
 
 #. Translators: Body of the notification shown when every queued download has finished.
-#: Application/Features.cs:135
+#: Application/Features.cs:128
 msgid "All items in the download queue have completed."
 msgstr ""
 
 #. Translators: Shown when settings could not be read. {error} is the underlying file or data error.
-#: Application/Features.cs:203
+#: Application/Features.cs:196
 msgid ""
 "The settings file could not be loaded. Default settings will be used, and "
 "the existing file will not be overwritten. Import a valid settings file or "
@@ -2828,7 +2828,7 @@ msgid ""
 msgstr ""
 
 #. Translators: Title of the message shown when settings could not be read.
-#: Application/Features.cs:205
+#: Application/Features.cs:198
 msgid "Settings error"
 msgstr ""
 
@@ -2874,66 +2874,66 @@ msgid "Sleep timer: {time} remaining."
 msgstr ""
 
 #. Translators: Spoken once, a minute before a sleep timer fires.
-#: Application/Infrastructure/SleepTimer.cs:194
+#: Application/Infrastructure/SleepTimer.cs:195
 msgid "Sleep timer: one minute remaining."
 msgstr ""
 
 #. Translators: Short warning spoken one minute before a sleep timer fires.
-#: Application/Infrastructure/SleepTimer.cs:196
+#: Application/Infrastructure/SleepTimer.cs:197
 msgid "Sleep 1:00"
 msgstr ""
 
 #. Translators: Spoken when the sleep timer is set to fire at the end of the current track.
-#: Application/Infrastructure/SleepTimer.cs:255
+#: Application/Infrastructure/SleepTimer.cs:257
 msgid "Sleep timer set for the end of the current track."
 msgstr ""
 
 #. Translators: Short announcement when the sleep timer will fire at the end of the track.
-#: Application/Infrastructure/SleepTimer.cs:257
+#: Application/Infrastructure/SleepTimer.cs:259
 msgid "Sleep: end of track"
 msgstr ""
 
 #. Translators: Spoken when the sleep timer fires and stops playback.
-#: Application/Infrastructure/SleepTimer.cs:264
+#: Application/Infrastructure/SleepTimer.cs:266
 msgid "Sleep timer: playback stopped."
 msgstr ""
 
 #. Translators: Short announcement when the sleep timer stops playback.
-#: Application/Infrastructure/SleepTimer.cs:266
+#: Application/Infrastructure/SleepTimer.cs:268
 msgid "Sleep: stopped"
 msgstr ""
 
 #. Translators: Spoken when the sleep timer fires and pauses playback.
-#: Application/Infrastructure/SleepTimer.cs:272
+#: Application/Infrastructure/SleepTimer.cs:274
 msgid "Sleep timer: playback paused."
 msgstr ""
 
 #. Translators: Short announcement when the sleep timer pauses playback.
-#: Application/Infrastructure/SleepTimer.cs:274
+#: Application/Infrastructure/SleepTimer.cs:276
 msgid "Sleep: paused"
 msgstr ""
 
 #. Translators: Spoken when a sleep-timer command is used but no timer is currently set.
-#: Application/Infrastructure/SleepTimer.cs:281
+#: Application/Infrastructure/SleepTimer.cs:283
 msgid "No sleep timer is set."
 msgstr ""
 
 #. Translators: Short announcement when no sleep timer is set.
-#: Application/Infrastructure/SleepTimer.cs:283
+#: Application/Infrastructure/SleepTimer.cs:285
 msgid "No sleep timer"
 msgstr ""
 
 #. Translators: Main window title during Spotify playback. {title} is the artist and track; {app} is the program name.
 #. Translators: Window title while a track is open. {title} is the track, {app} the program name.
-#: Application/Presentation/WindowTitlePresenter.cs:47
-#: Application/Presentation/WindowTitlePresenter.cs:64
+#: Application/Presentation/WindowTitlePresenter.cs:48
+#: Application/Presentation/WindowTitlePresenter.cs:65
 msgid "{title} - {app}"
 msgstr ""
 
 #. Translators: Main window title while Spotify playback is paused. {title} is the artist and track; {app} is the program name.
 #. Translators: Window title while playback is paused. {title} is the track, {app} the program name.
-#: Application/Presentation/WindowTitlePresenter.cs:49
-#: Application/Presentation/WindowTitlePresenter.cs:62
+#: Application/Presentation/WindowTitlePresenter.cs:50
+#: Application/Presentation/WindowTitlePresenter.cs:63
 msgid "[Paused]: {title} - {app}"
 msgstr ""
 

@@ -20,7 +20,7 @@ internal sealed partial class Playback
     private readonly PlaybackSelection _selection;
     private readonly SelectionSlots _selections;
     private readonly MediaGuard _guard;
-    private readonly LunaPlayer.Spotify.Playback _spotify;
+    private readonly Func<LunaPlayer.Spotify.Playback?> _getSpotify;
 
     internal Playback(
         ActionRouter router,
@@ -32,7 +32,7 @@ internal sealed partial class Playback
         PlaybackSelection selection,
         SelectionSlots selections,
         IApplicationDispatcher dispatcher,
-        LunaPlayer.Spotify.Playback spotify)
+        Func<LunaPlayer.Spotify.Playback?> getSpotify)
     {
         _view = view;
         _player = player;
@@ -43,7 +43,7 @@ internal sealed partial class Playback
         _selection = selection;
         _selections = selections;
         _guard = new MediaGuard(player, speech);
-        _spotify = spotify;
+        _getSpotify = getSpotify;
         RegisterCoreActions(router);
         RegisterGeneratedActions(router);
     }
@@ -68,13 +68,13 @@ internal sealed partial class Playback
         router.Register(ActionId.AnnounceVolume, AnnounceVolume);
         router.Register(ActionId.AnnounceElapsed, () => AnnounceTime(
             // Translators: Spoken before the time played so far, as in "Elapsed time: 1 minute 20 seconds".
-            Tr("Elapsed time:"), _spotify.IsActive ? _spotify.Elapsed : _player.Elapsed));
+            Tr("Elapsed time:"), _getSpotify() is { IsActive: true } spotify ? spotify.Elapsed : _player.Elapsed));
         router.Register(ActionId.AnnounceRemaining, () => AnnounceTime(
             // Translators: Spoken before the time still left to play, as in "Remaining time: 1 minute 20 seconds".
-            Tr("Remaining time:"), _spotify.IsActive ? _spotify.Remaining : _player.Remaining));
+            Tr("Remaining time:"), _getSpotify() is { IsActive: true } spotify ? spotify.Remaining : _player.Remaining));
         router.Register(ActionId.AnnounceDuration, () => AnnounceTime(
             // Translators: Spoken before the whole length of the file, as in "Total time: 3 minutes 40 seconds".
-            Tr("Total time:"), _spotify.IsActive ? _spotify.Duration : _player.Duration));
+            Tr("Total time:"), _getSpotify() is { IsActive: true } spotify ? spotify.Duration : _player.Duration));
         router.Register(ActionId.AnnouncePercent, AnnouncePercent);
         router.Register(ActionId.AnnounceSpeed, AnnounceSpeed);
         router.Register(ActionId.ToggleVerbosity, ToggleVerbosity);
@@ -115,9 +115,10 @@ internal sealed partial class Playback
 
     private void TogglePlayPause()
     {
-        if (_spotify.IsActive)
+        var spotify = _getSpotify();
+        if (spotify?.IsActive == true)
         {
-            var playing = _spotify.TogglePause();
+            var playing = spotify.TogglePause();
             _view.SetPlaying(playing);
             if (_settings.General.Verbosity == SpeechVerbosity.Beginner)
                 _speech.SpeakText(playing
@@ -157,8 +158,9 @@ internal sealed partial class Playback
 
     private void SeekByMultiplier(double multiplier)
     {
+        var spotify = _getSpotify();
         var delta = GetSeekStepSeconds() * multiplier;
-        if (_spotify.IsActive) { _spotify.SeekRelative(delta); return; }
+        if (spotify?.IsActive == true) { spotify.SeekRelative(delta); return; }
         if (_selections.PlaybackActive
             && _player.Elapsed is double elapsed
             && _selections.Start is double selectionStart
@@ -180,7 +182,8 @@ internal sealed partial class Playback
 
     private void SeekStart()
     {
-        if (_spotify.IsActive) { _spotify.Seek(0); return; }
+        var spotify = _getSpotify();
+        if (spotify?.IsActive == true) { spotify.Seek(0); return; }
         if (_selections.PlaybackActive && _selections.Start is double selectionStart)
             _player.SeekAbsolute(selectionStart);
         else if (_selection.IsActive(_player.CurrentPath) && _selection.Start is double start)
@@ -191,9 +194,10 @@ internal sealed partial class Playback
 
     private void SeekEnd()
     {
-        if (_spotify.IsActive)
+        var spotify = _getSpotify();
+        if (spotify?.IsActive == true)
         {
-            if (_spotify.Duration is double d) _spotify.Seek(Math.Max(0, d - 0.2));
+            if (spotify.Duration is double d) spotify.Seek(Math.Max(0, d - 0.2));
             return;
         }
         if (_selections.PlaybackActive && _selections.End is double selectionEnd)
@@ -212,9 +216,10 @@ internal sealed partial class Playback
 
     private void GoToTime()
     {
-        if (_spotify.IsActive)
+        var spotify = _getSpotify();
+        if (spotify?.IsActive == true)
         {
-            if (_spotify.Duration is not double spotifyDuration || spotifyDuration <= 0)
+            if (spotify.Duration is not double spotifyDuration || spotifyDuration <= 0)
             {
                 _view.Dialogs.ShowWarning(
                     // Translators: Warning when the Spotify track duration is not yet available for seeking.
@@ -223,8 +228,8 @@ internal sealed partial class Playback
                     Tr("Go to time"));
                 return;
             }
-            var chosen = _view.Dialogs.ChooseTime(spotifyDuration, Math.Clamp(_spotify.Elapsed ?? 0, 0, spotifyDuration));
-            if (chosen.HasValue) _spotify.Seek(chosen.Value);
+            var chosen = _view.Dialogs.ChooseTime(spotifyDuration, Math.Clamp(spotify.Elapsed ?? 0, 0, spotifyDuration));
+            if (chosen.HasValue) spotify.Seek(chosen.Value);
             return;
         }
         if (_player.Duration is not double duration || duration <= 0)
@@ -298,8 +303,9 @@ internal sealed partial class Playback
 
     private void AnnouncePercent()
     {
-        if ((_spotify.IsActive ? _spotify.Duration : _player.Duration) is not double duration || duration <= 0
-            || (_spotify.IsActive ? _spotify.Elapsed : _player.Elapsed) is not double elapsed)
+        var spotify = _getSpotify();
+        if ((spotify?.IsActive == true ? spotify.Duration : _player.Duration) is not double duration || duration <= 0
+            || (spotify?.IsActive == true ? spotify.Elapsed : _player.Elapsed) is not double elapsed)
         {
             _speech.Speak(
                 // Translators: Spoken when the player cannot work out how far through the file it is.
@@ -447,10 +453,11 @@ internal sealed partial class Playback
 
     private void JumpToPercent(int percent)
     {
-        if (_spotify.IsActive)
+        var spotify = _getSpotify();
+        if (spotify?.IsActive == true)
         {
-            if (_spotify.Duration is double spotifyDuration && spotifyDuration > 0)
-                _spotify.Seek(percent >= 100 ? Math.Max(0, spotifyDuration - 0.2) : spotifyDuration * percent / 100.0);
+            if (spotify.Duration is double spotifyDuration && spotifyDuration > 0)
+                spotify.Seek(percent >= 100 ? Math.Max(0, spotifyDuration - 0.2) : spotifyDuration * percent / 100.0);
             _speech.Speak(
                 // Translators: Spoken playback position. {percent} is a number from 0 to 100.
                 TrFormat("{percent} percent", percent),
