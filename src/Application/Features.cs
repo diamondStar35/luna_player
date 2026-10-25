@@ -94,7 +94,7 @@ internal sealed partial class Features : IDisposable
         var selections = features.Selections;
         var router = new ActionRouter();
         var radio = new LunaPlayer.Radio.Playback(_view, player, _settings, _dispatcher, speech, clipboard,
-            () => _sessions?.Clear());
+            () => { LeaveSpotify(); _sessions?.Clear(); });
         _radio = radio;
         router.Register(ActionId.OpenRadioBrowser, radio.Open);
         _ = new Help(router, _view);
@@ -147,7 +147,7 @@ internal sealed partial class Features : IDisposable
             favorites,
             components);
         _sessions = sessions;
-        var playbackSessions = new PlaybackSessions(sessions, radio, player);
+        var playbackSessions = new PlaybackSessions(sessions, radio, player, _spotifyPlayback, ReturnToSpotify);
         youTubeActions = new Commands.YouTube.YouTube(
             router, _view, player, _settings, speech, clipboard, youTube, sessions, components, _dispatcher,
             downloadQueue);
@@ -165,8 +165,11 @@ internal sealed partial class Features : IDisposable
         _tools = tools;
         _ = new Commands.Iptv.Iptv(router, _view, player, speech, _dispatcher,
             features.IptvSources);
-        var spotifyCatalog = new LunaPlayer.Spotify.Catalog(() => SpotifyAuth, _settings.Spotify);
-        router.Register(ActionId.OpenSpotifyPreview, () => OpenSpotify(spotifyCatalog));
+        _spotifyCatalog = new LunaPlayer.Spotify.Catalog(() => SpotifyAuth, _settings.Spotify);
+        router.Register(ActionId.OpenSpotifyPreview, () =>
+        {
+            if (!ReturnToSpotify()) OpenSpotify();
+        });
         var sleepTimer = new SleepTimer(_dispatcher, player, speech, _spotifyPlayback, CancelPendingSpotifyStart);
         _spotifyPlayback.BeforeTrackEnd = sleepTimer.OnTrackEnded;
         _ = new Sleep(router, _view, player, sleepTimer, _settings, _settingsStore);

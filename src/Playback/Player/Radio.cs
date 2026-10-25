@@ -8,6 +8,7 @@ internal sealed partial class Player
     /// <summary>Capture the old playlist before any radio preparation can stop its engine.</summary>
     internal void BeginRadioSession()
     {
+        if (_spotifySession) LeaveSession();
         EnterSession();
         _radioSession = true;
         _engine.ClearQueuedNext();

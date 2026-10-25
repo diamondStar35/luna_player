@@ -20,18 +20,42 @@ internal sealed partial class Features
         }
     }
     private LunaPlayer.Spotify.Playback _spotifyPlayback = null!;
+    private LunaPlayer.Spotify.Catalog _spotifyCatalog = null!;
     private CancellationTokenSource? _spotifyStart;
+    private bool _spotifyBrowserOpen;
 
-    private void OpenSpotify(LunaPlayer.Spotify.Catalog catalog)
+    private void OpenSpotify(LunaPlayer.UI.Spotify.DialogOutcome? playback = null)
     {
-        var choice = _view.Dialogs.ShowSpotifyPreview(catalog, SpotifyAuth, _settings.Spotify);
+        if (_disposed || _spotifyBrowserOpen) return;
+        LunaPlayer.UI.Spotify.DialogOutcome choice;
+        _spotifyBrowserOpen = true;
+        try { choice = _view.Dialogs.ShowSpotifyPreview(_spotifyCatalog, SpotifyAuth, _settings.Spotify, playback); }
+        finally { _spotifyBrowserOpen = false; }
         if (choice.Track is not { } track) return;
         Func<string?, CancellationToken, Task<LunaPlayer.Spotify.TrackPage>>? pageLoader =
-            choice.Collection is { } collection
-                ? (cursor, token) => catalog.TracksPageAsync(collection, cursor, token)
-                : null;
+            choice.LoadPage ?? (choice.Collection is { } collection
+                ? (cursor, token) => _spotifyCatalog.TracksPageAsync(collection, cursor, token)
+                : null);
         StartSpotify(track, choice.Queue, pageLoader: pageLoader, nextPage: choice.NextCursor,
             deduplicateArtist: choice.Collection?.Kind == LunaPlayer.Spotify.CollectionKind.Artist);
+    }
+
+    private void LeaveSpotify()
+    {
+        CancelPendingSpotifyStart();
+        if (_spotifyPlayback.HasSession) _spotifyPlayback.Stop();
+    }
+
+    private bool ReturnToSpotify()
+    {
+        if (!_spotifyPlayback.HasSession) return false;
+        var snapshot = new LunaPlayer.UI.Spotify.DialogOutcome(_spotifyPlayback.CurrentTrack,
+            _spotifyPlayback.IsActive ? _spotifyPlayback.SourceQueue : null,
+            NextCursor: _spotifyPlayback.NextPage);
+        LeaveSpotify();
+        _controller?.RefreshView();
+        _dispatcher.Post(() => OpenSpotify(snapshot));
+        return true;
     }
 
     private void RestartSpotifyForQuality()
@@ -53,6 +77,11 @@ internal sealed partial class Features
         string? nextPage = null, bool deduplicateArtist = false)
     {
         if (_disposed) return;
+        if (!_spotifyPlayback.HasSession)
+        {
+            if (_radio?.IsActive == true) _radio.Stop(restore: true);
+            else _sessions?.Clear();
+        }
         _spotifyStart?.Cancel();
         _spotifyStart?.Dispose();
         _spotifyStart = new CancellationTokenSource();
@@ -126,8 +155,7 @@ internal sealed partial class Features
     // An ordinary file or video replaces Spotify as the current source.
     private void OnSpotifyCurrentChanged()
     {
-        if (_spotifyPlayback.IsActive && _player.CurrentPath is { } spotifyPath
-            && spotifyPath.StartsWith("luna-spotify://", StringComparison.Ordinal)) return;
+        if (_player.InSpotifySession) return;
         CancelPendingSpotifyStart();
         if (_spotifyPlayback.HasSession || _spotifyPlayback.IsActive)
         {

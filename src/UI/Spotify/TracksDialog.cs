@@ -22,6 +22,9 @@ internal sealed class TracksDialog : IDisposable
     internal string? NextCursor { get; private set; }
     private Track? _selected;
     private bool _disposed;
+    private bool _started;
+    private bool _visible;
+    private CancellationTokenSource? _read;
     private bool _loading;
     private bool _hasMore = true;
 
@@ -62,30 +65,61 @@ internal sealed class TracksDialog : IDisposable
         _songs.Focus();
     }
 
-    internal Track? Show()
+    internal Track? Show(Track? selected = null)
     {
-        LoadNextPage(selectNew: false);
-        _dialog.ShowModal();
+        _selected = null;
+        if (!_started || (!_loading && _hasMore && _tracks.Count == 0))
+        {
+            _started = true;
+            LoadNextPage(selectNew: false);
+        }
+        if (selected is not null)
+        {
+            var index = _tracks.FindIndex(item => ReferenceEquals(item, selected));
+            if (index < 0) index = _tracks.FindIndex(item => item?.Uri == selected.Uri);
+            if (index >= 0) _songs.SelectedIndex = index;
+        }
+        _visible = true;
+        try { _dialog.ShowModal(); }
+        finally { _visible = false; CancelRead(); }
         return _selected;
+    }
+
+    internal void AppendPlayback(IReadOnlyList<Track> tracks, string? next)
+    {
+        var known = new HashSet<Track>(_tracks, ReferenceEqualityComparer.Instance);
+        var added = tracks.Where(track => known.Add(track)).ToArray();
+        if (added.Length > 0)
+        {
+            _tracks.AddRange(added);
+            foreach (var track in added) _seen.Add(track.ArtistSongKey);
+            _songs.Set(_tracks.Select(track => track.Label));
+        }
+        NextCursor = next;
+        _hasMore = next is not null;
     }
 
     private void LoadNextPage(bool selectNew)
     {
         if (_disposed || _loading || !_hasMore) return;
         _loading = true;
+        _read?.Dispose();
+        _read = CancellationTokenSource.CreateLinkedTokenSource(_token);
+        var token = _read.Token;
         // Translators: Loading status in the Spotify collection window while its track list is fetched.
         _status.Label = Tr("Loading tracks from Spotify...");
         var cursor = NextCursor;
+        var loadedPages = new HashSet<string>(_loadedPages, StringComparer.Ordinal);
         _ = Task.Run(async () =>
         {
             try
             {
-                var page = await _load(cursor, _token).ConfigureAwait(false);
+                var page = await _load(cursor, token).ConfigureAwait(false);
                 // Only one page is in flight. Stop a repeated cursor before it starts an
                 // unbounded sequence of requests through empty or duplicate pages.
-                if (page.Next is not null && (page.Next == cursor || _loadedPages.Contains(page.Next)))
+                if (page.Next is not null && (page.Next == cursor || loadedPages.Contains(page.Next)))
                     throw new InvalidDataException("Spotify repeated a track page.");
-                Wx.CallAfter(() =>
+                DialogWork.Post(token, () =>
                 {
                     if (_disposed) return;
                     _loading = false;
@@ -101,7 +135,7 @@ internal sealed class TracksDialog : IDisposable
                     {
                         _songs.SelectedIndex = selectNew && _tracks.Count > previousCount ? previousCount
                             : Math.Clamp(previousSelection, 0, _tracks.Count - 1);
-                        _songs.Focus();
+                        if (_visible) _songs.Focus();
                     }
                     _status.Label = _tracks.Count == 0 ? _emptyMessage
                         // Translators: Status in the Spotify collection window. {count} is the number of tracks loaded; Down means the keyboard arrow key.
@@ -111,20 +145,20 @@ internal sealed class TracksDialog : IDisposable
                     if (_tracks.Count == previousCount && _hasMore) LoadNextPage(selectNew);
                 });
             }
-            catch (OperationCanceledException) when (_lifetime.IsCancellationRequested)
+            catch (OperationCanceledException) when (token.IsCancellationRequested)
             {
                 // The dialog has closed, so its canceled request must not update the UI.
             }
             catch (Exception error)
             {
-                Wx.CallAfter(() =>
+                DialogWork.Post(token, () =>
                 {
                     if (_disposed) return;
                     _loading = false;
                     var message = Catalog.DescribeError(error);
                     _status.Label = message;
                     // Translators: Title of a message box reporting a Spotify or playback failure.
-                    Wx.MessageBox(message, Tr("Error"), MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
+                    if (_visible) Wx.MessageBox(message, Tr("Error"), MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
                 });
             }
         });
@@ -154,5 +188,21 @@ internal sealed class TracksDialog : IDisposable
         args.Skip();
     }
 
-    public void Dispose() { _disposed = true; _lifetime.Cancel(); _dialog.Dispose(); _lifetime.Dispose(); }
+    private void CancelRead()
+    {
+        _read?.Cancel();
+        _read?.Dispose();
+        _read = null;
+        _loading = false;
+    }
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _disposed = true;
+        _lifetime.Cancel();
+        CancelRead();
+        _dialog.Dispose();
+        _lifetime.Dispose();
+    }
 }

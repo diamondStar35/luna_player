@@ -48,8 +48,8 @@ internal sealed class ViewStatePresenter
 
     internal void Sync()
     {
-        var loaded = _player.CurrentPath is not null || _sessions.Radio.IsActive || _spotify.IsActive;
-        var local = !_spotify.IsActive && _player.CurrentPath is string path && File.Exists(path);
+        var loaded = _player.CurrentPath is not null || _sessions.Radio.IsActive || _spotify.HasSession;
+        var local = !_spotify.HasSession && _player.CurrentPath is string path && File.Exists(path);
         _view.SetMediaLoaded(loaded);
         _view.SetPlaying(_spotify.IsActive ? _spotify.IsPlaying : _player.IsPlaying);
         _view.SetEditState(local, loaded);
@@ -67,7 +67,7 @@ internal sealed class ViewStatePresenter
         _view.SetAudioTrackControlsEnabled(_player.GetAudioTracks().Count > 1);
         // The Subtitles menu is open whenever a file is - embedded subtitles or not - because one can always
         // be loaded from a file or a URL; it is only shut when nothing is loaded to attach one to.
-        _view.SetSubtitleControlsEnabled(loaded && !_spotify.IsActive);
+        _view.SetSubtitleControlsEnabled(loaded && !_spotify.HasSession);
         // Leave full screen when the current item stops being a video; once out, IsFullScreen is false so it
         // will not fire again. Moving between two videos keeps HasVideo true and stays silent.
         if (!_player.HasVideo && _view.IsFullScreen)

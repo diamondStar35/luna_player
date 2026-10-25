@@ -20,6 +20,9 @@ internal sealed class SearchResultsDialog : IDisposable
     private bool _hasMore = true;
     private bool _loading;
     private bool _disposed;
+    private bool _started;
+    private bool _visible;
+    private CancellationTokenSource? _read;
     private SearchItem? _selected;
 
     internal IReadOnlyList<Track> Tracks => _results.Select(item => item.Track)
@@ -61,17 +64,57 @@ internal sealed class SearchResultsDialog : IDisposable
         _list.Focus();
     }
 
-    internal SearchItem? Show()
+    internal SearchItem? Show(Track? selected = null)
     {
-        LoadNextPage(selectNew: false);
-        _dialog.ShowModal();
+        _selected = null;
+        if (!_started || (!_loading && _hasMore && _results.Count == 0))
+        {
+            _started = true;
+            LoadNextPage(selectNew: false);
+        }
+        if (selected is not null)
+        {
+            var index = _results.FindIndex(item => ReferenceEquals(item.Track, selected));
+            if (index < 0) index = _results.FindIndex(item => item.Track?.Uri == selected.Uri);
+            if (index >= 0) _list.SelectedIndex = index;
+        }
+        _visible = true;
+        try { _dialog.ShowModal(); }
+        finally { _visible = false; CancelRead(); }
         return _selected;
+    }
+
+    internal string? NextCursor => _hasMore ? _offset.ToString(System.Globalization.CultureInfo.InvariantCulture) : null;
+
+    internal async Task<TrackPage> LoadTracksPageAsync(string? cursor, CancellationToken token)
+    {
+        if (!int.TryParse(cursor, out var offset) || offset < 0 || offset > 1000)
+            throw new InvalidDataException("Invalid Spotify search cursor.");
+        var page = await _catalog.SearchAsync(_query, offset, _filter, token).ConfigureAwait(false);
+        return new TrackPage(page.Items.Select(item => item.Track).OfType<Track>().ToArray(),
+            page.HasMore ? (offset + 10).ToString(System.Globalization.CultureInfo.InvariantCulture) : null);
+    }
+
+    internal void AppendPlayback(IReadOnlyList<Track> tracks, string? next)
+    {
+        var known = new HashSet<Track>(Tracks, ReferenceEqualityComparer.Instance);
+        var added = tracks.Where(track => known.Add(track)).ToArray();
+        if (added.Length > 0)
+        {
+            _results.AddRange(added.Select(track => new SearchItem(track, null)));
+            _list.Set(_results.Select(item => item.Label));
+        }
+        _hasMore = next is not null;
+        if (int.TryParse(next, out var offset)) _offset = offset;
     }
 
     private void LoadNextPage(bool selectNew)
     {
         if (_disposed || _loading || !_hasMore) return;
         _loading = true;
+        _read?.Dispose();
+        _read = CancellationTokenSource.CreateLinkedTokenSource(_token);
+        var token = _read.Token;
         // Translators: Status or guidance beside the search controls in the Spotify browser and search results window.
         _status.Label = Tr("Loading more search results...");
         var offset = _offset;
@@ -79,8 +122,8 @@ internal sealed class SearchResultsDialog : IDisposable
         {
             try
             {
-                var page = await _catalog.SearchAsync(_query, offset, _filter, _token).ConfigureAwait(false);
-                Wx.CallAfter(() =>
+                var page = await _catalog.SearchAsync(_query, offset, _filter, token).ConfigureAwait(false);
+                DialogWork.Post(token, () =>
                 {
                     if (_disposed) return;
                     _loading = false;
@@ -94,7 +137,7 @@ internal sealed class SearchResultsDialog : IDisposable
                     {
                         _list.SelectedIndex = selectNew && page.Items.Count > 0 ? previousCount
                             : Math.Clamp(previousSelection, 0, _results.Count - 1);
-                        _list.Focus();
+                        if (_visible) _list.Focus();
                     }
                     // Translators: Empty-list status in the Spotify search results window when no matching tracks, artists or playlists were found.
                     _status.Label = _results.Count == 0 ? Tr("No results found.")
@@ -105,20 +148,20 @@ internal sealed class SearchResultsDialog : IDisposable
                     if (page.Items.Count == 0 && _hasMore) LoadNextPage(selectNew);
                 });
             }
-            catch (OperationCanceledException) when (_lifetime.IsCancellationRequested)
+            catch (OperationCanceledException) when (token.IsCancellationRequested)
             {
                 // The dialog has closed, so its canceled request must not update the UI.
             }
             catch (Exception error)
             {
-                Wx.CallAfter(() =>
+                DialogWork.Post(token, () =>
                 {
                     if (_disposed) return;
                     _loading = false;
                     var message = Catalog.DescribeError(error);
                     _status.Label = message;
                     // Translators: Title of a message box reporting a Spotify or playback failure.
-                    Wx.MessageBox(message, Tr("Error"), MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
+                    if (_visible) Wx.MessageBox(message, Tr("Error"), MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
                 });
             }
         });
@@ -148,5 +191,21 @@ internal sealed class SearchResultsDialog : IDisposable
         args.Skip();
     }
 
-    public void Dispose() { _disposed = true; _lifetime.Cancel(); _dialog.Dispose(); _lifetime.Dispose(); }
+    private void CancelRead()
+    {
+        _read?.Cancel();
+        _read?.Dispose();
+        _read = null;
+        _loading = false;
+    }
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _disposed = true;
+        _lifetime.Cancel();
+        CancelRead();
+        _dialog.Dispose();
+        _lifetime.Dispose();
+    }
 }

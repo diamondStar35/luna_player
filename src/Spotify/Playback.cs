@@ -56,7 +56,7 @@ internal sealed partial class Playback : IDisposable
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         if (_ownsPlayerSession) return;
-        _player.EnterSession();
+        _player.BeginSpotifySession();
         _ownsPlayerSession = true;
         _player.Stop();
     }
@@ -421,6 +421,7 @@ internal sealed partial class Playback : IDisposable
         if (ownedSession && _player.CurrentPath?.StartsWith("luna-spotify://", StringComparison.Ordinal) == true)
             _player.Stop();
         if (ownedSession && restoreSession) _player.LeaveSession();
+        else if (ownedSession) _player.DiscardSpotifySession();
     }
 
     internal void SignOut()

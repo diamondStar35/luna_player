@@ -1,3 +1,4 @@
+using LunaPlayer.Application;
 using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
 using LunaPlayer.Spotify;
@@ -7,7 +8,8 @@ namespace LunaPlayer.UI.Spotify;
 
 internal sealed record DialogOutcome(Track? Track = null,
     IReadOnlyList<Track>? Queue = null, Collection? Collection = null,
-    string? NextCursor = null);
+    string? NextCursor = null,
+    Func<string?, CancellationToken, Task<TrackPage>>? LoadPage = null);
 
 internal sealed class BrowserDialog : IDisposable
 {
@@ -35,6 +37,18 @@ internal sealed class BrowserDialog : IDisposable
     private SearchFilter _searchFilterToOpen;
     private bool _disposed;
     private int _libraryRequest;
+    private bool _libraryLoaded;
+    private bool _visible;
+    private string _clientId = string.Empty;
+    private TracksDialog? _tracksDialog;
+    private SearchResultsDialog? _searchResults;
+    private Collection? _tracksCollection;
+    private string? _resultsQuery;
+    private SearchFilter _resultsFilter;
+    private Page _page;
+    private Page _tracksParent;
+
+    private enum Page { Home, Search, Tracks }
 
     internal BrowserDialog(Window parent, Catalog catalog, Auth auth, SpotifySettings settings)
     {
@@ -152,46 +166,99 @@ internal sealed class BrowserDialog : IDisposable
         _homeList.Focus();
     }
 
-    internal DialogOutcome Show()
+    internal DialogOutcome Show(DialogOutcome? playback)
     {
-        if (_auth.IsSignedIn(_settings.ClientId)) LoadLibrary();
-        while (true)
+        if (_clientId != _settings.ClientId)
         {
-            _dialog.ShowModal();
-            if (_collectionToOpen is Collection collection)
+            ClearViews();
+            _clientId = _settings.ClientId;
+        }
+        if (playback is null) _page = Page.Home;
+        var selected = playback?.Track;
+        UpdateAccount();
+        if (!_libraryLoaded && _auth.IsSignedIn(_settings.ClientId)) LoadLibrary();
+        while (!_disposed)
+        {
+            if (_page == Page.Tracks && _tracksDialog is { } tracks)
             {
-                _collectionToOpen = null;
-                using var detail = new TracksDialog(_owner, collection.Name, collection.Description,
-                    (cursor, token) => _catalog.TracksPageAsync(collection, cursor, token),
-                    // Translators: Empty-list message in the Spotify collection tracks window.
-                    Tr("No accessible tracks were returned for this collection."),
-                    deduplicateArtist: collection.Kind == CollectionKind.Artist);
-                if (detail.Show() is Track track)
-                    return new DialogOutcome(track, detail.Tracks, collection, detail.NextCursor);
+                if (playback?.Queue is { } loaded) tracks.AppendPlayback(loaded, playback.NextCursor);
+                playback = null;
+                if (tracks.Show(selected) is { } track)
+                    return new DialogOutcome(track, tracks.Tracks, _tracksCollection, tracks.NextCursor);
+                selected = null;
+                _page = _tracksParent;
                 continue;
             }
-            if (_searchToOpen is string query)
+            if (_page == Page.Search && _searchResults is { } results)
+            {
+                if (playback?.Queue is { } loaded) results.AppendPlayback(loaded, playback.NextCursor);
+                playback = null;
+                var result = results.Show(selected);
+                selected = null;
+                if (result?.Track is { } track)
+                    return new DialogOutcome(track, results.Tracks, NextCursor: results.NextCursor,
+                        LoadPage: results.LoadTracksPageAsync);
+                if (result?.Collection is { } collection)
+                {
+                    ShowTracks(collection, Page.Search);
+                    continue;
+                }
+                _page = Page.Home;
+                continue;
+            }
+            _visible = true;
+            try { _dialog.ShowModal(); }
+            finally { _visible = false; }
+            if (_collectionToOpen is { } chosen)
+            {
+                _collectionToOpen = null;
+                ShowTracks(chosen, Page.Home);
+                continue;
+            }
+            if (_searchToOpen is { } query)
             {
                 _searchToOpen = null;
-                using var results = new SearchResultsDialog(_owner, _catalog, query, _searchFilterToOpen);
-                var selected = results.Show();
-                if (selected?.Track is Track track)
-                    return new DialogOutcome(track, results.Tracks);
-                if (selected?.Collection is Collection found)
+                if (_searchResults is null || _resultsQuery != query || _resultsFilter != _searchFilterToOpen)
                 {
-                    using var detail = new TracksDialog(_owner, found.Name,
-                        found.Kind == CollectionKind.Artist ? string.Empty : found.Description,
-                        (cursor, token) => _catalog.TracksPageAsync(found, cursor, token),
-                        // Translators: Empty-list message in the Spotify collection tracks window.
-                        Tr("No accessible tracks were returned for this collection."),
-                        deduplicateArtist: found.Kind == CollectionKind.Artist);
-                    if (detail.Show() is Track chosen)
-                        return new DialogOutcome(chosen, detail.Tracks, found, detail.NextCursor);
+                    _searchResults?.Dispose();
+                    _searchResults = new SearchResultsDialog(_owner, _catalog, query, _searchFilterToOpen);
+                    _resultsQuery = query;
+                    _resultsFilter = _searchFilterToOpen;
                 }
+                _page = Page.Search;
                 continue;
             }
             return new DialogOutcome();
         }
+        return new DialogOutcome();
+    }
+
+    private void ShowTracks(Collection collection, Page parent)
+    {
+        if (_tracksDialog is null || _tracksCollection != collection)
+        {
+            _tracksDialog?.Dispose();
+            _tracksDialog = new TracksDialog(_owner, collection.Name, collection.Description,
+                (cursor, token) => _catalog.TracksPageAsync(collection, cursor, token),
+                // Translators: Empty-list message in the Spotify collection tracks window.
+                Tr("No accessible tracks were returned for this collection."),
+                deduplicateArtist: collection.Kind == CollectionKind.Artist);
+            _tracksCollection = collection;
+        }
+        _tracksParent = parent;
+        _page = Page.Tracks;
+    }
+
+    private void ClearViews()
+    {
+        _libraryRequest++;
+        _libraryLoaded = false;
+        _tracksDialog?.Dispose();
+        _tracksDialog = null;
+        _tracksCollection = null;
+        _searchResults?.Dispose();
+        _searchResults = null;
+        _page = Page.Home;
     }
 
     private void UpdateAccount()
@@ -221,7 +288,7 @@ internal sealed class BrowserDialog : IDisposable
 
     private void SignOut()
     {
-        _libraryRequest++;
+        ClearViews();
         Exception? failure = null;
         try { _auth.SignOut(); }
         catch (Exception error) { failure = error; }
@@ -240,6 +307,7 @@ internal sealed class BrowserDialog : IDisposable
         Run(() => _catalog.LibraryAsync(_token), collections =>
         {
             if (request != _libraryRequest || !_auth.IsSignedIn(_settings.ClientId)) return;
+            _libraryLoaded = true;
             _library.Clear(); _library.AddRange(collections);
             _libraryList.Set(_library.Select(item => item.Label));
             if (_library.Count > 0) _libraryList.SelectedIndex = 0;
@@ -363,7 +431,7 @@ internal sealed class BrowserDialog : IDisposable
         UpdateAccount();
         _status.Label = message;
         // Translators: Title of a message box reporting a Spotify or playback failure.
-        Wx.MessageBox(message, Tr("Error"), MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
+        if (_visible) Wx.MessageBox(message, Tr("Error"), MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
     }
 
     private void Run<T>(Func<Task<T>> work, Action<T> success, Action<Exception> failure)
@@ -373,15 +441,43 @@ internal sealed class BrowserDialog : IDisposable
             try
             {
                 var result = await work().ConfigureAwait(false);
-                Wx.CallAfter(() => { if (!_disposed) success(result); });
+                DialogWork.Post(_token, () => { if (!_disposed) success(result); });
             }
-            catch (OperationCanceledException) when (_lifetime.IsCancellationRequested)
+            catch (OperationCanceledException) when (_token.IsCancellationRequested)
             {
                 // The dialog has closed, so its canceled request must not update the UI.
             }
-            catch (Exception error) { Wx.CallAfter(() => { if (!_disposed) failure(error); }); }
+            catch (Exception error) { DialogWork.Post(_token, () => { if (!_disposed) failure(error); }); }
         });
     }
 
-    public void Dispose() { _disposed = true; _lifetime.Cancel(); _dialog.Dispose(); _lifetime.Dispose(); }
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _disposed = true;
+        _lifetime.Cancel();
+        ClearViews();
+        _dialog.Dispose();
+        _lifetime.Dispose();
+    }
+}
+
+// Dialog workers carry a captured token so late completions never consult disposed wx objects.
+internal static class DialogWork
+{
+    internal static void Post(CancellationToken token, Action action)
+    {
+        if (token.IsCancellationRequested) return;
+        try
+        {
+            Wx.CallAfter(() =>
+            {
+                if (!token.IsCancellationRequested) CrashReport.Guard(action);
+            });
+        }
+        catch (InvalidOperationException) when (token.IsCancellationRequested)
+        {
+            // Closing the application can end wx between checking the token and posting the result.
+        }
+    }
 }

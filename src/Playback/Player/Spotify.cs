@@ -2,9 +2,25 @@ namespace LunaPlayer.Playback;
 
 internal sealed partial class Player
 {
+    private bool _spotifySession;
+    internal bool InSpotifySession => _spotifySession;
+
+    internal void BeginSpotifySession()
+    {
+        if (_radioSession) LeaveSession();
+        EnterSession();
+        _spotifySession = true;
+        _engine.ClearQueuedNext();
+    }
+
     // Called only while Spotify owns the session. Shared CloseAll retains the ordinary
     // YouTube behavior: its suspended local playlist can still be restored later.
-    internal void DiscardSpotifySession() => _suspendedPlaylist = null;
+    internal void DiscardSpotifySession()
+    {
+        if (!_spotifySession) return;
+        _spotifySession = false;
+        _suspendedPlaylist = null;
+    }
 
     /// <summary>Opens a decrypted Spotify file through the same mpv audio chain as local music.</summary>
     internal bool OpenSpotifyAudio(LunaPlayer.Spotify.AudioDecryptStream audio, string title,
@@ -16,7 +32,7 @@ internal sealed partial class Player
         try
         {
             url = mpv.RegisterSpotifyAudio(audio);
-            EnterSession();
+            BeginSpotifySession();
             if (!_playlist.OpenFile(url)) return false;
             Describe(url, title, source, null, audioOnly: true);
             opened = LoadCurrent(startPosition, paused: false);

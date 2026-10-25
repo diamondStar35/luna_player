@@ -34,6 +34,7 @@ internal sealed class DialogService : IDialogService, IDisposable
     /// per open.</summary>
     private YouTube.ResultsDialog? _youTubeResults;
     private Radio.BrowserDialog? _radioBrowser;
+    private Spotify.BrowserDialog? _spotifyBrowser;
 
     internal DialogService(
         Frame frame, IApplicationDispatcher dispatcher,
@@ -50,7 +51,8 @@ internal sealed class DialogService : IDialogService, IDisposable
     private Window DialogParent => Wx.GetActiveWindow() ?? _frame;
 
     public Spotify.DialogOutcome ShowSpotifyPreview(LunaPlayer.Spotify.Catalog catalog,
-        LunaPlayer.Spotify.Auth auth, SpotifySettings settings)
+        LunaPlayer.Spotify.Auth auth, SpotifySettings settings,
+        Spotify.DialogOutcome? playback = null)
     {
         if (string.IsNullOrWhiteSpace(settings.ClientId))
         {
@@ -59,8 +61,8 @@ internal sealed class DialogService : IDialogService, IDisposable
                 Wx.CallAfter(() => _requestAction(ActionId.OpenSpotifyCredentials));
             return new Spotify.DialogOutcome();
         }
-        using var dialog = new Spotify.BrowserDialog(DialogParent, catalog, auth, settings);
-        return dialog.Show();
+        _spotifyBrowser ??= new Spotify.BrowserDialog(_frame, catalog, auth, settings);
+        return _spotifyBrowser.Show(playback);
     }
 
     public LunaPlayer.Radio.StationView? ShowRadioBrowser(LunaPlayer.Radio.Browsing state,
@@ -309,6 +311,8 @@ internal sealed class DialogService : IDialogService, IDisposable
     /// is a child of it.</summary>
     public void Dispose()
     {
+        _spotifyBrowser?.Dispose();
+        _spotifyBrowser = null;
         _radioBrowser?.Dispose();
         _radioBrowser = null;
         _youTubeResults?.Dispose();
