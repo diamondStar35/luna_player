@@ -21,12 +21,12 @@ internal sealed class Updates : IDisposable
     // therefore cannot overtake the streamed rows they describe.
     private sealed record Pending(Func<bool> Apply, CancellationToken Token);
 
-    internal Updates(IApplicationDispatcher dispatcher, Action render, Action<Exception> report)
+    internal Updates(Window owner, IApplicationDispatcher dispatcher, Action render, Action<Exception> report)
     {
         _dispatcher = dispatcher;
         _render = render;
         _report = report;
-        _timer = new WxSharp.Timer(App.Current!);
+        _timer = new WxSharp.Timer(owner);
         _timer.Tick += (_, _) => Drain();
     }
 

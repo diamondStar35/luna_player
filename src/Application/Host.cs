@@ -143,7 +143,7 @@ internal sealed class ApplicationHost : IDisposable
         _view.CloseRequested -= StopStartupAsync;
         _singleInstance.Dispose();
         _startup.Dispose();
-        _features?.Dispose();
-        _view.Dispose();
+        try { _features?.Dispose(); }
+        finally { _view.Dispose(); }
     }
 }

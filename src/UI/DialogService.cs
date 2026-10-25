@@ -291,7 +291,9 @@ internal sealed class DialogService : IDialogService, IDisposable
     public void Dispose()
     {
         _radioBrowser?.Dispose();
+        _radioBrowser = null;
         _youTubeResults?.Dispose();
+        _youTubeResults = null;
         CloseDownloadProgressWindows();
     }
 }
