@@ -71,7 +71,7 @@ internal sealed partial class Playback : IDisposable
         Stop(restoreSession: false);
         return true;
     }
-    internal string? CurrentTitle => _current is { } track ? track.Name + " - " + track.Artists : null;
+    internal string? CurrentTitle => _current?.Title;
     internal Track? CurrentTrack => _current;
     internal int CurrentLoadGeneration => Volatile.Read(ref _loadGeneration);
     internal string? CurrentLink => _current is { } track && IsTrack(track.Uri)

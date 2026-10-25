@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-10-25 17:41+0300\n"
+"POT-Creation-Date: 2026-10-25 17:50+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -634,6 +634,16 @@ msgstr ""
 msgid "Open the radio browser"
 msgstr ""
 
+#. Translators: Command in shortcut preferences that opens the Spotify home, search and library browser. Keep Spotify unchanged.
+#: Actions/Registry.cs:44
+msgid "Open the Spotify browser"
+msgstr ""
+
+#. Translators: Command opening the Spotify account and audio-quality page in Preferences. Keep Spotify unchanged.
+#: Actions/Registry.cs:46
+msgid "Spotify preferences"
+msgstr ""
+
 #. Translators: Name of the command that opens the window where a sleep timer is set.
 #: Actions/SleepTimerActions.cs:16
 msgid "Set sleep timer..."
@@ -647,15 +657,6 @@ msgstr ""
 #. Translators: Name of the command that speaks how long is left before the sleep timer fires.
 #: Actions/SleepTimerActions.cs:21
 msgid "Sleep timer remaining"
-msgstr ""
-
-#. Translators: Window title or action label for Spotify. Keep the service name unchanged.
-#. Translators: Name of the Spotify credentials and audio-quality category in Preferences. Keep Spotify unchanged.
-#. Translators: Window title or action label for Spotify. Keep the service name unchanged.
-#: Actions/SpotifyPreviewActions.cs:8 Actions/SpotifyPreviewActions.cs:10
-#: UI/Dialogs/PreferencesDialog.cs:86 UI/Spotify/BrowserDialog.cs:61
-#: UI/Spotify/CredentialsPreferences.cs:21 UI/Spotify/CredentialsPrompt.cs:12
-msgid "Spotify"
 msgstr ""
 
 #. Translators: Name of the command that asks for a YouTube address and plays what it points at.
@@ -817,7 +818,7 @@ msgstr ""
 #. Translators: Title of the prompt shown when the user tries to stop a running download.
 #: Application/Commands/App/Tools.cs:69
 #: Application/Commands/Playback/SelectionSaving.cs:159
-#: UI/Dialogs/ConversionProgressDialog.cs:180 UI/Spotify/BrowserDialog.cs:410
+#: UI/Dialogs/ConversionProgressDialog.cs:180 UI/Spotify/Browsing.cs:255
 #: UI/YouTube/DownloadDialog.cs:171 UI/YouTube/DownloadProgressDialog.cs:209
 msgid "Warning"
 msgstr ""
@@ -1216,8 +1217,8 @@ msgstr ""
 #: Application/Commands/Files/Playlists.cs:62
 #: Application/Commands/Files/Playlists.cs:71
 #: Application/Commands/Playback/Bookmarks.cs:153
-#: Application/Commands/YouTube/Download.cs:121 Application/Spotify.cs:128
-#: Application/Spotify.cs:182 UI/Spotify/BrowserDialog.cs:434
+#: Application/Commands/YouTube/Download.cs:121 Application/Spotify.cs:115
+#: Application/Spotify.cs:169 UI/Spotify/Browsing.cs:279
 #: UI/Spotify/SearchResultsDialog.cs:164 UI/Spotify/TracksDialog.cs:161
 msgid "Error"
 msgstr ""
@@ -2030,79 +2031,84 @@ msgstr ""
 msgid "Percentage not available"
 msgstr ""
 
-#. Translators: Spoken when the user asks how far through the file playing has got. {percent} is that share out of a hundred.
-#. Translators: Spoken position after seeking in a Spotify track. {percent} is the requested percentage.
-#. Translators: Spoken after seeking by percentage. {percent} is a number from 0 to 100.
-#: Application/Commands/Playback/Playback.cs:313
-#: Application/Commands/Playback/Playback.cs:452
-#: Application/Commands/Playback/Playback.cs:464
+#. Translators: Spoken playback position. {percent} is a number from 0 to 100.
+#: Application/Commands/Playback/Playback.cs:314
+#: Application/Commands/Playback/Playback.cs:456
+#: Application/Commands/Playback/Playback.cs:471
 msgid "{percent} percent"
+msgstr ""
+
+#. Translators: Short spoken playback position. {percent} is the percentage; retain a percent sign.
+#: Application/Commands/Playback/Playback.cs:316
+#: Application/Commands/Playback/Playback.cs:458
+#: Application/Commands/Playback/Playback.cs:473
+msgid "{percent}%"
 msgstr ""
 
 #. Translators: Spoken when the user asks how fast the file is playing. {speed} is the speed, where 1 is the normal
 #. speed; "x" is short for "times" and is usually left as it is.
 #. Translators: Spoken after playback speed changes. {speed} is the multiplier, where 1 is normal; "x" means "times".
-#: Application/Commands/Playback/Playback.cs:318
-#: Application/Commands/Playback/Playback.cs:327
+#: Application/Commands/Playback/Playback.cs:321
+#: Application/Commands/Playback/Playback.cs:330
 msgid "{speed}x"
 msgstr ""
 
 #. Translators: Short announcement of pitch in advanced mode. {pitch} is a signed number such as
 #. +1, -2, or +0.25, or zero when pitch is normal.
-#: Application/Commands/Playback/Playback.cs:357
+#: Application/Commands/Playback/Playback.cs:360
 msgid "{pitch} semitones"
 msgstr ""
 
 #. Translators: Spoken when audio is playing at its original pitch.
-#: Application/Commands/Playback/Playback.cs:361
+#: Application/Commands/Playback/Playback.cs:364
 msgid "Pitch normal"
 msgstr ""
 
 #. Translators: Spoken after audio pitch changes or when it is requested. {pitch} is a signed
 #. number of semitones, such as +1, -2, or +0.25.
-#: Application/Commands/Playback/Playback.cs:366
+#: Application/Commands/Playback/Playback.cs:369
 msgid "Pitch {pitch} semitones"
 msgstr ""
 
 #. Translators: Spoken after audio panning changes or when it is requested. Negative values are
 #. toward the left, positive values are toward the right, and zero is centered.
-#: Application/Commands/Playback/Playback.cs:389
+#: Application/Commands/Playback/Playback.cs:392
 msgid "Pan {pan}%"
 msgstr ""
 
 #. Translators: Spoken when the user switches to whole, clearly worded messages. It should read the same as
 #. the "Beginner" entry in the Verbosity list on the General settings page.
-#: Application/Commands/Playback/Playback.cs:399
+#: Application/Commands/Playback/Playback.cs:402
 msgid "Beginner mode"
 msgstr ""
 
 #. Translators: Spoken when the user switches to short messages. It should read the same as the "Advanced"
 #. entry in the Verbosity list on the General settings page.
-#: Application/Commands/Playback/Playback.cs:406
+#: Application/Commands/Playback/Playback.cs:409
 msgid "Advanced mode"
 msgstr ""
 
 #. Translators: Spoken when trimming the silent parts out could not be switched on or off.
-#: Application/Commands/Playback/Playback.cs:418
+#: Application/Commands/Playback/Playback.cs:421
 msgid "Could not change silence removal filter."
 msgstr ""
 
 #. Translators: The short wording spoken when trimming the silent parts out could not be switched on or off.
-#: Application/Commands/Playback/Playback.cs:420
+#: Application/Commands/Playback/Playback.cs:423
 msgid "Filter failed."
 msgstr ""
 
 #. Translators: Spoken once the player has started trimming silent parts out.
 #. Translators: Short announcement once the player has started trimming silent parts out.
-#: Application/Commands/Playback/Playback.cs:431
-#: Application/Commands/Playback/Playback.cs:433
+#: Application/Commands/Playback/Playback.cs:434
+#: Application/Commands/Playback/Playback.cs:436
 msgid "Silence removal on"
 msgstr ""
 
 #. Translators: Spoken once the player has stopped trimming silent parts out.
 #. Translators: Short announcement once the player has stopped trimming silent parts out.
-#: Application/Commands/Playback/Playback.cs:438
-#: Application/Commands/Playback/Playback.cs:440
+#: Application/Commands/Playback/Playback.cs:441
+#: Application/Commands/Playback/Playback.cs:443
 msgid "Silence removal off"
 msgstr ""
 
@@ -2684,70 +2690,70 @@ msgid "Remove favorite '{name}' ({kind})?"
 msgstr ""
 
 #. Translators: Spoken when the user asks to jump to another file but only one is loaded.
-#: Application/Commands/YouTube/Playlist.cs:117
+#: Application/Commands/YouTube/Playlist.cs:105
 msgid "No other files are loaded."
 msgstr ""
 
 #. Translators: The short wording spoken when only one file is loaded.
-#: Application/Commands/YouTube/Playlist.cs:119
+#: Application/Commands/YouTube/Playlist.cs:107
 msgid "No other files."
 msgstr ""
 
 #. Translators: Asks the user which file in the playlist to move to. {count} is how many files are loaded.
-#: Application/Commands/YouTube/Playlist.cs:124
+#: Application/Commands/YouTube/Playlist.cs:112
 msgid "Enter file number (1-{count})"
 msgstr ""
 
 #. Translators: Title of the window that asks which file in the playlist to move to.
-#: Application/Commands/YouTube/Playlist.cs:126
+#: Application/Commands/YouTube/Playlist.cs:114
 msgid "Go To File"
 msgstr ""
 
 #. Translators: Spoken when what the user typed as a file number is not a number.
-#: Application/Commands/YouTube/Playlist.cs:133
+#: Application/Commands/YouTube/Playlist.cs:121
 msgid "Invalid file number."
 msgstr ""
 
 #. Translators: The short wording spoken when what was typed as a file number is not a number.
-#: Application/Commands/YouTube/Playlist.cs:135
+#: Application/Commands/YouTube/Playlist.cs:123
 msgid "Invalid number."
 msgstr ""
 
 #. Translators: Spoken when the file number the user typed is higher or lower than the playlist holds.
-#: Application/Commands/YouTube/Playlist.cs:142
+#: Application/Commands/YouTube/Playlist.cs:130
 msgid "File number out of range."
 msgstr ""
 
 #. Translators: The short wording spoken when the file number typed is outside the playlist.
-#: Application/Commands/YouTube/Playlist.cs:144
+#: Application/Commands/YouTube/Playlist.cs:132
 msgid "Out of range."
 msgstr ""
 
 #. Translators: Spoken once the player has started playing files in a random order.
 #. Translators: Short announcement once shuffle has been enabled.
-#: Application/Commands/YouTube/Playlist.cs:161
-#: Application/Commands/YouTube/Playlist.cs:163
+#: Application/Commands/YouTube/Playlist.cs:149
+#: Application/Commands/YouTube/Playlist.cs:151
 msgid "Shuffle on"
 msgstr ""
 
 #. Translators: Spoken once the player has returned to playing files in their listed order.
 #. Translators: Short announcement once shuffle has been disabled.
-#: Application/Commands/YouTube/Playlist.cs:169
-#: Application/Commands/YouTube/Playlist.cs:171
+#: Application/Commands/YouTube/Playlist.cs:157
+#: Application/Commands/YouTube/Playlist.cs:159
 msgid "Shuffle off"
 msgstr ""
 
 #. Translators: Spoken once the player has started playing the same file repeatedly.
 #. Translators: Short announcement once repeating the current file has been enabled.
-#: Application/Commands/YouTube/Playlist.cs:185
-#: Application/Commands/YouTube/Playlist.cs:187
+#: Application/Commands/YouTube/Playlist.cs:173
+#: Application/Commands/YouTube/Playlist.cs:175
 msgid "Repeat on"
 msgstr ""
 
 #. Translators: Spoken once the player has stopped playing the same file repeatedly.
 #. Translators: Short announcement once repeating the current file has been disabled.
-#: Application/Commands/YouTube/Playlist.cs:193
-#: Application/Commands/YouTube/Playlist.cs:195
+#: Application/Commands/YouTube/Playlist.cs:181
+#: Application/Commands/YouTube/Playlist.cs:183
 msgid "Repeat off"
 msgstr ""
 
@@ -2812,7 +2818,7 @@ msgid "All items in the download queue have completed."
 msgstr ""
 
 #. Translators: Shown when settings could not be read. {error} is the underlying file or data error.
-#: Application/Features.cs:204
+#: Application/Features.cs:203
 msgid ""
 "The settings file could not be loaded. Default settings will be used, and "
 "the existing file will not be overwritten. Import a valid settings file or "
@@ -2822,7 +2828,7 @@ msgid ""
 msgstr ""
 
 #. Translators: Title of the message shown when settings could not be read.
-#: Application/Features.cs:206
+#: Application/Features.cs:205
 msgid "Settings error"
 msgstr ""
 
@@ -3445,15 +3451,14 @@ msgstr ""
 
 #. Translators: Collection type on Spotify Home, containing the user's most played tracks.
 #. Translators: Collection name on the Spotify Home tab for the account's most played songs.
-#: Spotify/Catalog.cs:29 UI/Spotify/BrowserDialog.cs:317
+#: Spotify/Catalog.cs:29 UI/Spotify/Browsing.cs:162
 msgid "Your top tracks"
 msgstr ""
 
 #. Translators: Collection type on Spotify Home, containing listening history.
 #. Translators: Radio tree category containing this user's recently played stations.
 #. Translators: Collection name on the Spotify Home tab for listening history.
-#: Spotify/Catalog.cs:31 UI/Radio/Navigation.cs:23
-#: UI/Spotify/BrowserDialog.cs:322
+#: Spotify/Catalog.cs:31 UI/Radio/Navigation.cs:23 UI/Spotify/Browsing.cs:167
 msgid "Recently played"
 msgstr ""
 
@@ -3472,51 +3477,56 @@ msgstr ""
 msgid "Artist"
 msgstr ""
 
-#. Translators: Track row in Spotify lists. {name} is the song, {artists} lists its performers and {duration} is its playing time.
+#. Translators: Spotify track title used in the main window, opened-files list and navigation announcements. {name} is the song and {artists} lists its performers.
 #: Spotify/Catalog.cs:46
+msgid "{name} - {artists}"
+msgstr ""
+
+#. Translators: Track row in Spotify lists. {name} is the song, {artists} lists its performers and {duration} is its playing time.
+#: Spotify/Catalog.cs:49
 msgid "{name} - {artists} - {duration}"
 msgstr ""
 
 #. Translators: A song result in Spotify search. {track} contains the name, artists and duration; Track identifies the result type.
-#: Spotify/Catalog.cs:60
+#: Spotify/Catalog.cs:63
 msgid "{track} - Track"
 msgstr ""
 
 #. Translators: Error when a Spotify developer app has exhausted its quota. {wait} is the localized waiting time.
-#: Spotify/Catalog.cs:74
+#: Spotify/Catalog.cs:77
 msgid ""
 "Spotify's developer-app quota has been reached. Spotify says to try again in "
 "{wait}."
 msgstr ""
 
 #. Translators: Error when Spotify has exhausted a developer app's quota without saying when it resets.
-#: Spotify/Catalog.cs:76
+#: Spotify/Catalog.cs:79
 msgid ""
 "Spotify's developer-app quota has been reached. Spotify did not provide a "
 "reset time."
 msgstr ""
 
 #. Translators: Waiting time in a Spotify quota error. {count} is the number of hours.
-#: Spotify/Catalog.cs:85
+#: Spotify/Catalog.cs:88
 msgid "{count} hour"
 msgid_plural "{count} hours"
 msgstr[0] ""
 msgstr[1] ""
 
 #. Translators: Waiting time in a Spotify quota error. {count} is the number of minutes.
-#: Spotify/Catalog.cs:87
+#: Spotify/Catalog.cs:90
 msgid "{count} minute"
 msgid_plural "{count} minutes"
 msgstr[0] ""
 msgstr[1] ""
 
 #. Translators: Waiting time in a Spotify quota error. {hours} and {minutes} already contain their localized number and unit.
-#: Spotify/Catalog.cs:90
+#: Spotify/Catalog.cs:93
 msgid "{hours} and {minutes}"
 msgstr ""
 
 #. Translators: Error when Spotify asks the app to delay requests. {seconds} is the waiting time in seconds.
-#: Spotify/Catalog.cs:101
+#: Spotify/Catalog.cs:104
 msgid "Spotify asked Luna to wait about {seconds} second before trying again."
 msgid_plural ""
 "Spotify asked Luna to wait about {seconds} seconds before trying again."
@@ -3524,66 +3534,66 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. Translators: Error when Spotify continues limiting requests without giving a waiting time.
-#: Spotify/Catalog.cs:106
+#: Spotify/Catalog.cs:109
 msgid "Spotify is still limiting requests. Wait a moment and try again."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:426
+#: Spotify/Catalog.cs:428
 msgid "Spotify authorization expired. Sign in again."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:428
+#: Spotify/Catalog.cs:430
 msgid ""
 "Spotify does not allow this content for this developer app or account. Some "
 "playlists and recommendations are restricted."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:430
+#: Spotify/Catalog.cs:432
 msgid "Spotify rate limit reached. Wait a moment and try again."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails. {code} is the HTTP status code.
-#: Spotify/Catalog.cs:432
+#: Spotify/Catalog.cs:434
 msgid "Spotify request failed ({code})."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:434
+#: Spotify/Catalog.cs:436
 msgid "Could not reach Spotify. Check your internet connection."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:436
+#: Spotify/Catalog.cs:438
 msgid "Spotify did not respond in time."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:438
+#: Spotify/Catalog.cs:440
 msgid "Spotify refused the playback sign in. Sign in again."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:440
+#: Spotify/Catalog.cs:442
 msgid "Spotify could not load this track."
 msgstr ""
 
 #. Translators: Error when Spotify audio/network data or protected account files cannot be read or saved.
-#: Spotify/Catalog.cs:442
+#: Spotify/Catalog.cs:444
 msgid ""
 "Spotify could not read or save required data. Check your connection and "
 "available storage, then try again."
 msgstr ""
 
 #. Translators: Error when an operation outlives its disconnected Spotify session.
-#: Spotify/Catalog.cs:444
+#: Spotify/Catalog.cs:446
 msgid "Spotify was disconnected. Sign in again to continue."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails. {reason} is the failure reason returned by the service.
-#: Spotify/Catalog.cs:446
+#: Spotify/Catalog.cs:448
 msgid "Spotify request failed: {reason}"
 msgstr ""
 
@@ -4596,6 +4606,15 @@ msgstr ""
 msgid "Keyboard Shortcuts"
 msgstr ""
 
+#. Translators: Name of the Spotify credentials and audio-quality category in Preferences. Keep Spotify unchanged.
+#. Translators: Title of the Spotify home, search and library browser. Keep Spotify unchanged.
+#. Translators: Heading on the Spotify preferences page. Keep Spotify unchanged.
+#. Translators: Title of the dialog offering to configure Spotify credentials. Keep Spotify unchanged.
+#: UI/Dialogs/PreferencesDialog.cs:86 UI/Spotify/BrowserDialog.cs:61
+#: UI/Spotify/CredentialsPreferences.cs:21 UI/Spotify/CredentialsPrompt.cs:12
+msgid "Spotify"
+msgstr ""
+
 #. Translators: Help text for the settings tree down the left of the Preferences window.
 #: UI/Dialogs/PreferencesDialog.cs:209
 msgid ""
@@ -5539,7 +5558,7 @@ msgstr ""
 
 #. Translators: Tools menu item opening the internet radio station browser.
 #: UI/Menus/ToolsMenu.cs:17
-msgid "Radio browser…"
+msgid "Radio browser�"
 msgstr ""
 
 #. Translators: Opens the Spotify home, search and library interface.
@@ -7115,71 +7134,71 @@ msgid "Library"
 msgstr ""
 
 #. Translators: Empty-list message in the Spotify collection tracks window.
-#: UI/Spotify/BrowserDialog.cs:244
+#: UI/Spotify/Browsing.cs:89
 msgid "No accessible tracks were returned for this collection."
 msgstr ""
 
 #. Translators: Account connection status at the top of the Spotify browser. Keep Spotify and Client ID unchanged.
-#: UI/Spotify/BrowserDialog.cs:272
+#: UI/Spotify/Browsing.cs:117
 msgid "Set your Client ID in Spotify Preferences to connect."
 msgstr ""
 
 #. Translators: Account connection status at the top of the Spotify browser. Keep Spotify and Client ID unchanged.
-#: UI/Spotify/BrowserDialog.cs:274
+#: UI/Spotify/Browsing.cs:119
 msgid "Connected to Spotify."
 msgstr ""
 
 #. Translators: Account connection status at the top of the Spotify browser. Keep Spotify and Client ID unchanged.
-#: UI/Spotify/BrowserDialog.cs:276
+#: UI/Spotify/Browsing.cs:121
 msgid ""
 "Spotify credentials are configured. Choose Sign in to Spotify to connect "
 "your account."
 msgstr ""
 
 #. Translators: Account connection status at the top of the Spotify browser. Keep Spotify and Client ID unchanged.
-#: UI/Spotify/BrowserDialog.cs:283
+#: UI/Spotify/Browsing.cs:128
 msgid ""
 "Opening Spotify sign in in your browser. Return here after authorizing Luna "
 "Player."
 msgstr ""
 
 #. Translators: Account library loading status at the top of the Spotify browser.
-#: UI/Spotify/BrowserDialog.cs:306
+#: UI/Spotify/Browsing.cs:151
 msgid "Loading your Spotify library..."
 msgstr ""
 
 #. Translators: Description of the top tracks collection on the Spotify Home tab.
-#: UI/Spotify/BrowserDialog.cs:319
+#: UI/Spotify/Browsing.cs:164
 msgid "Based on your listening history."
 msgstr ""
 
 #. Translators: Description of the recently played collection on the Spotify Home tab.
-#: UI/Spotify/BrowserDialog.cs:324
+#: UI/Spotify/Browsing.cs:169
 msgid "Your recent listening history."
 msgstr ""
 
 #. Translators: Library loading status at the top of the Spotify browser. {count} is the number of available playlists and collections.
-#: UI/Spotify/BrowserDialog.cs:329
+#: UI/Spotify/Browsing.cs:174
 msgid "Spotify library loaded. {count} collections available."
 msgstr ""
 
 #. Translators: Status or guidance beside the search controls in the Spotify browser and search results window.
-#: UI/Spotify/BrowserDialog.cs:358
+#: UI/Spotify/Browsing.cs:203
 msgid "Type a search, then press Enter."
 msgstr ""
 
 #. Translators: Status or guidance beside the search controls in the Spotify browser and search results window.
-#: UI/Spotify/BrowserDialog.cs:361
+#: UI/Spotify/Browsing.cs:206
 msgid "Sign in to Spotify before searching."
 msgstr ""
 
 #. Translators: Status or guidance beside the search controls in the Spotify browser and search results window.
-#: UI/Spotify/BrowserDialog.cs:392
+#: UI/Spotify/Browsing.cs:237
 msgid "Could not load recent searches from this computer."
 msgstr ""
 
 #. Translators: Warning message box when saving recent searches from the Spotify browser fails.
-#: UI/Spotify/BrowserDialog.cs:408
+#: UI/Spotify/Browsing.cs:253
 msgid "Could not save recent searches on this computer."
 msgstr ""
 
@@ -7330,7 +7349,7 @@ msgstr ""
 msgid "{count} results loaded. Press Down at the end for more."
 msgstr ""
 
-#. Translators: Status in the Spotify search results window. {count} is the number of results already loaded; Down means the keyboard arrow key.
+#. Translators: Status in the Spotify search results window after all pages are loaded. {count} is the number of results.
 #: UI/Spotify/SearchResultsDialog.cs:147
 msgid "{count} results loaded."
 msgstr ""
@@ -7355,7 +7374,7 @@ msgstr ""
 msgid "{count} tracks loaded. Press Down at the end for more."
 msgstr ""
 
-#. Translators: Status in the Spotify collection window. {count} is the number of tracks loaded; Down means the keyboard arrow key.
+#. Translators: Status in the Spotify collection window after all pages are loaded. {count} is the number of tracks.
 #: UI/Spotify/TracksDialog.cs:144
 msgid "{count} tracks loaded."
 msgstr ""

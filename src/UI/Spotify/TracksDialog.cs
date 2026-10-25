@@ -140,7 +140,7 @@ internal sealed class TracksDialog : IDisposable
                     _status.Label = _tracks.Count == 0 ? _emptyMessage
                         // Translators: Status in the Spotify collection window. {count} is the number of tracks loaded; Down means the keyboard arrow key.
                         : _hasMore ? TrFormat("{count} tracks loaded. Press Down at the end for more.", _tracks.Count)
-                        // Translators: Status in the Spotify collection window. {count} is the number of tracks loaded; Down means the keyboard arrow key.
+                        // Translators: Status in the Spotify collection window after all pages are loaded. {count} is the number of tracks.
                         : TrFormat("{count} tracks loaded.", _tracks.Count);
                     if (_tracks.Count == previousCount && _hasMore) LoadNextPage(selectNew);
                 });

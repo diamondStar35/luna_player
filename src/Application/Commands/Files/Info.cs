@@ -60,7 +60,7 @@ internal sealed partial class Files
             if (tracks.Count == 0) return;
             var request = _view.Dialogs.ChooseOpenedFile(tracks.Count,
                 index => index >= 0 && index < tracks.Count
-                    ? tracks[index].Name + " - " + tracks[index].Artists : string.Empty,
+                    ? tracks[index].Title : string.Empty,
                 selected);
             if (request is null) return;
             if (request.Value.Action == OpenedFilesAction.Jump)

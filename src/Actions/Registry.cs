@@ -40,6 +40,10 @@ internal static class ToolsActions
         new(ActionId.OpenMediaConverter, Tr("Open the media converter")),
         // Translators: Name of the command opening the internet radio browser.
         new(ActionId.OpenRadioBrowser, Tr("Open the radio browser"), new("r", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
+        // Translators: Command in shortcut preferences that opens the Spotify home, search and library browser. Keep Spotify unchanged.
+        new(ActionId.OpenSpotifyBrowser, Tr("Open the Spotify browser"), new("s", ShortcutModifiers.Alt)),
+        // Translators: Command opening the Spotify account and audio-quality page in Preferences. Keep Spotify unchanged.
+        new(ActionId.OpenSpotifyCredentials, Tr("Spotify preferences")),
     ];
 }
 
@@ -51,5 +55,5 @@ internal static class ActionRegistry
     [.. MediaActions.All, .. PlaybackActions.All, .. YouTubeActions.All,
         .. HelpActions.All, .. UpdateActions.All,
         .. RecordingActions.All, .. ToolsActions.All, .. IptvActions.All,
-        .. SleepTimerActions.All, .. SpotifyPreviewActions.All];
+        .. SleepTimerActions.All];
 }

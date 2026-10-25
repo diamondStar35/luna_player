@@ -153,7 +153,7 @@ internal sealed partial class Features : IDisposable
             router, _view, player, _settings, speech, clipboard, youTube, sessions, components, _dispatcher,
             downloadQueue);
         _ = new Commands.YouTube.Favorites(router, _view, player, speech, favorites, sessions);
-        _ = new Commands.YouTube.Playlist(router, _view, player, _settings, speech, playbackSessions, _spotifyPlayback);
+        _ = new Commands.YouTube.Playlist(router, _view, player, _settings, speech, playbackSessions);
         _ = new Commands.App.Preferences(router, _view, _settings, _settingsStore,
             new BackupService(_settingsStore, bookmarks), new FileAssociations(), player, shortcuts,
             globalShortcuts, speech, youTube, components, RestartSpotifyForQuality);
@@ -166,8 +166,7 @@ internal sealed partial class Features : IDisposable
         _tools = tools;
         _ = new Commands.Iptv.Iptv(router, _view, player, speech, _dispatcher,
             features.IptvSources);
-        _spotifyCatalog = new LunaPlayer.Spotify.Catalog(() => SpotifyAuth, _settings.Spotify);
-        router.Register(ActionId.OpenSpotifyPreview, () =>
+        router.Register(ActionId.OpenSpotifyBrowser, () =>
         {
             if (!ReturnToSpotify()) OpenSpotify();
         });

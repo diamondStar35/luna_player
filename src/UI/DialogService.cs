@@ -50,7 +50,7 @@ internal sealed class DialogService : IDialogService, IDisposable
 
     private Window DialogParent => Wx.GetActiveWindow() ?? _frame;
 
-    public Spotify.DialogOutcome ShowSpotifyPreview(LunaPlayer.Spotify.Catalog catalog,
+    public Spotify.DialogOutcome ShowSpotifyBrowser(LunaPlayer.Spotify.Catalog catalog,
         LunaPlayer.Spotify.Auth auth, SpotifySettings settings,
         Spotify.DialogOutcome? playback = null)
     {

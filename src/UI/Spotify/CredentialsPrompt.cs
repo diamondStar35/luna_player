@@ -8,7 +8,7 @@ internal sealed class CredentialsPrompt : IDisposable
 
     internal CredentialsPrompt(Window parent)
     {
-        // Translators: Window title or action label for Spotify. Keep the service name unchanged.
+        // Translators: Title of the dialog offering to configure Spotify credentials. Keep Spotify unchanged.
         _dialog = new Dialog(parent, title: Tr("Spotify"),
             style: DialogStyle.Default | DialogStyle.ResizeBorder);
         var message = new StaticText(_dialog,

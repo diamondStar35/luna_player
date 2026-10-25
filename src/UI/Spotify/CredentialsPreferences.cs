@@ -17,7 +17,7 @@ internal sealed class CredentialsPreferences : PreferencesPage
     {
         _settings = settings;
         var panel = (Panel)Window;
-        // Translators: Window title or action label for Spotify. Keep the service name unchanged.
+        // Translators: Heading on the Spotify preferences page. Keep Spotify unchanged.
         var heading = new StaticText(panel, label: Tr("Spotify"));
         // Translators: Label for the public application identifier in Spotify Preferences; keep Client ID unchanged.
         var idLabel = new StaticText(panel, label: Tr("Client ID"));

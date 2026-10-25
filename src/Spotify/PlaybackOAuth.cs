@@ -7,7 +7,7 @@ using System.Text.Json;
 
 namespace LunaPlayer.Spotify;
 
-/// <summary>Signs in for playback using the same public PKCE flow as the former engine.</summary>
+/// <summary>Authorizes the playback connection through a browser PKCE flow.</summary>
 internal static class PlaybackOAuth
 {
     private const string ClientId = "65b708073fc0480ea92a077233ca87bd";

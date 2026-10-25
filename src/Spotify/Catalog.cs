@@ -42,6 +42,9 @@ internal sealed record Collection(string Id, string Name, CollectionKind Kind, s
 
 internal sealed record Track(string Name, string Artists, string Uri, int DurationMs)
 {
+    // Translators: Spotify track title used in the main window, opened-files list and navigation announcements. {name} is the song and {artists} lists its performers.
+    internal string Title => TrFormat("{name} - {artists}", Name, Artists);
+
     // Translators: Track row in Spotify lists. {name} is the song, {artists} lists its performers and {duration} is its playing time.
     internal string Label => TrFormat("{name} - {artists} - {duration}", Name, Artists,
         TimeSpan.FromMilliseconds(Math.Max(0, DurationMs)).ToString(
@@ -119,7 +122,6 @@ internal sealed class Catalog
     internal Catalog(Func<Auth> auth, SpotifySettings settings)
         : this(token => AccessTokenAsync(auth(), settings, token), SharedHttp) { }
 
-    // The injectable transport lets the small client be tested without a Spotify account.
     internal Catalog(Func<CancellationToken, Task<string>> accessToken, HttpClient http)
     {
         _accessToken = accessToken;

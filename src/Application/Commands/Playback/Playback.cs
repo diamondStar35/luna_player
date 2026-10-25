@@ -309,8 +309,11 @@ internal sealed partial class Playback
             return;
         }
         var percent = Math.Clamp((int)(elapsed / duration * 100), 0, 100);
-        // Translators: Spoken when the user asks how far through the file playing has got. {percent} is that share out of a hundred.
-        _speech.Speak(TrFormat("{percent} percent", percent), $"{percent}%");
+        _speech.Speak(
+            // Translators: Spoken playback position. {percent} is a number from 0 to 100.
+            TrFormat("{percent} percent", percent),
+            // Translators: Short spoken playback position. {percent} is the percentage; retain a percent sign.
+            TrFormat("{percent}%", percent));
     }
 
     // Translators: Spoken when the user asks how fast the file is playing. {speed} is the speed, where 1 is the normal
@@ -448,8 +451,11 @@ internal sealed partial class Playback
         {
             if (_spotify.Duration is double spotifyDuration && spotifyDuration > 0)
                 _spotify.Seek(percent >= 100 ? Math.Max(0, spotifyDuration - 0.2) : spotifyDuration * percent / 100.0);
-            // Translators: Spoken position after seeking in a Spotify track. {percent} is the requested percentage.
-            _speech.Speak(TrFormat("{percent} percent", percent), $"{percent}%");
+            _speech.Speak(
+                // Translators: Spoken playback position. {percent} is a number from 0 to 100.
+                TrFormat("{percent} percent", percent),
+                // Translators: Short spoken playback position. {percent} is the percentage; retain a percent sign.
+                TrFormat("{percent}%", percent));
             return;
         }
         if (!_guard.RequireDuration(out var duration))
@@ -460,8 +466,11 @@ internal sealed partial class Playback
             _player.SeekToEnd();
         else
             _player.SeekAbsolute(duration * percent / 100.0);
-        // Translators: Spoken after seeking by percentage. {percent} is a number from 0 to 100.
-        _speech.Speak(TrFormat("{percent} percent", percent), $"{percent}%");
+        _speech.Speak(
+            // Translators: Spoken playback position. {percent} is a number from 0 to 100.
+            TrFormat("{percent} percent", percent),
+            // Translators: Short spoken playback position. {percent} is the percentage; retain a percent sign.
+            TrFormat("{percent}%", percent));
     }
 
     private void SetSeekStep(SeekStepAction step)

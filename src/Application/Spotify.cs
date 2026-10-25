@@ -20,7 +20,8 @@ internal sealed partial class Features
         }
     }
     private LunaPlayer.Spotify.Playback _spotifyPlayback = null!;
-    private LunaPlayer.Spotify.Catalog _spotifyCatalog = null!;
+    private LunaPlayer.Spotify.Catalog? _spotifyCatalog;
+    private LunaPlayer.Spotify.Catalog SpotifyCatalog => _spotifyCatalog ??= new(() => SpotifyAuth, _settings.Spotify);
     private CancellationTokenSource? _spotifyStart;
     private bool _spotifyBrowserOpen;
 
@@ -29,12 +30,12 @@ internal sealed partial class Features
         if (_disposed || _spotifyBrowserOpen) return;
         LunaPlayer.UI.Spotify.DialogOutcome choice;
         _spotifyBrowserOpen = true;
-        try { choice = _view.Dialogs.ShowSpotifyPreview(_spotifyCatalog, SpotifyAuth, _settings.Spotify, playback); }
+        try { choice = _view.Dialogs.ShowSpotifyBrowser(SpotifyCatalog, SpotifyAuth, _settings.Spotify, playback); }
         finally { _spotifyBrowserOpen = false; }
         if (choice.Track is not { } track) return;
         Func<string?, CancellationToken, Task<LunaPlayer.Spotify.TrackPage>>? pageLoader =
             choice.LoadPage ?? (choice.Collection is { } collection
-                ? (cursor, token) => _spotifyCatalog.TracksPageAsync(collection, cursor, token)
+                ? (cursor, token) => SpotifyCatalog.TracksPageAsync(collection, cursor, token)
                 : null);
         StartSpotify(track, choice.Queue, pageLoader: pageLoader, nextPage: choice.NextCursor,
             deduplicateArtist: choice.Collection?.Kind == LunaPlayer.Spotify.CollectionKind.Artist);
@@ -129,7 +130,7 @@ internal sealed partial class Features
     {
         if (!_disposed && _spotifyPlayback.IsActive && ReferenceEquals(_spotifyPlayback.CurrentTrack, track)
             && _settings.General.SpeakFileOnNavigation)
-            _speech.Speak(track.Name + " - " + track.Artists, track.Name + " - " + track.Artists);
+            _speech.Speak(track.Title, track.Title);
     });
 
     // Refresh the window when Spotify's transport state changes.

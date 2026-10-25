@@ -51,9 +51,7 @@ internal sealed partial class Playback
             return _shuffle;
         }
     }
-    internal Func<string?, CancellationToken, Task<TrackPage>>? PageLoader => _pageLoader;
     internal string? NextPage => _nextPage;
-    internal bool DeduplicateArtist => _deduplicateArtist;
     internal void Play(Track track, IReadOnlyList<Track>? queue,
         CancellationToken cancellationToken, double? startPosition = null,
         Func<string?, CancellationToken, Task<TrackPage>>? pageLoader = null,

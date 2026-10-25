@@ -143,7 +143,7 @@ internal sealed class SearchResultsDialog : IDisposable
                     _status.Label = _results.Count == 0 ? Tr("No results found.")
                         // Translators: Status in the Spotify search results window. {count} is the number of results already loaded; Down means the keyboard arrow key.
                         : _hasMore ? TrFormat("{count} results loaded. Press Down at the end for more.", _results.Count)
-                        // Translators: Status in the Spotify search results window. {count} is the number of results already loaded; Down means the keyboard arrow key.
+                        // Translators: Status in the Spotify search results window after all pages are loaded. {count} is the number of results.
                         : TrFormat("{count} results loaded.", _results.Count);
                     if (page.Items.Count == 0 && _hasMore) LoadNextPage(selectNew);
                 });
