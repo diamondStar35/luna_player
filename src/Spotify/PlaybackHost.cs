@@ -546,6 +546,8 @@ internal sealed class PlaybackHost : IDisposable
         {
             if (Duration is not double duration || duration <= 0) return;
             var position = Math.Clamp(seconds, 0, duration);
+            // A completed track can be sought and played again without restarting at zero.
+            if (position < duration) _ended = false;
             if (_clock is { } clock)
                 _clock = clock with { Elapsed = position, Duration = duration, ObservedAt = DateTimeOffset.UtcNow };
             if (IsLoadedCurrent) Send($"seek {(long)Math.Round(position * 1000)}");
