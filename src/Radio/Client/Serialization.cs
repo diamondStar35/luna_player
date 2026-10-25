@@ -7,6 +7,7 @@ namespace LunaPlayer.Radio.Client;
 /// <summary>Explicit metadata for every JSON response. No reflection serializer or runtime type lookup
 /// is used by the transport. Legacy timestamp strings stay intact alongside typed ISO timestamps.</summary>
 [JsonSourceGenerationOptions(
+    DefaultBufferSize = 4096,
     NumberHandling = JsonNumberHandling.AllowReadingFromString,
     Converters = [typeof(FlagConverter), typeof(TimestampConverter), typeof(OptionalGuidConverter)])]
 [JsonSerializable(typeof(Station[]))]
