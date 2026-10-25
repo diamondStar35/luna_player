@@ -36,6 +36,7 @@ internal sealed partial class Playback : IDisposable
     internal event Action<Track>? TrackChanged;
     internal event Action<Track>? Navigated;
     internal event Action<bool>? PlayingChanged;
+    internal event Action? QueueEmpty;
     internal Func<bool>? BeforeTrackEnd { get; set; }
 
     internal Playback(SpotifySettings settings, Player player,
@@ -64,9 +65,7 @@ internal sealed partial class Playback : IDisposable
     internal bool CloseAllFiles()
     {
         if (!_ownsPlayerSession && !_active) return false;
-        var ownedSession = _ownsPlayerSession;
         Stop(restoreSession: false);
-        if (ownedSession) _player.DiscardSpotifySession();
         return true;
     }
     internal string? CurrentTitle => _current is { } track ? track.Name + " - " + track.Artists : null;
@@ -256,18 +255,27 @@ internal sealed partial class Playback : IDisposable
         lock (_navigationLock) { if (Elapsed is double e) Seek(e + delta); }
     }
 
-    private void SetCurrent(Track track, bool playing)
+    private void ClearCurrent()
     {
         CancelNavigationDelay();
-        // Selection changes immediately, before the navigation debounce starts the next load.
-        // Cancel metadata, key, demand and read-ahead requests for the previous track now.
+        // Invalidate the old track before any asynchronous completion can use its stream.
         _loadCancellation?.Cancel();
+        _loadCancellation?.Dispose();
+        _loadCancellation = null;
         Interlocked.Increment(ref _loadGeneration);
-        _playRequested = true;
+        _playRequested = false;
         _ended = false;
         _currentLoadSent = false;
         _loadedUri = null;
         _pendingSeek = null;
+        _current = null;
+        _clock = null;
+    }
+
+    private void SetCurrent(Track track, bool playing)
+    {
+        ClearCurrent();
+        _playRequested = true;
         _current = track;
         _clock = track.DurationMs > 0
             ? new PlaybackClock(track.DurationMs / 1000.0, 0, playing, DateTimeOffset.UtcNow) : null;
@@ -386,42 +394,28 @@ internal sealed partial class Playback : IDisposable
     {
         var ownedSession = _ownsPlayerSession;
         _ownsPlayerSession = false;
-        _loadCancellation?.Cancel();
-        _loadCancellation?.Dispose();
-        _loadCancellation = null;
         lock (_navigationLock)
         {
             SavePosition();
-            Interlocked.Increment(ref _loadGeneration);
+            ClearCurrent();
             _active = false;
-            _playRequested = false;
-            _ended = false;
-            _currentLoadSent = false;
-            _loadedUri = null;
-            _pendingSeek = null;
             _repeatCurrent = false;
             _navigationStopSent = false;
-            _pageCancellation?.Cancel();
-            _pageCancellation?.Dispose();
-            _pageCancellation = null;
-            _fetchingMore = false;
-            _pageFetchAfterEnded = false;
-            CancelNavigationDelay();
+            CancelPageRead();
             _pageCursors.Clear();
             _pageLoader = null;
             _nextPage = null;
             _deduplicateArtist = false;
             _queue = [];
             _sourceQueue = [];
-            _index = 0;
+            _index = -1;
             _shuffle = false;
-            _clock = null;
-            _current = null;
         }
-        if (ownedSession && _player.CurrentPath?.StartsWith("luna-spotify://", StringComparison.Ordinal) == true)
-            _player.Stop();
-        if (ownedSession && restoreSession) _player.LeaveSession();
-        else if (ownedSession) _player.DiscardSpotifySession();
+        // A replacement source may already have acquired the player. Never stop or restore over it.
+        if (!ownedSession || !_player.InSpotifySession) return;
+        _player.Stop();
+        if (restoreSession) _player.LeaveSession();
+        else _player.DiscardSpotifySession();
     }
 
     internal void SignOut()

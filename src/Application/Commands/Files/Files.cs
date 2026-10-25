@@ -227,11 +227,11 @@ internal sealed partial class Files
         if (_spotify.HasSession || _spotify.IsActive)
         {
             _cancelSpotifyStart();
-            _spotify.Stop();
+            _spotify.CloseCurrent();
             _speech.Speak(
-                // Translators: Full or short spoken confirmation after closing the current Spotify session.
+                // Translators: Spoken confirmation after removing the current track from a Spotify playback queue.
                 Tr("File closed."),
-                // Translators: Full or short spoken confirmation after closing the current Spotify session.
+                // Translators: Short confirmation after removing the current track from a Spotify playback queue.
                 Tr("File closed."));
             return;
         }

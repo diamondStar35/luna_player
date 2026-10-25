@@ -65,11 +65,7 @@ internal sealed partial class Playback
         {
             SavePosition();
             if (_active) _player.Stop();
-            _pageCancellation?.Cancel();
-            _pageCancellation?.Dispose();
-            _pageCancellation = null;
-            _fetchingMore = false;
-            _pageFetchAfterEnded = false;
+            CancelPageRead();
             _pageCursors.Clear();
             _pageLoader = pageLoader;
             _nextPage = nextPage;
@@ -94,6 +90,51 @@ internal sealed partial class Playback
 
     internal bool Next() => Step(1);
     internal bool Previous() => Step(-1);
+
+    internal bool CloseCurrent()
+    {
+        lock (_navigationLock)
+        {
+            if (!_ownsPlayerSession) return false;
+            if (!_active || _current is null)
+            {
+                QueueEmpty?.Invoke();
+                return true;
+            }
+            SavePosition();
+            var removed = _current;
+            var position = _index;
+            CancelPageRead();
+            _player.Stop();
+            _queue.RemoveAt(position);
+            var original = _sourceQueue.FindIndex(track => ReferenceEquals(track, removed));
+            if (original >= 0) _sourceQueue.RemoveAt(original);
+            if (_queue.Count > 0)
+            {
+                _index = Math.Min(position, _queue.Count - 1);
+                var next = _queue[_index];
+                SetCurrent(next, playing: false);
+                LoadTrack(next, SavedPosition(next));
+            }
+            else
+            {
+                ClearCurrent();
+                _index = -1;
+                if (_nextPage is not null) FetchMore(afterTrackEnded: true);
+                else QueueEmpty?.Invoke();
+            }
+            return true;
+        }
+    }
+
+    private void CancelPageRead()
+    {
+        _pageCancellation?.Cancel();
+        _pageCancellation?.Dispose();
+        _pageCancellation = null;
+        _fetchingMore = false;
+        _pageFetchAfterEnded = false;
+    }
     internal bool GoToIndex(int index)
     {
         lock (_navigationLock)
@@ -112,14 +153,7 @@ internal sealed partial class Playback
                 return true;
             }
             if (!TryTarget(_index, delta, out var target)) return false;
-            if (_fetchingMore)
-            {
-                _pageCancellation?.Cancel();
-                _pageCancellation?.Dispose();
-                _pageCancellation = null;
-                _fetchingMore = false;
-                _pageFetchAfterEnded = false;
-            }
+            CancelPageRead();
             if (savePosition) SavePosition();
             _index = target;
             var track = _queue[target];
@@ -197,6 +231,8 @@ internal sealed partial class Playback
                         }
                         else if (_nextPage is not null)
                             FetchMore(ended);
+                        else if (_queue.Count == 0)
+                            QueueEmpty?.Invoke();
                         else if (ended)
                             AdvanceAtEndCore();
                         else if (_audioSettings?.WrapPlaylist == true && _queue.Count > 1)

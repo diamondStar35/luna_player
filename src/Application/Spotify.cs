@@ -58,6 +58,8 @@ internal sealed partial class Features
         return true;
     }
 
+    private void OnSpotifyQueueEmpty() => ReturnToSpotify();
+
     private void RestartSpotifyForQuality()
     {
         if (!_spotifyPlayback.IsActive || _spotifyPlayback.CurrentTrack is not { } track)

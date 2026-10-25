@@ -88,6 +88,7 @@ internal sealed partial class Features : IDisposable
         _spotifyPlayback.TrackChanged += OnSpotifyTrackChanged;
         _spotifyPlayback.Navigated += OnSpotifyNavigated;
         _spotifyPlayback.PlayingChanged += OnSpotifyPlayingChanged;
+        _spotifyPlayback.QueueEmpty += OnSpotifyQueueEmpty;
         _player.CurrentChanged += OnSpotifyCurrentChanged;
         _view.CloseRequested += CancelSpotifyStart;
         var selection = features.Selection;
@@ -255,6 +256,7 @@ internal sealed partial class Features : IDisposable
             _spotifyPlayback.TrackChanged -= OnSpotifyTrackChanged;
             _spotifyPlayback.Navigated -= OnSpotifyNavigated;
             _spotifyPlayback.PlayingChanged -= OnSpotifyPlayingChanged;
+            _spotifyPlayback.QueueEmpty -= OnSpotifyQueueEmpty;
             _spotifyPlayback.Dispose();
         }
         if (_spotifyAuth is not null)
