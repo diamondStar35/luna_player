@@ -148,6 +148,11 @@ cd luna_player
 dotnet build src/LunaPlayer.csproj
 ```
 
+Spotify playback runs in Luna Player and uses the same mpv audio controls as local
+music. No separate Spotify engine is required. The managed protocol code follows
+the [librespot implementation](https://github.com/librespot-org/librespot); see
+[NOTICE](NOTICE) for attribution.
+
 See [CONTRIBUTING.md](CONTRIBUTING.md) for full build instructions and known issues.
 
 ## Credits

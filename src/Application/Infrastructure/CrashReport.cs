@@ -1,4 +1,5 @@
 using System.Runtime.ExceptionServices;
+using System.Runtime.InteropServices;
 using System.Text;
 using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
@@ -23,7 +24,7 @@ namespace LunaPlayer.Application;
 /// The report is written to a file before it is shown, because the most useful crash report is the one from
 /// the crash that was too severe to show anything.
 /// </remarks>
-internal static class CrashReport
+internal static partial class CrashReport
 {
     private static readonly Lock Sync = new();
     private static IClipboardService? _clipboard;
@@ -132,14 +133,20 @@ internal static class CrashReport
         }
         try
         {
+            if (App.Current is null)
+            {
+                ShowWithoutToolkit(failure);
+                return;
+            }
             using var dialog = new UI.CrashDialog(Describe(failure, "caught"), Path, _clipboard);
             dialog.Show();
         }
         catch (Exception exception)
         {
-            // The window itself would not open, which usually means the toolkit is the thing that is
-            // broken. There is nothing left to show it with, so the file is all there is.
+            // Reporting must remain possible when wx itself has failed. The technical report needs no
+            // translation or clipboard service, both of which depend on a working toolkit.
             Write(exception, "while reporting");
+            ShowWithoutToolkit(failure);
         }
         finally
         {
@@ -147,6 +154,13 @@ internal static class CrashReport
                 _showing = false;
         }
     }
+
+    private static void ShowWithoutToolkit(Exception failure)
+        => _ = MessageBox(0, Describe(failure, "caught") + Environment.NewLine + Path,
+            AppInfo.Name, 0x10);
+
+    [LibraryImport("user32.dll", EntryPoint = "MessageBoxW", StringMarshalling = StringMarshalling.Utf16)]
+    private static partial int MessageBox(nint owner, string text, string caption, uint flags);
 
     /// <summary>Rethrows a failure so it reaches the handlers above, keeping its original stack.</summary>
     internal static void Rethrow(Exception failure) => ExceptionDispatchInfo.Capture(failure).Throw();

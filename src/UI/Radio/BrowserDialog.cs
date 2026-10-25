@@ -61,7 +61,6 @@ internal sealed partial class BrowserDialog : IDisposable
         Catalog catalog, Library library, Action<string> speak, IClipboardService clipboard)
     {
         _dispatcher = dispatcher;
-        _updates = new Updates(dispatcher, RenderRows, ShowError);
         _state = state;
         _catalog = catalog;
         _library = library;
@@ -73,6 +72,7 @@ internal sealed partial class BrowserDialog : IDisposable
         // Translators: Title of the window for browsing internet radio stations.
         _dialog = new Dialog(parent, title: Tr("Radio browser"), size: new Size(960, 600),
             style: DialogStyle.Default | DialogStyle.ResizeBorder);
+        _updates = new Updates(_dialog, dispatcher, RenderRows, ShowError);
         var panel = new Panel(_dialog);
         var layout = new BoxSizer(Orientation.Vertical);
         var search = new BoxSizer(Orientation.Horizontal);

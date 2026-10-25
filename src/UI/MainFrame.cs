@@ -197,7 +197,7 @@ internal sealed class MainFrame : IMainView
 
     /// <summary>Dialogs, built lazily and parented to this window.</summary>
     public IDialogService Dialogs => _dialogs ??= new DialogService(
-        _frame, _dispatcher!, _catalog!, Input.GlobalShortcuts);
+        _frame, _dispatcher!, _catalog!, Input.GlobalShortcuts, Input.Request);
 
     public bool ApplyGlobalShortcuts(ShortcutManager shortcuts) => Input.ApplyGlobalShortcuts(shortcuts);
 
@@ -302,9 +302,9 @@ internal sealed class MainFrame : IMainView
         // before its returned task begins waiting for file writes and native teardown, so audio stops in the
         // same close-event dispatch that Windows initiated.
         _shutdownTask = RequestShutdownAsync();
-        // Parentless modeless progress windows do not follow the frame when it is hidden and would otherwise
-        // remain visible during teardown. They are views only; their jobs stay owned by the queue.
-        _dialogs?.CloseDownloadProgressWindows();
+        // Retained dialogs own timers and menus that must be released while wx is alive. This also hides
+        // parentless progress windows; their jobs stay owned by the queue until shutdown completes.
+        _dialogs?.Dispose();
         // The listener marks itself inactive before asking its background message loop to exit. It therefore
         // cannot dispatch another action even though shutdown does not wait for that thread to finish.
         _input?.StopGlobalShortcuts();
@@ -319,12 +319,19 @@ internal sealed class MainFrame : IMainView
         _ = CompleteCloseAsync(_shutdownTask);
     }
 
-    private async Task RequestShutdownAsync()
+    private Task RequestShutdownAsync()
     {
         if (CloseRequested is null)
-            return;
+            return Task.CompletedTask;
+        // Invoke every subscriber on the UI thread. Awaiting the first task before invoking the next
+        // would move later subscribers onto a worker thread during an unfinished startup.
+        var pending = new List<Task>();
         foreach (Func<Task> close in CloseRequested.GetInvocationList())
-            await close().ConfigureAwait(false);
+        {
+            try { pending.Add(close()); }
+            catch (Exception failure) { pending.Add(Task.FromException(failure)); }
+        }
+        return Task.WhenAll(pending);
     }
 
     private async Task CompleteCloseAsync(Task shutdown)

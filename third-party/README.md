@@ -4,6 +4,18 @@ The libraries Luna Player ships or compiles into its executable. `NOTICE` in the
 repository root records the terms each one comes under; `licenses/` holds the
 licence texts that are not already represented by the root Apache licence.
 
+## Spotify protocol implementation
+
+Luna's managed Spotify playback code follows the librespot protocol implementation.
+Audio is decoded by the bundled mpv library and played through Luna's audio chain.
+
+- Source: https://github.com/librespot-org/librespot
+- Revision: `1599145bf2c98660d35b17817b3386767a7e4b42`
+- Licence: MIT
+
+The Shannon packet cipher is adapted from Paul Lietar's `shannon` 0.2.0 Rust
+crate. Its MIT license is included separately in `licenses/shannon-LICENSE.txt`.
+
 ## mpv
 
 Media decoding and playback.

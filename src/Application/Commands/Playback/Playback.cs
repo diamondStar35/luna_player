@@ -20,6 +20,7 @@ internal sealed partial class Playback
     private readonly PlaybackSelection _selection;
     private readonly SelectionSlots _selections;
     private readonly MediaGuard _guard;
+    private readonly LunaPlayer.Spotify.Playback _spotify;
 
     internal Playback(
         ActionRouter router,
@@ -30,7 +31,8 @@ internal sealed partial class Playback
         ISpeechOutput speech,
         PlaybackSelection selection,
         SelectionSlots selections,
-        IApplicationDispatcher dispatcher)
+        IApplicationDispatcher dispatcher,
+        LunaPlayer.Spotify.Playback spotify)
     {
         _view = view;
         _player = player;
@@ -41,6 +43,7 @@ internal sealed partial class Playback
         _selection = selection;
         _selections = selections;
         _guard = new MediaGuard(player, speech);
+        _spotify = spotify;
         RegisterCoreActions(router);
         RegisterGeneratedActions(router);
     }
@@ -65,13 +68,13 @@ internal sealed partial class Playback
         router.Register(ActionId.AnnounceVolume, AnnounceVolume);
         router.Register(ActionId.AnnounceElapsed, () => AnnounceTime(
             // Translators: Spoken before the time played so far, as in "Elapsed time: 1 minute 20 seconds".
-            Tr("Elapsed time:"), _player.Elapsed));
+            Tr("Elapsed time:"), _spotify.IsActive ? _spotify.Elapsed : _player.Elapsed));
         router.Register(ActionId.AnnounceRemaining, () => AnnounceTime(
             // Translators: Spoken before the time still left to play, as in "Remaining time: 1 minute 20 seconds".
-            Tr("Remaining time:"), _player.Remaining));
+            Tr("Remaining time:"), _spotify.IsActive ? _spotify.Remaining : _player.Remaining));
         router.Register(ActionId.AnnounceDuration, () => AnnounceTime(
             // Translators: Spoken before the whole length of the file, as in "Total time: 3 minutes 40 seconds".
-            Tr("Total time:"), _player.Duration));
+            Tr("Total time:"), _spotify.IsActive ? _spotify.Duration : _player.Duration));
         router.Register(ActionId.AnnouncePercent, AnnouncePercent);
         router.Register(ActionId.AnnounceSpeed, AnnounceSpeed);
         router.Register(ActionId.ToggleVerbosity, ToggleVerbosity);
@@ -112,6 +115,18 @@ internal sealed partial class Playback
 
     private void TogglePlayPause()
     {
+        if (_spotify.IsActive)
+        {
+            var playing = _spotify.TogglePause();
+            _view.SetPlaying(playing);
+            if (_settings.General.Verbosity == SpeechVerbosity.Beginner)
+                _speech.SpeakText(playing
+                    // Translators: Playback action announcement or button that starts the selected Spotify track.
+                    ? Tr("Play")
+                    // Translators: Spoken announcement after pausing Spotify playback.
+                    : Tr("Pause"));
+            return;
+        }
         if (!_guard.RequireFile(out _))
             return;
 
@@ -143,6 +158,7 @@ internal sealed partial class Playback
     private void SeekByMultiplier(double multiplier)
     {
         var delta = GetSeekStepSeconds() * multiplier;
+        if (_spotify.IsActive) { _spotify.SeekRelative(delta); return; }
         if (_selections.PlaybackActive
             && _player.Elapsed is double elapsed
             && _selections.Start is double selectionStart
@@ -164,6 +180,7 @@ internal sealed partial class Playback
 
     private void SeekStart()
     {
+        if (_spotify.IsActive) { _spotify.Seek(0); return; }
         if (_selections.PlaybackActive && _selections.Start is double selectionStart)
             _player.SeekAbsolute(selectionStart);
         else if (_selection.IsActive(_player.CurrentPath) && _selection.Start is double start)
@@ -174,6 +191,11 @@ internal sealed partial class Playback
 
     private void SeekEnd()
     {
+        if (_spotify.IsActive)
+        {
+            if (_spotify.Duration is double d) _spotify.Seek(Math.Max(0, d - 0.2));
+            return;
+        }
         if (_selections.PlaybackActive && _selections.End is double selectionEnd)
         {
             _player.SeekAbsolute(selectionEnd);
@@ -190,6 +212,21 @@ internal sealed partial class Playback
 
     private void GoToTime()
     {
+        if (_spotify.IsActive)
+        {
+            if (_spotify.Duration is not double spotifyDuration || spotifyDuration <= 0)
+            {
+                _view.Dialogs.ShowWarning(
+                    // Translators: Warning when the Spotify track duration is not yet available for seeking.
+                    Tr("Time is not available for the current file."),
+                    // Translators: Title of the seek dialog warning during Spotify playback.
+                    Tr("Go to time"));
+                return;
+            }
+            var chosen = _view.Dialogs.ChooseTime(spotifyDuration, Math.Clamp(_spotify.Elapsed ?? 0, 0, spotifyDuration));
+            if (chosen.HasValue) _spotify.Seek(chosen.Value);
+            return;
+        }
         if (_player.Duration is not double duration || duration <= 0)
         {
             _view.Dialogs.ShowWarning(
@@ -261,7 +298,8 @@ internal sealed partial class Playback
 
     private void AnnouncePercent()
     {
-        if (_player.Duration is not double duration || duration <= 0 || _player.Elapsed is not double elapsed)
+        if ((_spotify.IsActive ? _spotify.Duration : _player.Duration) is not double duration || duration <= 0
+            || (_spotify.IsActive ? _spotify.Elapsed : _player.Elapsed) is not double elapsed)
         {
             _speech.Speak(
                 // Translators: Spoken when the player cannot work out how far through the file it is.
@@ -271,8 +309,11 @@ internal sealed partial class Playback
             return;
         }
         var percent = Math.Clamp((int)(elapsed / duration * 100), 0, 100);
-        // Translators: Spoken when the user asks how far through the file playing has got. {percent} is that share out of a hundred.
-        _speech.Speak(TrFormat("{percent} percent", percent), $"{percent}%");
+        _speech.Speak(
+            // Translators: Spoken playback position. {percent} is a number from 0 to 100.
+            TrFormat("{percent} percent", percent),
+            // Translators: Short spoken playback position. {percent} is the percentage; retain a percent sign.
+            TrFormat("{percent}%", percent));
     }
 
     // Translators: Spoken when the user asks how fast the file is playing. {speed} is the speed, where 1 is the normal
@@ -406,6 +447,17 @@ internal sealed partial class Playback
 
     private void JumpToPercent(int percent)
     {
+        if (_spotify.IsActive)
+        {
+            if (_spotify.Duration is double spotifyDuration && spotifyDuration > 0)
+                _spotify.Seek(percent >= 100 ? Math.Max(0, spotifyDuration - 0.2) : spotifyDuration * percent / 100.0);
+            _speech.Speak(
+                // Translators: Spoken playback position. {percent} is a number from 0 to 100.
+                TrFormat("{percent} percent", percent),
+                // Translators: Short spoken playback position. {percent} is the percentage; retain a percent sign.
+                TrFormat("{percent}%", percent));
+            return;
+        }
         if (!_guard.RequireDuration(out var duration))
             return;
         if (_selections.PlaybackActive)
@@ -414,8 +466,11 @@ internal sealed partial class Playback
             _player.SeekToEnd();
         else
             _player.SeekAbsolute(duration * percent / 100.0);
-        // Translators: Spoken after seeking by percentage. {percent} is a number from 0 to 100.
-        _speech.Speak(TrFormat("{percent} percent", percent), $"{percent}%");
+        _speech.Speak(
+            // Translators: Spoken playback position. {percent} is a number from 0 to 100.
+            TrFormat("{percent} percent", percent),
+            // Translators: Short spoken playback position. {percent} is the percentage; retain a percent sign.
+            TrFormat("{percent}%", percent));
     }
 
     private void SetSeekStep(SeekStepAction step)

@@ -65,6 +65,7 @@
     <Compile Include="Playlist\**\*.cs" />
     <Compile Include="Radio\**\*.cs" />
     <Compile Include="Recording\**\*.cs" />
+    <Compile Include="Spotify\**\*.cs" />
     <Compile Include="Update\**\*.cs" />
     <Compile Include="UI\**\*.cs" />
     <Compile Include="YouTube\**\*.cs" />
@@ -88,6 +89,7 @@
          transitively through these two. -->
     <PackageReference Include="NAudio.Wasapi" Version="3.1.0" />
     <PackageReference Include="NAudio.Extras" Version="3.1.0" />
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="10.0.0" />
     <ProjectReference Include="Speech\PrismSharp.csproj">
       <AdditionalProperties>Configuration=$(Configuration)</AdditionalProperties>
     </ProjectReference>
