@@ -14,7 +14,7 @@ internal static class PlaybackOAuth
     private const string Redirect = "http://127.0.0.1:5588/login";
     private const string Scopes = "streaming user-read-playback-state user-modify-playback-state user-read-currently-playing";
 
-    internal static async Task<AccessPointLogin.Credentials> SignInAsync(CancellationToken cancellationToken)
+    internal static async Task<AccessPointLogin.Credentials> SignInAsync(string responseText, CancellationToken cancellationToken)
     {
         using var listener = new TcpListener(IPAddress.Loopback, 5588);
         listener.Start();
@@ -37,8 +37,6 @@ internal static class PlaybackOAuth
         var request = await reader.ReadLineAsync(timeout.Token).ConfigureAwait(false);
         var route = request?.Split(' ', 3).ElementAtOrDefault(1);
         var callback = route is null ? null : new Uri(new Uri(Redirect), route);
-        // Translators: Confirmation displayed in the browser after returning from Spotify authorization.
-        var responseText = Tr("You can return to Luna Player now.");
         var body = Encoding.UTF8.GetBytes("<!doctype html><html lang=\"en\"><meta charset=\"utf-8\"><body>"
             + WebUtility.HtmlEncode(responseText) + "</body></html>");
         var headers = Encoding.ASCII.GetBytes($"HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {body.Length}\r\nConnection: close\r\n\r\n");
@@ -47,8 +45,7 @@ internal static class PlaybackOAuth
         var query = ParseQuery(callback?.Query);
         if (callback?.AbsolutePath != "/login" || !query.TryGetValue("state", out var received)
             || received != state || !query.TryGetValue("code", out var code))
-            // Translators: Error reported during Spotify account authorization. Keep Spotify, Client ID and URI unchanged.
-            throw new InvalidOperationException(Tr("Spotify sign in was not completed. Please try again."));
+            throw new AuthorizationException(AuthorizationFailure.PlaybackIncomplete);
         using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(20) };
         using var response = await http.PostAsync("https://accounts.spotify.com/api/token",
             new FormUrlEncodedContent(new Dictionary<string, string>

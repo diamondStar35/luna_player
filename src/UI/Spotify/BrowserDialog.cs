@@ -238,7 +238,7 @@ internal sealed class BrowserDialog : IDisposable
         if (_tracksDialog is null || _tracksCollection != collection)
         {
             _tracksDialog?.Dispose();
-            _tracksDialog = new TracksDialog(_owner, collection.Name, collection.Description,
+            _tracksDialog = new TracksDialog(_owner, collection.DisplayName, collection.DisplayDescription,
                 (cursor, token) => _catalog.TracksPageAsync(collection, cursor, token),
                 // Translators: Empty-list message in the Spotify collection tracks window.
                 Tr("No accessible tracks were returned for this collection."),

@@ -22,7 +22,14 @@ internal sealed class Auth : IDisposable
 
     internal event Action? SignedOut;
 
-    internal Auth() => _token = Load();
+    private readonly string _returnMessage;
+
+    internal Auth()
+    {
+        _token = Load();
+        // Translators: Confirmation displayed in the browser after returning from Spotify authorization.
+        _returnMessage = Tr("You can return to Luna Player now.");
+    }
 
     internal bool IsSignedIn(string clientId) => _token is { RefreshToken.Length: > 0 } token && token.ClientId == clientId;
 
@@ -38,8 +45,8 @@ internal sealed class Auth : IDisposable
                 token = _token;
             }
             if (token is null || token.ClientId != clientId || token.RefreshToken.Length == 0)
-                // Translators: Error when Spotify browsing is requested without a connected account.
-                throw new InvalidOperationException(Tr("Sign in to Spotify first."));
+
+                throw new AuthorizationException(AuthorizationFailure.NotSignedIn);
             if (token.ExpiresAt > DateTimeOffset.UtcNow.AddMinutes(1) && token.AccessToken.Length > 0)
                 return token.AccessToken;
             using var response = await _http.PostAsync("https://accounts.spotify.com/api/token",
@@ -64,8 +71,8 @@ internal sealed class Auth : IDisposable
                         }
                     }
                 }
-                // Translators: Error when Spotify rejects the saved browsing refresh token and requires a new sign-in.
-                throw new InvalidOperationException(Tr("The Spotify session expired. Sign in again."));
+
+                throw new AuthorizationException(AuthorizationFailure.Expired);
             }
             var refreshed = await ReadTokenAsync(response, clientId, token.RefreshToken, cancellationToken).ConfigureAwait(false);
             lock (_stateLock)
@@ -91,8 +98,8 @@ internal sealed class Auth : IDisposable
             version = _version;
         }
         if (clientId.Length != 32 || !clientId.All(Uri.IsHexDigit))
-            // Translators: Error before browser authorization when the Client ID field in Spotify Preferences is invalid. Keep Client ID unchanged.
-            throw new InvalidOperationException(Tr("Enter a valid Spotify Client ID in Preferences first."));
+
+            throw new AuthorizationException(AuthorizationFailure.InvalidClientId);
         using var listener = new TcpListener(IPAddress.Loopback, 43891);
         listener.Start();
         var verifier = Base64Url(RandomNumberGenerator.GetBytes(48));
@@ -114,22 +121,22 @@ internal sealed class Auth : IDisposable
         var route = request?.Split(' ', 3).ElementAtOrDefault(1);
         var query = route is null ? null : new Uri(new Uri(RedirectUri), route);
         var responsePage = "<!doctype html><html lang=\"en\"><meta charset=\"utf-8\"><body>"
-            // Translators: Confirmation displayed in the browser after returning from Spotify authorization.
-            + WebUtility.HtmlEncode(Tr("You can return to Luna Player now.")) + "</body></html>";
+
+            + WebUtility.HtmlEncode(_returnMessage) + "</body></html>";
         var body = Encoding.UTF8.GetBytes(responsePage);
         var headers = Encoding.ASCII.GetBytes($"HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=utf-8\r\nContent-Length: {body.Length}\r\nConnection: close\r\n\r\n");
         await stream.WriteAsync(headers, timeout.Token).ConfigureAwait(false);
         await stream.WriteAsync(body, timeout.Token).ConfigureAwait(false);
         var values = ParseQuery(query?.Query);
         if (query?.AbsolutePath != "/callback/" || !values.TryGetValue("state", out var receivedState) || receivedState != state)
-            // Translators: Error when the Spotify authorization callback has an unexpected address or does not match the sign-in request.
-            throw new InvalidOperationException(Tr("Spotify sign in returned an invalid callback. Please try again."));
+
+            throw new AuthorizationException(AuthorizationFailure.InvalidCallback);
         if (values.TryGetValue("error", out var error))
-            // Translators: Error when browser authorization was denied or canceled. {reason} is the error code returned by Spotify.
-            throw new InvalidOperationException(TrFormat("Spotify sign in was not completed: {reason}.", error));
+
+            throw new AuthorizationException(AuthorizationFailure.Denied, reason: error);
         if (!values.TryGetValue("code", out var code) || code.Length == 0)
-            // Translators: Error when Spotify returns from browser authorization without the code needed to sign in.
-            throw new InvalidOperationException(Tr("Spotify did not return an authorization code."));
+
+            throw new AuthorizationException(AuthorizationFailure.MissingCode);
         using var tokenResponse = await _http.PostAsync("https://accounts.spotify.com/api/token",
             new FormUrlEncodedContent(new Dictionary<string, string>
             {
@@ -174,8 +181,8 @@ internal sealed class Auth : IDisposable
     {
         var bytes = await response.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
         if (!response.IsSuccessStatusCode)
-            // Translators: Error after a failed token request. {code} is the HTTP status; Client ID and redirect URI name fields in Spotify app settings.
-            throw new InvalidOperationException(TrFormat("Spotify sign in failed ({code}). Check the Client ID and redirect URI.", (int)response.StatusCode));
+
+            throw new AuthorizationException(AuthorizationFailure.TokenRequest, status: (int)response.StatusCode);
         using var json = JsonDocument.Parse(bytes);
         var root = json.RootElement;
         var access = root.ValueKind == JsonValueKind.Object
@@ -186,8 +193,8 @@ internal sealed class Auth : IDisposable
         if (string.IsNullOrWhiteSpace(access) || string.IsNullOrWhiteSpace(refresh)
             || !root.TryGetProperty("expires_in", out var expires) || expires.ValueKind != JsonValueKind.Number
             || !expires.TryGetInt32(out var seconds) || seconds <= 0)
-            // Translators: Error when Spotify's authorization response is missing usable access/refresh tokens or their expiry.
-            throw new InvalidOperationException(Tr("Spotify did not provide the tokens needed to stay signed in."));
+
+            throw new AuthorizationException(AuthorizationFailure.MissingTokens);
         return new TokenData(clientId, access, refresh, DateTimeOffset.UtcNow.AddSeconds(seconds));
     }
 
@@ -257,3 +264,38 @@ internal sealed record TokenData(string ClientId, string AccessToken, string Ref
 
 [JsonSerializable(typeof(TokenData))]
 internal partial class TokenJsonContext : JsonSerializerContext;
+
+internal enum AuthorizationFailure
+{
+    NotSignedIn, Expired, InvalidClientId, InvalidCallback, Denied, MissingCode,
+    TokenRequest, MissingTokens, PlaybackIncomplete, MissingConfiguration,
+}
+
+// Workers carry error data; only the UI formats it through wx's translation service.
+internal sealed class AuthorizationException(AuthorizationFailure failure, string? reason = null,
+    int status = 0) : Exception
+{
+    internal string Describe() => failure switch
+    {
+        // Translators: Error when Spotify browsing is requested without a connected account.
+        AuthorizationFailure.NotSignedIn => Tr("Sign in to Spotify first."),
+        // Translators: Error when Spotify rejects the saved browsing refresh token and requires a new sign-in.
+        AuthorizationFailure.Expired => Tr("The Spotify session expired. Sign in again."),
+        // Translators: Error before browser authorization when the Client ID in Spotify Preferences is invalid. Keep Client ID unchanged.
+        AuthorizationFailure.InvalidClientId => Tr("Enter a valid Spotify Client ID in Preferences first."),
+        // Translators: Error when Spotify authorization returns an unexpected address or mismatched sign-in request.
+        AuthorizationFailure.InvalidCallback => Tr("Spotify sign in returned an invalid callback. Please try again."),
+        // Translators: Error when browser authorization was denied or canceled. {reason} is the error code from Spotify.
+        AuthorizationFailure.Denied => TrFormat("Spotify sign in was not completed: {reason}.", reason),
+        // Translators: Error when Spotify returns from browser authorization without an authorization code.
+        AuthorizationFailure.MissingCode => Tr("Spotify did not return an authorization code."),
+        // Translators: Spotify sign-in error. {code} is the HTTP status; keep Client ID and URI unchanged.
+        AuthorizationFailure.TokenRequest => TrFormat("Spotify sign in failed ({code}). Check the Client ID and redirect URI.", status),
+        // Translators: Error when Spotify's token response cannot keep the account signed in.
+        AuthorizationFailure.MissingTokens => Tr("Spotify did not provide the tokens needed to stay signed in."),
+        // Translators: Error when loading Spotify browsing results without a configured developer application.
+        AuthorizationFailure.MissingConfiguration => Tr("Spotify credentials have not been configured yet."),
+        // Translators: Error when browser authorization for Spotify playback did not complete.
+        _ => Tr("Spotify sign in was not completed. Please try again."),
+    };
+}

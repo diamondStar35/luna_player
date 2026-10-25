@@ -9,7 +9,17 @@ internal enum CollectionKind { Playlist, Mix, Radio, LikedSongs, TopTracks, Rece
 internal sealed record Collection(string Id, string Name, CollectionKind Kind, string Description)
 {
     // Translators: Row in the Spotify browser. {name} is the collection name and {kind} is its translated type.
-    internal string Label => TrFormat("{name} - {kind}", Name, KindLabel);
+    internal string Label => TrFormat("{name} - {kind}", DisplayName, KindLabel);
+
+    internal string DisplayName => !string.IsNullOrWhiteSpace(Name) ? Name
+        // Translators: Name of the saved favorite tracks collection in the Spotify browser.
+        : Kind == CollectionKind.LikedSongs ? Tr("Liked songs")
+        // Translators: Fallback name in the Spotify browser when a playlist has no name.
+        : Tr("Untitled playlist");
+
+    internal string DisplayDescription => Description.Length > 0 ? Description
+        // Translators: Description of the saved favorite tracks collection in the Spotify browser.
+        : Kind == CollectionKind.LikedSongs ? Tr("Tracks saved to your Spotify library.") : string.Empty;
 
     private string KindLabel => Kind switch
     {
@@ -55,12 +65,15 @@ internal enum SearchFilter { All, Songs, Artists, Playlists }
 internal sealed record TrackPage(IReadOnlyList<Track> Tracks, string? Next);
 internal sealed class QuotaException : Exception
 {
-    internal QuotaException(TimeSpan? retryAfter)
-        : base(retryAfter is { } wait
+    internal QuotaException(TimeSpan? retryAfter) => RetryAfter = retryAfter;
+
+    private TimeSpan? RetryAfter { get; }
+
+    internal string Describe() => RetryAfter is { } wait
             // Translators: Error when a Spotify developer app has exhausted its quota. {wait} is the localized waiting time.
             ? TrFormat("Spotify's developer-app quota has been reached. Spotify says to try again in {wait}.", FormatWait(wait))
             // Translators: Error when Spotify has exhausted a developer app's quota without saying when it resets.
-            : Tr("Spotify's developer-app quota has been reached. Spotify did not provide a reset time.")) { }
+            : Tr("Spotify's developer-app quota has been reached. Spotify did not provide a reset time.");
 
     private static string FormatWait(TimeSpan wait)
     {
@@ -79,15 +92,18 @@ internal sealed class QuotaException : Exception
 }
 internal sealed class RateLimitException : Exception
 {
-    internal RateLimitException(TimeSpan? retryAfter = null)
-        : base(retryAfter is { } wait
+    internal RateLimitException(TimeSpan? retryAfter = null) => RetryAfter = retryAfter;
+
+    private TimeSpan? RetryAfter { get; }
+
+    internal string Describe() => RetryAfter is { } wait
             // Translators: Error when Spotify asks the app to delay requests. {seconds} is the waiting time in seconds.
             ? TrPluralFormat("Spotify asked Luna to wait about {seconds} second before trying again.",
                 "Spotify asked Luna to wait about {seconds} seconds before trying again.",
                 (int)Math.Clamp(Math.Ceiling(wait.TotalSeconds), 1, int.MaxValue),
                 (int)Math.Clamp(Math.Ceiling(wait.TotalSeconds), 1, int.MaxValue))
             // Translators: Error when Spotify continues limiting requests without giving a waiting time.
-            : Tr("Spotify is still limiting requests. Wait a moment and try again.")) { }
+            : Tr("Spotify is still limiting requests. Wait a moment and try again.");
 }
 
 internal sealed class Catalog
@@ -113,8 +129,7 @@ internal sealed class Catalog
     private static Task<string> AccessTokenAsync(Auth auth, SpotifySettings settings, CancellationToken token)
     {
         if (settings.ClientId.Length == 0)
-            // Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-            throw new InvalidOperationException(Tr("Spotify credentials have not been configured yet."));
+            throw new AuthorizationException(AuthorizationFailure.MissingConfiguration);
         return auth.GetAccessTokenAsync(settings.ClientId, token);
     }
 
@@ -122,18 +137,13 @@ internal sealed class Catalog
     {
         var result = new List<Collection>
         {
-            new("liked",
-                // Translators: Name of the saved favorite tracks collection on the Spotify Library tab.
-                Tr("Liked Songs"), CollectionKind.LikedSongs,
-                // Translators: Description of the Liked Songs collection in the Spotify library.
-                Tr("Tracks saved to your Spotify library.")),
+            new("liked", string.Empty, CollectionKind.LikedSongs, string.Empty),
         };
         await ForEachPageAsync("me/playlists?limit=50", item =>
         {
             var id = String(item, "id");
             if (string.IsNullOrWhiteSpace(id)) return;
-            // Translators: Fallback collection name in the Spotify library when a playlist has no name.
-            var name = String(item, "name") ?? Tr("Untitled playlist");
+            var name = String(item, "name") ?? string.Empty;
             var kind = name.Contains("mix", StringComparison.OrdinalIgnoreCase) ? CollectionKind.Mix
                 : name.Contains("radio", StringComparison.OrdinalIgnoreCase) ? CollectionKind.Radio
                 : CollectionKind.Playlist;
@@ -189,7 +199,8 @@ internal sealed class Catalog
             if (cursor is not null && (!int.TryParse(cursor[7..], out searchOffset)
                 || searchOffset < 0 || searchOffset > 1000))
                 throw new InvalidDataException("Invalid artist search cursor.");
-            var query = $"artist:\"{artist.Name.Replace("\"", string.Empty, StringComparison.Ordinal)}\"";
+            var name = artist.Name.Replace("\"", string.Empty, StringComparison.Ordinal);
+            var query = $"artist:\"{name}\"";
             var path = $"search?q={Uri.EscapeDataString(query)}&type=track&limit=10&offset={searchOffset}";
             using var document = await GetAsync(new Uri(ApiRoot, path), token).ConfigureAwait(false);
             var results = Property(document.RootElement, "tracks");
@@ -408,6 +419,9 @@ internal sealed class Catalog
 
     internal static string DescribeError(Exception error) => error switch
     {
+        AuthorizationException authorization => authorization.Describe(),
+        QuotaException quota => quota.Describe(),
+        RateLimitException rateLimit => rateLimit.Describe(),
         // Translators: Error shown when loading Spotify browsing results or preparing playback fails.
         HttpRequestException { StatusCode: HttpStatusCode.Unauthorized } => Tr("Spotify authorization expired. Sign in again."),
         // Translators: Error shown when loading Spotify browsing results or preparing playback fails.

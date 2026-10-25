@@ -19,6 +19,7 @@ internal sealed partial class Playback : IDisposable
     private readonly object _positionLock = new();
     private volatile bool _active;
     private bool _ownsPlayerSession;
+    private string _authorizationMessage = string.Empty;
     private PlaybackClock? _clock;
     private volatile Track? _current;
     private volatile string? _loadedUri;
@@ -57,6 +58,8 @@ internal sealed partial class Playback : IDisposable
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
         if (_ownsPlayerSession) return;
+        // Translators: Confirmation displayed in the browser after returning from Spotify authorization.
+        _authorizationMessage = Tr("You can return to Luna Player now.");
         _player.BeginSpotifySession();
         _ownsPlayerSession = true;
         _player.Stop();
@@ -135,7 +138,7 @@ internal sealed partial class Playback : IDisposable
             }
             if (prepared is null)
             {
-                var signedIn = await PlaybackOAuth.SignInAsync(cancellationToken).ConfigureAwait(false);
+                var signedIn = await PlaybackOAuth.SignInAsync(_authorizationMessage, cancellationToken).ConfigureAwait(false);
                 prepared = await ManagedAudioSession.ConnectAsync(signedIn, cancellationToken)
                     .ConfigureAwait(false);
             }
