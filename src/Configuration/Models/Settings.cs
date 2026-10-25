@@ -95,11 +95,6 @@ internal sealed class Settings
         Require(Playback.LastFile is not null, "playback.lastFile");
         Require(double.IsFinite(Playback.LastPosition) && Playback.LastPosition >= 0,
             "playback.lastPosition");
-        Require(Playback.LastSpotifyUri is not null && Playback.LastSpotifyName is not null
-            && Playback.LastSpotifyArtists is not null, "playback.lastSpotifyTrack");
-        Require(Playback.LastSpotifyDurationMs >= 0, "playback.lastSpotifyDurationMs");
-        Require(double.IsFinite(Playback.LastSpotifyPosition) && Playback.LastSpotifyPosition >= 0,
-            "playback.lastSpotifyPosition");
 
         Require(Silence.StartPeriods >= 0, "silence.startPeriods");
         Require(double.IsFinite(Silence.StartDuration) && Silence.StartDuration >= 0,
@@ -207,11 +202,6 @@ internal sealed class Settings
         SleepTimer.FadeSeconds = Math.Clamp(
             SleepTimer.FadeSeconds, SleepTimerSettings.MinimumFadeSeconds, SleepTimerSettings.MaximumFadeSeconds);
         Playback.LastPosition = Precision.Normalize(Math.Max(0, Playback.LastPosition));
-        Playback.LastSpotifyUri ??= string.Empty;
-        Playback.LastSpotifyName ??= string.Empty;
-        Playback.LastSpotifyArtists ??= string.Empty;
-        Playback.LastSpotifyDurationMs = Math.Max(0, Playback.LastSpotifyDurationMs);
-        Playback.LastSpotifyPosition = Precision.Normalize(Math.Max(0, Playback.LastSpotifyPosition));
         Silence.StartPeriods = Math.Max(0, Silence.StartPeriods);
         Silence.StartDuration = Precision.Normalize(Math.Max(0, Silence.StartDuration));
         Silence.Threshold = Precision.Normalize(Silence.Threshold);

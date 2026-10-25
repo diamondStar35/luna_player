@@ -121,14 +121,16 @@ internal sealed class ApplicationController : IDisposable
         _settings.Audio.Pan = _player.Pan;
         var path = _player.CurrentPath;
         var elapsed = _player.Elapsed;
-        var spotifyTrack = _spotify.IsActive ? _spotify.CurrentTrack : null;
-        var spotifyPosition = _spotify.ResumePosition;
         // Stop before touching the filesystem: saving a position or checking a path on slow storage can
         // stall, but neither operation needs playback to remain active once its values have been captured.
         var radioTask = _sessions.Radio.ShutdownAsync();
         _player.Stop();
         if (!_spotify.IsActive) _player.SavePosition(path, elapsed);
-        SessionState.Remember(_settings, path, elapsed, spotifyTrack, spotifyPosition);
+        if (_settings.General.RememberLastPosition && path is not null && File.Exists(path))
+        {
+            _settings.Playback.LastFile = path;
+            _settings.Playback.LastPosition = Math.Max(0, elapsed ?? 0);
+        }
         // Snapshot and validate settings on this thread because shortcut validation uses wx localization;
         // only its disk write runs in the background. It proceeds alongside media shutdown, since storage,
         // antivirus, network streams and audio/video devices can each be slow on a particular machine.

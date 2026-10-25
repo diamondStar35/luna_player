@@ -93,7 +93,6 @@ internal sealed partial class Features
                 {
                     if (_disposed || token.IsCancellationRequested) return;
                     _spotifyPlayback.Stop();
-                    ForgetFailedSpotifyResume(track.Uri);
                     // Translators: Title of a message box reporting a Spotify or playback failure.
                     _view.Dialogs.ShowError(LunaPlayer.Spotify.Catalog.DescribeError(error), Tr("Error"));
                 });
@@ -142,14 +141,12 @@ internal sealed partial class Features
     private void OnSpotifyCommandFailed(Exception error)
     {
         var generation = _spotifyPlayback.CurrentLoadGeneration;
-        var failedUri = _spotifyPlayback.CurrentTrack?.Uri;
         _dispatcher.Post(() =>
         {
             // A queued failure from an earlier load must not interrupt a newly selected track.
             if (_disposed || !_spotifyPlayback.IsActive
                 || _spotifyPlayback.CurrentLoadGeneration != generation) return;
             _spotifyPlayback.Stop();
-            ForgetFailedSpotifyResume(failedUri);
             _controller?.RefreshView();
             // Translators: Title of a message box reporting a Spotify or playback failure.
             _view.Dialogs.ShowError(LunaPlayer.Spotify.Catalog.DescribeError(error), Tr("Error"));
@@ -170,13 +167,4 @@ internal sealed partial class Features
         _spotifyPlayback.SignOut();
         _controller?.RefreshView();
     }
-
-    private void ForgetFailedSpotifyResume(string? failedUri)
-    {
-        if (failedUri is null || _settings.Playback.LastSpotifyUri != failedUri) return;
-        // Do not reopen the same failed track automatically on the next launch.
-        _settings.Playback.LastSpotifyUri = string.Empty;
-        _ = _settingsStore.SaveSessionAsync(_settings);
-    }
-
 }

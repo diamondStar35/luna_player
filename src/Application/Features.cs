@@ -226,15 +226,7 @@ internal sealed partial class Features : IDisposable
 
     internal void RestoreSession()
     {
-        if (_settings.General.RememberLastPosition
-            && LunaPlayer.Spotify.PlaybackHost.IsTrack(_settings.Playback.LastSpotifyUri))
-        {
-            var track = new LunaPlayer.Spotify.Track(_settings.Playback.LastSpotifyName,
-                _settings.Playback.LastSpotifyArtists, _settings.Playback.LastSpotifyUri,
-                _settings.Playback.LastSpotifyDurationMs);
-            _dispatcher.Post(() => StartSpotify(track, [track], _settings.Playback.LastSpotifyPosition));
-        }
-        else if (_settings.General.RememberLastPosition && File.Exists(_settings.Playback.LastFile))
+        if (_settings.General.RememberLastPosition && File.Exists(_settings.Playback.LastFile))
             _dispatcher.Post(() => _fileActions.RestoreSession(
                 _settings.Playback.LastFile, _settings.Playback.LastPosition));
     }
