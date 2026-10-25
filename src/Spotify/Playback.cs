@@ -109,6 +109,24 @@ internal sealed partial class Playback : IDisposable
         _writePosition = writePosition;
     }
 
+    internal void ReloadQuality()
+    {
+        lock (_navigationLock)
+        {
+            if (!_active || _current is not { } track) return;
+            var position = Elapsed ?? 0;
+            var playing = _playRequested && !_ended;
+            var ended = _ended;
+            SavePosition();
+            CancelPageRead();
+            _player.Stop();
+            SetCurrent(track, playing: false);
+            _playRequested = playing;
+            _ended = ended;
+            LoadTrack(track, position);
+        }
+    }
+
     internal async Task PrepareAsync(CancellationToken cancellationToken)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);

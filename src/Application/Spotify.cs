@@ -60,21 +60,10 @@ internal sealed partial class Features
 
     private void OnSpotifyQueueEmpty() => ReturnToSpotify();
 
-    private void RestartSpotifyForQuality()
-    {
-        if (!_spotifyPlayback.IsActive || _spotifyPlayback.CurrentTrack is not { } track)
-            return;
-        StartSpotify(track, _spotifyPlayback.SourceQueue, _spotifyPlayback.Elapsed,
-            keepPaused: !_spotifyPlayback.IsPlaying, keepRepeat: _spotifyPlayback.IsRepeatCurrentEnabled,
-            keepShuffle: _spotifyPlayback.IsShuffleEnabled,
-            pageLoader: _spotifyPlayback.PageLoader,
-            nextPage: _spotifyPlayback.NextPage,
-            deduplicateArtist: _spotifyPlayback.DeduplicateArtist);
-    }
+    private void RestartSpotifyForQuality() => _spotifyPlayback.ReloadQuality();
 
     private void StartSpotify(LunaPlayer.Spotify.Track track,
-        IReadOnlyList<LunaPlayer.Spotify.Track>? queue, double? startPosition = null,
-        bool keepPaused = false, bool keepRepeat = false, bool keepShuffle = false,
+        IReadOnlyList<LunaPlayer.Spotify.Track>? queue,
         Func<string?, CancellationToken, Task<LunaPlayer.Spotify.TrackPage>>? pageLoader = null,
         string? nextPage = null, bool deduplicateArtist = false)
     {
@@ -103,11 +92,8 @@ internal sealed partial class Features
                     try
                     {
                         token.ThrowIfCancellationRequested();
-                        _spotifyPlayback.Play(track, queue, token, startPosition,
-                            pageLoader, nextPage, deduplicateArtist, keepShuffle);
-                        if (keepRepeat && !_spotifyPlayback.IsRepeatCurrentEnabled)
-                            _spotifyPlayback.ToggleRepeatCurrent();
-                        if (keepPaused) _spotifyPlayback.Pause();
+                        _spotifyPlayback.Play(track, queue, token, pageLoader: pageLoader,
+                            nextPage: nextPage, deduplicateArtist: deduplicateArtist);
                         started.TrySetResult(true);
                     }
                     catch (Exception error) { started.TrySetException(error); }
@@ -141,7 +127,7 @@ internal sealed partial class Features
 
     private void OnSpotifyNavigated(LunaPlayer.Spotify.Track track) => _dispatcher.Post(() =>
     {
-        if (!_disposed && _spotifyPlayback.IsActive && _spotifyPlayback.CurrentTrack == track
+        if (!_disposed && _spotifyPlayback.IsActive && ReferenceEquals(_spotifyPlayback.CurrentTrack, track)
             && _settings.General.SpeakFileOnNavigation)
             _speech.Speak(track.Name + " - " + track.Artists, track.Name + " - " + track.Artists);
     });
