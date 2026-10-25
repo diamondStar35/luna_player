@@ -17,10 +17,16 @@ internal sealed partial class Playback
     private bool _fetchingMore;
     private bool _pageFetchAfterEnded;
     private bool _deduplicateArtist;
+    private CancellationTokenSource? _navigationDelay;
+    private readonly HashSet<string> _pageCursors = new(StringComparer.Ordinal);
 
     internal IReadOnlyList<Track> CurrentQueue => _queue.ToArray();
     internal IReadOnlyList<Track> SourceQueue => _sourceQueue.ToArray();
     internal int CurrentIndex => _index;
+    internal bool CanMoveNext => _active && (_index + 1 < _queue.Count || _nextPage is not null
+        || _audioSettings?.WrapPlaylist == true && _queue.Count > 1);
+    internal bool CanMovePrevious => _active && (_index > 0
+        || _audioSettings?.WrapPlaylist == true && _queue.Count > 1);
     internal bool IsShuffleEnabled => _shuffle;
     internal bool ToggleShuffle()
     {
@@ -64,6 +70,7 @@ internal sealed partial class Playback
             _pageCancellation = null;
             _fetchingMore = false;
             _pageFetchAfterEnded = false;
+            _pageCursors.Clear();
             _pageLoader = pageLoader;
             _nextPage = nextPage;
             _deduplicateArtist = deduplicateArtist;
@@ -94,7 +101,7 @@ internal sealed partial class Playback
                 && Step(index - _index);
     }
 
-    private bool Step(int delta, bool savePosition = true)
+    private bool Step(int delta, bool savePosition = true, bool delay = true)
     {
         lock (_navigationLock)
         {
@@ -121,13 +128,18 @@ internal sealed partial class Playback
             Navigated?.Invoke(track);
             // Each key changes Luna's selection immediately. Only the final selection
             // after a short burst starts fetching audio, avoiding wasted key requests.
-            if (!_navigationStopSent) { _player.Stop(); _navigationStopSent = true; }
-            _ = LoadAfterNavigationAsync(track, Volatile.Read(ref _loadGeneration));
+            if (delay)
+            {
+                if (!_navigationStopSent) { _player.Stop(); _navigationStopSent = true; }
+                _navigationDelay = new CancellationTokenSource();
+                _ = LoadAfterNavigationAsync(track, CurrentLoadGeneration, _navigationDelay.Token);
+            }
+            else LoadTrack(track, SavedPosition(track));
             return true;
         }
     }
 
-    private void FetchMore(bool afterTrackEnded = false, int pagesRemaining = 3)
+    private void FetchMore(bool afterTrackEnded = false)
     {
         if (_fetchingMore)
         {
@@ -140,11 +152,15 @@ internal sealed partial class Playback
         var cancellation = _pageCancellation;
         var generation = Volatile.Read(ref _loadGeneration);
         var current = _current;
+        var token = cancellation.Token;
+        var visited = new HashSet<string>(_pageCursors, StringComparer.Ordinal) { cursor };
         _ = Task.Run(async () =>
         {
             try
             {
-                var page = await loader(cursor, cancellation.Token).ConfigureAwait(false);
+                var page = await loader(cursor, token).ConfigureAwait(false);
+                if (page.Next is not null && visited.Contains(page.Next))
+                    throw new InvalidDataException("Spotify repeated a track page.");
                 OnPlayerThread(() =>
                 {
                     lock (_navigationLock)
@@ -168,7 +184,8 @@ internal sealed partial class Playback
                             _index = _queue.FindIndex(track => ReferenceEquals(track, _current));
                         }
                         else _queue.AddRange(added);
-                        _nextPage = page.Next == cursor ? null : page.Next;
+                        _pageCursors.Add(cursor);
+                        _nextPage = page.Next;
                         var ended = afterTrackEnded || _pageFetchAfterEnded;
                         _fetchingMore = false;
                         _pageFetchAfterEnded = false;
@@ -176,11 +193,14 @@ internal sealed partial class Playback
                         cancellation.Dispose();
                         if (_index + 1 < _queue.Count)
                         {
-                            Step(1, savePosition: !ended);
+                            Step(1, savePosition: !ended, delay: !ended);
                         }
-                        else if (_nextPage is not null && pagesRemaining > 1)
-                            FetchMore(ended, pagesRemaining - 1);
-                        else if (ended) FinishCurrent();
+                        else if (_nextPage is not null)
+                            FetchMore(ended);
+                        else if (ended)
+                            AdvanceAtEndCore();
+                        else if (_audioSettings?.WrapPlaylist == true && _queue.Count > 1)
+                            Step(1);
                     }
                 });
             }
@@ -219,19 +239,32 @@ internal sealed partial class Playback
         return true;
     }
 
-    private async Task LoadAfterNavigationAsync(Track track, int generation)
+    private void CancelNavigationDelay()
     {
-        await Task.Delay(250).ConfigureAwait(false);
-        OnPlayerThread(() =>
+        _navigationDelay?.Cancel();
+        _navigationDelay?.Dispose();
+        _navigationDelay = null;
+    }
+
+    private async Task LoadAfterNavigationAsync(Track track, int generation, CancellationToken token)
+    {
+        try
         {
-            lock (_navigationLock)
+            await Task.Delay(250, token).ConfigureAwait(false);
+            OnPlayerThread(() =>
             {
-                if (!_active || Volatile.Read(ref _loadGeneration) != generation || _current?.Uri != track.Uri)
-                    return;
-                LoadTrack(track, SavedPosition(track));
-                if (!_playRequested) PauseLoaded();
-            }
-        });
+                lock (_navigationLock)
+                {
+                    if (token.IsCancellationRequested || !_active || CurrentLoadGeneration != generation
+                        || !ReferenceEquals(_current, track)) return;
+                    LoadTrack(track, SavedPosition(track));
+                }
+            });
+        }
+        catch (OperationCanceledException) when (token.IsCancellationRequested)
+        {
+            // A newer selection, session exit or source switch supersedes this Spotify-only delay.
+        }
     }
 
     private void AdvanceAtEnd(string endedUri)

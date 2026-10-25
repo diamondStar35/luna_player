@@ -258,6 +258,7 @@ internal sealed partial class Playback : IDisposable
 
     private void SetCurrent(Track track, bool playing)
     {
+        CancelNavigationDelay();
         // Selection changes immediately, before the navigation debounce starts the next load.
         // Cancel metadata, key, demand and read-ahead requests for the previous track now.
         _loadCancellation?.Cancel();
@@ -405,6 +406,8 @@ internal sealed partial class Playback : IDisposable
             _pageCancellation = null;
             _fetchingMore = false;
             _pageFetchAfterEnded = false;
+            CancelNavigationDelay();
+            _pageCursors.Clear();
             _pageLoader = null;
             _nextPage = null;
             _deduplicateArtist = false;
