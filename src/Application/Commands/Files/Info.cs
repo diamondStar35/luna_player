@@ -37,10 +37,9 @@ internal sealed partial class Files
 
     private void OpenedFiles()
     {
-        var spotify = _getSpotify();
-        if (spotify?.IsActive == true)
+        if (_spotify.IsActive)
         {
-            ShowSpotifyTracks(spotify.CurrentIndex);
+            ShowSpotifyTracks(_spotify.CurrentIndex);
             return;
         }
         if (_radio.IsActive)
@@ -55,9 +54,9 @@ internal sealed partial class Files
 
     private void ShowSpotifyTracks(int selected)
     {
-        while (_getSpotify() is { IsActive: true } spotify)
+        while (_spotify.IsActive)
         {
-            var tracks = spotify.CurrentQueue;
+            var tracks = _spotify.CurrentQueue;
             if (tracks.Count == 0) return;
             var request = _view.Dialogs.ChooseOpenedFile(tracks.Count,
                 index => index >= 0 && index < tracks.Count
@@ -66,7 +65,7 @@ internal sealed partial class Files
             if (request is null) return;
             if (request.Value.Action == OpenedFilesAction.Jump)
             {
-                spotify.GoToIndex(request.Value.SelectedIndex);
+                _spotify.GoToIndex(request.Value.SelectedIndex);
                 return;
             }
             var duration = tracks.Sum(track => (long)Math.Max(0, track.DurationMs)) / 1000.0;
@@ -155,8 +154,7 @@ internal sealed partial class Files
 
     private void AnnounceFileInfo()
     {
-        var spotify = _getSpotify();
-        if (spotify?.IsActive != true && !_guard.RequireFile(out _))
+        if (!_spotify.IsActive && !_guard.RequireFile(out _))
             return;
 
         var now = Environment.TickCount64;
@@ -168,9 +166,9 @@ internal sealed partial class Files
         switch (_fileInfoPressCount)
         {
             case 1:
-                if (spotify?.IsActive == true)
+                if (_spotify.IsActive)
                 {
-                    if (spotify.CurrentTitle is { } spotifyTitle) _speech.Speak(spotifyTitle, spotifyTitle);
+                    if (_spotify.CurrentTitle is { } spotifyTitle) _speech.Speak(spotifyTitle, spotifyTitle);
                     break;
                 }
                 var path = _player.CurrentPath!;
@@ -178,17 +176,17 @@ internal sealed partial class Files
                 _speech.Speak(name, name);
                 break;
             case 2:
-                var link = spotify?.IsActive == true ? spotify.CurrentLink : _player.CurrentPath;
+                var link = _spotify.IsActive ? _spotify.CurrentLink : _player.CurrentPath;
                 if (link is not null) _speech.Speak(link, link);
                 break;
             default:
-                var location = spotify?.IsActive == true ? spotify.CurrentLink : _player.CurrentPath;
+                var location = _spotify.IsActive ? _spotify.CurrentLink : _player.CurrentPath;
                 if (location is null) break;
                 var copied = _clipboard.SetText(location);
                 _speech.Speak(
                     copied
                         // Translators: Spoken once the Spotify track link has been copied to the clipboard.
-                        ? (spotify?.IsActive == true
+                        ? (_spotify.IsActive
                             // Translators: Spoken confirmation after copying a Spotify track's public web address.
                             ? Tr("Track link copied to clipboard.")
                             // Translators: Spoken confirmation after copying the current file's location.
@@ -207,10 +205,9 @@ internal sealed partial class Files
 
     private void AnnounceTitle()
     {
-        var spotify = _getSpotify();
-        if (spotify?.IsActive == true)
+        if (_spotify.IsActive)
         {
-            if (spotify.CurrentTitle is { } spotifyTitle) _speech.Speak(spotifyTitle, spotifyTitle);
+            if (_spotify.CurrentTitle is { } spotifyTitle) _speech.Speak(spotifyTitle, spotifyTitle);
             return;
         }
         if (!_guard.RequireFile(out _))

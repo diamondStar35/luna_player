@@ -82,8 +82,7 @@ internal sealed partial class Features : IDisposable
         var clipboard = new WxClipboardService();
         // Now that there is a toolkit, the crash window can offer to copy.
         CrashReport.SetClipboard(clipboard);
-        // Shared commands inspect the existing instance; only selecting a Spotify track creates playback.
-        Func<LunaPlayer.Spotify.Playback?> getSpotify = () => _spotifyPlayback;
+        _spotifyPlayback = new LunaPlayer.Spotify.Playback(_settings.Spotify, player, _dispatcher);
         var selection = features.Selection;
         var selections = features.Selections;
         var router = new ActionRouter();
@@ -95,10 +94,10 @@ internal sealed partial class Features : IDisposable
         var appUpdates = new Updates(router, _view, _settings, _dispatcher, speech);
         _appUpdates = appUpdates;
         var fileActions = new Files(router, _view, player, _settings, speech, clipboard, _dispatcher,
-            window.Recents, radio, getSpotify, CancelPendingSpotifyStart);
+            window.Recents, radio, _spotifyPlayback, CancelPendingSpotifyStart);
         _fileActions = fileActions;
         _ = new Commands.Playback.Playback(
-            router, _view, player, _settings, _settingsStore, speech, selection, selections, _dispatcher, getSpotify);
+            router, _view, player, _settings, _settingsStore, speech, selection, selections, _dispatcher, _spotifyPlayback);
 
         _ = new Edit(router, _view, player, speech, clipboard, fileActions);
         _ = new MarkedFiles(router, _view, player, _settings, speech, clipboard, _dispatcher);
@@ -141,7 +140,7 @@ internal sealed partial class Features : IDisposable
             favorites,
             components);
         _sessions = sessions;
-        var playbackSessions = new PlaybackSessions(sessions, radio, player, getSpotify, ReturnToSpotify);
+        var playbackSessions = new PlaybackSessions(sessions, radio, player, _spotifyPlayback, ReturnToSpotify);
         youTubeActions = new Commands.YouTube.YouTube(
             router, _view, player, _settings, speech, clipboard, youTube, sessions, components, _dispatcher,
             downloadQueue);
@@ -163,7 +162,7 @@ internal sealed partial class Features : IDisposable
         {
             if (!ReturnToSpotify()) OpenSpotify();
         });
-        var sleepTimer = new SleepTimer(_dispatcher, player, speech, getSpotify, CancelPendingSpotifyStart);
+        var sleepTimer = new SleepTimer(_dispatcher, player, speech, _spotifyPlayback, CancelPendingSpotifyStart);
         _sleepTimer = sleepTimer;
         _ = new Sleep(router, _view, player, sleepTimer, _settings, _settingsStore);
         router.EnsureComplete(ActionRegistry.All);
@@ -181,7 +180,7 @@ internal sealed partial class Features : IDisposable
             sleepTimer,
             speech,
             mediaControls,
-            getSpotify);
+            _spotifyPlayback);
         _controller = controller;
         // After the controller, which sets the rest of the audio state up from the same settings.
         equalizer.Restore();
@@ -242,13 +241,16 @@ internal sealed partial class Features : IDisposable
         _spotifyStart?.Dispose();
         if (_spotifyPlayback is not null)
         {
-            _view.CloseRequested -= CancelSpotifyStart;
-            _player.CurrentChanged -= OnSpotifyCurrentChanged;
-            _spotifyPlayback.CommandFailed -= OnSpotifyCommandFailed;
-            _spotifyPlayback.TrackChanged -= OnSpotifyTrackChanged;
-            _spotifyPlayback.Navigated -= OnSpotifyNavigated;
-            _spotifyPlayback.PlayingChanged -= OnSpotifyPlayingChanged;
-            _spotifyPlayback.QueueEmpty -= OnSpotifyQueueEmpty;
+            if (_spotifyEventsBound)
+            {
+                _view.CloseRequested -= CancelSpotifyStart;
+                _player.CurrentChanged -= OnSpotifyCurrentChanged;
+                _spotifyPlayback.CommandFailed -= OnSpotifyCommandFailed;
+                _spotifyPlayback.TrackChanged -= OnSpotifyTrackChanged;
+                _spotifyPlayback.Navigated -= OnSpotifyNavigated;
+                _spotifyPlayback.PlayingChanged -= OnSpotifyPlayingChanged;
+                _spotifyPlayback.QueueEmpty -= OnSpotifyQueueEmpty;
+            }
             _spotifyPlayback.Dispose();
         }
         if (_spotifyAuth is not null)

@@ -4,21 +4,20 @@ using LunaPlayer.Application;
 
 namespace LunaPlayer.Spotify;
 
-/// <summary>Coordinates Spotify navigation and plays decrypted audio through Luna's mpv engine.</summary>
+/// <summary>Owns Spotify playback sessions and their shared authenticated audio connection.</summary>
 internal sealed partial class Playback : IDisposable
 {
     private readonly SpotifySettings _settings;
     private readonly Player _player;
     private readonly IApplicationDispatcher _dispatcher;
-    private ManagedAudioSession? _session;
+    private ManagedAudioSession? _connection;
     private CancellationTokenSource? _loadCancellation;
-    private readonly SemaphoreSlim _prepareGate = new(1, 1);
-    private readonly object _sessionLock = new();
-    private int _sessionVersion;
+    private SemaphoreSlim? _prepareGate;
+    private readonly object _connectionLock = new();
+    private int _connectionVersion;
     private volatile bool _disposed;
     private readonly object _positionLock = new();
     private volatile bool _active;
-    private bool _ownsPlayerSession;
     private string _authorizationMessage = string.Empty;
     private PlaybackClock? _clock;
     private volatile Track? _current;
@@ -51,22 +50,22 @@ internal sealed partial class Playback : IDisposable
     /// <summary>True once a Spotify track is the active source, until it is stopped or replaced. Luna gates all
     /// Spotify-specific transport/window behaviour on this.</summary>
     internal bool IsActive => _active;
-    internal bool HasSession => _ownsPlayerSession;
+    internal bool HasSession => _session is not null;
 
     internal void BeginSession()
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
-        if (_ownsPlayerSession) return;
+        if (_session is not null) return;
         // Translators: Confirmation displayed in the browser after returning from Spotify authorization.
         _authorizationMessage = Tr("You can return to Luna Player now.");
         _player.BeginSpotifySession();
-        _ownsPlayerSession = true;
+        _session = new Session();
         _player.Stop();
     }
 
     internal bool CloseAllFiles()
     {
-        if (!_ownsPlayerSession && !_active) return false;
+        if (_session is null && !_active) return false;
         Stop(restoreSession: false);
         return true;
     }
@@ -129,16 +128,22 @@ internal sealed partial class Playback : IDisposable
     internal async Task PrepareAsync(CancellationToken cancellationToken)
     {
         ObjectDisposedException.ThrowIf(_disposed, this);
-        await _prepareGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        SemaphoreSlim gate;
+        lock (_connectionLock)
+        {
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            gate = _prepareGate ??= new SemaphoreSlim(1, 1);
+        }
+        await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
         ManagedAudioSession? prepared = null;
         try
         {
             int version;
-            lock (_sessionLock)
+            lock (_connectionLock)
             {
                 ObjectDisposedException.ThrowIf(_disposed, this);
-                if (_session is not null) return;
-                version = _sessionVersion;
+                if (_connection is not null) return;
+                version = _connectionVersion;
             }
             var credentials = PlaybackCredentialStore.Load() ?? PlaybackCredentialStore.LoadLegacy();
             if (credentials is not null)
@@ -159,18 +164,18 @@ internal sealed partial class Playback : IDisposable
                 prepared = await ManagedAudioSession.ConnectAsync(signedIn, cancellationToken)
                     .ConfigureAwait(false);
             }
-            lock (_sessionLock)
+            lock (_connectionLock)
             {
                 cancellationToken.ThrowIfCancellationRequested();
                 ObjectDisposedException.ThrowIf(_disposed, this);
-                if (version != _sessionVersion) throw new OperationCanceledException(cancellationToken);
+                if (version != _connectionVersion) throw new OperationCanceledException(cancellationToken);
                 // A late authorization must not reinstall a signed-out session or its credentials.
                 prepared.SaveCredentials();
-                _session = prepared;
+                _connection = prepared;
                 prepared = null;
             }
         }
-        finally { prepared?.Dispose(); _prepareGate.Release(); }
+        finally { prepared?.Dispose(); gate.Release(); }
     }
 
     private void NotifyTrackPlaying(string uri)
@@ -191,7 +196,7 @@ internal sealed partial class Playback : IDisposable
 
     private void LoadTrack(Track track, double seconds)
     {
-        _navigationStopSent = false;
+        if (_session is { } session) session.NavigationStopped = false;
         var position = Math.Clamp(_pendingSeek ?? seconds, 0,
             track.DurationMs > 0 ? Math.Max(0, track.DurationMs / 1000.0 - 1) : double.MaxValue);
         if (_clock is { } clock)
@@ -354,8 +359,8 @@ internal sealed partial class Playback : IDisposable
             CancellationTokenRegistration pendingRegistration = default;
             try
             {
-                var session = _session ?? throw new InvalidOperationException();
-                pendingAudio = await session.GetAudioAsync(uri, RequestedBitrate, token).ConfigureAwait(false);
+                var connection = _connection ?? throw new InvalidOperationException();
+                pendingAudio = await connection.GetAudioAsync(uri, RequestedBitrate, token).ConfigureAwait(false);
                 var audio = pendingAudio;
                 // Cancellation must release audio even if wx discards an already-posted callback at exit.
                 pendingRegistration = token.UnsafeRegister(static state => ((AudioDecryptStream)state!).Dispose(), audio);
@@ -437,24 +442,15 @@ internal sealed partial class Playback : IDisposable
 
     internal void Stop(bool restoreSession = true)
     {
-        var ownedSession = _ownsPlayerSession;
-        _ownsPlayerSession = false;
+        var ownedSession = _session is not null;
         lock (_navigationLock)
         {
             SavePosition();
             ClearCurrent();
             _active = false;
             _repeatCurrent = false;
-            _navigationStopSent = false;
             CancelPageRead();
-            _pageCursors.Clear();
-            _pageLoader = null;
-            _nextPage = null;
-            _deduplicateArtist = false;
-            _queue = [];
-            _sourceQueue = [];
-            _index = -1;
-            _shuffle = false;
+            _session = null;
         }
         // A replacement source may already have acquired the player. Never stop or restore over it.
         if (!ownedSession || !_player.InSpotifySession) return;
@@ -467,11 +463,11 @@ internal sealed partial class Playback : IDisposable
     {
         Stop();
         ManagedAudioSession? previous;
-        lock (_sessionLock)
+        lock (_connectionLock)
         {
-            _sessionVersion++;
-            previous = _session;
-            _session = null;
+            _connectionVersion++;
+            previous = _connection;
+            _connection = null;
             try { PlaybackCredentialStore.Delete(); }
             finally { previous?.Dispose(); }
         }
@@ -480,13 +476,13 @@ internal sealed partial class Playback : IDisposable
     public void Dispose()
     {
         ManagedAudioSession? previous;
-        lock (_sessionLock)
+        lock (_connectionLock)
         {
             if (_disposed) return;
             _disposed = true;
-            _sessionVersion++;
-            previous = _session;
-            _session = null;
+            _connectionVersion++;
+            previous = _connection;
+            _connection = null;
         }
         Stop(restoreSession: false);
         previous?.Dispose();

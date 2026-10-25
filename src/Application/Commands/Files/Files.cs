@@ -20,7 +20,7 @@ internal sealed partial class Files
     private readonly IClipboardService _clipboard;
     private readonly IApplicationDispatcher _dispatcher;
     private readonly MediaGuard _guard;
-    private readonly Func<LunaPlayer.Spotify.Playback?> _getSpotify;
+    private readonly LunaPlayer.Spotify.Playback _spotify;
     private readonly Action _cancelSpotifyStart;
     private readonly Radio.Playback _radio;
     private int _fileInfoPressCount;
@@ -38,7 +38,7 @@ internal sealed partial class Files
         IApplicationDispatcher dispatcher,
         RecentsStore recents,
         Radio.Playback radio,
-        Func<LunaPlayer.Spotify.Playback?> getSpotify,
+        LunaPlayer.Spotify.Playback spotify,
         Action cancelSpotifyStart)
     {
         _view = view;
@@ -48,7 +48,7 @@ internal sealed partial class Files
         _clipboard = clipboard;
         _dispatcher = dispatcher;
         _recents = recents;
-        _getSpotify = getSpotify;
+        _spotify = spotify;
         _cancelSpotifyStart = cancelSpotifyStart;
         _radio = radio;
         _guard = new MediaGuard(player, speech);
@@ -224,11 +224,10 @@ internal sealed partial class Files
 
     private void CloseFile()
     {
-        var spotify = _getSpotify();
-        if (spotify?.HasSession == true || spotify?.IsActive == true)
+        if (_spotify.HasSession || _spotify.IsActive)
         {
             _cancelSpotifyStart();
-            spotify.CloseCurrent();
+            _spotify.CloseCurrent();
             _speech.Speak(
                 // Translators: Spoken confirmation after removing the current track from a Spotify playback queue.
                 Tr("File closed."),
@@ -262,9 +261,8 @@ internal sealed partial class Files
 
     private void CloseAllFiles()
     {
-        var spotify = _getSpotify();
         _cancelSpotifyStart();
-        var hadSpotify = spotify?.CloseAllFiles() == true;
+        var hadSpotify = _spotify.CloseAllFiles();
         var radio = _radio.IsActive;
         if (radio) _radio.Stop(restore: false);
         if (_player.Count == 0 && !radio && !hadSpotify)

@@ -5,25 +5,25 @@ namespace LunaPlayer.Application;
 
 /// <summary>Routes session commands to their owner instead of chaining competing Escape or navigation handlers.</summary>
 internal sealed class PlaybackSessions(Sessions youTube, Radio.Playback radio, Player player,
-    Func<Spotify.Playback?> getSpotify, Func<bool> returnToSpotify)
+    Spotify.Playback spotify, Func<bool> returnToSpotify)
 {
     internal Radio.Playback Radio => radio;
-    internal Spotify.Playback? Spotify => getSpotify();
-    internal bool CanMoveNext => Spotify is { HasSession: true } spotify ? spotify.CanMoveNext
+    internal Spotify.Playback Spotify => spotify;
+    internal bool CanMoveNext => spotify.HasSession ? spotify.CanMoveNext
         : radio.IsActive ? radio.CanMoveNext : youTube.CanMoveNext;
-    internal bool CanMovePrevious => Spotify is { HasSession: true } spotify ? spotify.CanMovePrevious
+    internal bool CanMovePrevious => spotify.HasSession ? spotify.CanMovePrevious
         : radio.IsActive ? radio.CanMovePrevious : youTube.CanMovePrevious;
-    internal NavigationOutcome TryNext() => Spotify is { HasSession: true } spotify
+    internal NavigationOutcome TryNext() => spotify.HasSession
         ? spotify.Next() ? NavigationOutcome.Pending : NavigationOutcome.Exhausted
         : radio.IsActive ? radio.TryMove(1) : youTube.TryNext();
-    internal NavigationOutcome TryPrevious() => Spotify is { HasSession: true } spotify
+    internal NavigationOutcome TryPrevious() => spotify.HasSession
         ? spotify.Previous() ? NavigationOutcome.Pending : NavigationOutcome.Exhausted
         : radio.IsActive ? radio.TryMove(-1) : youTube.TryPrevious();
-    internal bool HandleEscape() => Spotify is { HasSession: true } ? returnToSpotify()
+    internal bool HandleEscape() => spotify.HasSession ? returnToSpotify()
         : radio.IsActive ? radio.HandleEscape() : youTube.HandleEscape();
-    internal void AcceptQueuedAdvance() { if (!radio.IsActive && Spotify?.HasSession != true) youTube.AcceptQueuedAdvance(); }
-    internal bool IsShuffleEnabled => Spotify is { HasSession: true } spotify ? spotify.IsShuffleEnabled
+    internal void AcceptQueuedAdvance() { if (!radio.IsActive && !spotify.HasSession) youTube.AcceptQueuedAdvance(); }
+    internal bool IsShuffleEnabled => spotify.HasSession ? spotify.IsShuffleEnabled
         : radio.IsActive ? radio.IsShuffleEnabled : player.IsShuffleEnabled;
-    internal bool ToggleShuffle() => Spotify is { HasSession: true } spotify ? spotify.ToggleShuffle()
+    internal bool ToggleShuffle() => spotify.HasSession ? spotify.ToggleShuffle()
         : radio.IsActive ? radio.ToggleShuffle() : player.ToggleShuffle();
 }

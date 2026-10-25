@@ -6,52 +6,60 @@ namespace LunaPlayer.Spotify;
 internal sealed partial class Playback
 {
     private readonly object _navigationLock = new();
-    private List<Track> _queue = [];
-    private List<Track> _sourceQueue = [];
-    private int _index;
-    private bool _shuffle;
-    private bool _navigationStopSent;
-    private Func<string?, CancellationToken, Task<TrackPage>>? _pageLoader;
-    private string? _nextPage;
-    private CancellationTokenSource? _pageCancellation;
-    private bool _fetchingMore;
-    private bool _pageFetchAfterEnded;
-    private bool _deduplicateArtist;
-    private CancellationTokenSource? _navigationDelay;
-    private readonly HashSet<string> _pageCursors = new(StringComparer.Ordinal);
+    private Session? _session;
 
-    internal IReadOnlyList<Track> CurrentQueue => _queue.ToArray();
-    internal IReadOnlyList<Track> SourceQueue => _sourceQueue.ToArray();
-    internal int CurrentIndex => _index;
-    internal bool CanMoveNext => _active && (_index + 1 < _queue.Count || _nextPage is not null
-        || _audioSettings?.WrapPlaylist == true && _queue.Count > 1);
-    internal bool CanMovePrevious => _active && (_index > 0
-        || _audioSettings?.WrapPlaylist == true && _queue.Count > 1);
-    internal bool IsShuffleEnabled => _shuffle;
+    // A manager exists at startup; queue and navigation state belong only to a selected session.
+    private sealed class Session
+    {
+        internal List<Track> Tracks { get; set; } = [];
+        internal List<Track> Source { get; set; } = [];
+        internal int Index { get; set; } = -1;
+        internal bool Shuffle { get; set; }
+        internal bool NavigationStopped { get; set; }
+        internal Func<string?, CancellationToken, Task<TrackPage>>? PageLoader { get; set; }
+        internal string? NextPage { get; set; }
+        internal CancellationTokenSource? PageCancellation { get; set; }
+        internal bool FetchingMore { get; set; }
+        internal bool PageFetchAfterEnded { get; set; }
+        internal bool DeduplicateArtist { get; set; }
+        internal CancellationTokenSource? NavigationDelay { get; set; }
+        internal HashSet<string> PageCursors { get; } = new(StringComparer.Ordinal);
+    }
+
+    internal IReadOnlyList<Track> CurrentQueue => _session?.Tracks.ToArray() ?? Array.Empty<Track>();
+    internal IReadOnlyList<Track> SourceQueue => _session?.Source.ToArray() ?? Array.Empty<Track>();
+    internal int CurrentIndex => _session?.Index ?? -1;
+    internal bool CanMoveNext => _active && _session is { } session
+        && (session.Index + 1 < session.Tracks.Count || session.NextPage is not null
+            || _audioSettings?.WrapPlaylist == true && session.Tracks.Count > 1);
+    internal bool CanMovePrevious => _active && _session is { } session
+        && (session.Index > 0 || _audioSettings?.WrapPlaylist == true && session.Tracks.Count > 1);
+    internal bool IsShuffleEnabled => _session?.Shuffle == true;
     internal bool ToggleShuffle()
     {
+        if (_session is not { } session) return false;
         lock (_navigationLock)
         {
             if (!_active) return false;
             var current = _current;
-            _shuffle = !_shuffle;
-            _queue = [.. _sourceQueue];
-            if (_shuffle)
+            session.Shuffle = !session.Shuffle;
+            session.Tracks = [.. session.Source];
+            if (session.Shuffle)
             {
                 // Like Luna's local shuffle, randomize the entire order and then locate
                 // the current track. Pinning it first prevents ordinary Previous navigation.
-                for (var index = _queue.Count - 1; index > 0; index--)
+                for (var index = session.Tracks.Count - 1; index > 0; index--)
                 {
                     var other = Random.Shared.Next(index + 1);
-                    (_queue[index], _queue[other]) = (_queue[other], _queue[index]);
+                    (session.Tracks[index], session.Tracks[other]) = (session.Tracks[other], session.Tracks[index]);
                 }
             }
-            _index = _queue.FindIndex(track => ReferenceEquals(track, current));
-            if (_index < 0) _index = 0;
-            return _shuffle;
+            session.Index = session.Tracks.FindIndex(track => ReferenceEquals(track, current));
+            if (session.Index < 0) session.Index = 0;
+            return session.Shuffle;
         }
     }
-    internal string? NextPage => _nextPage;
+    internal string? NextPage => _session?.NextPage;
     internal void Play(Track track, IReadOnlyList<Track>? queue,
         CancellationToken cancellationToken, double? startPosition = null,
         Func<string?, CancellationToken, Task<TrackPage>>? pageLoader = null,
@@ -59,25 +67,26 @@ internal sealed partial class Playback
     {
         cancellationToken.ThrowIfCancellationRequested();
         BeginSession();
+        var session = _session ?? throw new InvalidOperationException("No Spotify session is open.");
         lock (_navigationLock)
         {
             SavePosition();
             if (_active) _player.Stop();
             CancelPageRead();
-            _pageCursors.Clear();
-            _pageLoader = pageLoader;
-            _nextPage = nextPage;
-            _deduplicateArtist = deduplicateArtist;
-            _navigationStopSent = false;
+            session.PageCursors.Clear();
+            session.PageLoader = pageLoader;
+            session.NextPage = nextPage;
+            session.DeduplicateArtist = deduplicateArtist;
+            session.NavigationStopped = false;
             var tracks = queue?.Where(item => IsTrack(item.Uri)).ToList() ?? [];
             var selected = tracks.FindIndex(item => ReferenceEquals(item, track));
             if (selected < 0) selected = tracks.FindIndex(item => item.Uri == track.Uri);
             if (selected < 0) { tracks.Insert(0, track); selected = 0; }
-            _queue = tracks;
-            _sourceQueue = [.. tracks];
-            _index = selected;
+            session.Tracks = tracks;
+            session.Source = [.. tracks];
+            session.Index = selected;
             _active = true;
-            _shuffle = false;
+            session.Shuffle = false;
             // The shared mpv engine retains Luna's volume and audio effects.
             SetCurrent(track, playing: false);
             if (shuffle) ToggleShuffle();
@@ -91,9 +100,10 @@ internal sealed partial class Playback
 
     internal bool CloseCurrent()
     {
+        if (_session is not { } session) return false;
         lock (_navigationLock)
         {
-            if (!_ownsPlayerSession) return false;
+            if (!HasSession) return false;
             if (!_active || _current is null)
             {
                 QueueEmpty?.Invoke();
@@ -101,24 +111,24 @@ internal sealed partial class Playback
             }
             SavePosition();
             var removed = _current;
-            var position = _index;
+            var position = session.Index;
             CancelPageRead();
             _player.Stop();
-            _queue.RemoveAt(position);
-            var original = _sourceQueue.FindIndex(track => ReferenceEquals(track, removed));
-            if (original >= 0) _sourceQueue.RemoveAt(original);
-            if (_queue.Count > 0)
+            session.Tracks.RemoveAt(position);
+            var original = session.Source.FindIndex(track => ReferenceEquals(track, removed));
+            if (original >= 0) session.Source.RemoveAt(original);
+            if (session.Tracks.Count > 0)
             {
-                _index = Math.Min(position, _queue.Count - 1);
-                var next = _queue[_index];
+                session.Index = Math.Min(position, session.Tracks.Count - 1);
+                var next = session.Tracks[session.Index];
                 SetCurrent(next, playing: false);
                 LoadTrack(next, SavedPosition(next));
             }
             else
             {
                 ClearCurrent();
-                _index = -1;
-                if (_nextPage is not null) FetchMore(afterTrackEnded: true);
+                session.Index = -1;
+                if (session.NextPage is not null) FetchMore(afterTrackEnded: true);
                 else QueueEmpty?.Invoke();
             }
             return true;
@@ -127,34 +137,36 @@ internal sealed partial class Playback
 
     private void CancelPageRead()
     {
-        _pageCancellation?.Cancel();
-        _pageCancellation?.Dispose();
-        _pageCancellation = null;
-        _fetchingMore = false;
-        _pageFetchAfterEnded = false;
+        if (_session is not { } session) return;
+        session.PageCancellation?.Cancel();
+        session.PageCancellation?.Dispose();
+        session.PageCancellation = null;
+        session.FetchingMore = false;
+        session.PageFetchAfterEnded = false;
     }
     internal bool GoToIndex(int index)
     {
         lock (_navigationLock)
-            return _active && index >= 0 && index < _queue.Count
-                && Step(index - _index);
+            return _active && _session is { } session && index >= 0 && index < session.Tracks.Count
+                && Step(index - session.Index);
     }
 
     private bool Step(int delta, bool savePosition = true, bool delay = true)
     {
+        if (_session is not { } session) return false;
         lock (_navigationLock)
         {
-            if (delta > 0 && _index == _queue.Count - 1 && _nextPage is not null)
+            if (delta > 0 && session.Index == session.Tracks.Count - 1 && session.NextPage is not null)
             {
                 _playRequested = true;
                 FetchMore();
                 return true;
             }
-            if (!TryTarget(_index, delta, out var target)) return false;
+            if (!TryTarget(session.Index, delta, out var target)) return false;
             CancelPageRead();
             if (savePosition) SavePosition();
-            _index = target;
-            var track = _queue[target];
+            session.Index = target;
+            var track = session.Tracks[target];
             // Explicit navigation starts the selected file, matching ordinary local playback.
             SetCurrent(track, playing: false);
             Navigated?.Invoke(track);
@@ -162,9 +174,9 @@ internal sealed partial class Playback
             // after a short burst starts fetching audio, avoiding wasted key requests.
             if (delay)
             {
-                if (!_navigationStopSent) { _player.Stop(); _navigationStopSent = true; }
-                _navigationDelay = new CancellationTokenSource();
-                _ = LoadAfterNavigationAsync(track, CurrentLoadGeneration, _navigationDelay.Token);
+                if (!session.NavigationStopped) { _player.Stop(); session.NavigationStopped = true; }
+                session.NavigationDelay = new CancellationTokenSource();
+                _ = LoadAfterNavigationAsync(track, CurrentLoadGeneration, session.NavigationDelay.Token);
             }
             else LoadTrack(track, SavedPosition(track));
             return true;
@@ -173,19 +185,20 @@ internal sealed partial class Playback
 
     private void FetchMore(bool afterTrackEnded = false)
     {
-        if (_fetchingMore)
+        if (_session is not { } session) return;
+        if (session.FetchingMore)
         {
-            if (afterTrackEnded) _pageFetchAfterEnded = true;
+            if (afterTrackEnded) session.PageFetchAfterEnded = true;
             return;
         }
-        if (_pageLoader is not { } loader || _nextPage is not { } cursor) return;
-        _fetchingMore = true;
-        _pageCancellation = new CancellationTokenSource();
-        var cancellation = _pageCancellation;
+        if (session.PageLoader is not { } loader || session.NextPage is not { } cursor) return;
+        session.FetchingMore = true;
+        session.PageCancellation = new CancellationTokenSource();
+        var cancellation = session.PageCancellation;
         var generation = Volatile.Read(ref _loadGeneration);
         var current = _current;
         var token = cancellation.Token;
-        var visited = new HashSet<string>(_pageCursors, StringComparer.Ordinal) { cursor };
+        var visited = new HashSet<string>(session.PageCursors, StringComparer.Ordinal) { cursor };
         _ = Task.Run(async () =>
         {
             try
@@ -197,43 +210,43 @@ internal sealed partial class Playback
                 {
                     lock (_navigationLock)
                     {
-                        if (!_active || cancellation.IsCancellationRequested
+                        if (!ReferenceEquals(_session, session) || !_active || cancellation.IsCancellationRequested
                             || Volatile.Read(ref _loadGeneration) != generation || _current != current) return;
                         List<Track> added;
-                        if (_deduplicateArtist)
+                        if (session.DeduplicateArtist)
                         {
-                            var known = new HashSet<string>(_queue.Select(track => track.ArtistSongKey), StringComparer.Ordinal);
+                            var known = new HashSet<string>(session.Tracks.Select(track => track.ArtistSongKey), StringComparer.Ordinal);
                             added = page.Tracks.Where(track => known.Add(track.ArtistSongKey)).ToList();
                         }
                         else added = page.Tracks.ToList();
-                        _sourceQueue.AddRange(added);
-                        if (_shuffle)
+                        session.Source.AddRange(added);
+                        if (session.Shuffle)
                         {
                             // Newly discovered tracks join random positions in the full order,
                             // matching how Luna repairs its shuffle when a playlist grows.
                             foreach (var addedTrack in added)
-                                _queue.Insert(Random.Shared.Next(_queue.Count + 1), addedTrack);
-                            _index = _queue.FindIndex(track => ReferenceEquals(track, _current));
+                                session.Tracks.Insert(Random.Shared.Next(session.Tracks.Count + 1), addedTrack);
+                            session.Index = session.Tracks.FindIndex(track => ReferenceEquals(track, _current));
                         }
-                        else _queue.AddRange(added);
-                        _pageCursors.Add(cursor);
-                        _nextPage = page.Next;
-                        var ended = afterTrackEnded || _pageFetchAfterEnded;
-                        _fetchingMore = false;
-                        _pageFetchAfterEnded = false;
-                        _pageCancellation = null;
+                        else session.Tracks.AddRange(added);
+                        session.PageCursors.Add(cursor);
+                        session.NextPage = page.Next;
+                        var ended = afterTrackEnded || session.PageFetchAfterEnded;
+                        session.FetchingMore = false;
+                        session.PageFetchAfterEnded = false;
+                        session.PageCancellation = null;
                         cancellation.Dispose();
-                        if (_index + 1 < _queue.Count)
+                        if (session.Index + 1 < session.Tracks.Count)
                         {
                             Step(1, savePosition: !ended, delay: !ended);
                         }
-                        else if (_nextPage is not null)
+                        else if (session.NextPage is not null)
                             FetchMore(ended);
-                        else if (_queue.Count == 0)
+                        else if (session.Tracks.Count == 0)
                             QueueEmpty?.Invoke();
                         else if (ended)
                             AdvanceAtEndCore();
-                        else if (_audioSettings?.WrapPlaylist == true && _queue.Count > 1)
+                        else if (_audioSettings?.WrapPlaylist == true && session.Tracks.Count > 1)
                             Step(1);
                     }
                 });
@@ -248,12 +261,12 @@ internal sealed partial class Playback
                 {
                     lock (_navigationLock)
                     {
-                        if (!_active || cancellation.IsCancellationRequested
+                        if (!ReferenceEquals(_session, session) || !_active || cancellation.IsCancellationRequested
                             || Volatile.Read(ref _loadGeneration) != generation) return;
-                        var ended = afterTrackEnded || _pageFetchAfterEnded;
-                        _fetchingMore = false;
-                        _pageFetchAfterEnded = false;
-                        _pageCancellation = null;
+                        var ended = afterTrackEnded || session.PageFetchAfterEnded;
+                        session.FetchingMore = false;
+                        session.PageFetchAfterEnded = false;
+                        session.PageCancellation = null;
                         cancellation.Dispose();
                         if (ended) FinishCurrent();
                         CommandFailed?.Invoke(error);
@@ -266,18 +279,20 @@ internal sealed partial class Playback
     private bool TryTarget(int index, int delta, out int target)
     {
         target = index + delta;
-        if (_queue.Count == 0) return false;
-        if (target >= 0 && target < _queue.Count) return true;
-        if (_audioSettings?.WrapPlaylist != true || _queue.Count < 2) return false;
-        target = (target + _queue.Count) % _queue.Count;
+        if (_session is not { } session) return false;
+        if (session.Tracks.Count == 0) return false;
+        if (target >= 0 && target < session.Tracks.Count) return true;
+        if (_audioSettings?.WrapPlaylist != true || session.Tracks.Count < 2) return false;
+        target = (target + session.Tracks.Count) % session.Tracks.Count;
         return true;
     }
 
     private void CancelNavigationDelay()
     {
-        _navigationDelay?.Cancel();
-        _navigationDelay?.Dispose();
-        _navigationDelay = null;
+        if (_session is not { } session) return;
+        session.NavigationDelay?.Cancel();
+        session.NavigationDelay?.Dispose();
+        session.NavigationDelay = null;
     }
 
     private async Task LoadAfterNavigationAsync(Track track, int generation, CancellationToken token)
@@ -313,6 +328,7 @@ internal sealed partial class Playback
 
     private void AdvanceAtEndCore()
     {
+        if (_session is not { } session) return;
         SavePosition(0);
         if (_repeatCurrent && _current is { } current)
         {
@@ -326,29 +342,29 @@ internal sealed partial class Playback
             LoadTrack(loopTrack, 0);
             return;
         }
-        if (_audioSettings?.EndBehavior == EndBehavior.None || _queue.Count == 0)
+        if (_audioSettings?.EndBehavior == EndBehavior.None || session.Tracks.Count == 0)
         {
             FinishCurrent();
             return;
         }
-        var next = _index + 1;
-        if (next >= _queue.Count)
+        var next = session.Index + 1;
+        if (next >= session.Tracks.Count)
         {
-            if (_nextPage is not null)
+            if (session.NextPage is not null)
             {
                 SetPlaying(false);
                 FetchMore(afterTrackEnded: true);
                 return;
             }
-            if (_audioSettings?.WrapPlaylist != true || _queue.Count < 2)
+            if (_audioSettings?.WrapPlaylist != true || session.Tracks.Count < 2)
             {
                 FinishCurrent();
                 return;
             }
             next = 0;
         }
-        _index = next;
-        var track = _queue[_index];
+        session.Index = next;
+        var track = session.Tracks[session.Index];
         SetCurrent(track, playing: false);
         Navigated?.Invoke(track);
         LoadTrack(track, SavedPosition(track));
