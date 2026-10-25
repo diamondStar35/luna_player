@@ -92,7 +92,7 @@ internal sealed partial class Playback : IDisposable
         }
     }
     internal double? Remaining => Duration is double d && Elapsed is double e ? Math.Max(0, d - e) : null;
-    internal bool IsPlaying => !_ended && (IsLoadedCurrent
+    internal bool IsPlaying => !_ended && _playRequested && (IsLoadedCurrent
         ? _player.IsPlaying : _clock?.Playing ?? false);
     private bool IsLoadedCurrent => _loadedUri == _current?.Uri && _loadedUri is not null
         && _player.CurrentPath?.StartsWith("luna-spotify://", StringComparison.Ordinal) == true;
@@ -324,7 +324,16 @@ internal sealed partial class Playback : IDisposable
         if (IsLoadedCurrent) _player.Play();
     }
 
-    private void OnPlayerThread(Action action) => _dispatcher.Post(action);
+    private bool OnPlayerThread(Action action)
+    {
+        if (_disposed) return false;
+        try { _dispatcher.Post(action); return true; }
+        catch (InvalidOperationException) when (_disposed)
+        {
+            // The host can be released while a worker is posting its final canceled result.
+            return false;
+        }
+    }
 
     private void LoadManaged(string uri, double position)
     {
@@ -336,14 +345,20 @@ internal sealed partial class Playback : IDisposable
         var generation = CurrentLoadGeneration;
         _ = Task.Run(async () =>
         {
+            AudioDecryptStream? pendingAudio = null;
+            CancellationTokenRegistration pendingRegistration = default;
             try
             {
                 var session = _session ?? throw new InvalidOperationException();
-                var audio = await session.GetAudioAsync(uri, RequestedBitrate,
-                    token).ConfigureAwait(false);
-                _dispatcher.Post(() =>
+                pendingAudio = await session.GetAudioAsync(uri, RequestedBitrate, token).ConfigureAwait(false);
+                var audio = pendingAudio;
+                // Cancellation must release audio even if wx discards an already-posted callback at exit.
+                pendingRegistration = token.UnsafeRegister(static state => ((AudioDecryptStream)state!).Dispose(), audio);
+                var registration = pendingRegistration;
+                if (OnPlayerThread(() =>
                 {
-                    if (token.IsCancellationRequested || !_active
+                    registration.Dispose();
+                    if (token.IsCancellationRequested || !_active || !_player.InSpotifySession
                         || generation != CurrentLoadGeneration || _current?.Uri != uri)
                     {
                         audio.Dispose();
@@ -365,11 +380,14 @@ internal sealed partial class Playback : IDisposable
                     }
                     catch (Exception error)
                     {
-                        // This action runs later on the UI thread, outside the worker's try/catch.
-                        // Optional Spotify stream failures must restore the session, not escape it.
+                        // The player owns successfully opened streams; failed opens dispose their audio.
                         CommandFailed?.Invoke(error);
                     }
-                });
+                }))
+                {
+                    pendingAudio = null;
+                    pendingRegistration = default;
+                }
             }
             catch (OperationCanceledException) when (token.IsCancellationRequested)
             {
@@ -377,11 +395,16 @@ internal sealed partial class Playback : IDisposable
             }
             catch (Exception error)
             {
-                _dispatcher.Post(() =>
+                OnPlayerThread(() =>
                 {
                     if (!token.IsCancellationRequested && _active
                         && generation == CurrentLoadGeneration) CommandFailed?.Invoke(error);
                 });
+            }
+            finally
+            {
+                pendingRegistration.Dispose();
+                pendingAudio?.Dispose();
             }
         }, token);
     }
@@ -391,7 +414,7 @@ internal sealed partial class Playback : IDisposable
         if (!_active || !IsLoadedCurrent || _current is not { } track) return;
         var generation = CurrentLoadGeneration;
         if (reason == EndReason.EndOfFile)
-            _dispatcher.Post(() =>
+            OnPlayerThread(() =>
             {
                 if (generation != CurrentLoadGeneration) return;
                 if (BeforeTrackEnd?.Invoke() == true)
@@ -402,7 +425,7 @@ internal sealed partial class Playback : IDisposable
                 NotifyTrackEnded(track.Uri);
             });
         else if (reason == EndReason.Error)
-            _dispatcher.Post(() =>
+            OnPlayerThread(() =>
             {
                 if (generation == CurrentLoadGeneration)
                     CommandFailed?.Invoke(new InvalidDataException());
