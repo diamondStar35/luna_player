@@ -7,8 +7,6 @@ namespace LunaPlayer.Spotify;
 /// <summary>Coordinates Spotify navigation and plays decrypted audio through Luna's mpv engine.</summary>
 internal sealed class PlaybackHost : IDisposable
 {
-    private static readonly TimeSpan LoadWindow = TimeSpan.FromSeconds(3);
-    private static readonly TimeSpan BurstLoadDelay = TimeSpan.FromMilliseconds(1250);
     private readonly SpotifySettings _settings;
     private readonly Player? _player;
     private readonly IApplicationDispatcher? _dispatcher;
@@ -21,7 +19,6 @@ internal sealed class PlaybackHost : IDisposable
     private volatile bool _disposed;
     private readonly object _positionLock = new();
     private readonly object _navigationLock = new();
-    private readonly Queue<DateTime> _loadSentAt = new();
     private volatile bool _active;
     private bool _ownsPlayerSession;
     private List<Track> _queue = [];
@@ -40,7 +37,6 @@ internal sealed class PlaybackHost : IDisposable
     private AudioSettings? _audioSettings;
     private Func<string, double?>? _readPosition;
     private Action<string, double>? _writePosition;
-    private int _scheduledLoadId;
     private bool _navigationStopSent;
     private Func<string?, CancellationToken, Task<TrackPage>>? _pageLoader;
     private string? _nextPage;
@@ -480,42 +476,12 @@ internal sealed class PlaybackHost : IDisposable
 
     private void SendLoad(Track track, double seconds)
     {
-        var now = DateTime.UtcNow;
-        while (_loadSentAt.TryPeek(out var sent) && now - sent >= LoadWindow)
-            _loadSentAt.Dequeue();
-        var due = _loadSentAt.Count >= 2 ? now + BurstLoadDelay : now;
-        var id = ++_scheduledLoadId;
-        var wait = due - now;
-        if (wait > TimeSpan.Zero)
-        {
-            var generation = Volatile.Read(ref _loadGeneration);
-            _ = Task.Run(async () =>
-            {
-                await Task.Delay(wait).ConfigureAwait(false);
-                OnPlayerThread(() =>
-                {
-                    lock (_navigationLock)
-                    {
-                        if (!_active || Volatile.Read(ref _loadGeneration) != generation
-                            || _scheduledLoadId != id || _current?.Uri != track.Uri) return;
-                        SendLoadNow(track, seconds);
-                    }
-                });
-            });
-            return;
-        }
-        SendLoadNow(track, seconds);
-    }
-
-    private void SendLoadNow(Track track, double seconds)
-    {
         _navigationStopSent = false;
         var position = Math.Clamp(_pendingSeek ?? seconds, 0,
             track.DurationMs > 0 ? Math.Max(0, track.DurationMs / 1000.0 - 1) : double.MaxValue);
         if (_clock is { } clock)
             _clock = clock with { Elapsed = position, ObservedAt = DateTimeOffset.UtcNow };
         _currentLoadSent = true;
-        _loadSentAt.Enqueue(DateTime.UtcNow);
         Send(position > 0 ? $"loadpos {track.Uri} {(long)Math.Round(position * 1000)}" : $"load {track.Uri}");
     }
 
@@ -752,7 +718,6 @@ internal sealed class PlaybackHost : IDisposable
             _loadedUri = null;
             _pendingSeek = null;
             _repeatCurrent = false;
-            _scheduledLoadId++;
             _navigationStopSent = false;
             _pageCancellation?.Cancel();
             _pageCancellation?.Dispose();
