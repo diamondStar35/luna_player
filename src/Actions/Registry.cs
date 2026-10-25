@@ -38,6 +38,8 @@ internal static class ToolsActions
     [
         // Translators: Name of the command that opens the window for converting files to another audio format.
         new(ActionId.OpenMediaConverter, Tr("Open the media converter")),
+        // Translators: Name of the command opening the internet radio browser.
+        new(ActionId.OpenRadioBrowser, Tr("Open the radio browser"), new("r", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
     ];
 }
 

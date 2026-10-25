@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-10-23 17:52+0300\n"
+"POT-Creation-Date: 2026-10-25 14:42+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -629,6 +629,11 @@ msgstr ""
 msgid "Open the media converter"
 msgstr ""
 
+#. Translators: Name of the command opening the internet radio browser.
+#: Actions/Registry.cs:42
+msgid "Open the radio browser"
+msgstr ""
+
 #. Translators: Name of the command that opens the window where a sleep timer is set.
 #: Actions/SleepTimerActions.cs:16
 msgid "Set sleep timer..."
@@ -662,7 +667,7 @@ msgstr ""
 
 #. Translators: Name of the command that opens the YouTube download queue window.
 #. Translators: Tools menu item that opens the YouTube download queue.
-#: Actions/YouTubeActions.cs:23 UI/Menus/ToolsMenu.cs:17
+#: Actions/YouTubeActions.cs:23 UI/Menus/ToolsMenu.cs:19
 msgid "Download queue..."
 msgstr ""
 
@@ -1021,7 +1026,7 @@ msgstr ""
 #. Translators: The short wording spoken once the marked files have been copied into the chosen folder.
 #. Translators: The short wording spoken once the address of a video has been copied.
 #: Application/Commands/Files/Edit.cs:125
-#: Application/Commands/Files/Info.cs:148
+#: Application/Commands/Files/Info.cs:153
 #: Application/Commands/Files/MarkedFiles.cs:73
 #: Application/Commands/Files/MarkedFiles.cs:168
 #: Application/Commands/YouTube/CurrentVideo.cs:101
@@ -1033,7 +1038,7 @@ msgstr ""
 #. Translators: Short announcement after copying marked files to the clipboard fails.
 #. Translators: The short wording spoken when the address of a video could not be copied.
 #: Application/Commands/Files/Edit.cs:127
-#: Application/Commands/Files/Info.cs:150
+#: Application/Commands/Files/Info.cs:155
 #: Application/Commands/Files/MarkedFiles.cs:75
 #: Application/Commands/YouTube/CurrentVideo.cs:107
 msgid "Copy failed."
@@ -1143,28 +1148,28 @@ msgstr[1] ""
 #. Translators: Spoken when a launch-time folder holds nothing this player can play.
 #. Translators: Spoken when the chosen folder holds nothing this player can play.
 #. Translators: Spoken when the folder and the folders inside it hold nothing this player can play.
-#: Application/Commands/Files/Files.cs:107
-#: Application/Commands/Files/Files.cs:211
-#: Application/Commands/Files/Files.cs:343
+#: Application/Commands/Files/Files.cs:110
+#: Application/Commands/Files/Files.cs:214
+#: Application/Commands/Files/Files.cs:355
 msgid "No audio files found in that folder."
 msgstr ""
 
 #. Translators: Short announcement when a launch-time folder holds no playable files.
 #. Translators: The short wording spoken when the chosen folder holds nothing this player can play.
 #. Translators: The short wording spoken when a folder holds nothing this player can play.
-#: Application/Commands/Files/Files.cs:109
-#: Application/Commands/Files/Files.cs:213
-#: Application/Commands/Files/Files.cs:345
+#: Application/Commands/Files/Files.cs:112
+#: Application/Commands/Files/Files.cs:216
+#: Application/Commands/Files/Files.cs:357
 msgid "No audio files."
 msgstr ""
 
 #. Translators: Asks the user for the web address of the stream they want to play.
-#: Application/Commands/Files/Files.cs:172
+#: Application/Commands/Files/Files.cs:175
 msgid "Enter link to play."
 msgstr ""
 
 #. Translators: Title of the window that asks for the web address of a stream to play.
-#: Application/Commands/Files/Files.cs:174
+#: Application/Commands/Files/Files.cs:177
 msgid "Open Link"
 msgstr ""
 
@@ -1172,20 +1177,20 @@ msgstr ""
 #. "http" and "https" are the names of the two web protocols and are not translated.
 #. Translators: Shown when a typed YouTube address does not begin with a supported web protocol.
 #. Translators: Shown when a favourite is saved with something that is not a web address.
-#: Application/Commands/Files/Files.cs:184
+#: Application/Commands/Files/Files.cs:187
 #: Application/Commands/YouTube/YouTube.cs:92 Favorites/FavoriteStore.cs:140
 msgid "The link must start with http or https."
 msgstr ""
 
 #. Translators: Title of the message shown when the address typed into Open Link is not a web address.
 #. Translators: Title of the message shown when what was typed is not a web address.
-#: Application/Commands/Files/Files.cs:186
+#: Application/Commands/Files/Files.cs:189
 #: Application/Commands/YouTube/YouTube.cs:94
 msgid "Invalid link"
 msgstr ""
 
 #. Translators: Shown when the stream at the address typed into Open Link could not be played.
-#: Application/Commands/Files/Files.cs:197
+#: Application/Commands/Files/Files.cs:200
 msgid "Could not open the link."
 msgstr ""
 
@@ -1195,7 +1200,7 @@ msgstr ""
 #. Translators: Title of an error shown when playlist entries cannot be loaded.
 #. Translators: Title of a message telling the user that something went wrong.
 #. Translators: Title of the message shown when a download could not finish.
-#: Application/Commands/Files/Files.cs:199
+#: Application/Commands/Files/Files.cs:202
 #: Application/Commands/Files/Playlists.cs:49
 #: Application/Commands/Files/Playlists.cs:62
 #: Application/Commands/Files/Playlists.cs:71
@@ -1204,57 +1209,59 @@ msgstr ""
 msgid "Error"
 msgstr ""
 
+#. Translators: Spoken after closing a radio session and restoring the original playlist paused.
+#. Translators: Spoken once the current file has been removed from the playlist.
+#. Translators: Short announcement once the current file has been removed from the playlist.
+#: Application/Commands/Files/Files.cs:225
+#: Application/Commands/Files/Files.cs:240
+#: Application/Commands/Files/Files.cs:242
+msgid "File closed."
+msgstr ""
+
 #. Translators: Spoken when the current file could not be taken out of the playlist.
-#: Application/Commands/Files/Files.cs:223
+#: Application/Commands/Files/Files.cs:233
 msgid "Could not close the file."
 msgstr ""
 
 #. Translators: The short wording spoken when a file could not be closed.
 #. Translators: The short wording spoken when the files could not be closed.
-#: Application/Commands/Files/Files.cs:225
-#: Application/Commands/Files/Files.cs:244
+#: Application/Commands/Files/Files.cs:235
+#: Application/Commands/Files/Files.cs:256
 msgid "Close failed."
 msgstr ""
 
-#. Translators: Spoken once the current file has been removed from the playlist.
-#. Translators: Short announcement once the current file has been removed from the playlist.
-#: Application/Commands/Files/Files.cs:230
-#: Application/Commands/Files/Files.cs:232
-msgid "File closed."
-msgstr ""
-
 #. Translators: Spoken when the loaded files could not be taken out of the playlist.
-#: Application/Commands/Files/Files.cs:242
+#: Application/Commands/Files/Files.cs:254
 msgid "Could not close files."
 msgstr ""
 
 #. Translators: Spoken once every file has been removed from the playlist.
 #. Translators: Short announcement once every file has been removed from the playlist.
-#: Application/Commands/Files/Files.cs:249
-#: Application/Commands/Files/Files.cs:251
+#: Application/Commands/Files/Files.cs:261
+#: Application/Commands/Files/Files.cs:263
 msgid "All files closed."
 msgstr ""
 
 #. Translators: The short wording spoken when Windows could not be asked to open a folder.
 #. Translators: The short wording spoken when Windows could not show a file's properties.
-#: Application/Commands/Files/Files.cs:259
+#: Application/Commands/Files/Files.cs:271
 #: Application/Commands/Files/Info.cs:35
 msgid "Open failed."
 msgstr ""
 
 #. Translators: Title of the progress window shown while a folder and the folders inside it are being searched for media.
-#: Application/Commands/Files/Files.cs:323
+#: Application/Commands/Files/Files.cs:335
 msgid "Opening files"
 msgstr ""
 
 #. Translators: First message in the progress window, before any file has been found.
-#: Application/Commands/Files/Files.cs:325
+#: Application/Commands/Files/Files.cs:337
 msgid "Loading files from folder and subfolders..."
 msgstr ""
 
 #. Translators: Progress message while a folder is being searched. {found} is how many media files
 #. have been found so far.
-#: Application/Commands/Files/Files.cs:328
+#: Application/Commands/Files/Files.cs:340
 msgid "Opening files... {found} media files found"
 msgstr ""
 
@@ -1279,67 +1286,68 @@ msgid "Could not open file properties."
 msgstr ""
 
 #. Translators: Title of the progress window shown while details of every file in the playlist are being read.
-#: Application/Commands/Files/Info.cs:71
+#: Application/Commands/Files/Info.cs:76
 msgid "Loading playlist info"
 msgstr ""
 
 #. Translators: First message in the progress window, shown before the first file has been read.
-#: Application/Commands/Files/Info.cs:73
+#: Application/Commands/Files/Info.cs:78
 msgid "Preparing..."
 msgstr ""
 
 #. Translators: Progress message naming the file being read right now. {name} is the file name.
-#: Application/Commands/Files/Info.cs:75
+#: Application/Commands/Files/Info.cs:80
 msgid "Reading: {name}"
 msgstr ""
 
 #. Translators: Title of the window listing details of every file in the playlist.
-#: Application/Commands/Files/Info.cs:90
+#: Application/Commands/Files/Info.cs:95
 msgid "Playlist Info"
 msgstr ""
 
 #. Translators: The playlist summary. {count} is how many files are loaded.
-#: Application/Commands/Files/Info.cs:99
+#: Application/Commands/Files/Info.cs:104
 msgid "Number of files: {count}"
 msgstr ""
 
 #. Translators: The playlist summary. {value} is a size such as "12.5 MB".
-#: Application/Commands/Files/Info.cs:101
+#: Application/Commands/Files/Info.cs:106
 msgid "Total size: {value}"
 msgstr ""
 
 #. Translators: The playlist summary. {value} is a duration as hours:minutes:seconds.
-#: Application/Commands/Files/Info.cs:103
+#: Application/Commands/Files/Info.cs:108
 msgid "Total duration: {value}"
 msgstr ""
 
 #. Translators: The playlist summary: how much of the whole playlist has already played.
-#: Application/Commands/Files/Info.cs:105
+#: Application/Commands/Files/Info.cs:110
 msgid "Elapsed: {value}"
 msgstr ""
 
 #. Translators: The playlist summary: how much of the whole playlist is left to play.
-#: Application/Commands/Files/Info.cs:107
+#: Application/Commands/Files/Info.cs:112
 msgid "Remaining: {value}"
 msgstr ""
 
 #. Translators: Spoken once the full location of the current file has been copied to the clipboard.
-#: Application/Commands/Files/Info.cs:143
+#: Application/Commands/Files/Info.cs:148
 msgid "File path copied to clipboard."
 msgstr ""
 
 #. Translators: Spoken when the full location of the current file could not be copied to the clipboard.
-#: Application/Commands/Files/Info.cs:145
+#. Translators: Spoken when a radio station name or stream URL could not be copied.
+#: Application/Commands/Files/Info.cs:150 UI/Radio/Actions.cs:121
 msgid "Unable to copy to clipboard."
 msgstr ""
 
 #. Translators: Spoken when the current media file contains no title metadata.
-#: Application/Commands/Files/Info.cs:165
+#: Application/Commands/Files/Info.cs:170
 msgid "The current file has no title."
 msgstr ""
 
 #. Translators: Short announcement when the current media file contains no title metadata.
-#: Application/Commands/Files/Info.cs:167
+#: Application/Commands/Files/Info.cs:172
 msgid "No title."
 msgstr ""
 
@@ -1573,7 +1581,7 @@ msgstr ""
 #: Application/Commands/Iptv/Iptv.cs:143 Application/Commands/Iptv/Iptv.cs:152
 #: Application/Commands/Iptv/Iptv.cs:188 Application/Commands/Iptv/Iptv.cs:215
 #: Application/Commands/Iptv/Iptv.cs:226 Application/Commands/Iptv/Iptv.cs:286
-#: UI/Menus/ToolsMenu.cs:27
+#: UI/Menus/ToolsMenu.cs:29
 msgid "IPTV"
 msgstr ""
 
@@ -1656,8 +1664,9 @@ msgstr ""
 
 #. Translators: The short wording spoken when a time the user asked for is not known.
 #. Translators: Short announcement when playback progress cannot be calculated.
+#. Translators: Radio Browser's latest check did not find the station available.
 #: Application/Commands/MediaGuard.cs:108
-#: Application/Commands/Playback/Playback.cs:270
+#: Application/Commands/Playback/Playback.cs:270 UI/Radio/DetailsDialog.cs:43
 msgid "Unavailable"
 msgstr ""
 
@@ -1909,10 +1918,13 @@ msgstr ""
 #. Translators: Button that plays the channel chosen in the list.
 #. Translators: Spoken name of the main-window button that starts playback. It becomes Pause while playing. The button shows an icon, not this text.
 #. Translators: Spoken name of the play/pause button while playback is stopped or paused.
+#. Translators: Button playing the selected radio station.
+#. Translators: Radio station context-menu action that starts playback.
 #. Translators: Button that plays the video chosen in the list of results.
 #: Application/Commands/Playback/Playback.cs:129
 #: Application/Commands/Playback/Playback.cs:138
 #: UI/Iptv/ChannelBrowserDialog.cs:118 UI/MainFrame.cs:99 UI/MainFrame.cs:180
+#: UI/Radio/BrowserDialog.cs:120 UI/Radio/BrowserDialog.cs:148
 #: UI/YouTube/ResultsDialog.cs:196
 msgid "Play"
 msgstr ""
@@ -1952,14 +1964,14 @@ msgstr ""
 #. Translators: Spoken when full-screen mode is turned off.
 #. Translators: Spoken when full-screen mode ends on its own because the video stopped playing.
 #: Application/Commands/Playback/Playback.cs:227
-#: Application/Presentation/ViewStatePresenter.cs:73
+#: Application/Presentation/ViewStatePresenter.cs:75
 msgid "Full-screen mode off."
 msgstr ""
 
 #. Translators: The short advanced-verbosity wording spoken when full-screen mode is turned off.
 #. Translators: Short announcement when full-screen mode ends because the video stopped.
 #: Application/Commands/Playback/Playback.cs:229
-#: Application/Presentation/ViewStatePresenter.cs:75
+#: Application/Presentation/ViewStatePresenter.cs:77
 msgid "Full-screen off"
 msgstr ""
 
@@ -2184,7 +2196,7 @@ msgstr ""
 #. Translators: Title of the file picker used to save the currently selected part of a file.
 #: Application/Commands/Playback/SelectionSaving.cs:16
 #: Application/Commands/Playback/SelectionSaving.cs:121
-#: UI/DialogService.cs:128
+#: UI/DialogService.cs:138
 msgid "Save selection"
 msgstr ""
 
@@ -2311,7 +2323,7 @@ msgstr ""
 #. Translators: Tools submenu holding the sleep-timer commands.
 #: Application/Commands/Playback/SleepTimer.cs:66
 #: UI/Dialogs/SleepTimerDialog.cs:49 UI/Dialogs/SleepTimerDialog.cs:239
-#: UI/Menus/ToolsMenu.cs:39
+#: UI/Menus/ToolsMenu.cs:41
 msgid "Sleep timer"
 msgstr ""
 
@@ -2630,70 +2642,70 @@ msgid "Remove favorite '{name}' ({kind})?"
 msgstr ""
 
 #. Translators: Spoken when the user asks to jump to another file but only one is loaded.
-#: Application/Commands/YouTube/Playlist.cs:91
+#: Application/Commands/YouTube/Playlist.cs:96
 msgid "No other files are loaded."
 msgstr ""
 
 #. Translators: The short wording spoken when only one file is loaded.
-#: Application/Commands/YouTube/Playlist.cs:93
+#: Application/Commands/YouTube/Playlist.cs:98
 msgid "No other files."
 msgstr ""
 
 #. Translators: Asks the user which file in the playlist to move to. {count} is how many files are loaded.
-#: Application/Commands/YouTube/Playlist.cs:98
+#: Application/Commands/YouTube/Playlist.cs:103
 msgid "Enter file number (1-{count})"
 msgstr ""
 
 #. Translators: Title of the window that asks which file in the playlist to move to.
-#: Application/Commands/YouTube/Playlist.cs:100
+#: Application/Commands/YouTube/Playlist.cs:105
 msgid "Go To File"
 msgstr ""
 
 #. Translators: Spoken when what the user typed as a file number is not a number.
-#: Application/Commands/YouTube/Playlist.cs:107
+#: Application/Commands/YouTube/Playlist.cs:112
 msgid "Invalid file number."
 msgstr ""
 
 #. Translators: The short wording spoken when what was typed as a file number is not a number.
-#: Application/Commands/YouTube/Playlist.cs:109
+#: Application/Commands/YouTube/Playlist.cs:114
 msgid "Invalid number."
 msgstr ""
 
 #. Translators: Spoken when the file number the user typed is higher or lower than the playlist holds.
-#: Application/Commands/YouTube/Playlist.cs:116
+#: Application/Commands/YouTube/Playlist.cs:121
 msgid "File number out of range."
 msgstr ""
 
 #. Translators: The short wording spoken when the file number typed is outside the playlist.
-#: Application/Commands/YouTube/Playlist.cs:118
+#: Application/Commands/YouTube/Playlist.cs:123
 msgid "Out of range."
 msgstr ""
 
 #. Translators: Spoken once the player has started playing files in a random order.
 #. Translators: Short announcement once shuffle has been enabled.
-#: Application/Commands/YouTube/Playlist.cs:133
-#: Application/Commands/YouTube/Playlist.cs:135
+#: Application/Commands/YouTube/Playlist.cs:139
+#: Application/Commands/YouTube/Playlist.cs:141
 msgid "Shuffle on"
 msgstr ""
 
 #. Translators: Spoken once the player has returned to playing files in their listed order.
 #. Translators: Short announcement once shuffle has been disabled.
-#: Application/Commands/YouTube/Playlist.cs:141
-#: Application/Commands/YouTube/Playlist.cs:143
+#: Application/Commands/YouTube/Playlist.cs:147
+#: Application/Commands/YouTube/Playlist.cs:149
 msgid "Shuffle off"
 msgstr ""
 
 #. Translators: Spoken once the player has started playing the same file repeatedly.
 #. Translators: Short announcement once repeating the current file has been enabled.
-#: Application/Commands/YouTube/Playlist.cs:157
-#: Application/Commands/YouTube/Playlist.cs:159
+#: Application/Commands/YouTube/Playlist.cs:163
+#: Application/Commands/YouTube/Playlist.cs:165
 msgid "Repeat on"
 msgstr ""
 
 #. Translators: Spoken once the player has stopped playing the same file repeatedly.
 #. Translators: Short announcement once repeating the current file has been disabled.
-#: Application/Commands/YouTube/Playlist.cs:165
-#: Application/Commands/YouTube/Playlist.cs:167
+#: Application/Commands/YouTube/Playlist.cs:171
+#: Application/Commands/YouTube/Playlist.cs:173
 msgid "Repeat off"
 msgstr ""
 
@@ -2748,17 +2760,17 @@ msgid "No YouTube video."
 msgstr ""
 
 #. Translators: Title of the notification shown when every queued download has finished.
-#: Application/Features.cs:118
+#: Application/Features.cs:123
 msgid "Downloads completed"
 msgstr ""
 
 #. Translators: Body of the notification shown when every queued download has finished.
-#: Application/Features.cs:120
+#: Application/Features.cs:125
 msgid "All items in the download queue have completed."
 msgstr ""
 
 #. Translators: Shown when settings could not be read. {error} is the underlying file or data error.
-#: Application/Features.cs:181
+#: Application/Features.cs:187
 msgid ""
 "The settings file could not be loaded. Default settings will be used, and "
 "the existing file will not be overwritten. Import a valid settings file or "
@@ -2768,7 +2780,7 @@ msgid ""
 msgstr ""
 
 #. Translators: Title of the message shown when settings could not be read.
-#: Application/Features.cs:183
+#: Application/Features.cs:189
 msgid "Settings error"
 msgstr ""
 
@@ -3183,6 +3195,69 @@ msgstr ""
 msgid "All Files"
 msgstr ""
 
+#. Translators: Error shown when a radio directory request or a local radio-library operation fails. {reason} is the diagnostic detail.
+#: Radio/Catalog.cs:226
+msgid ""
+"The radio operation could not be completed.\n"
+"\n"
+"{reason}"
+msgstr ""
+
+#. Translators: Radio Browser could not locate an available directory server.
+#: Radio/Catalog.cs:233
+msgid "No radio directory server is available. Please try again."
+msgstr ""
+
+#. Translators: A radio directory request exceeded its allowed time.
+#: Radio/Catalog.cs:235
+msgid "The radio directory did not respond in time."
+msgstr ""
+
+#. Translators: A radio directory server returned data the player could not understand.
+#: Radio/Catalog.cs:237
+msgid "The radio directory returned an invalid response."
+msgstr ""
+
+#. Translators: A radio directory rejected an action. {reason} is the server's explanation or HTTP status.
+#: Radio/Catalog.cs:239
+msgid "The radio directory rejected the request: {reason}"
+msgstr ""
+
+#. Translators: A network failure prevented a radio directory request.
+#: Radio/Catalog.cs:242
+msgid "Could not reach the radio directory. Check your internet connection."
+msgstr ""
+
+#. Translators: Title of the summary of loaded stations in a radio playback session.
+#: Radio/Playback.cs:162
+msgid "Radio session"
+msgstr ""
+
+#. Translators: Radio session summary. {count} is the number of stations loaded for the selected category.
+#: Radio/Playback.cs:164
+msgid "Loaded stations: {count}"
+msgstr ""
+
+#. Translators: Error shown when MPV could not accept the selected radio station.
+#: Radio/Playback.cs:216
+msgid "Could not open the radio station."
+msgstr ""
+
+#. Translators: Title of a radio playback error.
+#. Translators: Title of a message reporting a radio station navigation or preparation failure.
+#. Translators: Title of a failure to open a radio station's website in the user's browser.
+#. Translators: Title of an error reporting a radio browser operation failure.
+#: Radio/Playback.cs:218 Radio/Playback.cs:301 UI/Radio/Actions.cs:104
+#: UI/Radio/Loading.cs:190
+msgid "Radio error"
+msgstr ""
+
+#. Translators: Title of a warning when local radio favorites or history could not be saved.
+#. Translators: Title of a warning that locally saved radio stations could not be read.
+#: Radio/Playback.cs:319 UI/Radio/Loading.cs:96
+msgid "Radio library"
+msgstr ""
+
 #. Translators: Shown when recording was asked for with nothing to record from.
 #: Recording/RecordingSources.cs:72
 msgid "There is nothing to record from."
@@ -3567,6 +3642,8 @@ msgstr ""
 #. Translators: Button that closes the save-selection-points dialog without saving anything.
 #. Translators: Button that closes a selection time dialog without changing anything.
 #. Translators: The button that closes a window and leaves everything as it was.
+#. Translators: Button closing Radio filters without applying changes.
+#. Translators: The button that closes a window and leaves everything as it was.
 #. Translators: Dismisses the close warning and keeps Luna and its downloads running.
 #. Translators: The button that stops a running download. It asks for confirmation first.
 #. Translators: Closes the link-entry window without adding anything.
@@ -3575,97 +3652,97 @@ msgstr ""
 #: UI/Dialogs/GoToTimeDialog.cs:72 UI/Dialogs/OpenedFilesDialog.cs:51
 #: UI/Dialogs/SaveSelectionsDialog.cs:89 UI/Dialogs/SelectionTimeDialog.cs:61
 #: UI/Dialogs/SleepTimerDialog.cs:171 UI/Equalizer/EditDialog.cs:116
-#: UI/YouTube/DownloadDialog.cs:133 UI/YouTube/DownloadExitDialog.cs:22
-#: UI/YouTube/DownloadProgressDialog.cs:60
+#: UI/Radio/FiltersDialog.cs:78 UI/YouTube/DownloadDialog.cs:133
+#: UI/YouTube/DownloadExitDialog.cs:22 UI/YouTube/DownloadProgressDialog.cs:60
 #: UI/YouTube/DownloadQueueDialog.cs:380 UI/YouTube/LinkKindDialog.cs:33
 msgid "Cancel"
 msgstr ""
 
 #. Translators: Title of the window that picks a subtitle file to load, and its file-type filter.
-#: UI/DialogService.cs:57
+#: UI/DialogService.cs:67
 msgid "Load subtitle"
 msgstr ""
 
 #. Translators: File-type filter for supported subtitle files, followed by all files.
-#: UI/DialogService.cs:59
+#: UI/DialogService.cs:69
 msgid ""
 "Subtitle files (*.srt;*.ass;*.ssa;*.vtt;*.sub)|*.srt;*.ass;*.ssa;*.vtt;*.sub|"
 "All files (*.*)|*.*"
 msgstr ""
 
 #. Translators: Prompt asking for a subtitle file's web address.
-#: UI/DialogService.cs:67
+#: UI/DialogService.cs:77
 msgid "Enter the web address of a subtitle file:"
 msgstr ""
 
 #. Translators: Title of the box asking for a subtitle file's web address.
-#: UI/DialogService.cs:69
+#: UI/DialogService.cs:79
 msgid "Load subtitle from URL"
 msgstr ""
 
 #. Translators: Default base name for a selected part when the source has no usable file name.
 #. Translators: Default common name for numbered files created by Save Selection Points.
-#: UI/DialogService.cs:114 UI/DialogService.cs:153
+#: UI/DialogService.cs:124 UI/DialogService.cs:163
 msgid "selection"
 msgstr ""
 
 #. Translators: Default file name for a saved selection. {name} is the source file's base name.
-#: UI/DialogService.cs:116
+#: UI/DialogService.cs:126
 msgid "{name} - selection"
 msgstr ""
 
 #. Translators: MP4 choice in the format list when saving selected parts of a video.
-#: UI/DialogService.cs:163
+#: UI/DialogService.cs:173
 msgid "MP4 video (*.mp4)"
 msgstr ""
 
 #. Translators: Matroska choice in the format list when saving selected parts of a video.
-#: UI/DialogService.cs:165
+#: UI/DialogService.cs:175
 msgid "Matroska video (*.mkv)"
 msgstr ""
 
 #. Translators: WebM choice in the format list when saving selected parts of a video.
-#: UI/DialogService.cs:167
+#: UI/DialogService.cs:177
 msgid "WebM video (*.webm)"
 msgstr ""
 
 #. Translators: QuickTime choice in the format list when saving selected parts of a video.
-#: UI/DialogService.cs:169
+#: UI/DialogService.cs:179
 msgid "QuickTime video (*.mov)"
 msgstr ""
 
 #. Translators: AVI choice in the format list when saving selected parts of a video.
-#: UI/DialogService.cs:171
+#: UI/DialogService.cs:181
 msgid "AVI video (*.avi)"
 msgstr ""
 
 #. Translators: MP3 choice in the format list when saving selected parts of an audio file.
-#: UI/DialogService.cs:176
+#: UI/DialogService.cs:186
 msgid "MP3 audio (*.mp3)"
 msgstr ""
 
 #. Translators: M4A choice in the format list when saving selected parts of an audio file.
-#: UI/DialogService.cs:178
+#: UI/DialogService.cs:188
 msgid "M4A audio (*.m4a)"
 msgstr ""
 
 #. Translators: FLAC choice in the format list when saving selected parts of an audio file.
-#: UI/DialogService.cs:180
+#: UI/DialogService.cs:190
 msgid "FLAC audio (*.flac)"
 msgstr ""
 
 #. Translators: WAV choice in the format list when saving selected parts of an audio file.
-#: UI/DialogService.cs:182
+#: UI/DialogService.cs:192
 msgid "WAV audio (*.wav)"
 msgstr ""
 
 #. Translators: Ogg Vorbis choice in the format list when saving selected parts of an audio file.
-#: UI/DialogService.cs:184
+#: UI/DialogService.cs:194
 msgid "Ogg Vorbis audio (*.ogg)"
 msgstr ""
 
 #. Translators: Opus choice in the format list when saving selected parts of an audio file.
-#: UI/DialogService.cs:186
+#: UI/DialogService.cs:196
 msgid "Opus audio (*.opus)"
 msgstr ""
 
@@ -3775,14 +3852,16 @@ msgstr ""
 #. Translators: Heading of the channel list column holding each channel's name.
 #. Translators: Label of the box holding what an IPTV source is called.
 #. Translators: Heading of the IPTV sources list column holding what each source is called.
+#. Translators: Column heading for a radio station's name.
 #. Translators: Label of the box holding what the user calls a recording source.
 #. Translators: Label of the box holding what a saved link is called.
 #. Translators: Heading of the favourites list column holding what each saved link is called.
 #: UI/Dialogs/BookmarkManagerDialog.cs:20
 #: UI/Dialogs/SaveSelectionsDialog.cs:43 UI/Equalizer/EditDialog.cs:87
 #: UI/Iptv/ChannelBrowserDialog.cs:79 UI/Iptv/IptvSourceEditDialog.cs:56
-#: UI/Iptv/IptvSourcesDialog.cs:29 UI/Recording/SourceDialog.cs:49
-#: UI/YouTube/FavoriteEditDialog.cs:26 UI/YouTube/FavoritesDialog.cs:29
+#: UI/Iptv/IptvSourcesDialog.cs:29 UI/Radio/BrowserDialog.cs:108
+#: UI/Recording/SourceDialog.cs:49 UI/YouTube/FavoriteEditDialog.cs:26
+#: UI/YouTube/FavoritesDialog.cs:29
 msgid "Name"
 msgstr ""
 
@@ -3817,13 +3896,17 @@ msgstr ""
 #. Translators: Button that closes a read-only information window.
 #. Translators: Button that closes a window when there is nothing to accept or cancel.
 #. Translators: The button that closes a window.
+#. Translators: Button closing the radio browser without choosing a station.
+#. Translators: Button closing the radio station details window.
+#. Translators: The button that closes a window.
 #. Translators: Closes the queue window. Active downloads continue in the background.
 #. Translators: The button that closes a window.
 #: UI/Dialogs/BookmarkManagerDialog.cs:43
 #: UI/Dialogs/ConversionReportDialog.cs:24 UI/Dialogs/CrashDialog.cs:48
 #: UI/Dialogs/MediaConverterDialog.cs:219 UI/Dialogs/TextInfoDialog.cs:19
 #: UI/Equalizer/PresetsDialog.cs:56 UI/Iptv/ChannelBrowserDialog.cs:121
-#: UI/Iptv/IptvSourcesDialog.cs:62 UI/Recording/RecordingDialog.cs:171
+#: UI/Iptv/IptvSourcesDialog.cs:62 UI/Radio/BrowserDialog.cs:134
+#: UI/Radio/DetailsDialog.cs:55 UI/Recording/RecordingDialog.cs:171
 #: UI/YouTube/DescriptionDialog.cs:53 UI/YouTube/DownloadQueueDialog.cs:68
 #: UI/YouTube/FavoritesDialog.cs:62 UI/YouTube/ResultsDialog.cs:110
 #: UI/YouTube/SearchDialog.cs:85
@@ -4170,9 +4253,13 @@ msgstr ""
 
 #. Translators: Label of the box that filters the loaded files by part of their name as the user types.
 #. Translators: Label of the box that filters channels by part of their name as the user types.
+#. Translators: Label of the radio browser box for searching the station list.
+#. Translators: Button searching the current radio directory or station list.
+#. Translators: Radio browser button searching the current directory or station list.
 #. Translators: Button that runs the YouTube search with the text and filter chosen.
 #: UI/Dialogs/OpenedFilesDialog.cs:30 UI/Iptv/ChannelBrowserDialog.cs:74
-#: UI/YouTube/SearchDialog.cs:80
+#: UI/Radio/BrowserDialog.cs:80 UI/Radio/BrowserDialog.cs:84
+#: UI/Radio/Interactions.cs:78 UI/YouTube/SearchDialog.cs:80
 msgid "Search"
 msgstr ""
 
@@ -4502,7 +4589,8 @@ msgid "Category"
 msgstr ""
 
 #. Translators: Channel-browser filter choice: show channels from every category.
-#: UI/Iptv/ChannelBrowserDialog.cs:67
+#. Translators: Scope option in Radio filters that affects every category, including favorites and history.
+#: UI/Iptv/ChannelBrowserDialog.cs:67 UI/Radio/FiltersDialog.cs:38
 msgid "All categories"
 msgstr ""
 
@@ -5173,28 +5261,33 @@ msgstr ""
 msgid "Media converter..."
 msgstr ""
 
+#. Translators: Tools menu item opening the internet radio station browser.
+#: UI/Menus/ToolsMenu.cs:17
+msgid "Radio browser…"
+msgstr ""
+
 #. Translators: IPTV menu item that opens the window where IPTV sources are added and edited.
-#: UI/Menus/ToolsMenu.cs:23
+#: UI/Menus/ToolsMenu.cs:25
 msgid "Manage IPTV sources..."
 msgstr ""
 
 #. Translators: IPTV menu item that opens the list of channels the chosen IPTV source holds.
-#: UI/Menus/ToolsMenu.cs:25
+#: UI/Menus/ToolsMenu.cs:27
 msgid "Browse channels..."
 msgstr ""
 
 #. Translators: Sleep-timer menu item that opens the window where a timer is set.
-#: UI/Menus/ToolsMenu.cs:33
+#: UI/Menus/ToolsMenu.cs:35
 msgid "Set timer..."
 msgstr ""
 
 #. Translators: Sleep-timer menu item that turns off a timer that is counting down.
-#: UI/Menus/ToolsMenu.cs:35
+#: UI/Menus/ToolsMenu.cs:37
 msgid "Cancel timer"
 msgstr ""
 
 #. Translators: Sleep-timer menu item that speaks how long is left before the timer fires.
-#: UI/Menus/ToolsMenu.cs:37
+#: UI/Menus/ToolsMenu.cs:39
 msgid "Time remaining"
 msgstr ""
 
@@ -5431,7 +5524,10 @@ msgid "JSON files (*.json)|*.json|All files (*.*)|*.*"
 msgstr ""
 
 #. Translators: Label of the list for choosing the language the player speaks and shows its windows in.
-#: UI/Preferences/GeneralPreferences.cs:31
+#. Translators: Column heading for the languages spoken by a radio station.
+#. Translators: Label for the language spoken by radio stations in Radio filters.
+#: UI/Preferences/GeneralPreferences.cs:31 UI/Radio/BrowserDialog.cs:112
+#: UI/Radio/FiltersDialog.cs:50
 msgid "Language"
 msgstr ""
 
@@ -6129,6 +6225,410 @@ msgstr ""
 msgid "Enter a numeric value, then press OK to apply it."
 msgstr ""
 
+#. Translators: Spoken after saving the selected radio station to favorites.
+#. Translators: Spoken once a video has been added to the favourites from the results list.
+#. Translators: The short wording spoken once a video has been added to the favourites.
+#: UI/Radio/Actions.cs:48 YouTube/Playback/Browsing.cs:194
+#: YouTube/Playback/Browsing.cs:196
+msgid "Added to favorites."
+msgstr ""
+
+#. Translators: Spoken after removing the selected radio station from favorites.
+#. Translators: Spoken once a video has been taken back out of the favourites from the results list.
+#. Translators: The short wording spoken once a video has been removed from the favourites.
+#: UI/Radio/Actions.cs:50 YouTube/Playback/Browsing.cs:177
+#: YouTube/Playback/Browsing.cs:179
+msgid "Removed from favorites."
+msgstr ""
+
+#. Translators: Radio station context-menu action removing a saved station.
+#: UI/Radio/Actions.cs:88
+msgid "Remove from favorites"
+msgstr ""
+
+#. Translators: Radio station context-menu action saving a station.
+#. Translators: Radio station context-menu action saving the selected station locally.
+#: UI/Radio/Actions.cs:90 UI/Radio/BrowserDialog.cs:154
+msgid "Add to favorites"
+msgstr ""
+
+#. Translators: Spoken after a radio station name or stream URL was copied to the clipboard.
+#: UI/Radio/Actions.cs:119
+msgid "Copied to clipboard."
+msgstr ""
+
+#. Translators: Spoken confirmation after Radio Browser accepted a vote for the selected station.
+#: UI/Radio/Actions.cs:132
+msgid "Vote submitted."
+msgstr ""
+
+#. Translators: Confirmation before deleting this user's local radio playback history.
+#: UI/Radio/Actions.cs:140
+msgid "Clear all recently played radio stations?"
+msgstr ""
+
+#. Translators: Title of the radio listening-history deletion confirmation.
+#: UI/Radio/Actions.cs:142
+msgid "Clear history"
+msgstr ""
+
+#. Translators: Spoken confirmation after deleting the local radio listening history.
+#: UI/Radio/Actions.cs:148
+msgid "Radio history cleared."
+msgstr ""
+
+#. Translators: Title of the window for browsing internet radio stations.
+#: UI/Radio/BrowserDialog.cs:74
+msgid "Radio browser"
+msgstr ""
+
+#. Translators: Button opening radio filters for this category or every category.
+#: UI/Radio/BrowserDialog.cs:87
+msgid "Filters…"
+msgstr ""
+
+#. Translators: Label above the radio browser's navigation tree.
+#. Translators: Accessible name of the radio browser's navigation tree.
+#: UI/Radio/BrowserDialog.cs:93 UI/Radio/BrowserDialog.cs:97
+msgid "Categories"
+msgstr ""
+
+#. Translators: Label above the virtual radio station list.
+#. Translators: Accessible name of the virtual radio station list.
+#: UI/Radio/BrowserDialog.cs:102 UI/Radio/BrowserDialog.cs:106
+msgid "Stations"
+msgstr ""
+
+#. Translators: Column heading for a radio station's country.
+#: UI/Radio/BrowserDialog.cs:110
+msgid "Country"
+msgstr ""
+
+#. Translators: Column heading for a radio stream's audio codec.
+#. Translators: Label for an audio codec, such as MP3 or AAC, in Radio filters.
+#: UI/Radio/BrowserDialog.cs:114 UI/Radio/FiltersDialog.cs:54
+msgid "Codec"
+msgstr ""
+
+#. Translators: Column heading for a radio stream's bitrate in kilobits per second.
+#. Translators: Label of the list that chooses how much room a second of compressed audio may take.
+#: UI/Radio/BrowserDialog.cs:116 UI/Recording/RecordingDialog.cs:142
+msgid "Bitrate"
+msgstr ""
+
+#. Translators: Button opening details of the selected radio station.
+#. Translators: Radio station context-menu action showing station metadata.
+#. Translators: Title of the read-only details window for a radio station.
+#: UI/Radio/BrowserDialog.cs:122 UI/Radio/BrowserDialog.cs:151
+#: UI/Radio/DetailsDialog.cs:13
+msgid "Station details"
+msgstr ""
+
+#. Translators: Button reloading the current radio directory or station list.
+#. Translators: Radio category context-menu action reloading its contents.
+#: UI/Radio/BrowserDialog.cs:132 UI/Radio/BrowserDialog.cs:169
+msgid "Refresh"
+msgstr ""
+
+#. Translators: Radio station context-menu action opening the broadcaster's website.
+#: UI/Radio/BrowserDialog.cs:157
+msgid "Open website"
+msgstr ""
+
+#. Translators: Radio station context-menu action copying the stream address.
+#: UI/Radio/BrowserDialog.cs:160
+msgid "Copy stream URL"
+msgstr ""
+
+#. Translators: Radio station context-menu action copying the station's name.
+#: UI/Radio/BrowserDialog.cs:163
+msgid "Copy station name"
+msgstr ""
+
+#. Translators: Radio station context-menu action sending one public vote to Radio Browser.
+#: UI/Radio/BrowserDialog.cs:166
+msgid "Vote for station"
+msgstr ""
+
+#. Translators: Radio category context-menu action deleting this user's listening history.
+#: UI/Radio/BrowserDialog.cs:172
+msgid "Clear history…"
+msgstr ""
+
+#. Translators: Radio station details. {name} is the station's name.
+#: UI/Radio/DetailsDialog.cs:17
+msgid "Name: {name}"
+msgstr ""
+
+#. Translators: Radio station details. {country} is the country supplied by Radio Browser.
+#: UI/Radio/DetailsDialog.cs:19
+msgid "Country: {country}"
+msgstr ""
+
+#. Translators: Radio station details. {region} is the state or province supplied by Radio Browser.
+#: UI/Radio/DetailsDialog.cs:21
+msgid "Region: {region}"
+msgstr ""
+
+#. Translators: Radio station details. {languages} lists languages spoken by the station.
+#: UI/Radio/DetailsDialog.cs:23
+msgid "Languages: {languages}"
+msgstr ""
+
+#. Translators: Radio station details. {tags} contains the station's descriptive tags.
+#: UI/Radio/DetailsDialog.cs:25
+msgid "Tags: {tags}"
+msgstr ""
+
+#. Translators: Radio station details. {codec} is an audio codec such as MP3 or AAC.
+#: UI/Radio/DetailsDialog.cs:27
+msgid "Codec: {codec}"
+msgstr ""
+
+#. Translators: Radio station details. {bitrate} is the bitrate in kilobits per second.
+#: UI/Radio/DetailsDialog.cs:29
+msgid "Bitrate: {bitrate} kbps"
+msgstr ""
+
+#. Translators: Radio station details. {url} is the stream address.
+#: UI/Radio/DetailsDialog.cs:31
+msgid "Stream URL: {url}"
+msgstr ""
+
+#. Translators: Radio station details. {url} is the station's website.
+#: UI/Radio/DetailsDialog.cs:33
+msgid "Website: {url}"
+msgstr ""
+
+#. Translators: Radio station details. {count} is the station's public vote count.
+#: UI/Radio/DetailsDialog.cs:35
+msgid "Votes: {count}"
+msgstr ""
+
+#. Translators: Radio station details. {count} is the directory's playback click count.
+#: UI/Radio/DetailsDialog.cs:37
+msgid "Playback clicks: {count}"
+msgstr ""
+
+#. Translators: Radio station details. {value} is the latest check result.
+#: UI/Radio/DetailsDialog.cs:39
+msgid "Last check: {value}"
+msgstr ""
+
+#. Translators: Radio Browser's latest check found the station available.
+#: UI/Radio/DetailsDialog.cs:41
+msgid "Working"
+msgstr ""
+
+#. Translators: Radio station details. {time} is the timestamp supplied by Radio Browser for the latest check.
+#: UI/Radio/DetailsDialog.cs:45
+msgid "Last checked: {time}"
+msgstr ""
+
+#. Translators: Radio station details. {time} is the timestamp supplied by Radio Browser for the latest metadata change.
+#: UI/Radio/DetailsDialog.cs:47
+msgid "Last updated: {time}"
+msgstr ""
+
+#. Translators: Radio station details. {id} is the station's unique Radio Browser identifier.
+#: UI/Radio/DetailsDialog.cs:49
+msgid "Station UUID: {id}"
+msgstr ""
+
+#. Translators: Title of the dialog for filtering radio station lists.
+#: UI/Radio/FiltersDialog.cs:30
+msgid "Radio filters"
+msgstr ""
+
+#. Translators: Label for choosing whether radio filters apply to this category or every category.
+#: UI/Radio/FiltersDialog.cs:33
+msgid "Apply to"
+msgstr ""
+
+#. Translators: Scope option in Radio filters; these restrictions are combined with the global filters.
+#: UI/Radio/FiltersDialog.cs:36
+msgid "This category"
+msgstr ""
+
+#. Translators: Explanation in Radio filters. Category restrictions narrow the global restrictions.
+#: UI/Radio/FiltersDialog.cs:42
+msgid ""
+"Category filters are combined with the global filters. Leave a field empty "
+"to add no restriction."
+msgstr ""
+
+#. Translators: Label for a two-letter country code, such as EG, in Radio filters.
+#: UI/Radio/FiltersDialog.cs:46
+msgid "Country code"
+msgstr ""
+
+#. Translators: Label for a state or province name in Radio filters.
+#: UI/Radio/FiltersDialog.cs:48
+msgid "Region"
+msgstr ""
+
+#. Translators: Label for required radio station tags in Radio filters. Every entered tag must match.
+#: UI/Radio/FiltersDialog.cs:52
+msgid "Tags, separated by commas"
+msgstr ""
+
+#. Translators: Label for the lowest acceptable radio stream bitrate. Zero adds no lower limit.
+#: UI/Radio/FiltersDialog.cs:56
+msgid "Minimum bitrate (kbps; 0 for no limit)"
+msgstr ""
+
+#. Translators: Label for the highest acceptable radio stream bitrate. Zero adds no upper limit.
+#: UI/Radio/FiltersDialog.cs:60
+msgid "Maximum bitrate (kbps; 0 for no limit)"
+msgstr ""
+
+#. Translators: Checkbox in Radio filters excluding stations last reported as unavailable by Radio Browser.
+#: UI/Radio/FiltersDialog.cs:64
+msgid "Only working stations"
+msgstr ""
+
+#. Translators: Checkbox in Radio filters requiring an HTTPS stream address.
+#: UI/Radio/FiltersDialog.cs:67
+msgid "HTTPS only"
+msgstr ""
+
+#. Translators: Button that applies the selected radio filters and closes the filter dialog.
+#: UI/Radio/FiltersDialog.cs:71
+msgid "Apply"
+msgstr ""
+
+#. Translators: Button restoring default values in the radio filter dialog, without applying them yet.
+#: UI/Radio/FiltersDialog.cs:75
+msgid "Reset"
+msgstr ""
+
+#. Translators: Validation error in Radio filters, where country codes have two letters and bitrate limits define a range.
+#: UI/Radio/FiltersDialog.cs:137
+msgid ""
+"Enter a two-letter country code and a minimum bitrate no greater than the "
+"maximum."
+msgstr ""
+
+#. Translators: Title of a validation error in Radio filters.
+#: UI/Radio/FiltersDialog.cs:139
+msgid "Invalid filters"
+msgstr ""
+
+#. Translators: Radio browser button clearing the current directory or station-name search.
+#: UI/Radio/Interactions.cs:76
+msgid "Clear search"
+msgstr ""
+
+#. Translators: Spoken only when reaching the end of the radio list requests another batch of stations.
+#: UI/Radio/Loading.cs:64
+msgid "Loading more stations…"
+msgstr ""
+
+#. Translators: Radio tree category containing every station in the public directory.
+#: UI/Radio/Navigation.cs:19
+msgid "Global stations"
+msgstr ""
+
+#. Translators: Radio tree category containing stations saved by this user.
+#: UI/Radio/Navigation.cs:21
+msgid "Favorites"
+msgstr ""
+
+#. Translators: Radio tree category containing this user's recently played stations.
+#: UI/Radio/Navigation.cs:23
+msgid "Recently played"
+msgstr ""
+
+#. Translators: Radio tree branch containing public station rankings.
+#: UI/Radio/Navigation.cs:25
+msgid "Discover"
+msgstr ""
+
+#. Translators: Radio discovery category ordered by public playback counts.
+#. Translators: Country-specific radio tree item ranking stations by public playback counts.
+#: UI/Radio/Navigation.cs:27 UI/Radio/Navigation.cs:129
+msgid "Most played"
+msgstr ""
+
+#. Translators: Radio discovery category ordered by growth in playback counts.
+#. Translators: Country-specific radio tree item ranking stations by growth in playback counts.
+#: UI/Radio/Navigation.cs:29 UI/Radio/Navigation.cs:131
+msgid "Trending"
+msgstr ""
+
+#. Translators: Radio discovery category ordered by public votes.
+#. Translators: Country-specific radio tree item ranking stations by public votes.
+#: UI/Radio/Navigation.cs:31 UI/Radio/Navigation.cs:133
+msgid "Most voted"
+msgstr ""
+
+#. Translators: Radio discovery category containing stations recently played worldwide.
+#: UI/Radio/Navigation.cs:33
+msgid "Recently clicked"
+msgstr ""
+
+#. Translators: Radio discovery category ordered by recent changes to station metadata.
+#: UI/Radio/Navigation.cs:35
+msgid "Recently updated"
+msgstr ""
+
+#. Translators: Expandable radio tree category listing countries and their regions.
+#: UI/Radio/Navigation.cs:37
+msgid "Countries"
+msgstr ""
+
+#. Translators: Expandable radio tree category listing languages.
+#: UI/Radio/Navigation.cs:39
+msgid "Languages"
+msgstr ""
+
+#. Translators: Expandable radio tree category listing genres and tags.
+#: UI/Radio/Navigation.cs:41
+msgid "Genres and tags"
+msgstr ""
+
+#. Translators: Expandable radio tree category listing audio codecs.
+#: UI/Radio/Navigation.cs:43
+msgid "Formats"
+msgstr ""
+
+#. Translators: Error shown if the radio navigation tree cannot create a requested item.
+#: UI/Radio/Navigation.cs:50
+msgid "The radio tree could not insert an item."
+msgstr ""
+
+#. Translators: Country-specific radio tree item listing all working stations.
+#: UI/Radio/Navigation.cs:125
+msgid "All stations"
+msgstr ""
+
+#. Translators: Country-specific radio tree branch containing its states and provinces.
+#: UI/Radio/Navigation.cs:135
+msgid "Regions"
+msgstr ""
+
+#. Translators: Radio tree item with its station count. {name} is a country, region, language, genre, codec or All stations label; {count} is its number of working stations.
+#: UI/Radio/Navigation.cs:141
+msgid "{name}, {count} station"
+msgid_plural "{name}, {count} stations"
+msgstr[0] ""
+msgstr[1] ""
+
+#. Translators: Name of a saved station in the radio list. {name} is the station's name.
+#: UI/Radio/Results.cs:61
+msgid "{name} (favorite)"
+msgstr ""
+
+#. Translators: Radio stream bitrate in a station-list cell. {bitrate} is in kilobits per second.
+#: UI/Radio/Results.cs:63
+msgid "{bitrate} kbps"
+msgstr ""
+
+#. Translators: Error shown if Windows cannot schedule the radio browser's background-result updates.
+#: UI/Radio/Updates.cs:52
+msgid "Could not schedule radio browser updates."
+msgstr ""
+
 #. Translators: Button that adds a recording source. It opens a menu of the kinds that can be added.
 #. Translators: Confirms adding the entered links to the download queue.
 #: UI/Recording/RecordingDialog.cs:91 UI/YouTube/DownloadQueueDialog.cs:376
@@ -6143,11 +6643,6 @@ msgstr ""
 #. Translators: Title of the group of the recording window holding how a recording is written.
 #: UI/Recording/RecordingDialog.cs:127
 msgid "Recording settings"
-msgstr ""
-
-#. Translators: Label of the list that chooses how much room a second of compressed audio may take.
-#: UI/Recording/RecordingDialog.cs:142
-msgid "Bitrate"
 msgstr ""
 
 #. Translators: Button that begins recording, and ends it when pressed a second time.
@@ -7262,21 +7757,9 @@ msgstr ""
 msgid "Could not read this YouTube channel."
 msgstr ""
 
-#. Translators: Spoken once a video has been taken back out of the favourites from the results list.
-#. Translators: The short wording spoken once a video has been removed from the favourites.
-#: YouTube/Playback/Browsing.cs:177 YouTube/Playback/Browsing.cs:179
-msgid "Removed from favorites."
-msgstr ""
-
 #. Translators: Spoken when a video could not be removed from the favourites.
 #: YouTube/Playback/Browsing.cs:185
 msgid "Could not remove from favorites."
-msgstr ""
-
-#. Translators: Spoken once a video has been added to the favourites from the results list.
-#. Translators: The short wording spoken once a video has been added to the favourites.
-#: YouTube/Playback/Browsing.cs:194 YouTube/Playback/Browsing.cs:196
-msgid "Added to favorites."
 msgstr ""
 
 #. Translators: Spoken when a video could not be added to the favourites.

@@ -211,6 +211,11 @@ internal static class Text
     internal static string TrFormat(string text, params object?[] values)
         => Substitute(Tr(text), text, values);
 
+    /// <summary>Fills a single named value in an already translated template. Capture the template
+    /// with Tr on the UI thread; substitution itself does not access wxWidgets and is safe on workers.</summary>
+    internal static string FormatTranslatedValue(string template, object? value)
+        => Substitute(template, template, [value]);
+
     /// <summary><see cref="TrPlural"/> and <see cref="TrFormat"/> together, for a counted message that also
     /// shows the count: <c>TrPluralFormat("{count} file marked", "{count} files marked", count, count)</c>.
     /// </summary>

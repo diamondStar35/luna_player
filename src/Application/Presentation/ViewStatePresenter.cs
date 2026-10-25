@@ -12,12 +12,14 @@ internal sealed class ViewStatePresenter
     private readonly IMainView _view;
     private readonly Player _player;
     private readonly ISpeechOutput _speech;
+    private readonly PlaybackSessions _sessions;
 
-    internal ViewStatePresenter(IMainView view, Player player, ISpeechOutput speech)
+    internal ViewStatePresenter(IMainView view, Player player, ISpeechOutput speech, PlaybackSessions sessions)
     {
         _view = view;
         _player = player;
         _speech = speech;
+        _sessions = sessions;
     }
 
     /// <summary>The starting state, before anything is open.</summary>
@@ -37,13 +39,13 @@ internal sealed class ViewStatePresenter
         _view.SetSelectionState(new SelectionMenuState(false, false, false, false, false, false, false, false));
         // Both belong to a playlist rather than to the player, so they change when a list of videos is put
         // in front of the one the user opened and change back when it goes.
-        _view.SetShuffleChecked(_player.IsShuffleEnabled);
+        _view.SetShuffleChecked(_sessions.IsShuffleEnabled);
         _view.SetRepeatFileChecked(_player.IsRepeatFileEnabled);
     }
 
     internal void Sync()
     {
-        var loaded = _player.CurrentPath is not null;
+        var loaded = _player.CurrentPath is not null || _sessions.Radio.IsActive;
         var local = _player.CurrentPath is string path && File.Exists(path);
         _view.SetMediaLoaded(loaded);
         _view.SetPlaying(_player.IsPlaying);
@@ -75,5 +77,7 @@ internal sealed class ViewStatePresenter
                 Tr("Full-screen off"));
         }
         _view.SetSilenceRemovalChecked(_player.IsSilenceRemovalEnabled);
+        _view.SetShuffleChecked(_sessions.IsShuffleEnabled);
+        _view.SetRepeatFileChecked(_player.IsRepeatFileEnabled);
     }
 }

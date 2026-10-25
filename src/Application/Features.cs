@@ -31,6 +31,7 @@ internal sealed class Features : IDisposable
     private Updates? _appUpdates;
     private LunaPlayer.Recording.RecordingEngine? _recorder;
     private LunaPlayer.YouTube.Playback.Sessions? _sessions;
+    private LunaPlayer.Radio.Playback? _radio;
     private LunaPlayer.YouTube.Download.DownloadQueue? _downloadQueue;
     private Tools _tools = null!;
     private Files _fileActions = null!;
@@ -84,10 +85,14 @@ internal sealed class Features : IDisposable
         var selection = features.Selection;
         var selections = features.Selections;
         var router = new ActionRouter();
+        var radio = new LunaPlayer.Radio.Playback(_view, player, _settings, _dispatcher, speech, clipboard,
+            () => _sessions?.Clear());
+        _radio = radio;
+        router.Register(ActionId.OpenRadioBrowser, radio.Open);
         _ = new Help(router, _view);
         var appUpdates = new Updates(router, _view, _settings, _dispatcher, speech);
         _appUpdates = appUpdates;
-        var fileActions = new Files(router, _view, player, _settings, speech, clipboard, _dispatcher, window.Recents);
+        var fileActions = new Files(router, _view, player, _settings, speech, clipboard, _dispatcher, window.Recents, radio);
         _fileActions = fileActions;
         _ = new Commands.Playback.Playback(
             router, _view, player, _settings, _settingsStore, speech, selection, selections, _dispatcher);
@@ -133,11 +138,12 @@ internal sealed class Features : IDisposable
             favorites,
             components);
         _sessions = sessions;
+        var playbackSessions = new PlaybackSessions(sessions, radio, player);
         youTubeActions = new Commands.YouTube.YouTube(
             router, _view, player, _settings, speech, clipboard, youTube, sessions, components, _dispatcher,
             downloadQueue);
         _ = new Commands.YouTube.Favorites(router, _view, player, speech, favorites, sessions);
-        _ = new Commands.YouTube.Playlist(router, _view, player, _settings, speech, sessions);
+        _ = new Commands.YouTube.Playlist(router, _view, player, _settings, speech, playbackSessions);
         _ = new Commands.App.Preferences(router, _view, _settings, _settingsStore,
             new BackupService(_settingsStore, bookmarks), new FileAssociations(), player, shortcuts,
             globalShortcuts, speech, youTube, components);
@@ -163,7 +169,7 @@ internal sealed class Features : IDisposable
             fileActions,
             selection,
             selections,
-            sessions,
+            playbackSessions,
             sleepTimer,
             speech,
             mediaControls);
@@ -223,6 +229,7 @@ internal sealed class Features : IDisposable
             return;
         _disposed = true;
         _controller?.Dispose();
+        _radio?.Dispose();
         // Unsubscribe subtitle handlers before the player is released.
         _subtitles?.Dispose();
         // A running recording still has an encoder to flush before its engine goes away.

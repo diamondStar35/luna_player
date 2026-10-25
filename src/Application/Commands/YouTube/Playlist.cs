@@ -16,7 +16,7 @@ internal sealed class Playlist
     private readonly Settings _settings;
     private readonly ISpeechOutput _speech;
     private readonly MediaGuard _guard;
-    private readonly Sessions _sessions;
+    private readonly PlaybackSessions _sessions;
 
     internal Playlist(
         ActionRouter router,
@@ -24,7 +24,7 @@ internal sealed class Playlist
         Player player,
         Settings settings,
         ISpeechOutput speech,
-        Sessions sessions)
+        PlaybackSessions sessions)
     {
         _view = view;
         _player = player;
@@ -79,12 +79,17 @@ internal sealed class Playlist
             return;
         SetSwitched(true, announce: true);
     }
-    private void MoveFirst() => SetSwitched(_player.First(), announce: true);
-    private void MoveLast() => SetSwitched(_player.Last(), announce: true);
+    private void MoveFirst() => SetSwitched(_sessions.Radio.IsActive
+        ? _sessions.Radio.GoToIndex(0) == NavigationOutcome.Advanced : _player.First(), announce: true);
+    private void MoveLast() => SetSwitched(_sessions.Radio.IsActive
+        ? _sessions.Radio.GoToIndex(_sessions.Radio.Count - 1) == NavigationOutcome.Advanced : _player.Last(), announce: true);
 
     private void GoToFile()
     {
-        if (_player.Count <= 1)
+        var radio = _sessions.Radio.IsActive;
+        var count = radio ? _sessions.Radio.Count : _player.Count;
+        var index = radio ? _sessions.Radio.CurrentIndex : _player.CurrentIndex;
+        if (count <= 1)
         {
             _speech.Speak(
                 // Translators: Spoken when the user asks to jump to another file but only one is loaded.
@@ -95,9 +100,9 @@ internal sealed class Playlist
         }
         var value = _view.Dialogs.PromptText(
             // Translators: Asks the user which file in the playlist to move to. {count} is how many files are loaded.
-            TrFormat("Enter file number (1-{count})", _player.Count),
+            TrFormat("Enter file number (1-{count})", count),
             // Translators: Title of the window that asks which file in the playlist to move to.
-            Tr("Go To File"), (_player.CurrentIndex + 1).ToString());
+            Tr("Go To File"), (index + 1).ToString());
         if (value is null)
             return;
         if (!int.TryParse(value, out var number))
@@ -109,7 +114,7 @@ internal sealed class Playlist
                 Tr("Invalid number."));
             return;
         }
-        if (number < 1 || number > _player.Count)
+        if (number < 1 || number > count)
         {
             _speech.Speak(
                 // Translators: Spoken when the file number the user typed is higher or lower than the playlist holds.
@@ -118,14 +123,15 @@ internal sealed class Playlist
                 Tr("Out of range."));
             return;
         }
-        SetSwitched(_player.GoToIndex(number - 1), announce: true);
+        SetSwitched(radio ? _sessions.Radio.GoToIndex(number - 1) == NavigationOutcome.Advanced
+            : _player.GoToIndex(number - 1), announce: true);
     }
 
     private void ToggleShuffle()
     {
-        if (!_guard.RequireFile(out _))
+        if (!_sessions.Radio.IsActive && !_guard.RequireFile(out _))
             return;
-        var enabled = _player.ToggleShuffle();
+        var enabled = _sessions.ToggleShuffle();
         _view.SetShuffleChecked(enabled);
         if (enabled)
         {

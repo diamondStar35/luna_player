@@ -37,6 +37,11 @@ internal sealed partial class Files
 
     private void OpenedFiles()
     {
+        if (_radio.IsActive)
+        {
+            _radio.ShowOpenedFiles();
+            return;
+        }
         if (!_guard.RequireAnyFile())
             return;
         ShowOpenedFiles(_player.CurrentIndex);

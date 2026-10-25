@@ -31,6 +31,7 @@ internal sealed class DialogService : IDialogService, IDisposable
     /// rather than rebuilt on every open. A channel's tabbed browser has a different structure and is built
     /// per open.</summary>
     private YouTube.ResultsDialog? _youTubeResults;
+    private Radio.BrowserDialog? _radioBrowser;
 
     internal DialogService(
         Frame frame, IApplicationDispatcher dispatcher,
@@ -43,6 +44,15 @@ internal sealed class DialogService : IDialogService, IDisposable
     }
 
     private Window DialogParent => Wx.GetActiveWindow() ?? _frame;
+
+    public LunaPlayer.Radio.StationView? ShowRadioBrowser(LunaPlayer.Radio.Browsing state,
+        LunaPlayer.Radio.Catalog catalog, LunaPlayer.Radio.Library library, Action<string> speak,
+        IClipboardService clipboard, bool returnToStation)
+    {
+        // Keep the controls and cached browsing locations while a radio session is playing.
+        _radioBrowser ??= new Radio.BrowserDialog(_frame, _dispatcher, state, catalog, library, speak, clipboard);
+        return _radioBrowser.Show(returnToStation);
+    }
 
     public FileSelection? ChooseFile(string initialDirectory)
     {
@@ -280,6 +290,7 @@ internal sealed class DialogService : IDialogService, IDisposable
     /// is a child of it.</summary>
     public void Dispose()
     {
+        _radioBrowser?.Dispose();
         _youTubeResults?.Dispose();
         CloseDownloadProgressWindows();
     }

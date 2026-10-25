@@ -20,6 +20,7 @@ internal sealed partial class Files
     private readonly IClipboardService _clipboard;
     private readonly IApplicationDispatcher _dispatcher;
     private readonly MediaGuard _guard;
+    private readonly Radio.Playback _radio;
     private int _fileInfoPressCount;
     private long _fileInfoLastPress;
     private readonly PlaylistInfoService _playlistInfo = new();
@@ -33,7 +34,8 @@ internal sealed partial class Files
         ISpeechOutput speech,
         IClipboardService clipboard,
         IApplicationDispatcher dispatcher,
-        RecentsStore recents)
+        RecentsStore recents,
+        Radio.Playback radio)
     {
         _view = view;
         _player = player;
@@ -42,6 +44,7 @@ internal sealed partial class Files
         _clipboard = clipboard;
         _dispatcher = dispatcher;
         _recents = recents;
+        _radio = radio;
         _guard = new MediaGuard(player, speech);
         router.Register(ActionId.OpenFile, OpenFileFromDialog);
         router.Register(ActionId.OpenLink, OpenLink);
@@ -215,6 +218,13 @@ internal sealed partial class Files
 
     private void CloseFile()
     {
+        if (_radio.IsActive)
+        {
+            _radio.Stop(restore: true);
+            // Translators: Spoken after closing a radio session and restoring the original playlist paused.
+            _speech.SpeakText(Tr("File closed."));
+            return;
+        }
         if (_player.CurrentPath is null)
             _guard.ReportNoFile();
         else if (!_player.CloseCurrent())
@@ -234,9 +244,11 @@ internal sealed partial class Files
 
     private void CloseAllFiles()
     {
-        if (_player.Count == 0)
+        var radio = _radio.IsActive;
+        if (radio) _radio.Stop(restore: false);
+        if (_player.Count == 0 && !radio)
             _guard.ReportNoFile();
-        else if (!_player.CloseAll())
+        else if (!_player.CloseAll() && !radio)
             _speech.Speak(
                 // Translators: Spoken when the loaded files could not be taken out of the playlist.
                 Tr("Could not close files."),
