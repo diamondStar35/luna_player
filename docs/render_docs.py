@@ -62,7 +62,7 @@ STYLE = """
     pre { border: 1px solid var(--border); border-radius: 8px; padding: 12px; overflow: auto; }
     pre code { border: 0; padding: 0; }
     table { border-collapse: collapse; width: 100%; }
-    th, td { border: 1px solid var(--border); padding: 8px 10px; text-align: left; }
+    th, td { border: 1px solid var(--border); padding: 8px 10px; text-align: start; }
 """
 
 
@@ -80,8 +80,9 @@ def render(source: Path) -> None:
     )
     language = source.parent.name
     output = source.with_suffix(".html")
+    dir_attr = ' dir="rtl"' if language.startswith("ar") else ''
     page = f"""<!doctype html>
-<html lang="{html.escape(language, quote=True)}">
+<html lang="{html.escape(language, quote=True)}"{dir_attr}>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
