@@ -36,6 +36,7 @@ internal enum ActionId
     PitchUp, PitchDown, ResetPitch, AnnouncePitch,
     AnnounceTitle,
     OpenMediaConverter,
+    OpenRadioBrowser,
     OpenIptvSources, OpenIptvChannels,
     OpenSleepTimer, CancelSleepTimer, AnnounceSleepTimerRemaining,
     OpenSpotifyPreview, OpenSpotifyCredentials,

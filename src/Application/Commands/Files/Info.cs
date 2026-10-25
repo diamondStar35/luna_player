@@ -42,6 +42,11 @@ internal sealed partial class Files
             ShowSpotifyTracks(_spotify.CurrentIndex);
             return;
         }
+        if (_radio.IsActive)
+        {
+            _radio.ShowOpenedFiles();
+            return;
+        }
         if (!_guard.RequireAnyFile())
             return;
         ShowOpenedFiles(_player.CurrentIndex);

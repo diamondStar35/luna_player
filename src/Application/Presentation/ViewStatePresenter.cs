@@ -13,15 +13,16 @@ internal sealed class ViewStatePresenter
     private readonly Player _player;
     private readonly ISpeechOutput _speech;
     private readonly LunaPlayer.Spotify.PlaybackHost _spotify;
-    private bool _wasSpotifyActive;
+    private readonly PlaybackSessions _sessions;
 
-    internal ViewStatePresenter(IMainView view, Player player, ISpeechOutput speech,
+    internal ViewStatePresenter(IMainView view, Player player, ISpeechOutput speech, PlaybackSessions sessions,
         LunaPlayer.Spotify.PlaybackHost spotify)
     {
         _view = view;
         _player = player;
         _speech = speech;
         _spotify = spotify;
+        _sessions = sessions;
     }
 
     /// <summary>The starting state, before anything is open.</summary>
@@ -41,13 +42,13 @@ internal sealed class ViewStatePresenter
         _view.SetSelectionState(new SelectionMenuState(false, false, false, false, false, false, false, false));
         // Both belong to a playlist rather than to the player, so they change when a list of videos is put
         // in front of the one the user opened and change back when it goes.
-        _view.SetShuffleChecked(_player.IsShuffleEnabled);
+        _view.SetShuffleChecked(_sessions.IsShuffleEnabled);
         _view.SetRepeatFileChecked(_player.IsRepeatFileEnabled);
     }
 
     internal void Sync()
     {
-        var loaded = _player.CurrentPath is not null || _spotify.IsActive;
+        var loaded = _player.CurrentPath is not null || _sessions.Radio.IsActive || _spotify.IsActive;
         var local = !_spotify.IsActive && _player.CurrentPath is string path && File.Exists(path);
         _view.SetMediaLoaded(loaded);
         _view.SetPlaying(_spotify.IsActive ? _spotify.IsPlaying : _player.IsPlaying);
@@ -79,13 +80,7 @@ internal sealed class ViewStatePresenter
                 Tr("Full-screen off"));
         }
         _view.SetSilenceRemovalChecked(_player.IsSilenceRemovalEnabled);
-        if (_spotify.IsActive || _wasSpotifyActive)
-        {
-            // Only Spotify and its return to the interrupted source need extra updates.
-            // Ordinary local and YouTube state changes retain their existing menu behavior.
-            _view.SetShuffleChecked(_spotify.IsActive ? _spotify.IsShuffleEnabled : _player.IsShuffleEnabled);
-            _view.SetRepeatFileChecked(_spotify.IsActive ? _spotify.IsRepeatCurrentEnabled : _player.IsRepeatFileEnabled);
-        }
-        _wasSpotifyActive = _spotify.IsActive;
+        _view.SetShuffleChecked(_spotify.IsActive ? _spotify.IsShuffleEnabled : _sessions.IsShuffleEnabled);
+        _view.SetRepeatFileChecked(_spotify.IsActive ? _spotify.IsRepeatCurrentEnabled : _player.IsRepeatFileEnabled);
     }
 }

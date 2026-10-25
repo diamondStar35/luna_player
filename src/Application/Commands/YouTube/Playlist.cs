@@ -16,7 +16,7 @@ internal sealed class Playlist
     private readonly Settings _settings;
     private readonly ISpeechOutput _speech;
     private readonly MediaGuard _guard;
-    private readonly Sessions _sessions;
+    private readonly PlaybackSessions _sessions;
     private readonly LunaPlayer.Spotify.PlaybackHost _spotify;
 
     internal Playlist(
@@ -25,7 +25,7 @@ internal sealed class Playlist
         Player player,
         Settings settings,
         ISpeechOutput speech,
-        Sessions sessions,
+        PlaybackSessions sessions,
         LunaPlayer.Spotify.PlaybackHost spotify)
     {
         _view = view;
@@ -95,17 +95,21 @@ internal sealed class Playlist
     private void MoveFirst()
     {
         if (_spotify.IsActive) { _spotify.GoToIndex(0); return; }
-        SetSwitched(_player.First(), announce: true);
+        SetSwitched(_sessions.Radio.IsActive
+            ? _sessions.Radio.GoToIndex(0) == NavigationOutcome.Advanced : _player.First(), announce: true);
     }
     private void MoveLast()
     {
         if (_spotify.IsActive) { _spotify.GoToIndex(_spotify.CurrentQueue.Count - 1); return; }
-        SetSwitched(_player.Last(), announce: true);
+        SetSwitched(_sessions.Radio.IsActive
+            ? _sessions.Radio.GoToIndex(_sessions.Radio.Count - 1) == NavigationOutcome.Advanced : _player.Last(), announce: true);
     }
 
     private void GoToFile()
     {
-        var count = _spotify.IsActive ? _spotify.CurrentQueue.Count : _player.Count;
+        var radio = _sessions.Radio.IsActive;
+        var count = _spotify.IsActive ? _spotify.CurrentQueue.Count : radio ? _sessions.Radio.Count : _player.Count;
+        var index = _spotify.IsActive ? _spotify.CurrentIndex : radio ? _sessions.Radio.CurrentIndex : _player.CurrentIndex;
         if (count <= 1)
         {
             _speech.Speak(
@@ -119,7 +123,7 @@ internal sealed class Playlist
             // Translators: Asks the user which file in the playlist to move to. {count} is how many files are loaded.
             TrFormat("Enter file number (1-{count})", count),
             // Translators: Title of the window that asks which file in the playlist to move to.
-            Tr("Go To File"), ((_spotify.IsActive ? _spotify.CurrentIndex : _player.CurrentIndex) + 1).ToString());
+            Tr("Go To File"), (index + 1).ToString());
         if (value is null)
             return;
         if (!int.TryParse(value, out var number))
@@ -141,14 +145,15 @@ internal sealed class Playlist
             return;
         }
         if (_spotify.IsActive) _spotify.GoToIndex(number - 1);
-        else SetSwitched(_player.GoToIndex(number - 1), announce: true);
+        else SetSwitched(radio ? _sessions.Radio.GoToIndex(number - 1) == NavigationOutcome.Advanced
+            : _player.GoToIndex(number - 1), announce: true);
     }
 
     private void ToggleShuffle()
     {
-        if (!_spotify.IsActive && !_guard.RequireFile(out _))
+        if (!_spotify.IsActive && !_sessions.Radio.IsActive && !_guard.RequireFile(out _))
             return;
-        var enabled = _spotify.IsActive ? _spotify.ToggleShuffle() : _player.ToggleShuffle();
+        var enabled = _spotify.IsActive ? _spotify.ToggleShuffle() : _sessions.ToggleShuffle();
         _view.SetShuffleChecked(enabled);
         if (enabled)
         {

@@ -54,8 +54,9 @@ internal static class Program
 
         try
         {
-            using var app = new App();
+            using var app = new PlayerApp();
             using var host = new ApplicationHost(singleInstance, args);
+            app.Host = host;
             host.Show();
             return app.MainLoop();
         }
@@ -70,6 +71,21 @@ internal static class Program
         finally
         {
             singleInstance.Dispose();
+        }
+    }
+
+    // MainLoop tears down wx before it returns. Release UI resources from OnExit, while the toolkit
+    // still exists, including when a callback failure ends the loop without a normal frame close.
+    private sealed class PlayerApp : App
+    {
+        internal ApplicationHost? Host { get; set; }
+
+        protected override int OnExit()
+        {
+            try { Host?.Dispose(); }
+            catch (Exception failure) { CrashReport.Report(failure); }
+            finally { Host = null; }
+            return base.OnExit();
         }
     }
 }

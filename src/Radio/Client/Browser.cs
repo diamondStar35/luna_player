@@ -88,6 +88,16 @@ internal sealed partial class Browser : IDisposable
 
     private async Task<Content> SendAsync(string path, Dictionary<string, string>? parameters,
         CancellationToken token, bool mutation = false)
+        => await ExecuteAsync(path, parameters, token, mutation, async (response, endpoint, cancellation) =>
+        {
+            var body = await response.Content.ReadAsStringAsync(cancellation).ConfigureAwait(false);
+            var content = new Content(body, response.Content.Headers.ContentType?.ToString(), endpoint);
+            if (mutation) EnsureActionSuccess(content, path);
+            return content;
+        }).ConfigureAwait(false);
+
+    private async Task<T> ExecuteAsync<T>(string path, Dictionary<string, string>? parameters,
+        CancellationToken token, bool mutation, Func<HttpResponseMessage, Uri, CancellationToken, Task<T>> read)
     {
         ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
         using var lifetime = CancellationTokenSource.CreateLinkedTokenSource(token, _disposedToken);
@@ -118,9 +128,9 @@ internal sealed partial class Browser : IDisposable
             {
                 using var response = await _http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead,
                     timeout.Token).ConfigureAwait(false);
-                var body = await response.Content.ReadAsStringAsync(timeout.Token).ConfigureAwait(false);
                 if (!response.IsSuccessStatusCode)
                 {
+                    var body = await response.Content.ReadAsStringAsync(timeout.Token).ConfigureAwait(false);
                     var retryAfter = response.Headers.RetryAfter?.Delta;
                     if (!retryAfter.HasValue && response.Headers.RetryAfter?.Date is DateTimeOffset retryDate)
                         retryAfter = TimeSpan.FromSeconds(Math.Max(0, (retryDate - DateTimeOffset.UtcNow).TotalSeconds));
@@ -132,10 +142,8 @@ internal sealed partial class Browser : IDisposable
                         throw failure;
                     continue;
                 }
-                var result = new Content(body, response.Content.Headers.ContentType?.ToString(), endpoint);
+                var result = await read(response, endpoint, timeout.Token).ConfigureAwait(false);
                 cancellation.ThrowIfCancellationRequested();
-                if (mutation)
-                    EnsureActionSuccess(result, path);
                 Volatile.Write(ref _preferredServer, server);
                 return result;
             }
@@ -154,6 +162,8 @@ internal sealed partial class Browser : IDisposable
         // request remains bounded by MaximumAttempts and never repeats a mutation.
         if (discovery is not null)
             Interlocked.CompareExchange(ref _servers, null, discovery);
+        // A later bounded read retry must not promote the mirror that just failed to the front again.
+        if (!mutation) Interlocked.CompareExchange(ref _preferredServer, null, servers[0]);
         throw failure!;
     }
 

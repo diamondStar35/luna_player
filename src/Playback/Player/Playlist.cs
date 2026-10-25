@@ -242,7 +242,7 @@ internal sealed partial class Player
     private void PrepareNext()
     {
         _engine.SetRepeatFile(_playlist.IsRepeatFileEnabled);
-        if (!_loaded || (!_crossfade && _gaplessPlayback == GaplessPlaybackMode.Disabled) || _holdAutomaticAdvance
+        if (_radioSession || !_loaded || (!_crossfade && _gaplessPlayback == GaplessPlaybackMode.Disabled) || _holdAutomaticAdvance
             || _endBehavior != EndBehavior.Advance || _playlist.IsRepeatFileEnabled)
         {
             _engine.ClearQueuedNext();

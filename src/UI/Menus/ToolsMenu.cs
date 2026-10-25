@@ -13,6 +13,8 @@ internal static partial class MainMenuBuilder
         var toolsMenu = new Menu();
         // Translators: Tools menu item that opens the window for converting files to another audio format.
         toolsMenu.Append(commandIds[ActionId.OpenMediaConverter], Label(Tr("Media converter..."), ActionId.OpenMediaConverter, shortcuts));
+        // Translators: Tools menu item opening the internet radio station browser.
+        toolsMenu.Append(commandIds[ActionId.OpenRadioBrowser], Label(Tr("Radio browser…"), ActionId.OpenRadioBrowser, shortcuts));
         // Translators: Opens the Spotify home, search and library interface.
         toolsMenu.Append(commandIds[ActionId.OpenSpotifyPreview], Label(Tr("Spotify..."), ActionId.OpenSpotifyPreview, shortcuts));
         // Translators: Tools menu item that opens the YouTube download queue.

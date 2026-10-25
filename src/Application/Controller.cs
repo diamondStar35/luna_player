@@ -25,7 +25,7 @@ internal sealed class ApplicationController : IDisposable
     private readonly Files _fileActions;
     private readonly PlaybackSelection _selection;
     private readonly SelectionSlots _selections;
-    private readonly YouTube.Playback.Sessions _sessions;
+    private readonly PlaybackSessions _sessions;
     private readonly SleepTimer _sleepTimer;
     private readonly ISpeechOutput _speech;
     private readonly MediaTagsCache _tags = new();
@@ -48,7 +48,7 @@ internal sealed class ApplicationController : IDisposable
         Files fileActions,
         PlaybackSelection selection,
         SelectionSlots selections,
-        YouTube.Playback.Sessions sessions,
+        PlaybackSessions sessions,
         SleepTimer sleepTimer,
         ISpeechOutput speech,
         SystemMediaControls mediaControls,
@@ -69,7 +69,7 @@ internal sealed class ApplicationController : IDisposable
         _spotify = spotify;
         _selectionPath = player.CurrentPath;
         _selectionPlaylistIndex = player.CurrentIndex;
-        _viewState = new ViewStatePresenter(view, player, speech, spotify);
+        _viewState = new ViewStatePresenter(view, player, speech, sessions, spotify);
         _title = new WindowTitlePresenter(view, player, settings, _tags, spotify);
         _overlay = new MediaOverlayPresenter(
             player,
@@ -125,6 +125,7 @@ internal sealed class ApplicationController : IDisposable
         var spotifyPosition = _spotify.ResumePosition;
         // Stop before touching the filesystem: saving a position or checking a path on slow storage can
         // stall, but neither operation needs playback to remain active once its values have been captured.
+        var radioTask = _sessions.Radio.ShutdownAsync();
         _player.Stop();
         if (!_spotify.IsActive) _player.SavePosition(path, elapsed);
         SessionState.Remember(_settings, path, elapsed, spotifyTrack, spotifyPosition);
@@ -134,8 +135,8 @@ internal sealed class ApplicationController : IDisposable
         _spotify.Stop(restoreSession: false);
         var saveTask = _settingsStore.SaveSessionAsync(_settings);
         var playerTask = Task.Run(_player.Dispose);
-        // The frame remains hidden but alive until both tasks finish, preserving the window handle mpv uses.
-        return _shutdownTask = Task.WhenAll(saveTask, playerTask);
+        // The frame remains hidden but alive until shutdown finishes, preserving the window handle mpv uses.
+        return _shutdownTask = Task.WhenAll(saveTask, playerTask, radioTask);
     }
 
     public void Dispose()

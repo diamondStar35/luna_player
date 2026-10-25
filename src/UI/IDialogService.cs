@@ -1,4 +1,5 @@
 using LunaPlayer.Actions;
+using LunaPlayer.Application;
 using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
 using LunaPlayer.Equalizer;
@@ -13,6 +14,11 @@ namespace LunaPlayer.UI;
 /// <see cref="DialogService"/>, which is the only part of the UI coupled to the concrete dialog classes.</summary>
 internal interface IDialogService
 {
+    /// <summary>Browses a radio category and returns its loaded station order and selected station.</summary>
+    LunaPlayer.Radio.StationView? ShowRadioBrowser(LunaPlayer.Radio.Browsing state,
+        LunaPlayer.Radio.Catalog catalog, LunaPlayer.Radio.Library library, Action<string> speak,
+        IClipboardService clipboard, bool returnToStation);
+
     /// <summary>Opens the band editor on one preset, giving back what was saved or null if it was not.
     /// </summary>
     EqualizerEditResult? EditEqualizerPreset(EqualizerEditContext context);

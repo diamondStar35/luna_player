@@ -39,6 +39,7 @@ internal sealed partial class Player
     /// </remarks>
     internal void LeaveSession()
     {
+        _radioSession = false;
         if (_suspendedPlaylist is not SuspendedPlaylist suspended)
             return;
         _suspendedPlaylist = null;
@@ -59,6 +60,7 @@ internal sealed partial class Player
     internal bool PlaySessionStream(string url, string? title, string? source, string? audioFile,
         bool audioOnly = false, bool fadeTransition = false)
     {
+        if (_radioSession) LeaveSession();
         EnterSession();
         // The YouTube session owns its complete, durable order. Keep only the stream currently given to
         // mpv here: stream addresses expire, while the session can resolve any previous or next row again.
