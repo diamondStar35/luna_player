@@ -66,7 +66,7 @@ internal sealed partial class BrowserDialog
                 if (_searchResults is null || _resultsQuery != query || _resultsFilter != _searchFilterToOpen)
                 {
                     _searchResults?.Dispose();
-                    _searchResults = new SearchResultsDialog(_owner, _catalog, query, _searchFilterToOpen);
+                    _searchResults = new SearchResultsDialog(_owner, _catalog, query, _searchFilterToOpen, _speak);
                     _resultsQuery = query;
                     _resultsFilter = _searchFilterToOpen;
                 }
@@ -85,8 +85,7 @@ internal sealed partial class BrowserDialog
             _tracksDialog?.Dispose();
             _tracksDialog = new TracksDialog(_owner, collection.DisplayName, collection.DisplayDescription,
                 (cursor, token) => _catalog.TracksPageAsync(collection, cursor, token),
-                // Translators: Empty-list message in the Spotify collection tracks window.
-                Tr("No accessible tracks were returned for this collection."),
+                _speak,
                 deduplicateArtist: collection.Kind == CollectionKind.Artist);
             _tracksCollection = collection;
         }

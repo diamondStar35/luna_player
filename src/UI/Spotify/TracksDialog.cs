@@ -1,5 +1,4 @@
 using LunaPlayer.Configuration;
-using LunaPlayer.Configuration.Models;
 using LunaPlayer.Spotify;
 using WxSharp;
 
@@ -9,11 +8,10 @@ internal sealed class TracksDialog : IDisposable
 {
     private readonly Dialog _dialog;
     private readonly Func<string?, CancellationToken, Task<TrackPage>> _load;
-    private readonly string _emptyMessage;
     private readonly CancellationTokenSource _lifetime = new();
     private readonly CancellationToken _token;
     private readonly HashSet<string> _loadedPages = new(StringComparer.Ordinal);
-    private readonly StaticText _status;
+    private readonly Action<string> _speak;
     private readonly ListBox _songs;
     private readonly List<Track> _tracks = [];
     private readonly HashSet<string> _seen = new(StringComparer.Ordinal);
@@ -29,21 +27,24 @@ internal sealed class TracksDialog : IDisposable
     private bool _hasMore = true;
 
     internal TracksDialog(Window parent, string title, string description,
-        Func<string?, CancellationToken, Task<TrackPage>> load, string emptyMessage,
+        Func<string?, CancellationToken, Task<TrackPage>> load, Action<string> speak,
         bool deduplicateArtist = false)
     {
         _token = _lifetime.Token;
         _load = load;
-        _emptyMessage = emptyMessage;
+        _speak = speak;
         _deduplicateArtist = deduplicateArtist;
         // Translators: Title of a Spotify collection window. {title} is the collection name; keep Spotify unchanged.
         _dialog = new Dialog(parent, title: TrFormat("{title} - Spotify", title), style: DialogStyle.Default | DialogStyle.ResizeBorder);
-        // Translators: Loading status in the Spotify collection window while its track list is fetched.
-        _status = new StaticText(_dialog, label: Tr("Loading tracks from Spotify..."));
         // Translators: Label for the track list in a Spotify collection window.
         var tracksLabel = new StaticText(_dialog, label: Tr("Tracks"));
         _songs = new ListBox(_dialog) { Name = tracksLabel.Label };
         _songs.ItemActivated += (_, _) => Select();
+        _songs.SelectionChanged += (_, _) =>
+        {
+            if (_visible && _songs.SelectedIndex >= 0 && _songs.SelectedIndex == _tracks.Count - 1)
+                LoadNextPage(announce: true);
+        };
         // Translators: Button in a Spotify collection window that plays the selected track.
         var play = new Button(_dialog, label: Tr("Play"));
         play.Click += (_, _) => Select();
@@ -53,7 +54,6 @@ internal sealed class TracksDialog : IDisposable
         if (!string.IsNullOrWhiteSpace(description))
             layout.Add(new StaticText(_dialog, label: description),
                 flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderTop, border: 8);
-        layout.Add(_status, flags: SizerFlags.All, border: 8);
         layout.Add(tracksLabel, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight, border: 8);
         layout.Add(_songs, proportion: 1, flags: SizerFlags.Expand | SizerFlags.BorderLeft | SizerFlags.BorderRight, border: 8);
         layout.Add(play, flags: SizerFlags.All, border: 8);
@@ -71,7 +71,7 @@ internal sealed class TracksDialog : IDisposable
         if (!_started || (!_loading && _hasMore && _tracks.Count == 0))
         {
             _started = true;
-            LoadNextPage(selectNew: false);
+            LoadNextPage();
         }
         if (selected is not null)
         {
@@ -93,21 +93,22 @@ internal sealed class TracksDialog : IDisposable
         {
             _tracks.AddRange(added);
             foreach (var track in added) _seen.Add(track.ArtistSongKey);
-            _songs.Set(_tracks.Select(track => track.Label));
+            _songs.AppendRange(added.Select(track => track.Label));
         }
         NextCursor = next;
         _hasMore = next is not null;
     }
 
-    private void LoadNextPage(bool selectNew)
+    private void LoadNextPage(bool announce = false)
     {
         if (_disposed || _loading || !_hasMore) return;
         _loading = true;
         _read?.Dispose();
         _read = CancellationTokenSource.CreateLinkedTokenSource(_token);
         var token = _read.Token;
-        // Translators: Loading status in the Spotify collection window while its track list is fetched.
-        _status.Label = Tr("Loading tracks from Spotify...");
+        if (announce && _visible && _tracks.Count > 0)
+            // Translators: Spoken when reaching the end of a Spotify collection's track list requests another page.
+            _speak(Tr("Loading more tracks..."));
         var cursor = NextCursor;
         var loadedPages = new HashSet<string>(_loadedPages, StringComparer.Ordinal);
         _ = Task.Run(async () =>
@@ -122,27 +123,16 @@ internal sealed class TracksDialog : IDisposable
                 DialogWork.Post(token, () =>
                 {
                     if (_disposed) return;
-                    _loading = false;
                     _loadedPages.Add(cursor ?? string.Empty);
                     var previousCount = _tracks.Count;
-                    var previousSelection = _songs.SelectedIndex;
-                    foreach (var track in page.Tracks)
-                        if (!_deduplicateArtist || _seen.Add(track.ArtistSongKey)) _tracks.Add(track);
+                    var added = page.Tracks.Where(track => !_deduplicateArtist || _seen.Add(track.ArtistSongKey)).ToArray();
+                    _tracks.AddRange(added);
                     NextCursor = page.Next;
                     _hasMore = page.Next is not null;
-                    _songs.Set(_tracks.Select(item => item.Label));
-                    if (_tracks.Count > 0)
-                    {
-                        _songs.SelectedIndex = selectNew && _tracks.Count > previousCount ? previousCount
-                            : Math.Clamp(previousSelection, 0, _tracks.Count - 1);
-                        if (_visible) _songs.Focus();
-                    }
-                    _status.Label = _tracks.Count == 0 ? _emptyMessage
-                        // Translators: Status in the Spotify collection window. {count} is the number of tracks loaded; Down means the keyboard arrow key.
-                        : _hasMore ? TrFormat("{count} tracks loaded. Press Down at the end for more.", _tracks.Count)
-                        // Translators: Status in the Spotify collection window after all pages are loaded. {count} is the number of tracks.
-                        : TrFormat("{count} tracks loaded.", _tracks.Count);
-                    if (_tracks.Count == previousCount && _hasMore) LoadNextPage(selectNew);
+                    _songs.AppendRange(added.Select(track => track.Label));
+                    if (previousCount == 0 && _tracks.Count > 0) _songs.SelectedIndex = 0;
+                    _loading = false;
+                    if (_tracks.Count == previousCount && _hasMore) LoadNextPage();
                 });
             }
             catch (OperationCanceledException) when (token.IsCancellationRequested)
@@ -156,7 +146,6 @@ internal sealed class TracksDialog : IDisposable
                     if (_disposed) return;
                     _loading = false;
                     var message = Catalog.DescribeError(error);
-                    _status.Label = message;
                     // Translators: Title of a message box reporting a Spotify or playback failure.
                     if (_visible) Wx.MessageBox(message, Tr("Error"), MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
                 });
@@ -181,7 +170,7 @@ internal sealed class TracksDialog : IDisposable
             if (args.Code is Key.Down or Key.NumpadDown && !args.Control && !args.Alt
                 && _songs.SelectedIndex == _tracks.Count - 1 && _hasMore)
             {
-                LoadNextPage(selectNew: true);
+                LoadNextPage(announce: true);
                 return;
             }
         }

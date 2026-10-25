@@ -51,7 +51,7 @@ internal sealed class DialogService : IDialogService, IDisposable
     private Window DialogParent => Wx.GetActiveWindow() ?? _frame;
 
     public Spotify.DialogOutcome ShowSpotifyBrowser(LunaPlayer.Spotify.Catalog catalog,
-        LunaPlayer.Spotify.Auth auth, SpotifySettings settings,
+        LunaPlayer.Spotify.Auth auth, SpotifySettings settings, Action<string> speak,
         Spotify.DialogOutcome? playback = null)
     {
         if (string.IsNullOrWhiteSpace(settings.ClientId))
@@ -61,7 +61,7 @@ internal sealed class DialogService : IDialogService, IDisposable
                 Wx.CallAfter(() => _requestAction(ActionId.OpenSpotifyCredentials));
             return new Spotify.DialogOutcome();
         }
-        _spotifyBrowser ??= new Spotify.BrowserDialog(_frame, catalog, auth, settings);
+        _spotifyBrowser ??= new Spotify.BrowserDialog(_frame, catalog, auth, settings, speak);
         return _spotifyBrowser.Show(playback);
     }
 

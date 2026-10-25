@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-10-25 18:33+0300\n"
+"POT-Creation-Date: 2026-10-25 18:54+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -818,7 +818,7 @@ msgstr ""
 #. Translators: Title of the prompt shown when the user tries to stop a running download.
 #: Application/Commands/App/Tools.cs:69
 #: Application/Commands/Playback/SelectionSaving.cs:159
-#: UI/Dialogs/ConversionProgressDialog.cs:180 UI/Spotify/Browsing.cs:255
+#: UI/Dialogs/ConversionProgressDialog.cs:180 UI/Spotify/Browsing.cs:254
 #: UI/YouTube/DownloadDialog.cs:171 UI/YouTube/DownloadProgressDialog.cs:209
 msgid "Warning"
 msgstr ""
@@ -1217,9 +1217,9 @@ msgstr ""
 #: Application/Commands/Files/Playlists.cs:62
 #: Application/Commands/Files/Playlists.cs:71
 #: Application/Commands/Playback/Bookmarks.cs:153
-#: Application/Commands/YouTube/Download.cs:121 Application/Spotify.cs:134
-#: Application/Spotify.cs:188 UI/Spotify/Browsing.cs:279
-#: UI/Spotify/SearchResultsDialog.cs:164 UI/Spotify/TracksDialog.cs:161
+#: Application/Commands/YouTube/Download.cs:121 Application/Spotify.cs:138
+#: Application/Spotify.cs:192 UI/Spotify/Browsing.cs:278
+#: UI/Spotify/SearchResultsDialog.cs:155 UI/Spotify/TracksDialog.cs:150
 msgid "Error"
 msgstr ""
 
@@ -1962,7 +1962,7 @@ msgstr ""
 #: Application/Commands/Playback/Playback.cs:153
 #: UI/Iptv/ChannelBrowserDialog.cs:118 UI/MainFrame.cs:99 UI/MainFrame.cs:180
 #: UI/Radio/BrowserDialog.cs:120 UI/Radio/BrowserDialog.cs:148
-#: UI/Spotify/TracksDialog.cs:48 UI/YouTube/ResultsDialog.cs:196
+#: UI/Spotify/TracksDialog.cs:49 UI/YouTube/ResultsDialog.cs:196
 msgid "Play"
 msgstr ""
 
@@ -3451,14 +3451,14 @@ msgstr ""
 
 #. Translators: Collection type on Spotify Home, containing the user's most played tracks.
 #. Translators: Collection name on the Spotify Home tab for the account's most played songs.
-#: Spotify/Catalog.cs:29 UI/Spotify/Browsing.cs:162
+#: Spotify/Catalog.cs:29 UI/Spotify/Browsing.cs:161
 msgid "Your top tracks"
 msgstr ""
 
 #. Translators: Collection type on Spotify Home, containing listening history.
 #. Translators: Radio tree category containing this user's recently played stations.
 #. Translators: Collection name on the Spotify Home tab for listening history.
-#: Spotify/Catalog.cs:31 UI/Radio/Navigation.cs:23 UI/Spotify/Browsing.cs:167
+#: Spotify/Catalog.cs:31 UI/Radio/Navigation.cs:23 UI/Spotify/Browsing.cs:166
 msgid "Recently played"
 msgstr ""
 
@@ -4188,7 +4188,7 @@ msgstr ""
 #: UI/Equalizer/PresetsDialog.cs:56 UI/Iptv/ChannelBrowserDialog.cs:121
 #: UI/Iptv/IptvSourcesDialog.cs:62 UI/Radio/BrowserDialog.cs:134
 #: UI/Radio/DetailsDialog.cs:55 UI/Recording/RecordingDialog.cs:171
-#: UI/Spotify/BrowserDialog.cs:151 UI/YouTube/DescriptionDialog.cs:53
+#: UI/Spotify/BrowserDialog.cs:153 UI/YouTube/DescriptionDialog.cs:53
 #: UI/YouTube/DownloadQueueDialog.cs:68 UI/YouTube/FavoritesDialog.cs:62
 #: UI/YouTube/ResultsDialog.cs:110 UI/YouTube/SearchDialog.cs:85
 msgid "Close"
@@ -4541,8 +4541,8 @@ msgstr ""
 #. Translators: Button that runs the YouTube search with the text and filter chosen.
 #: UI/Dialogs/OpenedFilesDialog.cs:30 UI/Iptv/ChannelBrowserDialog.cs:74
 #: UI/Radio/BrowserDialog.cs:80 UI/Radio/BrowserDialog.cs:84
-#: UI/Radio/Interactions.cs:78 UI/Spotify/BrowserDialog.cs:112
-#: UI/Spotify/BrowserDialog.cs:132 UI/YouTube/SearchDialog.cs:80
+#: UI/Radio/Interactions.cs:78 UI/Spotify/BrowserDialog.cs:114
+#: UI/Spotify/BrowserDialog.cs:134 UI/YouTube/SearchDialog.cs:80
 msgid "Search"
 msgstr ""
 
@@ -4610,7 +4610,7 @@ msgstr ""
 #. Translators: Title of the Spotify home, search and library browser. Keep Spotify unchanged.
 #. Translators: Heading on the Spotify preferences page. Keep Spotify unchanged.
 #. Translators: Title of the dialog offering to configure Spotify credentials. Keep Spotify unchanged.
-#: UI/Dialogs/PreferencesDialog.cs:86 UI/Spotify/BrowserDialog.cs:61
+#: UI/Dialogs/PreferencesDialog.cs:86 UI/Spotify/BrowserDialog.cs:63
 #: UI/Spotify/CredentialsPreferences.cs:21 UI/Spotify/CredentialsPrompt.cs:12
 msgid "Spotify"
 msgstr ""
@@ -4856,7 +4856,7 @@ msgstr ""
 
 #. Translators: Channel-browser filter choice: show channels of every kind.
 #. Translators: Option in the Spotify search filter to include every result type.
-#: UI/Iptv/ChannelBrowserDialog.cs:54 UI/Spotify/BrowserDialog.cs:103
+#: UI/Iptv/ChannelBrowserDialog.cs:54 UI/Spotify/BrowserDialog.cs:105
 msgid "All"
 msgstr ""
 
@@ -5005,7 +5005,7 @@ msgstr ""
 #. Translators: File-type name for M3U and M3U8 IPTV playlists.
 #. Translators: Option in the Spotify search filter to show playlists.
 #. Translators: A channel browser tab: the playlists the channel publishes.
-#: UI/Iptv/IptvSourceEditDialog.cs:182 UI/Spotify/BrowserDialog.cs:109
+#: UI/Iptv/IptvSourceEditDialog.cs:182 UI/Spotify/BrowserDialog.cs:111
 #: YouTube/Client/Channels.cs:36
 msgid "Playlists"
 msgstr ""
@@ -6630,7 +6630,7 @@ msgstr ""
 #. Translators: Radio category context-menu action reloading its contents.
 #. Translators: Button in the Spotify browser that reloads the account library.
 #: UI/Radio/BrowserDialog.cs:132 UI/Radio/BrowserDialog.cs:169
-#: UI/Spotify/BrowserDialog.cs:70
+#: UI/Spotify/BrowserDialog.cs:72
 msgid "Refresh"
 msgstr ""
 
@@ -7072,133 +7072,128 @@ msgid "Recording source"
 msgstr ""
 
 #. Translators: Button in the Spotify browser that opens account authorization. Keep Spotify unchanged.
-#: UI/Spotify/BrowserDialog.cs:64
+#: UI/Spotify/BrowserDialog.cs:66
 msgid "Sign in to Spotify"
 msgstr ""
 
 #. Translators: Button in the Spotify browser that disconnects the account.
-#: UI/Spotify/BrowserDialog.cs:67
+#: UI/Spotify/BrowserDialog.cs:69
 msgid "Sign out"
 msgstr ""
 
 #. Translators: Label for the collection list on the Spotify Home tab.
-#: UI/Spotify/BrowserDialog.cs:80
+#: UI/Spotify/BrowserDialog.cs:82
 msgid "Collections"
 msgstr ""
 
 #. Translators: Button in a Spotify list that opens the selected collection or search result.
-#: UI/Spotify/BrowserDialog.cs:84 UI/Spotify/BrowserDialog.cs:140
-#: UI/Spotify/SearchResultsDialog.cs:49
+#: UI/Spotify/BrowserDialog.cs:86 UI/Spotify/BrowserDialog.cs:142
+#: UI/Spotify/SearchResultsDialog.cs:52
 msgid "Open selection"
 msgstr ""
 
 #. Translators: Tab in the Spotify browser showing listening history and recommendations.
 #. Translators: A channel browser tab: the channel's front page.
-#: UI/Spotify/BrowserDialog.cs:92 YouTube/Client/Channels.cs:28
+#: UI/Spotify/BrowserDialog.cs:94 YouTube/Client/Channels.cs:28
 msgid "Home"
 msgstr ""
 
 #. Translators: Label for the search entry on the Spotify Search tab. Keep Spotify unchanged.
-#: UI/Spotify/BrowserDialog.cs:96
+#: UI/Spotify/BrowserDialog.cs:98
 msgid "Search Spotify for a song, artist or playlist"
 msgstr ""
 
 #. Translators: Label for the result type selector on the Spotify Search tab.
-#: UI/Spotify/BrowserDialog.cs:100
+#: UI/Spotify/BrowserDialog.cs:102
 msgid "Filter by"
 msgstr ""
 
 #. Translators: Option in the Spotify search filter to show tracks.
-#: UI/Spotify/BrowserDialog.cs:105
+#: UI/Spotify/BrowserDialog.cs:107
 msgid "Songs"
 msgstr ""
 
 #. Translators: Option in the Spotify search filter to show musicians and groups.
-#: UI/Spotify/BrowserDialog.cs:107
+#: UI/Spotify/BrowserDialog.cs:109
 msgid "Artists"
 msgstr ""
 
 #. Translators: Label above the search history on the Spotify Search tab.
-#: UI/Spotify/BrowserDialog.cs:118
+#: UI/Spotify/BrowserDialog.cs:120
 msgid "Recent searches"
 msgstr ""
 
 #. Translators: Label above the account collections on the Spotify Library tab. Liked Songs means saved favorite tracks.
-#: UI/Spotify/BrowserDialog.cs:136
+#: UI/Spotify/BrowserDialog.cs:138
 msgid "Your playlists and Liked Songs"
 msgstr ""
 
 #. Translators: Tab in the Spotify browser listing account playlists and saved songs.
-#: UI/Spotify/BrowserDialog.cs:148
+#: UI/Spotify/BrowserDialog.cs:150
 msgid "Library"
 msgstr ""
 
-#. Translators: Empty-list message in the Spotify collection tracks window.
-#: UI/Spotify/Browsing.cs:89
-msgid "No accessible tracks were returned for this collection."
-msgstr ""
-
 #. Translators: Account connection status at the top of the Spotify browser. Keep Spotify and Client ID unchanged.
-#: UI/Spotify/Browsing.cs:117
+#: UI/Spotify/Browsing.cs:116
 msgid "Set your Client ID in Spotify Preferences to connect."
 msgstr ""
 
 #. Translators: Account connection status at the top of the Spotify browser. Keep Spotify and Client ID unchanged.
-#: UI/Spotify/Browsing.cs:119
+#: UI/Spotify/Browsing.cs:118
 msgid "Connected to Spotify."
 msgstr ""
 
 #. Translators: Account connection status at the top of the Spotify browser. Keep Spotify and Client ID unchanged.
-#: UI/Spotify/Browsing.cs:121
+#: UI/Spotify/Browsing.cs:120
 msgid ""
 "Spotify credentials are configured. Choose Sign in to Spotify to connect "
 "your account."
 msgstr ""
 
 #. Translators: Account connection status at the top of the Spotify browser. Keep Spotify and Client ID unchanged.
-#: UI/Spotify/Browsing.cs:128
+#: UI/Spotify/Browsing.cs:127
 msgid ""
 "Opening Spotify sign in in your browser. Return here after authorizing Luna "
 "Player."
 msgstr ""
 
 #. Translators: Account library loading status at the top of the Spotify browser.
-#: UI/Spotify/Browsing.cs:151
+#: UI/Spotify/Browsing.cs:150
 msgid "Loading your Spotify library..."
 msgstr ""
 
 #. Translators: Description of the top tracks collection on the Spotify Home tab.
-#: UI/Spotify/Browsing.cs:164
+#: UI/Spotify/Browsing.cs:163
 msgid "Based on your listening history."
 msgstr ""
 
 #. Translators: Description of the recently played collection on the Spotify Home tab.
-#: UI/Spotify/Browsing.cs:169
+#: UI/Spotify/Browsing.cs:168
 msgid "Your recent listening history."
 msgstr ""
 
 #. Translators: Library loading status at the top of the Spotify browser. {count} is the number of available playlists and collections.
-#: UI/Spotify/Browsing.cs:174
+#: UI/Spotify/Browsing.cs:173
 msgid "Spotify library loaded. {count} collections available."
 msgstr ""
 
 #. Translators: Status or guidance beside the search controls in the Spotify browser and search results window.
-#: UI/Spotify/Browsing.cs:203
+#: UI/Spotify/Browsing.cs:202
 msgid "Type a search, then press Enter."
 msgstr ""
 
 #. Translators: Status or guidance beside the search controls in the Spotify browser and search results window.
-#: UI/Spotify/Browsing.cs:206
+#: UI/Spotify/Browsing.cs:205
 msgid "Sign in to Spotify before searching."
 msgstr ""
 
 #. Translators: Status or guidance beside the search controls in the Spotify browser and search results window.
-#: UI/Spotify/Browsing.cs:237
+#: UI/Spotify/Browsing.cs:236
 msgid "Could not load recent searches from this computer."
 msgstr ""
 
 #. Translators: Warning message box when saving recent searches from the Spotify browser fails.
-#: UI/Spotify/Browsing.cs:253
+#: UI/Spotify/Browsing.cs:252
 msgid "Could not save recent searches on this computer."
 msgstr ""
 
@@ -7318,65 +7313,35 @@ msgstr ""
 msgid "Search results - Spotify"
 msgstr ""
 
-#. Translators: Status or guidance beside the search controls in the Spotify browser and search results window.
-#: UI/Spotify/SearchResultsDialog.cs:43
-msgid "Loading search results..."
-msgstr ""
-
 #. Translators: Label for the list of songs, artists and playlists in the Spotify search results window.
 #. Translators: Heading above the list of videos a YouTube search found.
-#: UI/Spotify/SearchResultsDialog.cs:45 YouTube/Playback/Session.cs:88
+#: UI/Spotify/SearchResultsDialog.cs:43 YouTube/Playback/Session.cs:88
 msgid "Search results"
 msgstr ""
 
 #. Translators: Button that returns from Spotify tracks or search results to the browser.
-#: UI/Spotify/SearchResultsDialog.cs:52 UI/Spotify/TracksDialog.cs:51
+#: UI/Spotify/SearchResultsDialog.cs:55 UI/Spotify/TracksDialog.cs:52
 msgid "Back"
 msgstr ""
 
-#. Translators: Status or guidance beside the search controls in the Spotify browser and search results window.
-#: UI/Spotify/SearchResultsDialog.cs:119
-msgid "Loading more search results..."
-msgstr ""
-
-#. Translators: Empty-list status in the Spotify search results window when no matching tracks, artists or playlists were found.
-#: UI/Spotify/SearchResultsDialog.cs:143
-msgid "No results found."
-msgstr ""
-
-#. Translators: Status in the Spotify search results window. {count} is the number of results already loaded; Down means the keyboard arrow key.
-#: UI/Spotify/SearchResultsDialog.cs:145
-msgid "{count} results loaded. Press Down at the end for more."
-msgstr ""
-
-#. Translators: Status in the Spotify search results window after all pages are loaded. {count} is the number of results.
-#: UI/Spotify/SearchResultsDialog.cs:147
-msgid "{count} results loaded."
+#. Translators: Spoken when reaching the end of the Spotify search results list requests another page.
+#: UI/Spotify/SearchResultsDialog.cs:123
+msgid "Loading more results..."
 msgstr ""
 
 #. Translators: Title of a Spotify collection window. {title} is the collection name; keep Spotify unchanged.
-#: UI/Spotify/TracksDialog.cs:40
+#: UI/Spotify/TracksDialog.cs:38
 msgid "{title} - Spotify"
 msgstr ""
 
-#. Translators: Loading status in the Spotify collection window while its track list is fetched.
-#: UI/Spotify/TracksDialog.cs:42 UI/Spotify/TracksDialog.cs:110
-msgid "Loading tracks from Spotify..."
-msgstr ""
-
 #. Translators: Label for the track list in a Spotify collection window.
-#: UI/Spotify/TracksDialog.cs:44
+#: UI/Spotify/TracksDialog.cs:40
 msgid "Tracks"
 msgstr ""
 
-#. Translators: Status in the Spotify collection window. {count} is the number of tracks loaded; Down means the keyboard arrow key.
-#: UI/Spotify/TracksDialog.cs:142
-msgid "{count} tracks loaded. Press Down at the end for more."
-msgstr ""
-
-#. Translators: Status in the Spotify collection window after all pages are loaded. {count} is the number of tracks.
-#: UI/Spotify/TracksDialog.cs:144
-msgid "{count} tracks loaded."
+#. Translators: Spoken when reaching the end of a Spotify collection's track list requests another page.
+#: UI/Spotify/TracksDialog.cs:111
+msgid "Loading more tracks..."
 msgstr ""
 
 #. Translators: Title of the window offering to fetch the extra programs YouTube needs.

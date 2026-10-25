@@ -158,7 +158,7 @@ internal interface IDialogService
     void ShowConversionReport(string title, string message, string details);
     LunaPlayer.UI.Spotify.DialogOutcome ShowSpotifyBrowser(
         LunaPlayer.Spotify.Catalog catalog, LunaPlayer.Spotify.Auth auth,
-        SpotifySettings settings, LunaPlayer.UI.Spotify.DialogOutcome? playback = null);
+        SpotifySettings settings, Action<string> speak, LunaPlayer.UI.Spotify.DialogOutcome? playback = null);
     Settings? EditPreferences(Settings settings, PrefsOps operations, Action<string> speakHelp,
         bool openSpotifyCredentials = false);
 }

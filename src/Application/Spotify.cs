@@ -48,7 +48,11 @@ internal sealed partial class Features
         if (_disposed || _spotifyBrowserOpen) return;
         LunaPlayer.UI.Spotify.DialogOutcome choice;
         _spotifyBrowserOpen = true;
-        try { choice = _view.Dialogs.ShowSpotifyBrowser(SpotifyCatalog, SpotifyAuth, _settings.Spotify, playback); }
+        try
+        {
+            choice = _view.Dialogs.ShowSpotifyBrowser(SpotifyCatalog, SpotifyAuth, _settings.Spotify,
+                text => _speech.SpeakText(text), playback);
+        }
         finally { _spotifyBrowserOpen = false; }
         if (choice.Track is not { } track) return;
         Func<string?, CancellationToken, Task<LunaPlayer.Spotify.TrackPage>>? pageLoader =

@@ -18,6 +18,7 @@ internal sealed partial class BrowserDialog : IDisposable
     private readonly Catalog _catalog;
     private readonly Auth _auth;
     private readonly SpotifySettings _settings;
+    private readonly Action<string> _speak;
     private readonly CancellationTokenSource _lifetime = new();
     private readonly CancellationToken _token;
     private readonly StaticText _status;
@@ -50,13 +51,14 @@ internal sealed partial class BrowserDialog : IDisposable
 
     private enum Page { Home, Search, Tracks }
 
-    internal BrowserDialog(Window parent, Catalog catalog, Auth auth, SpotifySettings settings)
+    internal BrowserDialog(Window parent, Catalog catalog, Auth auth, SpotifySettings settings, Action<string> speak)
     {
         _token = _lifetime.Token;
         _owner = parent;
         _catalog = catalog;
         _auth = auth;
         _settings = settings;
+        _speak = speak;
         // Translators: Title of the Spotify home, search and library browser. Keep Spotify unchanged.
         _dialog = new Dialog(parent, title: Tr("Spotify"), style: DialogStyle.Default | DialogStyle.ResizeBorder);
         _status = new StaticText(_dialog, label: string.Empty);

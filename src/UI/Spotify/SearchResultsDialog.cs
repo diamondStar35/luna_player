@@ -1,5 +1,4 @@
 using LunaPlayer.Configuration;
-using LunaPlayer.Configuration.Models;
 using LunaPlayer.Spotify;
 using WxSharp;
 
@@ -13,7 +12,7 @@ internal sealed class SearchResultsDialog : IDisposable
     private readonly SearchFilter _filter;
     private readonly CancellationTokenSource _lifetime = new();
     private readonly CancellationToken _token;
-    private readonly StaticText _status;
+    private readonly Action<string> _speak;
     private readonly ListBox _list;
     private readonly List<SearchItem> _results = [];
     private int _offset;
@@ -29,22 +28,26 @@ internal sealed class SearchResultsDialog : IDisposable
         .OfType<Track>().ToArray();
 
     internal SearchResultsDialog(Window parent, Catalog catalog, string query,
-        SearchFilter filter)
+        SearchFilter filter, Action<string> speak)
     {
         _token = _lifetime.Token;
         _catalog = catalog;
         _query = query;
         _filter = filter;
+        _speak = speak;
         // Translators: Title of the Spotify search results window. Keep Spotify unchanged.
         _dialog = new Dialog(parent, title: Tr("Search results - Spotify"),
             style: DialogStyle.Default | DialogStyle.ResizeBorder);
         var heading = new StaticText(_dialog, label: query);
-        // Translators: Status or guidance beside the search controls in the Spotify browser and search results window.
-        _status = new StaticText(_dialog, label: Tr("Loading search results..."));
         // Translators: Label for the list of songs, artists and playlists in the Spotify search results window.
         var resultsLabel = new StaticText(_dialog, label: Tr("Search results"));
         _list = new ListBox(_dialog) { Name = resultsLabel.Label };
         _list.ItemActivated += (_, _) => Select();
+        _list.SelectionChanged += (_, _) =>
+        {
+            if (_visible && _list.SelectedIndex >= 0 && _list.SelectedIndex == _results.Count - 1)
+                LoadNextPage(announce: true);
+        };
         // Translators: Button in a Spotify list that opens the selected collection or search result.
         var open = new Button(_dialog, label: Tr("Open selection"));
         open.Click += (_, _) => Select();
@@ -52,7 +55,6 @@ internal sealed class SearchResultsDialog : IDisposable
         var back = new Button(_dialog, StandardId.Cancel, Tr("Back"));
         var layout = new BoxSizer(Orientation.Vertical);
         layout.Add(heading, flags: SizerFlags.All, border: 8);
-        layout.Add(_status, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight, border: 8);
         layout.Add(resultsLabel, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight, border: 8);
         layout.Add(_list, proportion: 1, flags: SizerFlags.Expand | SizerFlags.All, border: 8);
         layout.Add(open, flags: SizerFlags.BorderLeft | SizerFlags.BorderBottom, border: 8);
@@ -70,7 +72,7 @@ internal sealed class SearchResultsDialog : IDisposable
         if (!_started || (!_loading && _hasMore && _results.Count == 0))
         {
             _started = true;
-            LoadNextPage(selectNew: false);
+            LoadNextPage();
         }
         if (selected is not null)
         {
@@ -101,22 +103,24 @@ internal sealed class SearchResultsDialog : IDisposable
         var added = tracks.Where(track => known.Add(track)).ToArray();
         if (added.Length > 0)
         {
-            _results.AddRange(added.Select(track => new SearchItem(track, null)));
-            _list.Set(_results.Select(item => item.Label));
+            var rows = added.Select(track => new SearchItem(track, null)).ToArray();
+            _results.AddRange(rows);
+            _list.AppendRange(rows.Select(item => item.Label));
         }
         _hasMore = next is not null;
         if (int.TryParse(next, out var offset)) _offset = offset;
     }
 
-    private void LoadNextPage(bool selectNew)
+    private void LoadNextPage(bool announce = false)
     {
         if (_disposed || _loading || !_hasMore) return;
         _loading = true;
         _read?.Dispose();
         _read = CancellationTokenSource.CreateLinkedTokenSource(_token);
         var token = _read.Token;
-        // Translators: Status or guidance beside the search controls in the Spotify browser and search results window.
-        _status.Label = Tr("Loading more search results...");
+        if (announce && _visible && _results.Count > 0)
+            // Translators: Spoken when reaching the end of the Spotify search results list requests another page.
+            _speak(Tr("Loading more results..."));
         var offset = _offset;
         _ = Task.Run(async () =>
         {
@@ -126,26 +130,14 @@ internal sealed class SearchResultsDialog : IDisposable
                 DialogWork.Post(token, () =>
                 {
                     if (_disposed) return;
-                    _loading = false;
                     var previousCount = _results.Count;
-                    var previousSelection = _list.SelectedIndex;
                     _results.AddRange(page.Items);
                     _offset += 10;
                     _hasMore = page.HasMore;
-                    _list.Set(_results.Select(item => item.Label));
-                    if (_results.Count > 0)
-                    {
-                        _list.SelectedIndex = selectNew && page.Items.Count > 0 ? previousCount
-                            : Math.Clamp(previousSelection, 0, _results.Count - 1);
-                        if (_visible) _list.Focus();
-                    }
-                    // Translators: Empty-list status in the Spotify search results window when no matching tracks, artists or playlists were found.
-                    _status.Label = _results.Count == 0 ? Tr("No results found.")
-                        // Translators: Status in the Spotify search results window. {count} is the number of results already loaded; Down means the keyboard arrow key.
-                        : _hasMore ? TrFormat("{count} results loaded. Press Down at the end for more.", _results.Count)
-                        // Translators: Status in the Spotify search results window after all pages are loaded. {count} is the number of results.
-                        : TrFormat("{count} results loaded.", _results.Count);
-                    if (page.Items.Count == 0 && _hasMore) LoadNextPage(selectNew);
+                    _list.AppendRange(page.Items.Select(item => item.Label));
+                    if (previousCount == 0 && _results.Count > 0) _list.SelectedIndex = 0;
+                    _loading = false;
+                    if (page.Items.Count == 0 && _hasMore) LoadNextPage();
                 });
             }
             catch (OperationCanceledException) when (token.IsCancellationRequested)
@@ -159,7 +151,6 @@ internal sealed class SearchResultsDialog : IDisposable
                     if (_disposed) return;
                     _loading = false;
                     var message = Catalog.DescribeError(error);
-                    _status.Label = message;
                     // Translators: Title of a message box reporting a Spotify or playback failure.
                     if (_visible) Wx.MessageBox(message, Tr("Error"), MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
                 });
@@ -184,7 +175,7 @@ internal sealed class SearchResultsDialog : IDisposable
             if (args.Code is Key.Down or Key.NumpadDown && !args.Control && !args.Alt
                 && _list.SelectedIndex == _results.Count - 1 && _hasMore)
             {
-                LoadNextPage(selectNew: true);
+                LoadNextPage(announce: true);
                 return;
             }
         }
