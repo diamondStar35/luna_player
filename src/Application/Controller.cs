@@ -225,9 +225,15 @@ internal sealed class ApplicationController : IDisposable
     private void OnPlaybackEnded(EndReason reason)
     {
         var spotifyEnd = _spotify.IsActive;
+        var generation = _spotify.CurrentLoadGeneration;
         _dispatcher.Post(() =>
         {
-            if (spotifyEnd) { SyncViewState(); return; }
+            if (spotifyEnd)
+            {
+                _spotify.HandleEnded(reason, generation);
+                SyncViewState();
+                return;
+            }
             HandlePlaybackEnded(reason);
         });
     }

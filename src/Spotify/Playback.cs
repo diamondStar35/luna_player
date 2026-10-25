@@ -46,7 +46,6 @@ internal sealed partial class Playback : IDisposable
         _settings = settings;
         _player = player;
         _dispatcher = dispatcher;
-        player.Ended += HandlePlayerEnded;
     }
 
     /// <summary>True once a Spotify track is the active source, until it is stopped or replaced. Luna gates all
@@ -266,7 +265,13 @@ internal sealed partial class Playback : IDisposable
             if (position < duration) _ended = false;
             if (_clock is { } clock)
                 _clock = clock with { Elapsed = position, Duration = duration, ObservedAt = DateTimeOffset.UtcNow };
-            if (IsLoadedCurrent) _player.SeekAbsolute(position);
+            if (IsLoadedCurrent)
+            {
+                // Discard EOF callbacks and page results queued before this explicit seek.
+                Interlocked.Increment(ref _loadGeneration);
+                CancelPageRead();
+                _player.SeekAbsolute(position);
+            }
             else _pendingSeek = position;
         }
     }
@@ -409,27 +414,23 @@ internal sealed partial class Playback : IDisposable
         }, token);
     }
 
-    private void HandlePlayerEnded(EndReason reason)
+    internal void HandleEnded(EndReason reason, int generation)
     {
-        if (!_active || !IsLoadedCurrent || _current is not { } track) return;
-        var generation = CurrentLoadGeneration;
+        // The controller captures the owner and generation before posting the event. A Spotify sleep
+        // timer can restore local playback here, but that same EOF must never advance the restored file.
+        if (!_active || !_player.InSpotifySession || !IsLoadedCurrent
+            || generation != CurrentLoadGeneration || _current is not { } track) return;
         if (reason == EndReason.EndOfFile)
-            OnPlayerThread(() =>
+        {
+            if (BeforeTrackEnd?.Invoke() == true)
             {
-                if (generation != CurrentLoadGeneration) return;
-                if (BeforeTrackEnd?.Invoke() == true)
-                {
-                    if (_active) FinishCurrent();
-                    return;
-                }
-                NotifyTrackEnded(track.Uri);
-            });
+                if (_active) FinishCurrent();
+                return;
+            }
+            NotifyTrackEnded(track.Uri);
+        }
         else if (reason == EndReason.Error)
-            OnPlayerThread(() =>
-            {
-                if (generation == CurrentLoadGeneration)
-                    CommandFailed?.Invoke(new InvalidDataException());
-            });
+            CommandFailed?.Invoke(new InvalidDataException());
     }
 
     internal static bool IsTrack(string uri) => TrackId.TryParse(uri, out _);
@@ -488,7 +489,6 @@ internal sealed partial class Playback : IDisposable
             _session = null;
         }
         Stop(restoreSession: false);
-        _player.Ended -= HandlePlayerEnded;
         previous?.Dispose();
         // A canceled preparation still needs to release its managed gate on the worker thread.
     }

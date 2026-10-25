@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-10-25 17:50+0300\n"
+"POT-Creation-Date: 2026-10-25 17:54+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3374,7 +3374,7 @@ msgid "{name} - {kind} - {volume}%"
 msgstr ""
 
 #. Translators: Confirmation displayed in the browser after returning from Spotify authorization.
-#: Spotify/Auth.cs:31 Spotify/Playback.cs:62
+#: Spotify/Auth.cs:31 Spotify/Playback.cs:61
 msgid "You can return to Luna Player now."
 msgstr ""
 
