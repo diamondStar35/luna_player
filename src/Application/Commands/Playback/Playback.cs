@@ -20,7 +20,7 @@ internal sealed partial class Playback
     private readonly PlaybackSelection _selection;
     private readonly SelectionSlots _selections;
     private readonly MediaGuard _guard;
-    private readonly LunaPlayer.Spotify.PlaybackHost _spotify;
+    private readonly LunaPlayer.Spotify.Playback _spotify;
 
     internal Playback(
         ActionRouter router,
@@ -32,7 +32,7 @@ internal sealed partial class Playback
         PlaybackSelection selection,
         SelectionSlots selections,
         IApplicationDispatcher dispatcher,
-        LunaPlayer.Spotify.PlaybackHost spotify)
+        LunaPlayer.Spotify.Playback spotify)
     {
         _view = view;
         _player = player;

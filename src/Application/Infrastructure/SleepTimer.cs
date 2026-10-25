@@ -3,7 +3,7 @@ using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
 using LunaPlayer.Playback;
 using LunaPlayer.UI;
-using LunaPlayer.Spotify;
+using SpotifyPlayback = LunaPlayer.Spotify.Playback;
 
 namespace LunaPlayer.Application;
 
@@ -27,7 +27,7 @@ internal sealed class SleepTimer : IDisposable
     private readonly IApplicationDispatcher _dispatcher;
     private readonly Player _player;
     private readonly ISpeechOutput _speech;
-    private readonly PlaybackHost? _spotify;
+    private readonly SpotifyPlayback? _spotify;
     private readonly Action? _cancelSpotifyStart;
 
     private bool _armed;
@@ -41,7 +41,7 @@ internal sealed class SleepTimer : IDisposable
     private bool _warned;
 
     internal SleepTimer(IApplicationDispatcher dispatcher, Player player, ISpeechOutput speech,
-        PlaybackHost? spotify = null, Action? cancelSpotifyStart = null)
+        SpotifyPlayback? spotify = null, Action? cancelSpotifyStart = null)
     {
         _dispatcher = dispatcher;
         _player = player;

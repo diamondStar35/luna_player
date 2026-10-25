@@ -21,10 +21,10 @@ internal sealed class WindowTitlePresenter
     private readonly Player _player;
     private readonly Settings _settings;
     private readonly MediaTagsCache _tags;
-    private readonly LunaPlayer.Spotify.PlaybackHost _spotify;
+    private readonly LunaPlayer.Spotify.Playback _spotify;
 
     internal WindowTitlePresenter(IMainView view, Player player, Settings settings, MediaTagsCache tags,
-        LunaPlayer.Spotify.PlaybackHost spotify)
+        LunaPlayer.Spotify.Playback spotify)
     {
         _view = view;
         _player = player;

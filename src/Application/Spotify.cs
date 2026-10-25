@@ -19,7 +19,7 @@ internal sealed partial class Features
             return _spotifyAuth;
         }
     }
-    private LunaPlayer.Spotify.PlaybackHost _spotifyPlayback = null!;
+    private LunaPlayer.Spotify.Playback _spotifyPlayback = null!;
     private CancellationTokenSource? _spotifyStart;
 
     private void OpenSpotify(LunaPlayer.Spotify.Catalog catalog)
@@ -72,8 +72,8 @@ internal sealed partial class Features
                     try
                     {
                         token.ThrowIfCancellationRequested();
-                        _spotifyPlayback.PlayAsync(track, queue, token, startPosition,
-                            pageLoader, nextPage, deduplicateArtist, keepShuffle).GetAwaiter().GetResult();
+                        _spotifyPlayback.Play(track, queue, token, startPosition,
+                            pageLoader, nextPage, deduplicateArtist, keepShuffle);
                         if (keepRepeat && !_spotifyPlayback.IsRepeatCurrentEnabled)
                             _spotifyPlayback.ToggleRepeatCurrent();
                         if (keepPaused) _spotifyPlayback.Pause();

@@ -12,11 +12,11 @@ internal sealed class ViewStatePresenter
     private readonly IMainView _view;
     private readonly Player _player;
     private readonly ISpeechOutput _speech;
-    private readonly LunaPlayer.Spotify.PlaybackHost _spotify;
+    private readonly LunaPlayer.Spotify.Playback _spotify;
     private readonly PlaybackSessions _sessions;
 
     internal ViewStatePresenter(IMainView view, Player player, ISpeechOutput speech, PlaybackSessions sessions,
-        LunaPlayer.Spotify.PlaybackHost spotify)
+        LunaPlayer.Spotify.Playback spotify)
     {
         _view = view;
         _player = player;

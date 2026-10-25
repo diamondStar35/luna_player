@@ -34,7 +34,7 @@ internal sealed class AccessPointRequests : IDisposable
         try
         {
             var sequence = _keySequence++;
-            var request = AudioKeyRequest.Create(track, fileId.Span, sequence);
+            var request = CreateKeyRequest(track, fileId.Span, sequence);
             var response = new TaskCompletionSource<byte[]>(TaskCreationOptions.RunContinuationsAsynchronously);
             lock (_stateLock)
             {
@@ -46,7 +46,7 @@ internal sealed class AccessPointRequests : IDisposable
             {
                 using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _stopToken);
                 timeout.CancelAfter(TimeSpan.FromSeconds(10));
-                await _connection.SendAsync(AudioKeyRequest.PacketType, request, timeout.Token)
+                await _connection.SendAsync(0x0c, request, timeout.Token)
                     .ConfigureAwait(false);
                 try { return await response.Task.WaitAsync(timeout.Token).ConfigureAwait(false); }
                 catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested
@@ -121,5 +121,14 @@ internal sealed class AccessPointRequests : IDisposable
     {
         await _receiver.ConfigureAwait(false);
         _stop.Dispose();
+    }
+    private static byte[] CreateKeyRequest(TrackId track, ReadOnlySpan<byte> fileId, uint sequence)
+    {
+        if (fileId.Length != 20) throw new ArgumentException(null, nameof(fileId));
+        var packet = new byte[42];
+        fileId.CopyTo(packet);
+        track.WriteRaw(packet.AsSpan(20, 16));
+        BinaryPrimitives.WriteUInt32BigEndian(packet.AsSpan(36, 4), sequence);
+        return packet;
     }
 }

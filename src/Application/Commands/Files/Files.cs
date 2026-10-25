@@ -20,7 +20,7 @@ internal sealed partial class Files
     private readonly IClipboardService _clipboard;
     private readonly IApplicationDispatcher _dispatcher;
     private readonly MediaGuard _guard;
-    private readonly LunaPlayer.Spotify.PlaybackHost _spotify;
+    private readonly LunaPlayer.Spotify.Playback _spotify;
     private readonly Action _cancelSpotifyStart;
     private readonly Radio.Playback _radio;
     private int _fileInfoPressCount;
@@ -38,7 +38,7 @@ internal sealed partial class Files
         IApplicationDispatcher dispatcher,
         RecentsStore recents,
         Radio.Playback radio,
-        LunaPlayer.Spotify.PlaybackHost spotify,
+        LunaPlayer.Spotify.Playback spotify,
         Action cancelSpotifyStart)
     {
         _view = view;
