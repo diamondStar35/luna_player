@@ -34,7 +34,7 @@ internal enum ActionId
     OpenRecordingInterface, StartRecording, PauseRecording, StopRecording, OpenRecordingsFolder,
     PanLeft, PanRight, AnnouncePan,
     PitchUp, PitchDown, ResetPitch, AnnouncePitch,
-    AnnounceTitle,
+    AnnounceTitle, AnnounceArtist, AnnounceMetadata,
     OpenMediaConverter,
     OpenRadioBrowser,
     OpenIptvSources, OpenIptvChannels,

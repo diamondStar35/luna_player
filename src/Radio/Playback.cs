@@ -141,7 +141,7 @@ internal sealed class Playback : IDisposable
         if (_session is not { } session) return false;
         session.Shuffled = !session.Shuffled;
         if (session.Shuffled) session.Shuffle.Create(Count, session.Index);
-        _player.RefreshSessionState();
+        _player.RefreshState();
         return session.Shuffled;
     }
 

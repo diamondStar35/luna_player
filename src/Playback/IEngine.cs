@@ -18,6 +18,9 @@ internal interface IEngine : IDisposable
     /// after the load returns, so the answer is not known the moment a file opens.</summary>
     event Action? VideoAvailabilityChanged;
 
+    /// <summary>Raised when the loaded media's metadata changes, including a new live radio programme.</summary>
+    event Action? MetadataChanged;
+
     /// <summary>Raised when the set of tracks may have changed - a file's tracks are learned after the load
     /// returns, so <see cref="GetAudioTracks"/> is not settled the moment a file opens.</summary>
     event Action? AudioTracksChanged;
@@ -112,13 +115,11 @@ internal interface IEngine : IDisposable
 
     void SetEndBehavior(EndBehavior behavior);
 
-    /// <summary>Turns mpv's own system-media integration on or off: the media keys it answers and the
-    /// transport controls it publishes to the OS. The equivalent of mpv's <c>--media-controls</c>.</summary>
-    void SetMediaControls(bool enabled);
-
-    /// <summary>The title the media declares for itself, from tags or a stream's metadata. Null when the
-    /// media carries none, in which case callers fall back to the file name.</summary>
+    /// <summary>The title selected by mpv from file or stream metadata, falling back to its file name.</summary>
     string? MediaTitle { get; }
+
+    /// <summary>The current title and metadata from mpv. Live radio can update these during playback.</summary>
+    Metadata GetMetadata();
 
     /// <summary>Whether a real picture is playing: a decoded video track that is neither a still image nor
     /// cover art. False for audio and for audio-only tracks in a video container. Not known synchronously

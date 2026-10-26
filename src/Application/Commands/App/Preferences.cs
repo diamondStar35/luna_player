@@ -57,9 +57,8 @@ internal sealed class Preferences
             settings.Audio.NormalizeAudio = player.IsNormalizationEnabled;
             settings.Audio.MonoAudio = player.IsMonoEnabled;
             settings.Silence.Enabled = player.IsSilenceRemovalEnabled;
-            // Moves both mpv's own integration and the Windows overlay: SetMediaControls raises the player's
-            // StateChanged, which is what the controller reconciles the overlay from.
-            player.SetMediaControls(!settings.General.DisableMediaControls);
+            // Reconcile the Windows media controls with the newly saved preference.
+            player.RefreshState();
             shortcuts.Apply(settings.Shortcuts.Primary, settings.Shortcuts.Secondary);
             view.ApplyShortcuts(shortcuts);
             GlobalShortcutBinder.Apply(view, globalShortcuts, settings, speech: null);

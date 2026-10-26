@@ -50,7 +50,7 @@ internal sealed class WindowTitlePresenter
         var path = _player.CurrentPath;
         if (string.IsNullOrEmpty(path))
             return AppInfo.Name;
-        var tags = _tags.For(path);
+        var tags = _tags.For(_player);
         // The same title the overlay shows: what the media calls itself, falling back to the name on disk.
         var title = tags.Title.Length > 0 ? tags.Title : _player.CurrentDisplayName ?? string.Empty;
         if (string.IsNullOrWhiteSpace(title))
@@ -58,9 +58,9 @@ internal sealed class WindowTitlePresenter
         // Loaded but not playing is paused; stopped unloads mpv and leaves the entry, which is not the same
         // thing and reads as the plain title.
         return _player.IsLoaded && !_player.IsPlaying
-            // Translators: Window title while playback is paused. {title} is the track, {app} the program name.
+            // Translators: Window title while playback is paused. {title} is the track or radio programme title; {app} is the program name.
             ? TrFormat("[Paused]: {title} - {app}", title, AppInfo.Name)
-            // Translators: Window title while a track is open. {title} is the track, {app} the program name.
+            // Translators: Window title while media is open. {title} is the track or radio programme title; {app} is the program name.
             : TrFormat("{title} - {app}", title, AppInfo.Name);
     }
 }

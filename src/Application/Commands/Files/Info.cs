@@ -203,6 +203,86 @@ internal sealed partial class Files
         }
     }
 
+    private void AnnounceMetadata()
+    {
+        if (!_spotify.IsActive && !_guard.RequireFile(out _)) return;
+        var metadata = _player.CurrentMetadata;
+        var display = _spotify.IsActive && _spotify.CurrentTrack is { } track
+            ? metadata.Display with { Title = track.Name, Artist = track.Artists }
+            : metadata.Display;
+        var lines = new List<string>();
+        void Add(string value, Func<string, string> format)
+        {
+            if (!string.IsNullOrWhiteSpace(value)) lines.Add(format(value));
+        }
+        if (_player.InRadioSession)
+        {
+            var station = metadata.Value("icy-name", "service_name");
+            Add(station.Length > 0 ? station : _player.CurrentDisplayName ?? string.Empty,
+                // Translators: Line spoken by Ctrl+Alt+I identifying the radio station. {station} is its name from the stream or radio directory.
+                value => TrFormat("Station: {station}", value));
+        }
+        Add(display.Title,
+            // Translators: Line spoken by Ctrl+Alt+I. {title} is the current file or radio programme title.
+            value => TrFormat("Title: {title}", value));
+        Add(display.Artist,
+            // Translators: Line spoken by Ctrl+Alt+I. {artist} is the performer named by the current media or radio broadcast.
+            value => TrFormat("Artist: {artist}", value));
+        Add(display.Album,
+            // Translators: Line spoken by Ctrl+Alt+I. {album} is the album named in the current media's metadata.
+            value => TrFormat("Album: {album}", value));
+        Add(metadata.Value("album_artist", "albumartist"),
+            // Translators: Line spoken by Ctrl+Alt+I. {artist} is the album artist, which can differ from the current track's performer.
+            value => TrFormat("Album artist: {artist}", value));
+        Add(metadata.Value("genre", "icy-genre"),
+            // Translators: Line spoken by Ctrl+Alt+I. {genre} is the genre supplied by the file or radio stream.
+            value => TrFormat("Genre: {genre}", value));
+        Add(metadata.Value("description", "comment", "icy-description"),
+            // Translators: Line spoken by Ctrl+Alt+I. {description} is a description or comment supplied by the current media or radio station.
+            value => TrFormat("Description: {description}", value));
+        Add(metadata.Value("date", "year"),
+            // Translators: Line spoken by Ctrl+Alt+I. {date} is the release or recording date exactly as supplied by the media.
+            value => TrFormat("Date: {date}", value));
+        Add(metadata.Value("track", "tracknumber"),
+            // Translators: Line spoken by Ctrl+Alt+I. {number} is the track's number within its album.
+            value => TrFormat("Track number: {number}", value));
+        Add(metadata.Value("disc", "discnumber"),
+            // Translators: Line spoken by Ctrl+Alt+I. {number} is the disc number within a multi-disc album.
+            value => TrFormat("Disc number: {number}", value));
+        Add(metadata.Value("composer"),
+            // Translators: Line spoken by Ctrl+Alt+I. {composer} is the composer named in the media's metadata.
+            value => TrFormat("Composer: {composer}", value));
+        Add(metadata.Value("language"),
+            // Translators: Line spoken by Ctrl+Alt+I. {language} is the language name or code supplied by the current media.
+            value => TrFormat("Language: {language}", value));
+        Add(metadata.Value("publisher", "organization"),
+            // Translators: Line spoken by Ctrl+Alt+I. {publisher} is the publisher or organization named by the current media.
+            value => TrFormat("Publisher: {publisher}", value));
+        Add(metadata.Value("copyright"),
+            // Translators: Line spoken by Ctrl+Alt+I. {copyright} is the media's copyright notice.
+            value => TrFormat("Copyright: {copyright}", value));
+        Add(metadata.Value("icy-url", "website", "purl", "url"),
+            // Translators: Line spoken by Ctrl+Alt+I. {url} is the website supplied by the media or radio station.
+            value => TrFormat("Website: {url}", value));
+        Add(metadata.Value("icy-br"),
+            // Translators: Line spoken by Ctrl+Alt+I. {bitrate} is the radio stream's advertised bitrate in kilobits per second. Keep kbps as the bitrate unit.
+            value => TrFormat("Bitrate: {bitrate} kbps", value));
+        _speech.SpeakText(lines.Count > 0 ? string.Join(Environment.NewLine, lines)
+            // Translators: Spoken by Ctrl+Alt+I when the current media provides no metadata to announce.
+            : Tr("No metadata is available."));
+    }
+
+    private void AnnounceArtist()
+    {
+        if (!_spotify.IsActive && !_guard.RequireFile(out _)) return;
+        var artist = _spotify.IsActive ? _spotify.CurrentTrack?.Artists : _player.CurrentArtist;
+        if (!string.IsNullOrWhiteSpace(artist))
+            _speech.Speak(artist, artist);
+        else
+            // Translators: Spoken by Shift+I when the current file or radio broadcast provides no artist information.
+            _speech.SpeakText(Tr("Unknown artist."));
+    }
+
     private void AnnounceTitle()
     {
         if (_spotify.IsActive)
@@ -212,8 +292,15 @@ internal sealed partial class Files
         }
         if (!_guard.RequireFile(out _))
             return;
-        if (_player.CurrentTitle is { Length: > 0 } title)
+        var currentTitle = _player.InRadioSession ? _player.CurrentBroadcast.Title : _player.CurrentTitle;
+        if (currentTitle is { Length: > 0 } title)
             _speech.Speak(title, title);
+        else if (_player.InRadioSession)
+            _speech.Speak(
+                // Translators: Spoken by I when the live radio station supplies no programme title.
+                Tr("The current radio broadcast has no title."),
+                // Translators: Short announcement by I when the live radio station supplies no programme title.
+                Tr("No title."));
         else
             _speech.Speak(
                 // Translators: Spoken when the current media file contains no title metadata.

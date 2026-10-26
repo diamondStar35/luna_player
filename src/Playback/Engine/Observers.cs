@@ -4,6 +4,11 @@ namespace LunaPlayer.Playback;
 
 internal sealed partial class Engine
 {
+    private void HandleMetadataChange(string _, object? __)
+    {
+        if (!_disposed) MetadataChanged?.Invoke();
+    }
+
     /// <summary>Rebuilds the equalizer when the decoded sample rate changes, keeping every band below the
     /// new Nyquist frequency. Reports sent while the equalizer is off or the file is stopping are ignored.</summary>
     private void HandleSampleRateChange(string _, object? value)

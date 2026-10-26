@@ -1,6 +1,7 @@
 using LunaPlayer.Actions;
 using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
+using LunaPlayer.Media;
 using LunaPlayer.Playback;
 
 namespace LunaPlayer.Application.Presentation;
@@ -21,6 +22,7 @@ internal sealed class MediaOverlayPresenter : IDisposable
     private readonly IApplicationDispatcher _dispatcher;
     private readonly MediaTagsCache _tags;
     private readonly SystemMediaControls _mediaControls;
+    private readonly Spotify.Playback.Sessions _spotify;
     private readonly Func<bool> _canGoNext;
     private readonly Func<bool> _canGoPrevious;
     private IDisposable? _clock;
@@ -31,6 +33,7 @@ internal sealed class MediaOverlayPresenter : IDisposable
         IApplicationDispatcher dispatcher,
         MediaTagsCache tags,
         SystemMediaControls mediaControls,
+        Spotify.Playback.Sessions spotify,
         Func<bool> canGoNext,
         Func<bool> canGoPrevious,
         Action<ActionId> onButton)
@@ -40,6 +43,7 @@ internal sealed class MediaOverlayPresenter : IDisposable
         _dispatcher = dispatcher;
         _tags = tags;
         _mediaControls = mediaControls;
+        _spotify = spotify;
         _canGoNext = canGoNext;
         _canGoPrevious = canGoPrevious;
         _mediaControls.ButtonPressed += action => _dispatcher.Post(() => onButton(action));
@@ -57,7 +61,9 @@ internal sealed class MediaOverlayPresenter : IDisposable
         var path = _player.CurrentPath;
         var hasMedia = !string.IsNullOrEmpty(path);
         var index = _player.CurrentIndex;
-        var tags = _tags.For(path);
+        var tags = _spotify.IsActive && _spotify.CurrentTrack is { } track
+            ? new MediaTags(track.Name, track.Artists, string.Empty)
+            : _tags.For(_player);
         _mediaControls.Update(new MediaControlsState(
             HasMedia: hasMedia,
             IsPlaying: _player.IsPlaying,

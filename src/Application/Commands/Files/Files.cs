@@ -63,6 +63,8 @@ internal sealed partial class Files
         router.Register(ActionId.Exit, _view.Close);
         router.Register(ActionId.AnnounceFileInfo, AnnounceFileInfo);
         router.Register(ActionId.AnnounceTitle, AnnounceTitle);
+        router.Register(ActionId.AnnounceArtist, AnnounceArtist);
+        router.Register(ActionId.AnnounceMetadata, AnnounceMetadata);
         _view.RecentRequested += OnRecentRequested;
     }
 

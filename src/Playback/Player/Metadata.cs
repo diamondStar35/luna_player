@@ -36,6 +36,32 @@ internal sealed partial class Player
     /// <summary>The display name of whatever is playing, or null when nothing is.</summary>
     internal string? CurrentDisplayName => CurrentPath is string path ? DisplayName(path) : null;
 
+    internal string? CurrentArtist => CurrentMetadata.Display.Artist;
+
+    /// <summary>The live programme metadata, distinct from the station's directory name.</summary>
+    internal MediaTags CurrentBroadcast => InRadioSession ? CurrentMetadata.Display : MediaTags.None;
+
+    internal Metadata CurrentMetadata
+    {
+        get
+        {
+            if (!_loaded) return Metadata.None;
+            var metadata = _engine.GetMetadata();
+            if (!InRadioSession) return metadata;
+            var tags = metadata.Display;
+            if (tags.Artist.Length > 0) return metadata;
+            // ICY commonly provides one "Artist - Title" field instead of separate tags. Only split
+            // that explicit separator; an unsplit programme title does not identify an artist.
+            var separator = tags.Title.IndexOf(" - ", StringComparison.Ordinal);
+            if (separator <= 0 || separator + 3 >= tags.Title.Length) return metadata;
+            var artist = tags.Title[..separator].Trim();
+            var title = tags.Title[(separator + 3)..].Trim();
+            return artist.Length > 0 && title.Length > 0
+                ? metadata with { Display = tags with { Artist = artist, Title = title } }
+                : metadata;
+        }
+    }
+
     /// <summary>The file name for local media, or the stored title for a network entry.</summary>
     internal string? CurrentName => CurrentPath is string path
         ? LinkValidator.IsHttpUrl(path) ? DisplayName(path) : MediaLibrary.DisplayName(path)

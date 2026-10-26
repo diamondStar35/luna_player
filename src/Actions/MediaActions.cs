@@ -42,6 +42,10 @@ internal static class MediaActions
             new(ActionId.AnnounceFileInfo, Tr("Speak information about the current file"), new("f")),
             // Translators: Name of the command that speaks the title stored in the current media file.
             new(ActionId.AnnounceTitle, Tr("Speak current media title"), new("i")),
+            // Translators: Shortcut-preferences command that speaks the current file or live radio programme's artist.
+            new(ActionId.AnnounceArtist, Tr("Speak current artist"), new("i", ShortcutModifiers.Shift)),
+            // Translators: Shortcut-preferences command that speaks available tags such as genre, album and station information for the current media.
+            new(ActionId.AnnounceMetadata, Tr("Speak current media metadata"), new("i", ShortcutModifiers.Control | ShortcutModifiers.Alt)),
             // Translators: Name of the command that gives the current file a new name on the disk.
             new(ActionId.RenameFile, Tr("Rename the current file"), new("f2", ShortcutModifiers.Shift)),
             // Translators: Name of the command that deletes the current file from the disk.

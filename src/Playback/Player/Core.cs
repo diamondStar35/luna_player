@@ -38,6 +38,7 @@ internal sealed partial class Player : IDisposable
         _engine.SelectionEnded += OnSelectionEnded;
         _engine.SelectionSeekCompleted += OnSelectionSeekCompleted;
         _engine.VideoAvailabilityChanged += OnVideoAvailabilityChanged;
+        _engine.MetadataChanged += OnMetadataChanged;
         _engine.AudioTracksChanged += OnAudioTracksChanged;
         _engine.SubtitleTracksChanged += OnSubtitleTracksChanged;
         _engine.SubtitleTextChanged += OnSubtitleTextChanged;
@@ -53,6 +54,8 @@ internal sealed partial class Player : IDisposable
     /// <summary>Raised when <see cref="HasVideo"/> may have changed, a moment after a file loads.</summary>
     internal event Action? VideoAvailabilityChanged;
 
+    internal event Action? MetadataChanged;
+
     /// <summary>Raised when the audio tracks the current file offers may have changed, a moment after a file
     /// loads.</summary>
     internal event Action? AudioTracksChanged;
@@ -63,6 +66,8 @@ internal sealed partial class Player : IDisposable
 
     /// <summary>Raised with each subtitle line as it appears, while a subtitle track is being read.</summary>
     internal event Action<string>? SubtitleTextChanged;
+
+    internal void RefreshState() => StateChanged?.Invoke();
 
     internal string? CurrentPath => _playlist.CurrentPath;
     internal int Count => _playlist.Count;
@@ -108,6 +113,7 @@ internal sealed partial class Player : IDisposable
         _engine.SelectionEnded -= OnSelectionEnded;
         _engine.SelectionSeekCompleted -= OnSelectionSeekCompleted;
         _engine.VideoAvailabilityChanged -= OnVideoAvailabilityChanged;
+        _engine.MetadataChanged -= OnMetadataChanged;
         _engine.AudioTracksChanged -= OnAudioTracksChanged;
         _engine.SubtitleTracksChanged -= OnSubtitleTracksChanged;
         _engine.SubtitleTextChanged -= OnSubtitleTextChanged;
@@ -136,6 +142,11 @@ internal sealed partial class Player : IDisposable
     {
         if (!_disposed)
             VideoAvailabilityChanged?.Invoke();
+    }
+
+    private void OnMetadataChanged()
+    {
+        if (!_disposed) MetadataChanged?.Invoke();
     }
 
     private void OnAudioTracksChanged()

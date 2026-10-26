@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-10-25 18:54+0300\n"
+"POT-Creation-Date: 2026-10-26 02:29+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,13 +49,13 @@ msgstr ""
 
 #. Translators: Name of the command that plays the next file, here in the list of shortcuts that work while another program is in front.
 #. Translators: Name of the command that plays the file after the current one.
-#: Actions/GlobalActions.cs:24 Actions/MediaActions.cs:76
+#: Actions/GlobalActions.cs:24 Actions/MediaActions.cs:80
 msgid "Play the next file"
 msgstr ""
 
 #. Translators: Name of the command that plays the previous file, here in the list of shortcuts that work while another program is in front.
 #. Translators: Name of the command that plays the file before the current one.
-#: Actions/GlobalActions.cs:26 Actions/MediaActions.cs:74
+#: Actions/GlobalActions.cs:26 Actions/MediaActions.cs:78
 msgid "Play the previous file"
 msgstr ""
 
@@ -150,104 +150,114 @@ msgstr ""
 msgid "Speak current media title"
 msgstr ""
 
-#. Translators: Name of the command that gives the current file a new name on the disk.
+#. Translators: Shortcut-preferences command that speaks the current file or live radio programme's artist.
 #: Actions/MediaActions.cs:46
+msgid "Speak current artist"
+msgstr ""
+
+#. Translators: Shortcut-preferences command that speaks available tags such as genre, album and station information for the current media.
+#: Actions/MediaActions.cs:48
+msgid "Speak current media metadata"
+msgstr ""
+
+#. Translators: Name of the command that gives the current file a new name on the disk.
+#: Actions/MediaActions.cs:50
 msgid "Rename the current file"
 msgstr ""
 
 #. Translators: Name of the command that deletes the current file from the disk.
-#: Actions/MediaActions.cs:48
+#: Actions/MediaActions.cs:52
 msgid "Delete the current file from the disk"
 msgstr ""
 
 #. Translators: Name of the command that copies the current file to the clipboard.
-#: Actions/MediaActions.cs:50
+#: Actions/MediaActions.cs:54
 msgid "Copy the current file to the clipboard"
 msgstr ""
 
 #. Translators: Name of the command that pastes files copied from Windows Explorer into the player.
-#: Actions/MediaActions.cs:52
+#: Actions/MediaActions.cs:56
 msgid "Paste files from the clipboard"
 msgstr ""
 
 #. Translators: Name of the command that marks or unmarks the current file. Marked files can then be copied, moved or deleted together.
-#: Actions/MediaActions.cs:54
+#: Actions/MediaActions.cs:58
 msgid "Mark or unmark the current file"
 msgstr ""
 
 #. Translators: Name of the command that marks or unmarks every loaded file at once.
-#: Actions/MediaActions.cs:56
+#: Actions/MediaActions.cs:60
 msgid "Mark or unmark all files"
 msgstr ""
 
 #. Translators: Name of the command that unmarks all marked files.
-#: Actions/MediaActions.cs:58
+#: Actions/MediaActions.cs:62
 msgid "Unmark all marked files"
 msgstr ""
 
 #. Translators: Name of the command that speaks how many files are marked.
-#: Actions/MediaActions.cs:60
+#: Actions/MediaActions.cs:64
 msgid "Speak the number of marked files"
 msgstr ""
 
 #. Translators: Name of the command that copies the marked files into a folder the user chooses.
-#: Actions/MediaActions.cs:62
+#: Actions/MediaActions.cs:66
 msgid "Copy the marked files to a folder"
 msgstr ""
 
 #. Translators: Name of the command that moves the marked files into a folder the user chooses.
-#: Actions/MediaActions.cs:64
+#: Actions/MediaActions.cs:68
 msgid "Move the marked files to a folder"
 msgstr ""
 
 #. Translators: Name of the command that copies the marked files to the clipboard.
-#: Actions/MediaActions.cs:66
+#: Actions/MediaActions.cs:70
 msgid "Copy the marked files to the clipboard"
 msgstr ""
 
 #. Translators: Name of the command that deletes the marked files from the disk.
-#: Actions/MediaActions.cs:68
+#: Actions/MediaActions.cs:72
 msgid "Delete the marked files from the disk"
 msgstr ""
 
 #. Translators: Name of the command that saves the position playing has reached as a bookmark.
-#: Actions/MediaActions.cs:70
+#: Actions/MediaActions.cs:74
 msgid "Add a bookmark at the current position"
 msgstr ""
 
 #. Translators: Name of the command that opens the window for renaming and deleting bookmarks.
-#: Actions/MediaActions.cs:72
+#: Actions/MediaActions.cs:76
 msgid "Manage bookmarks dialog"
 msgstr ""
 
 #. Translators: Name of the command that plays the first file in the list.
-#: Actions/MediaActions.cs:78
+#: Actions/MediaActions.cs:82
 msgid "Play the first file in the list"
 msgstr ""
 
 #. Translators: Name of the command that opens the window asking for a file number to jump to.
-#: Actions/MediaActions.cs:80
+#: Actions/MediaActions.cs:84
 msgid "Go to file dialog"
 msgstr ""
 
 #. Translators: Name of the command that plays the last file in the list.
-#: Actions/MediaActions.cs:82
+#: Actions/MediaActions.cs:86
 msgid "Play the last file in the list"
 msgstr ""
 
 #. Translators: Name of the command that turns playing the files in random order on or off.
-#: Actions/MediaActions.cs:84
+#: Actions/MediaActions.cs:88
 msgid "Turn shuffle on or off"
 msgstr ""
 
 #. Translators: Name of the command that turns repeating the current file on or off.
-#: Actions/MediaActions.cs:86
+#: Actions/MediaActions.cs:90
 msgid "Turn repeat file on or off"
 msgstr ""
 
 #. Translators: Name of the command that jumps to one of the ten numbered bookmark slots of the current file.
 #. {number} is the slot, 1 to 10.
-#: Actions/MediaActions.cs:90
+#: Actions/MediaActions.cs:94
 msgid "Jump to bookmark {number}"
 msgstr ""
 
@@ -764,8 +774,8 @@ msgstr ""
 #: Application/Commands/App/Preferences.cs:42
 #: Application/Commands/App/Preferences.cs:48
 #: Application/Commands/App/Preferences.cs:56
-#: Application/Commands/App/Preferences.cs:129
-#: Application/Commands/App/Preferences.cs:138
+#: Application/Commands/App/Preferences.cs:128
+#: Application/Commands/App/Preferences.cs:137
 #: UI/Dialogs/PreferencesDialog.cs:38 UI/Dialogs/PreferencesDialog.cs:232
 msgid "Preferences"
 msgstr ""
@@ -781,12 +791,12 @@ msgid "Could not apply the silence removal filter."
 msgstr ""
 
 #. Translators: Shown when the settings the user accepted could not be written to disk.
-#: Application/Commands/App/Preferences.cs:127
+#: Application/Commands/App/Preferences.cs:126
 msgid "Could not save settings."
 msgstr ""
 
 #. Translators: Shown after the user picks a different language, because the player only reads it when it starts.
-#: Application/Commands/App/Preferences.cs:136
+#: Application/Commands/App/Preferences.cs:135
 msgid "Please restart the app for language changes to take effect."
 msgstr ""
 
@@ -1159,28 +1169,28 @@ msgstr[1] ""
 #. Translators: Spoken when a launch-time folder holds nothing this player can play.
 #. Translators: Spoken when the chosen folder holds nothing this player can play.
 #. Translators: Spoken when the folder and the folders inside it hold nothing this player can play.
-#: Application/Commands/Files/Files.cs:116
-#: Application/Commands/Files/Files.cs:220
-#: Application/Commands/Files/Files.cs:374
+#: Application/Commands/Files/Files.cs:118
+#: Application/Commands/Files/Files.cs:222
+#: Application/Commands/Files/Files.cs:376
 msgid "No audio files found in that folder."
 msgstr ""
 
 #. Translators: Short announcement when a launch-time folder holds no playable files.
 #. Translators: The short wording spoken when the chosen folder holds nothing this player can play.
 #. Translators: The short wording spoken when a folder holds nothing this player can play.
-#: Application/Commands/Files/Files.cs:118
-#: Application/Commands/Files/Files.cs:222
-#: Application/Commands/Files/Files.cs:376
+#: Application/Commands/Files/Files.cs:120
+#: Application/Commands/Files/Files.cs:224
+#: Application/Commands/Files/Files.cs:378
 msgid "No audio files."
 msgstr ""
 
 #. Translators: Asks the user for the web address of the stream they want to play.
-#: Application/Commands/Files/Files.cs:181
+#: Application/Commands/Files/Files.cs:183
 msgid "Enter link to play."
 msgstr ""
 
 #. Translators: Title of the window that asks for the web address of a stream to play.
-#: Application/Commands/Files/Files.cs:183
+#: Application/Commands/Files/Files.cs:185
 msgid "Open Link"
 msgstr ""
 
@@ -1188,20 +1198,20 @@ msgstr ""
 #. "http" and "https" are the names of the two web protocols and are not translated.
 #. Translators: Shown when a typed YouTube address does not begin with a supported web protocol.
 #. Translators: Shown when a favourite is saved with something that is not a web address.
-#: Application/Commands/Files/Files.cs:193
+#: Application/Commands/Files/Files.cs:195
 #: Application/Commands/YouTube/YouTube.cs:92 Favorites/FavoriteStore.cs:140
 msgid "The link must start with http or https."
 msgstr ""
 
 #. Translators: Title of the message shown when the address typed into Open Link is not a web address.
 #. Translators: Title of the message shown when what was typed is not a web address.
-#: Application/Commands/Files/Files.cs:195
+#: Application/Commands/Files/Files.cs:197
 #: Application/Commands/YouTube/YouTube.cs:94
 msgid "Invalid link"
 msgstr ""
 
 #. Translators: Shown when the stream at the address typed into Open Link could not be played.
-#: Application/Commands/Files/Files.cs:206
+#: Application/Commands/Files/Files.cs:208
 msgid "Could not open the link."
 msgstr ""
 
@@ -1212,13 +1222,13 @@ msgstr ""
 #. Translators: Title of a message telling the user that something went wrong.
 #. Translators: Title of the message shown when a download could not finish.
 #. Translators: Title of a message box reporting a Spotify or playback failure.
-#: Application/Commands/Files/Files.cs:208
+#: Application/Commands/Files/Files.cs:210
 #: Application/Commands/Files/Playlists.cs:49
 #: Application/Commands/Files/Playlists.cs:62
 #: Application/Commands/Files/Playlists.cs:71
 #: Application/Commands/Playback/Bookmarks.cs:153
-#: Application/Commands/YouTube/Download.cs:121 Application/Spotify.cs:138
-#: Application/Spotify.cs:192 UI/Spotify/Browsing.cs:278
+#: Application/Commands/YouTube/Download.cs:121 Application/Spotify.cs:143
+#: Application/Spotify.cs:197 UI/Spotify/Browsing.cs:278
 #: UI/Spotify/SearchResultsDialog.cs:155 UI/Spotify/TracksDialog.cs:150
 msgid "Error"
 msgstr ""
@@ -1228,58 +1238,58 @@ msgstr ""
 #. Translators: Spoken after closing a radio session and restoring the original playlist paused.
 #. Translators: Spoken once the current file has been removed from the playlist.
 #. Translators: Short announcement once the current file has been removed from the playlist.
-#: Application/Commands/Files/Files.cs:233
 #: Application/Commands/Files/Files.cs:235
-#: Application/Commands/Files/Files.cs:242
-#: Application/Commands/Files/Files.cs:257
+#: Application/Commands/Files/Files.cs:237
+#: Application/Commands/Files/Files.cs:244
 #: Application/Commands/Files/Files.cs:259
+#: Application/Commands/Files/Files.cs:261
 msgid "File closed."
 msgstr ""
 
 #. Translators: Spoken when the current file could not be taken out of the playlist.
-#: Application/Commands/Files/Files.cs:250
+#: Application/Commands/Files/Files.cs:252
 msgid "Could not close the file."
 msgstr ""
 
 #. Translators: The short wording spoken when a file could not be closed.
 #. Translators: The short wording spoken when the files could not be closed.
-#: Application/Commands/Files/Files.cs:252
-#: Application/Commands/Files/Files.cs:275
+#: Application/Commands/Files/Files.cs:254
+#: Application/Commands/Files/Files.cs:277
 msgid "Close failed."
 msgstr ""
 
 #. Translators: Spoken when the loaded files could not be taken out of the playlist.
-#: Application/Commands/Files/Files.cs:273
+#: Application/Commands/Files/Files.cs:275
 msgid "Could not close files."
 msgstr ""
 
 #. Translators: Spoken once every file has been removed from the playlist.
 #. Translators: Short announcement once every file has been removed from the playlist.
-#: Application/Commands/Files/Files.cs:280
 #: Application/Commands/Files/Files.cs:282
+#: Application/Commands/Files/Files.cs:284
 msgid "All files closed."
 msgstr ""
 
 #. Translators: The short wording spoken when Windows could not be asked to open a folder.
 #. Translators: The short wording spoken when Windows could not show a file's properties.
-#: Application/Commands/Files/Files.cs:290
+#: Application/Commands/Files/Files.cs:292
 #: Application/Commands/Files/Info.cs:35
 msgid "Open failed."
 msgstr ""
 
 #. Translators: Title of the progress window shown while a folder and the folders inside it are being searched for media.
-#: Application/Commands/Files/Files.cs:354
+#: Application/Commands/Files/Files.cs:356
 msgid "Opening files"
 msgstr ""
 
 #. Translators: First message in the progress window, before any file has been found.
-#: Application/Commands/Files/Files.cs:356
+#: Application/Commands/Files/Files.cs:358
 msgid "Loading files from folder and subfolders..."
 msgstr ""
 
 #. Translators: Progress message while a folder is being searched. {found} is how many media files
 #. have been found so far.
-#: Application/Commands/Files/Files.cs:359
+#: Application/Commands/Files/Files.cs:361
 msgid "Opening files... {found} media files found"
 msgstr ""
 
@@ -1373,14 +1383,113 @@ msgstr ""
 msgid "Unable to copy to clipboard."
 msgstr ""
 
-#. Translators: Spoken when the current media file contains no title metadata.
-#: Application/Commands/Files/Info.cs:220
-msgid "The current file has no title."
+#. Translators: Line spoken by Ctrl+Alt+I identifying the radio station. {station} is its name from the stream or radio directory.
+#: Application/Commands/Files/Info.cs:223
+msgid "Station: {station}"
 msgstr ""
 
+#. Translators: Line spoken by Ctrl+Alt+I. {title} is the current file or radio programme title.
+#: Application/Commands/Files/Info.cs:227
+msgid "Title: {title}"
+msgstr ""
+
+#. Translators: Line spoken by Ctrl+Alt+I. {artist} is the performer named by the current media or radio broadcast.
+#: Application/Commands/Files/Info.cs:230
+msgid "Artist: {artist}"
+msgstr ""
+
+#. Translators: Line spoken by Ctrl+Alt+I. {album} is the album named in the current media's metadata.
+#: Application/Commands/Files/Info.cs:233
+msgid "Album: {album}"
+msgstr ""
+
+#. Translators: Line spoken by Ctrl+Alt+I. {artist} is the album artist, which can differ from the current track's performer.
+#: Application/Commands/Files/Info.cs:236
+msgid "Album artist: {artist}"
+msgstr ""
+
+#. Translators: Line spoken by Ctrl+Alt+I. {genre} is the genre supplied by the file or radio stream.
+#: Application/Commands/Files/Info.cs:239
+msgid "Genre: {genre}"
+msgstr ""
+
+#. Translators: Line spoken by Ctrl+Alt+I. {description} is a description or comment supplied by the current media or radio station.
+#: Application/Commands/Files/Info.cs:242
+msgid "Description: {description}"
+msgstr ""
+
+#. Translators: Line spoken by Ctrl+Alt+I. {date} is the release or recording date exactly as supplied by the media.
+#: Application/Commands/Files/Info.cs:245
+msgid "Date: {date}"
+msgstr ""
+
+#. Translators: Line spoken by Ctrl+Alt+I. {number} is the track's number within its album.
+#: Application/Commands/Files/Info.cs:248
+msgid "Track number: {number}"
+msgstr ""
+
+#. Translators: Line spoken by Ctrl+Alt+I. {number} is the disc number within a multi-disc album.
+#: Application/Commands/Files/Info.cs:251
+msgid "Disc number: {number}"
+msgstr ""
+
+#. Translators: Line spoken by Ctrl+Alt+I. {composer} is the composer named in the media's metadata.
+#: Application/Commands/Files/Info.cs:254
+msgid "Composer: {composer}"
+msgstr ""
+
+#. Translators: Line spoken by Ctrl+Alt+I. {language} is the language name or code supplied by the current media.
+#: Application/Commands/Files/Info.cs:257
+msgid "Language: {language}"
+msgstr ""
+
+#. Translators: Line spoken by Ctrl+Alt+I. {publisher} is the publisher or organization named by the current media.
+#: Application/Commands/Files/Info.cs:260
+msgid "Publisher: {publisher}"
+msgstr ""
+
+#. Translators: Line spoken by Ctrl+Alt+I. {copyright} is the media's copyright notice.
+#: Application/Commands/Files/Info.cs:263
+msgid "Copyright: {copyright}"
+msgstr ""
+
+#. Translators: Line spoken by Ctrl+Alt+I. {url} is the website supplied by the media or radio station.
+#. Translators: Radio station details. {url} is the station's website.
+#: Application/Commands/Files/Info.cs:266 UI/Radio/DetailsDialog.cs:33
+msgid "Website: {url}"
+msgstr ""
+
+#. Translators: Line spoken by Ctrl+Alt+I. {bitrate} is the radio stream's advertised bitrate in kilobits per second. Keep kbps as the bitrate unit.
+#. Translators: Radio station details. {bitrate} is the bitrate in kilobits per second.
+#: Application/Commands/Files/Info.cs:269 UI/Radio/DetailsDialog.cs:29
+msgid "Bitrate: {bitrate} kbps"
+msgstr ""
+
+#. Translators: Spoken by Ctrl+Alt+I when the current media provides no metadata to announce.
+#: Application/Commands/Files/Info.cs:272
+msgid "No metadata is available."
+msgstr ""
+
+#. Translators: Spoken by Shift+I when the current file or radio broadcast provides no artist information.
+#: Application/Commands/Files/Info.cs:283
+msgid "Unknown artist."
+msgstr ""
+
+#. Translators: Spoken by I when the live radio station supplies no programme title.
+#: Application/Commands/Files/Info.cs:301
+msgid "The current radio broadcast has no title."
+msgstr ""
+
+#. Translators: Short announcement by I when the live radio station supplies no programme title.
 #. Translators: Short announcement when the current media file contains no title metadata.
-#: Application/Commands/Files/Info.cs:222
+#: Application/Commands/Files/Info.cs:303
+#: Application/Commands/Files/Info.cs:309
 msgid "No title."
+msgstr ""
+
+#. Translators: Spoken when the current media file contains no title metadata.
+#: Application/Commands/Files/Info.cs:307
+msgid "The current file has no title."
 msgstr ""
 
 #. Translators: Title of the progress window shown while the marked files are being moved into another folder.
@@ -2582,7 +2691,7 @@ msgstr ""
 #. Translators: Title of an error shown while resolving or playing a YouTube video.
 #: Application/Commands/YouTube/CurrentVideo.cs:42
 #: UI/Dialogs/PreferencesDialog.cs:57 YouTube/Playback/Browsing.cs:250
-#: YouTube/Playback/Sessions.cs:362
+#: YouTube/Playback/Sessions.cs:360
 msgid "YouTube"
 msgstr ""
 
@@ -2594,14 +2703,14 @@ msgstr ""
 #. Translators: Spoken when the playing video does not say which channel published it.
 #. Translators: Spoken when the chosen video does not say which channel published it.
 #: Application/Commands/YouTube/CurrentVideo.cs:89 YouTube/Playback/Feed.cs:55
-#: YouTube/Playback/Sessions.cs:290
+#: YouTube/Playback/Sessions.cs:288
 msgid "Channel link is not available."
 msgstr ""
 
 #. Translators: The short wording spoken when the playing video does not name its channel.
 #. Translators: The short wording spoken when the chosen video does not name its channel.
 #: Application/Commands/YouTube/CurrentVideo.cs:91 YouTube/Playback/Feed.cs:57
-#: YouTube/Playback/Sessions.cs:292
+#: YouTube/Playback/Sessions.cs:290
 msgid "No channel link."
 msgstr ""
 
@@ -2818,7 +2927,7 @@ msgid "All items in the download queue have completed."
 msgstr ""
 
 #. Translators: Shown when settings could not be read. {error} is the underlying file or data error.
-#: Application/Features.cs:195
+#: Application/Features.cs:192
 msgid ""
 "The settings file could not be loaded. Default settings will be used, and "
 "the existing file will not be overwritten. Import a valid settings file or "
@@ -2828,7 +2937,7 @@ msgid ""
 msgstr ""
 
 #. Translators: Title of the message shown when settings could not be read.
-#: Application/Features.cs:197
+#: Application/Features.cs:194
 msgid "Settings error"
 msgstr ""
 
@@ -2924,14 +3033,14 @@ msgid "No sleep timer"
 msgstr ""
 
 #. Translators: Main window title during Spotify playback. {title} is the artist and track; {app} is the program name.
-#. Translators: Window title while a track is open. {title} is the track, {app} the program name.
+#. Translators: Window title while media is open. {title} is the track or radio programme title; {app} is the program name.
 #: Application/Presentation/WindowTitlePresenter.cs:47
 #: Application/Presentation/WindowTitlePresenter.cs:64
 msgid "{title} - {app}"
 msgstr ""
 
 #. Translators: Main window title while Spotify playback is paused. {title} is the artist and track; {app} is the program name.
-#. Translators: Window title while playback is paused. {title} is the track, {app} the program name.
+#. Translators: Window title while playback is paused. {title} is the track or radio programme title; {app} is the program name.
 #: Application/Presentation/WindowTitlePresenter.cs:49
 #: Application/Presentation/WindowTitlePresenter.cs:62
 msgid "[Paused]: {title} - {app}"
@@ -3081,7 +3190,7 @@ msgstr ""
 #. Translators: Type of a song collection in the Spotify browser.
 #. Translators: Marks a row in the results list as a playlist rather than a single video.
 #. Translators: Search filter: return playlists rather than videos.
-#: Favorites/FavoriteStore.cs:176 Spotify/Catalog.cs:39
+#: Favorites/FavoriteStore.cs:176 Spotify/Catalog.cs:40
 #: UI/YouTube/ResultsDialog.cs:344 UI/YouTube/SearchDialog.cs:74
 msgid "Playlist"
 msgstr ""
@@ -3282,17 +3391,17 @@ msgid "Could not reach the radio directory. Check your internet connection."
 msgstr ""
 
 #. Translators: Title of the summary of loaded stations in a radio playback session.
-#: Radio/Playback.cs:162
+#: Radio/Playback.cs:165
 msgid "Radio session"
 msgstr ""
 
 #. Translators: Radio session summary. {count} is the number of stations loaded for the selected category.
-#: Radio/Playback.cs:164
+#: Radio/Playback.cs:167
 msgid "Loaded stations: {count}"
 msgstr ""
 
 #. Translators: Error shown when MPV could not accept the selected radio station.
-#: Radio/Playback.cs:216
+#: Radio/Playback.cs:219
 msgid "Could not open the radio station."
 msgstr ""
 
@@ -3300,14 +3409,14 @@ msgstr ""
 #. Translators: Title of a message reporting a radio station navigation or preparation failure.
 #. Translators: Title of a failure to open a radio station's website in the user's browser.
 #. Translators: Title of an error reporting a radio browser operation failure.
-#: Radio/Playback.cs:218 Radio/Playback.cs:301 UI/Radio/Actions.cs:104
+#: Radio/Playback.cs:221 Radio/Playback.cs:304 UI/Radio/Actions.cs:104
 #: UI/Radio/Loading.cs:190
 msgid "Radio error"
 msgstr ""
 
 #. Translators: Title of a warning when local radio favorites or history could not be saved.
 #. Translators: Title of a warning that locally saved radio stations could not be read.
-#: Radio/Playback.cs:319 UI/Radio/Loading.cs:96
+#: Radio/Playback.cs:322 UI/Radio/Loading.cs:96
 msgid "Radio library"
 msgstr ""
 
@@ -3374,7 +3483,7 @@ msgid "{name} - {kind} - {volume}%"
 msgstr ""
 
 #. Translators: Confirmation displayed in the browser after returning from Spotify authorization.
-#: Spotify/Auth.cs:31 Spotify/Playback.cs:60
+#: Spotify/Auth.cs:31 Spotify/Playback/Sessions.cs:61
 msgid "You can return to Luna Player now."
 msgstr ""
 
@@ -3429,104 +3538,104 @@ msgid "Spotify sign in was not completed. Please try again."
 msgstr ""
 
 #. Translators: Row in the Spotify browser. {name} is the collection name and {kind} is its translated type.
-#: Spotify/Catalog.cs:12
+#: Spotify/Catalog.cs:13
 msgid "{name} - {kind}"
 msgstr ""
 
 #. Translators: Name of the saved favorite tracks collection in the Spotify browser.
 #. Translators: Collection type in the Spotify library, containing the user's saved favorite tracks.
-#: Spotify/Catalog.cs:16 Spotify/Catalog.cs:27
+#: Spotify/Catalog.cs:17 Spotify/Catalog.cs:28
 msgid "Liked songs"
 msgstr ""
 
 #. Translators: Fallback name in the Spotify browser when a playlist has no name.
-#: Spotify/Catalog.cs:18
+#: Spotify/Catalog.cs:19
 msgid "Untitled playlist"
 msgstr ""
 
 #. Translators: Description of the saved favorite tracks collection in the Spotify browser.
-#: Spotify/Catalog.cs:22
+#: Spotify/Catalog.cs:23
 msgid "Tracks saved to your Spotify library."
 msgstr ""
 
 #. Translators: Collection type on Spotify Home, containing the user's most played tracks.
 #. Translators: Collection name on the Spotify Home tab for the account's most played songs.
-#: Spotify/Catalog.cs:29 UI/Spotify/Browsing.cs:161
+#: Spotify/Catalog.cs:30 UI/Spotify/Browsing.cs:161
 msgid "Your top tracks"
 msgstr ""
 
 #. Translators: Collection type on Spotify Home, containing listening history.
 #. Translators: Radio tree category containing this user's recently played stations.
 #. Translators: Collection name on the Spotify Home tab for listening history.
-#: Spotify/Catalog.cs:31 UI/Radio/Navigation.cs:23 UI/Spotify/Browsing.cs:166
+#: Spotify/Catalog.cs:32 UI/Radio/Navigation.cs:23 UI/Spotify/Browsing.cs:166
 msgid "Recently played"
 msgstr ""
 
 #. Translators: Type of a personalized song collection in the Spotify browser.
-#: Spotify/Catalog.cs:33
+#: Spotify/Catalog.cs:34
 msgid "Mix"
 msgstr ""
 
 #. Translators: Type of a collection of related tracks in the Spotify browser.
-#: Spotify/Catalog.cs:35
+#: Spotify/Catalog.cs:36
 msgid "Radio"
 msgstr ""
 
 #. Translators: Type of a musician or group result in Spotify search.
-#: Spotify/Catalog.cs:37
+#: Spotify/Catalog.cs:38
 msgid "Artist"
 msgstr ""
 
 #. Translators: Spotify track title used in the main window, opened-files list and navigation announcements. {name} is the song and {artists} lists its performers.
-#: Spotify/Catalog.cs:46
+#: Spotify/Catalog.cs:47
 msgid "{name} - {artists}"
 msgstr ""
 
 #. Translators: Track row in Spotify lists. {name} is the song, {artists} lists its performers and {duration} is its playing time.
-#: Spotify/Catalog.cs:49
+#: Spotify/Catalog.cs:50
 msgid "{name} - {artists} - {duration}"
 msgstr ""
 
 #. Translators: A song result in Spotify search. {track} contains the name, artists and duration; Track identifies the result type.
-#: Spotify/Catalog.cs:63
+#: Spotify/Catalog.cs:64
 msgid "{track} - Track"
 msgstr ""
 
 #. Translators: Error when a Spotify developer app has exhausted its quota. {wait} is the localized waiting time.
-#: Spotify/Catalog.cs:77
+#: Spotify/Catalog.cs:78
 msgid ""
 "Spotify's developer-app quota has been reached. Spotify says to try again in "
 "{wait}."
 msgstr ""
 
 #. Translators: Error when Spotify has exhausted a developer app's quota without saying when it resets.
-#: Spotify/Catalog.cs:79
+#: Spotify/Catalog.cs:80
 msgid ""
 "Spotify's developer-app quota has been reached. Spotify did not provide a "
 "reset time."
 msgstr ""
 
 #. Translators: Waiting time in a Spotify quota error. {count} is the number of hours.
-#: Spotify/Catalog.cs:88
+#: Spotify/Catalog.cs:89
 msgid "{count} hour"
 msgid_plural "{count} hours"
 msgstr[0] ""
 msgstr[1] ""
 
 #. Translators: Waiting time in a Spotify quota error. {count} is the number of minutes.
-#: Spotify/Catalog.cs:90
+#: Spotify/Catalog.cs:91
 msgid "{count} minute"
 msgid_plural "{count} minutes"
 msgstr[0] ""
 msgstr[1] ""
 
 #. Translators: Waiting time in a Spotify quota error. {hours} and {minutes} already contain their localized number and unit.
-#: Spotify/Catalog.cs:93
+#: Spotify/Catalog.cs:94
 msgid "{hours} and {minutes}"
 msgstr ""
 
 #. Translators: Error when Spotify asks the app to delay requests. {seconds} is the waiting time in seconds.
-#: Spotify/Catalog.cs:104
+#: Spotify/Catalog.cs:105
 msgid "Spotify asked Luna to wait about {seconds} second before trying again."
 msgid_plural ""
 "Spotify asked Luna to wait about {seconds} seconds before trying again."
@@ -3534,66 +3643,66 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. Translators: Error when Spotify continues limiting requests without giving a waiting time.
-#: Spotify/Catalog.cs:109
+#: Spotify/Catalog.cs:110
 msgid "Spotify is still limiting requests. Wait a moment and try again."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:428
+#: Spotify/Catalog.cs:429
 msgid "Spotify authorization expired. Sign in again."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:430
+#: Spotify/Catalog.cs:431
 msgid ""
 "Spotify does not allow this content for this developer app or account. Some "
 "playlists and recommendations are restricted."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:432
+#: Spotify/Catalog.cs:433
 msgid "Spotify rate limit reached. Wait a moment and try again."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails. {code} is the HTTP status code.
-#: Spotify/Catalog.cs:434
+#: Spotify/Catalog.cs:435
 msgid "Spotify request failed ({code})."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:436
+#: Spotify/Catalog.cs:437
 msgid "Could not reach Spotify. Check your internet connection."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:438
+#: Spotify/Catalog.cs:439
 msgid "Spotify did not respond in time."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:440
+#: Spotify/Catalog.cs:441
 msgid "Spotify refused the playback sign in. Sign in again."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:442
+#: Spotify/Catalog.cs:443
 msgid "Spotify could not load this track."
 msgstr ""
 
 #. Translators: Error when Spotify audio/network data or protected account files cannot be read or saved.
-#: Spotify/Catalog.cs:444
+#: Spotify/Catalog.cs:445
 msgid ""
 "Spotify could not read or save required data. Check your connection and "
 "available storage, then try again."
 msgstr ""
 
 #. Translators: Error when an operation outlives its disconnected Spotify session.
-#: Spotify/Catalog.cs:446
+#: Spotify/Catalog.cs:447
 msgid "Spotify was disconnected. Sign in again to continue."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails. {reason} is the failure reason returned by the service.
-#: Spotify/Catalog.cs:448
+#: Spotify/Catalog.cs:449
 msgid "Spotify request failed: {reason}"
 msgstr ""
 
@@ -6689,19 +6798,9 @@ msgstr ""
 msgid "Codec: {codec}"
 msgstr ""
 
-#. Translators: Radio station details. {bitrate} is the bitrate in kilobits per second.
-#: UI/Radio/DetailsDialog.cs:29
-msgid "Bitrate: {bitrate} kbps"
-msgstr ""
-
 #. Translators: Radio station details. {url} is the stream address.
 #: UI/Radio/DetailsDialog.cs:31
 msgid "Stream URL: {url}"
-msgstr ""
-
-#. Translators: Radio station details. {url} is the station's website.
-#: UI/Radio/DetailsDialog.cs:33
-msgid "Website: {url}"
 msgstr ""
 
 #. Translators: Radio station details. {count} is the station's public vote count.
@@ -8144,7 +8243,7 @@ msgstr ""
 
 #. Translators: A channel browser tab: the channel's ordinary videos.
 #. Translators: Title of the window listing the videos a search or a playlist turned up.
-#: YouTube/Client/Channels.cs:30 YouTube/Playback/Sessions.cs:262
+#: YouTube/Client/Channels.cs:30 YouTube/Playback/Sessions.cs:259
 msgid "Videos"
 msgstr ""
 
@@ -8351,39 +8450,39 @@ msgid "Loading more videos..."
 msgstr ""
 
 #. Translators: Shown when a video was found but the player could not start playing it.
-#: YouTube/Playback/Playing.cs:69
+#: YouTube/Playback/Playing.cs:75
 msgid "Could not open YouTube stream."
 msgstr ""
 
 #. Translators: Spoken when the video before this one is being fetched before it can be played.
 #. Translators: The short wording spoken while the video before this one is being fetched.
-#: YouTube/Playback/Playing.cs:90 YouTube/Playback/Playing.cs:95
+#: YouTube/Playback/Playing.cs:96 YouTube/Playback/Playing.cs:101
 msgid "Loading previous video..."
 msgstr ""
 
 #. Translators: Spoken when the video after this one is being fetched before it can be played.
 #. Translators: The short wording spoken while the video after this one is being fetched.
-#: YouTube/Playback/Playing.cs:92 YouTube/Playback/Playing.cs:97
+#: YouTube/Playback/Playing.cs:98 YouTube/Playback/Playing.cs:103
 msgid "Loading next video..."
 msgstr ""
 
 #. Translators: Spoken when the video before this one could not be fetched.
-#: YouTube/Playback/Playing.cs:137
+#: YouTube/Playback/Playing.cs:143
 msgid "Could not load the previous video."
 msgstr ""
 
 #. Translators: Spoken when the video after this one could not be fetched, so playback stops.
-#: YouTube/Playback/Playing.cs:139
+#: YouTube/Playback/Playing.cs:145
 msgid "Could not load the next video."
 msgstr ""
 
 #. Translators: The short wording spoken when the previous video could not be fetched.
-#: YouTube/Playback/Playing.cs:142
+#: YouTube/Playback/Playing.cs:148
 msgid "Previous video failed."
 msgstr ""
 
 #. Translators: The short wording spoken when the next video could not be fetched.
-#: YouTube/Playback/Playing.cs:144
+#: YouTube/Playback/Playing.cs:150
 msgid "Next video failed."
 msgstr ""
 
@@ -8398,12 +8497,12 @@ msgid "This link does not include a YouTube video."
 msgstr ""
 
 #. Translators: Title of the window shown while the address of a video is being looked up.
-#: YouTube/Playback/Sessions.cs:351
+#: YouTube/Playback/Sessions.cs:349
 msgid "Loading YouTube stream"
 msgstr ""
 
 #. Translators: First message shown while the address of a video is being looked up.
-#: YouTube/Playback/Sessions.cs:353
+#: YouTube/Playback/Sessions.cs:351
 msgid "Fetching stream URL..."
 msgstr ""
 
