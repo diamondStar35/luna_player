@@ -72,14 +72,19 @@ internal sealed partial class Features
     private bool ReturnToSpotify()
     {
         if (!_spotifyPlayback.HasSession) return false;
-        var snapshot = new LunaPlayer.UI.Spotify.DialogOutcome(_spotifyPlayback.CurrentTrack,
-            _spotifyPlayback.IsActive ? _spotifyPlayback.SourceQueue : null,
-            NextCursor: _spotifyPlayback.NextPage);
+        var snapshot = SpotifyBrowserPosition();
         LeaveSpotify();
         _controller?.RefreshView();
         _dispatcher.Post(() => OpenSpotify(snapshot));
         return true;
     }
+
+    private LunaPlayer.UI.Spotify.DialogOutcome? SpotifyBrowserPosition()
+        => _spotifyPlayback.HasSession
+            ? new(_spotifyPlayback.CurrentTrack,
+                _spotifyPlayback.IsActive ? _spotifyPlayback.SourceQueue : null,
+                NextCursor: _spotifyPlayback.NextPage)
+            : null;
 
     private void OnSpotifyQueueEmpty() => ReturnToSpotify();
 

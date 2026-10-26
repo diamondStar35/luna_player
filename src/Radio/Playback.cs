@@ -69,7 +69,9 @@ internal sealed class Playback : IDisposable
     internal IReadOnlyList<Station> Stations => _session is { } session
         ? Enumerable.Range(0, Count).Select(index => session.View.Stations[session.At(index)]).ToArray() : [];
 
-    internal void Open()
+    internal void Open() => ShowBrowser(leavePlayback: false);
+
+    private void ShowBrowser(bool leavePlayback)
     {
         if (_opening || _disposed) return;
         _opening = true;
@@ -79,7 +81,7 @@ internal sealed class Playback : IDisposable
             if (returnToStation)
             {
                 _data!.Browsing.Restore(_session!.View);
-                Stop(restore: true);
+                if (leavePlayback) Stop(restore: true);
             }
             var data = _data ??= new Data();
             if (!returnToStation)
@@ -92,6 +94,7 @@ internal sealed class Playback : IDisposable
             if (choice is null || _disposed) return;
             var index = choice.Stations.FindIndex(station => station.StationUuid == choice.Selected);
             if (index < 0) return;
+            CancelNavigation();
             _leaveYouTube();
             _player.BeginRadioSession();
             _session = new Session(choice, index);
@@ -103,7 +106,7 @@ internal sealed class Playback : IDisposable
     internal bool HandleEscape()
     {
         if (!IsActive) return false;
-        Open();
+        ShowBrowser(leavePlayback: true);
         return true;
     }
 

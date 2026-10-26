@@ -158,10 +158,7 @@ internal sealed partial class Features : IDisposable
         _tools = tools;
         _ = new Commands.Iptv.Iptv(router, _view, player, speech, _dispatcher,
             features.IptvSources);
-        router.Register(ActionId.OpenSpotifyBrowser, () =>
-        {
-            if (!ReturnToSpotify()) OpenSpotify();
-        });
+        router.Register(ActionId.OpenSpotifyBrowser, () => OpenSpotify(SpotifyBrowserPosition()));
         var sleepTimer = new SleepTimer(_dispatcher, player, speech, _spotifyPlayback, CancelPendingSpotifyStart);
         _sleepTimer = sleepTimer;
         _ = new Sleep(router, _view, player, sleepTimer, _settings, _settingsStore);

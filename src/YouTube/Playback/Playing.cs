@@ -16,12 +16,17 @@ internal sealed partial class Sessions
     /// <summary>Starts a video from a session and makes it the session's current one.</summary>
     private bool Start(Session session, int index, Resolved ready, int direction = 1)
     {
-        // Refusing rather than installing it: a session that is no longer the current one has been
-        // disposed, and putting it back would leave the player driving a list nothing can add to.
-        if (!ReferenceEquals(_session, session))
+        if (!Owns(session))
             return false;
+        var previous = _session;
+        _session = session;
         if (!Open(ready, Session.AudioFor(session.Mode)))
+        {
+            _session = previous;
             return false;
+        }
+        _pending = null;
+        if (!ReferenceEquals(previous, session)) previous?.Dispose();
         session.Selected = index;
         var adjacent = index + Math.Sign(direction);
         if (adjacent >= 0 && adjacent < session.Items.Count)
@@ -56,6 +61,7 @@ internal sealed partial class Sessions
     /// </remarks>
     private bool OpenAlone(Resolved ready)
     {
+        Clear();
         _activeChannelUrl = ready.Item.ChannelUrl;
         return Report(_player.OpenStream(ready.Url, ready.Item.Title, ready.Item.Url, ready.AudioUrl));
     }
