@@ -7,15 +7,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-10-26 01:01+0200\n"
-"PO-Revision-Date: 2026-10-25 17:26+02:00\n"
-"Last-Translator: makhlwf mohammed <altrhwnyashrf1@gmail.com>\n"
+"POT-Creation-Date: 2026-10-26 02:29+0300\n"
+"PO-Revision-Date: 2026-10-26 03:43+0200\n"
+"Last-Translator: makhlwf <altrhwnyashrf1@gmail.com>\n"
 "Language-Team: Arabic <altrhwnyashrf1@gmail.com>\n"
 "Language: ar\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5);\n"
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && "
+"n%100<=10 ? 3 : n%100>=11 ? 4 : 5);\n"
+"X-Generator: Poedit 3.10\n"
 
 #. Translators: Name of the command that starts or pauses playing, here in the list of shortcuts that work while another program is in front.
 #. Translators: Name of the command that starts playing, or pauses playing, in the shortcuts list.
@@ -49,13 +51,13 @@ msgstr "خفض مستوى الصوت"
 
 #. Translators: Name of the command that plays the next file, here in the list of shortcuts that work while another program is in front.
 #. Translators: Name of the command that plays the file after the current one.
-#: Actions/GlobalActions.cs:24 Actions/MediaActions.cs:76
+#: Actions/GlobalActions.cs:24 Actions/MediaActions.cs:80
 msgid "Play the next file"
 msgstr "تشغيل الملف التالي"
 
 #. Translators: Name of the command that plays the previous file, here in the list of shortcuts that work while another program is in front.
 #. Translators: Name of the command that plays the file before the current one.
-#: Actions/GlobalActions.cs:26 Actions/MediaActions.cs:74
+#: Actions/GlobalActions.cs:26 Actions/MediaActions.cs:78
 msgid "Play the previous file"
 msgstr "تشغيل الملف السابق"
 
@@ -150,104 +152,114 @@ msgstr "نطق معلومات عن الملف الحالي"
 msgid "Speak current media title"
 msgstr "نطق عنوان الوسائط الحالي"
 
-#. Translators: Name of the command that gives the current file a new name on the disk.
+#. Translators: Shortcut-preferences command that speaks the current file or live radio programme's artist.
 #: Actions/MediaActions.cs:46
+msgid "Speak current artist"
+msgstr "نطق الفنان الحالي"
+
+#. Translators: Shortcut-preferences command that speaks available tags such as genre, album and station information for the current media.
+#: Actions/MediaActions.cs:48
+msgid "Speak current media metadata"
+msgstr "نطق البيانات الوصفية لملف الوسائط الحالي"
+
+#. Translators: Name of the command that gives the current file a new name on the disk.
+#: Actions/MediaActions.cs:50
 msgid "Rename the current file"
 msgstr "إعادة تسمية الملف الحالي"
 
 #. Translators: Name of the command that deletes the current file from the disk.
-#: Actions/MediaActions.cs:48
+#: Actions/MediaActions.cs:52
 msgid "Delete the current file from the disk"
 msgstr "حذف الملف الحالي من القرص"
 
 #. Translators: Name of the command that copies the current file to the clipboard.
-#: Actions/MediaActions.cs:50
+#: Actions/MediaActions.cs:54
 msgid "Copy the current file to the clipboard"
 msgstr "نسخ الملف الحالي إلى الحافظة"
 
 #. Translators: Name of the command that pastes files copied from Windows Explorer into the player.
-#: Actions/MediaActions.cs:52
+#: Actions/MediaActions.cs:56
 msgid "Paste files from the clipboard"
 msgstr "لصق الملفات من الحافظة"
 
 #. Translators: Name of the command that marks or unmarks the current file. Marked files can then be copied, moved or deleted together.
-#: Actions/MediaActions.cs:54
+#: Actions/MediaActions.cs:58
 msgid "Mark or unmark the current file"
 msgstr "تحديد أو إلغاء تحديد الملف الحالي"
 
 #. Translators: Name of the command that marks or unmarks every loaded file at once.
-#: Actions/MediaActions.cs:56
+#: Actions/MediaActions.cs:60
 msgid "Mark or unmark all files"
 msgstr "تحديد أو إلغاء تحديد جميع الملفات"
 
 #. Translators: Name of the command that unmarks all marked files.
-#: Actions/MediaActions.cs:58
+#: Actions/MediaActions.cs:62
 msgid "Unmark all marked files"
 msgstr "إلغاء تحديد كافة الملفات المحددة"
 
 #. Translators: Name of the command that speaks how many files are marked.
-#: Actions/MediaActions.cs:60
+#: Actions/MediaActions.cs:64
 msgid "Speak the number of marked files"
 msgstr "نطق عدد الملفات المحددة"
 
 #. Translators: Name of the command that copies the marked files into a folder the user chooses.
-#: Actions/MediaActions.cs:62
+#: Actions/MediaActions.cs:66
 msgid "Copy the marked files to a folder"
 msgstr "نسخ الملفات المحددة إلى مجلد"
 
 #. Translators: Name of the command that moves the marked files into a folder the user chooses.
-#: Actions/MediaActions.cs:64
+#: Actions/MediaActions.cs:68
 msgid "Move the marked files to a folder"
 msgstr "نقل الملفات المحددة إلى مجلد"
 
 #. Translators: Name of the command that copies the marked files to the clipboard.
-#: Actions/MediaActions.cs:66
+#: Actions/MediaActions.cs:70
 msgid "Copy the marked files to the clipboard"
 msgstr "نسخ الملفات المحددة إلى الحافظة"
 
 #. Translators: Name of the command that deletes the marked files from the disk.
-#: Actions/MediaActions.cs:68
+#: Actions/MediaActions.cs:72
 msgid "Delete the marked files from the disk"
 msgstr "حذف الملفات المحددة من القرص"
 
 #. Translators: Name of the command that saves the position playing has reached as a bookmark.
-#: Actions/MediaActions.cs:70
+#: Actions/MediaActions.cs:74
 msgid "Add a bookmark at the current position"
 msgstr "إضافة إشارة مرجعية عند الموضع الحالي"
 
 #. Translators: Name of the command that opens the window for renaming and deleting bookmarks.
-#: Actions/MediaActions.cs:72
+#: Actions/MediaActions.cs:76
 msgid "Manage bookmarks dialog"
 msgstr "مربع حوار إدارة الإشارات المرجعية"
 
 #. Translators: Name of the command that plays the first file in the list.
-#: Actions/MediaActions.cs:78
+#: Actions/MediaActions.cs:82
 msgid "Play the first file in the list"
 msgstr "تشغيل الملف الأول في القائمة"
 
 #. Translators: Name of the command that opens the window asking for a file number to jump to.
-#: Actions/MediaActions.cs:80
+#: Actions/MediaActions.cs:84
 msgid "Go to file dialog"
 msgstr "مربع حوار الانتقال إلى ملف"
 
 #. Translators: Name of the command that plays the last file in the list.
-#: Actions/MediaActions.cs:82
+#: Actions/MediaActions.cs:86
 msgid "Play the last file in the list"
 msgstr "تشغيل الملف الأخير في القائمة"
 
 #. Translators: Name of the command that turns playing the files in random order on or off.
-#: Actions/MediaActions.cs:84
+#: Actions/MediaActions.cs:88
 msgid "Turn shuffle on or off"
 msgstr "تبديل تشغيل/إيقاف الوضع العشوائي"
 
 #. Translators: Name of the command that turns repeating the current file on or off.
-#: Actions/MediaActions.cs:86
+#: Actions/MediaActions.cs:90
 msgid "Turn repeat file on or off"
 msgstr "تبديل تشغيل/إيقاف تكرار الملف"
 
 #. Translators: Name of the command that jumps to one of the ten numbered bookmark slots of the current file.
 #. {number} is the slot, 1 to 10.
-#: Actions/MediaActions.cs:90
+#: Actions/MediaActions.cs:94
 msgid "Jump to bookmark {number}"
 msgstr "الانتقال إلى الإشارة المرجعية {number}"
 
@@ -720,9 +732,7 @@ msgstr "فتح القناة في المتصفح"
 
 #. Translators: Name of the command that opens the channel of the video being played inside the player.
 #. Translators: Item in the Video options menu that opens the channel of the video being played inside the player.
-#. Translators: Context menu item in the results list that opens the channel that published the video inside the player.
 #: Actions/YouTubeActions.cs:45 UI/Menus/VideoMenu.cs:30
-#: UI/YouTube/ResultsDialog.cs:392
 msgid "Go to channel"
 msgstr "الانتقال إلى القناة"
 
@@ -756,7 +766,7 @@ msgstr "لم يقم Windows بتشغيل تطبيق لهذا العنصر."
 #. Translators: Shown when the setting that evens out the loudness could not be turned on or off.
 #: Application/Commands/App/Preferences.cs:40
 msgid "Could not apply the audio normalization filter."
-msgstr "تعذر تطبيق مرشح تسوية الصوت."
+msgstr "تعذر تطبيق فلتر تسوية الصوت."
 
 #. Translators: Title of an error caused by applying a preference.
 #. Translators: Title of an error caused by saving preferences.
@@ -766,29 +776,29 @@ msgstr "تعذر تطبيق مرشح تسوية الصوت."
 #: Application/Commands/App/Preferences.cs:42
 #: Application/Commands/App/Preferences.cs:48
 #: Application/Commands/App/Preferences.cs:56
-#: Application/Commands/App/Preferences.cs:129
-#: Application/Commands/App/Preferences.cs:138
-#: UI/Dialogs/PreferencesDialog.cs:38 UI/Dialogs/PreferencesDialog.cs:232
+#: Application/Commands/App/Preferences.cs:128
+#: Application/Commands/App/Preferences.cs:137 UI/Dialogs/PreferencesDialog.cs:38
+#: UI/Dialogs/PreferencesDialog.cs:232
 msgid "Preferences"
 msgstr "التفضيلات"
 
 #. Translators: Shown when the setting that mixes both channels into one could not be turned on or off.
 #: Application/Commands/App/Preferences.cs:46
 msgid "Could not apply the mono audio filter."
-msgstr "تعذر تطبيق مرشح الصوت الأحادي."
+msgstr "تعذر تطبيق فلتر الصوت الأحادي."
 
 #. Translators: Shown when the setting that trims the silent parts out could not be turned on or off.
 #: Application/Commands/App/Preferences.cs:54
 msgid "Could not apply the silence removal filter."
-msgstr "تعذر تطبيق مرشح إزالة الصمت."
+msgstr "تعذر تطبيق فلتر إزالة الصمت."
 
 #. Translators: Shown when the settings the user accepted could not be written to disk.
-#: Application/Commands/App/Preferences.cs:127
+#: Application/Commands/App/Preferences.cs:126
 msgid "Could not save settings."
 msgstr "تعذر حفظ الإعدادات."
 
 #. Translators: Shown after the user picks a different language, because the player only reads it when it starts.
-#: Application/Commands/App/Preferences.cs:136
+#: Application/Commands/App/Preferences.cs:135
 msgid "Please restart the app for language changes to take effect."
 msgstr "يرجى إعادة تشغيل التطبيق لتطبيق تغييرات اللغة."
 
@@ -842,8 +852,7 @@ msgstr "التحقق من وجود تحديثات للتطبيق"
 
 #. Translators: Initial message shown while contacting the application update server.
 #. Translators: Status shown while the application update check is still running.
-#: Application/Commands/App/Updates.cs:72
-#: Application/Commands/App/Updates.cs:74
+#: Application/Commands/App/Updates.cs:72 Application/Commands/App/Updates.cs:74
 msgid "Checking for updates..."
 msgstr "جارٍ التحقق من وجود تحديثات..."
 
@@ -864,10 +873,8 @@ msgstr ""
 #. Translators: Title of an application update integrity error.
 #. Translators: Title of an error raised while downloading an application update.
 #. Translators: Title of an error raised while starting the application updater.
-#: Application/Commands/App/Updates.cs:112
-#: Application/Commands/App/Updates.cs:137
-#: Application/Commands/App/Updates.cs:217
-#: Application/Commands/App/Updates.cs:226
+#: Application/Commands/App/Updates.cs:112 Application/Commands/App/Updates.cs:137
+#: Application/Commands/App/Updates.cs:217 Application/Commands/App/Updates.cs:226
 #: Application/Commands/App/Updates.cs:241
 msgid "Application update"
 msgstr "تحديث التطبيق"
@@ -885,8 +892,12 @@ msgstr "لا توجد تحديثات"
 #. Translators: Shown when info.json announces a newer application release before its
 #. installer, portable archive, or checksum file has finished being published.
 #: Application/Commands/App/Updates.cs:135
-msgid "A new version has been announced, but its download is not available yet. Please try again later."
-msgstr "تم الإعلان عن إصدار جديد، لكن ملف التنزيل غير متوفر بعد. يرجى المحاولة مرة أخرى لاحقاً."
+msgid ""
+"A new version has been announced, but its download is not available yet. Please "
+"try again later."
+msgstr ""
+"تم الإعلان عن إصدار جديد، لكن ملف التنزيل غير متوفر بعد. يرجى المحاولة مرة أخرى "
+"لاحقاً."
 
 #. Translators: Shown and spoken after an application update has downloaded, while its SHA-256
 #. checksum is compared with the checksum published alongside the release.
@@ -902,8 +913,14 @@ msgstr "جارٍ تنزيل التحديث"
 #. Translators: Shown when an application's downloaded update does not match the
 #. SHA-256 checksum published with the release, or that checksum cannot be obtained.
 #: Application/Commands/App/Updates.cs:215
-msgid "The downloaded update failed its integrity check. This may indicate malicious activity on the network or an internet problem. The updater was not started. Please try downloading the update again."
-msgstr "فشل التحقق من سلامة التحديث المنزّل. قد يشير هذا إلى وجود نشاط ضار على الشبكة أو مشكلة في الاتصال بالإنترنت. لم يتم تشغيل أداة التحديث. يرجى محاولة تنزيل التحديث مرة أخرى."
+msgid ""
+"The downloaded update failed its integrity check. This may indicate malicious "
+"activity on the network or an internet problem. The updater was not started. "
+"Please try downloading the update again."
+msgstr ""
+"فشل التحقق من سلامة التحديث المنزّل. قد يشير هذا إلى وجود نشاط ضار على الشبكة أو "
+"مشكلة في الاتصال بالإنترنت. لم يتم تشغيل أداة التحديث. يرجى محاولة تنزيل التحديث "
+"مرة أخرى."
 
 #. Translators: Shown when the application update package cannot be downloaded. {reason}
 #. is the network or file error reported by the system.
@@ -1049,8 +1066,7 @@ msgstr "تعذر نسخ الملف الحالي إلى الحافظة."
 #. Translators: Short announcement after copying marked files to the clipboard succeeds.
 #. Translators: The short wording spoken once the marked files have been copied into the chosen folder.
 #. Translators: The short wording spoken once the address of a video has been copied.
-#: Application/Commands/Files/Edit.cs:125
-#: Application/Commands/Files/Info.cs:198
+#: Application/Commands/Files/Edit.cs:125 Application/Commands/Files/Info.cs:198
 #: Application/Commands/Files/MarkedFiles.cs:73
 #: Application/Commands/Files/MarkedFiles.cs:168
 #: Application/Commands/YouTube/CurrentVideo.cs:101
@@ -1061,8 +1077,7 @@ msgstr "تم النسخ."
 #. Translators: Short announcement after copying the current file path fails.
 #. Translators: Short announcement after copying marked files to the clipboard fails.
 #. Translators: The short wording spoken when the address of a video could not be copied.
-#: Application/Commands/Files/Edit.cs:127
-#: Application/Commands/Files/Info.cs:200
+#: Application/Commands/Files/Edit.cs:127 Application/Commands/Files/Info.cs:200
 #: Application/Commands/Files/MarkedFiles.cs:75
 #: Application/Commands/YouTube/CurrentVideo.cs:107
 msgid "Copy failed."
@@ -1176,28 +1191,26 @@ msgstr[5] "{count} ملف محدد"
 #. Translators: Spoken when a launch-time folder holds nothing this player can play.
 #. Translators: Spoken when the chosen folder holds nothing this player can play.
 #. Translators: Spoken when the folder and the folders inside it hold nothing this player can play.
-#: Application/Commands/Files/Files.cs:116
-#: Application/Commands/Files/Files.cs:220
-#: Application/Commands/Files/Files.cs:374
+#: Application/Commands/Files/Files.cs:118 Application/Commands/Files/Files.cs:222
+#: Application/Commands/Files/Files.cs:376
 msgid "No audio files found in that folder."
 msgstr "لم يتم العثور على ملفات صوتية في هذا المجلد."
 
 #. Translators: Short announcement when a launch-time folder holds no playable files.
 #. Translators: The short wording spoken when the chosen folder holds nothing this player can play.
 #. Translators: The short wording spoken when a folder holds nothing this player can play.
-#: Application/Commands/Files/Files.cs:118
-#: Application/Commands/Files/Files.cs:222
-#: Application/Commands/Files/Files.cs:376
+#: Application/Commands/Files/Files.cs:120 Application/Commands/Files/Files.cs:224
+#: Application/Commands/Files/Files.cs:378
 msgid "No audio files."
 msgstr "لا توجد ملفات صوتية."
 
 #. Translators: Asks the user for the web address of the stream they want to play.
-#: Application/Commands/Files/Files.cs:181
+#: Application/Commands/Files/Files.cs:183
 msgid "Enter link to play."
 msgstr "أدخل الرابط للتشغيل."
 
 #. Translators: Title of the window that asks for the web address of a stream to play.
-#: Application/Commands/Files/Files.cs:183
+#: Application/Commands/Files/Files.cs:185
 msgid "Open Link"
 msgstr "فتح رابط"
 
@@ -1205,20 +1218,20 @@ msgstr "فتح رابط"
 #. "http" and "https" are the names of the two web protocols and are not translated.
 #. Translators: Shown when a typed YouTube address does not begin with a supported web protocol.
 #. Translators: Shown when a favourite is saved with something that is not a web address.
-#: Application/Commands/Files/Files.cs:193
+#: Application/Commands/Files/Files.cs:195
 #: Application/Commands/YouTube/YouTube.cs:92 Favorites/FavoriteStore.cs:140
 msgid "The link must start with http or https."
 msgstr "يجب أن يبدأ الرابط بـ http أو https."
 
 #. Translators: Title of the message shown when the address typed into Open Link is not a web address.
 #. Translators: Title of the message shown when what was typed is not a web address.
-#: Application/Commands/Files/Files.cs:195
+#: Application/Commands/Files/Files.cs:197
 #: Application/Commands/YouTube/YouTube.cs:94
 msgid "Invalid link"
 msgstr "رابط غير صالح"
 
 #. Translators: Shown when the stream at the address typed into Open Link could not be played.
-#: Application/Commands/Files/Files.cs:206
+#: Application/Commands/Files/Files.cs:208
 msgid "Could not open the link."
 msgstr "تعذر فتح الرابط."
 
@@ -1229,13 +1242,13 @@ msgstr "تعذر فتح الرابط."
 #. Translators: Title of a message telling the user that something went wrong.
 #. Translators: Title of the message shown when a download could not finish.
 #. Translators: Title of a message box reporting a Spotify or playback failure.
-#: Application/Commands/Files/Files.cs:208
+#: Application/Commands/Files/Files.cs:210
 #: Application/Commands/Files/Playlists.cs:49
 #: Application/Commands/Files/Playlists.cs:62
 #: Application/Commands/Files/Playlists.cs:71
 #: Application/Commands/Playback/Bookmarks.cs:153
-#: Application/Commands/YouTube/Download.cs:121 Application/Spotify.cs:138
-#: Application/Spotify.cs:192 UI/Spotify/Browsing.cs:278
+#: Application/Commands/YouTube/Download.cs:121 Application/Spotify.cs:143
+#: Application/Spotify.cs:197 UI/Spotify/Browsing.cs:278
 #: UI/Spotify/SearchResultsDialog.cs:155 UI/Spotify/TracksDialog.cs:150
 msgid "Error"
 msgstr "خطأ"
@@ -1245,58 +1258,53 @@ msgstr "خطأ"
 #. Translators: Spoken after closing a radio session and restoring the original playlist paused.
 #. Translators: Spoken once the current file has been removed from the playlist.
 #. Translators: Short announcement once the current file has been removed from the playlist.
-#: Application/Commands/Files/Files.cs:233
-#: Application/Commands/Files/Files.cs:235
-#: Application/Commands/Files/Files.cs:242
-#: Application/Commands/Files/Files.cs:257
-#: Application/Commands/Files/Files.cs:259
+#: Application/Commands/Files/Files.cs:235 Application/Commands/Files/Files.cs:237
+#: Application/Commands/Files/Files.cs:244 Application/Commands/Files/Files.cs:259
+#: Application/Commands/Files/Files.cs:261
 msgid "File closed."
 msgstr "تم إغلاق الملف."
 
 #. Translators: Spoken when the current file could not be taken out of the playlist.
-#: Application/Commands/Files/Files.cs:250
+#: Application/Commands/Files/Files.cs:252
 msgid "Could not close the file."
 msgstr "تعذر إغلاق الملف."
 
 #. Translators: The short wording spoken when a file could not be closed.
 #. Translators: The short wording spoken when the files could not be closed.
-#: Application/Commands/Files/Files.cs:252
-#: Application/Commands/Files/Files.cs:275
+#: Application/Commands/Files/Files.cs:254 Application/Commands/Files/Files.cs:277
 msgid "Close failed."
 msgstr "فشل الإغلاق."
 
 #. Translators: Spoken when the loaded files could not be taken out of the playlist.
-#: Application/Commands/Files/Files.cs:273
+#: Application/Commands/Files/Files.cs:275
 msgid "Could not close files."
 msgstr "تعذر إغلاق الملفات."
 
 #. Translators: Spoken once every file has been removed from the playlist.
 #. Translators: Short announcement once every file has been removed from the playlist.
-#: Application/Commands/Files/Files.cs:280
-#: Application/Commands/Files/Files.cs:282
+#: Application/Commands/Files/Files.cs:282 Application/Commands/Files/Files.cs:284
 msgid "All files closed."
 msgstr "تم إغلاق جميع الملفات."
 
 #. Translators: The short wording spoken when Windows could not be asked to open a folder.
 #. Translators: The short wording spoken when Windows could not show a file's properties.
-#: Application/Commands/Files/Files.cs:290
-#: Application/Commands/Files/Info.cs:35
+#: Application/Commands/Files/Files.cs:292 Application/Commands/Files/Info.cs:35
 msgid "Open failed."
 msgstr "فشل الفتح."
 
 #. Translators: Title of the progress window shown while a folder and the folders inside it are being searched for media.
-#: Application/Commands/Files/Files.cs:354
+#: Application/Commands/Files/Files.cs:356
 msgid "Opening files"
 msgstr "جارٍ فتح الملفات"
 
 #. Translators: First message in the progress window, before any file has been found.
-#: Application/Commands/Files/Files.cs:356
+#: Application/Commands/Files/Files.cs:358
 msgid "Loading files from folder and subfolders..."
 msgstr "جارٍ تحميل الملفات من المجلد والمجلدات الفرعية..."
 
 #. Translators: Progress message while a folder is being searched. {found} is how many media files
 #. have been found so far.
-#: Application/Commands/Files/Files.cs:359
+#: Application/Commands/Files/Files.cs:361
 msgid "Opening files... {found} media files found"
 msgstr "جارٍ فتح الملفات... تم العثور على {found} ملف وسائط"
 
@@ -1388,15 +1396,113 @@ msgstr "تم نسخ مسار الملف إلى الحافظة."
 msgid "Unable to copy to clipboard."
 msgstr "تعذر النسخ إلى الحافظة."
 
-#. Translators: Spoken when the current media file contains no title metadata.
-#: Application/Commands/Files/Info.cs:220
-msgid "The current file has no title."
-msgstr "الملف الحالي لا يحتوي على عنوان."
+#. Translators: Line spoken by Ctrl+Alt+I identifying the radio station. {station} is its name from the stream or radio directory.
+#: Application/Commands/Files/Info.cs:223
+msgid "Station: {station}"
+msgstr "المحطة: {station}"
 
+#. Translators: Line spoken by Ctrl+Alt+I. {title} is the current file or radio programme title.
+#: Application/Commands/Files/Info.cs:227
+msgid "Title: {title}"
+msgstr "العنوان: {title}"
+
+#. Translators: Line spoken by Ctrl+Alt+I. {artist} is the performer named by the current media or radio broadcast.
+#: Application/Commands/Files/Info.cs:230
+msgid "Artist: {artist}"
+msgstr "الفنان: {artist}"
+
+#. Translators: Line spoken by Ctrl+Alt+I. {album} is the album named in the current media's metadata.
+#: Application/Commands/Files/Info.cs:233
+msgid "Album: {album}"
+msgstr "ألبوم: {album}"
+
+#. Translators: Line spoken by Ctrl+Alt+I. {artist} is the album artist, which can differ from the current track's performer.
+#: Application/Commands/Files/Info.cs:236
+msgid "Album artist: {artist}"
+msgstr "فنان الألبوم: {artist}"
+
+#. Translators: Line spoken by Ctrl+Alt+I. {genre} is the genre supplied by the file or radio stream.
+#: Application/Commands/Files/Info.cs:239
+msgid "Genre: {genre}"
+msgstr "النوع: {genre}"
+
+#. Translators: Line spoken by Ctrl+Alt+I. {description} is a description or comment supplied by the current media or radio station.
+#: Application/Commands/Files/Info.cs:242
+msgid "Description: {description}"
+msgstr "الوصف: {description}"
+
+#. Translators: Line spoken by Ctrl+Alt+I. {date} is the release or recording date exactly as supplied by the media.
+#: Application/Commands/Files/Info.cs:245
+msgid "Date: {date}"
+msgstr "التاريخ: {date}"
+
+#. Translators: Line spoken by Ctrl+Alt+I. {number} is the track's number within its album.
+#: Application/Commands/Files/Info.cs:248
+msgid "Track number: {number}"
+msgstr "رقم المسار: {number}"
+
+#. Translators: Line spoken by Ctrl+Alt+I. {number} is the disc number within a multi-disc album.
+#: Application/Commands/Files/Info.cs:251
+msgid "Disc number: {number}"
+msgstr "رقم الأسطوانة: {number}"
+
+#. Translators: Line spoken by Ctrl+Alt+I. {composer} is the composer named in the media's metadata.
+#: Application/Commands/Files/Info.cs:254
+msgid "Composer: {composer}"
+msgstr "المؤلف: {composer}"
+
+#. Translators: Line spoken by Ctrl+Alt+I. {language} is the language name or code supplied by the current media.
+#: Application/Commands/Files/Info.cs:257
+msgid "Language: {language}"
+msgstr "اللغة: {language}"
+
+#. Translators: Line spoken by Ctrl+Alt+I. {publisher} is the publisher or organization named by the current media.
+#: Application/Commands/Files/Info.cs:260
+msgid "Publisher: {publisher}"
+msgstr "الناشر: {publisher}"
+
+#. Translators: Line spoken by Ctrl+Alt+I. {copyright} is the media's copyright notice.
+#: Application/Commands/Files/Info.cs:263
+msgid "Copyright: {copyright}"
+msgstr "حقوق الطبع والنشر: {copyright}"
+
+#. Translators: Line spoken by Ctrl+Alt+I. {url} is the website supplied by the media or radio station.
+#. Translators: Radio station details. {url} is the station's website.
+#: Application/Commands/Files/Info.cs:266 UI/Radio/DetailsDialog.cs:33
+msgid "Website: {url}"
+msgstr "الموقع الإلكتروني: {url}"
+
+#. Translators: Line spoken by Ctrl+Alt+I. {bitrate} is the radio stream's advertised bitrate in kilobits per second. Keep kbps as the bitrate unit.
+#. Translators: Radio station details. {bitrate} is the bitrate in kilobits per second.
+#: Application/Commands/Files/Info.cs:269 UI/Radio/DetailsDialog.cs:29
+msgid "Bitrate: {bitrate} kbps"
+msgstr "معدل البت: {bitrate} كيلوبت/ثانية"
+
+#. Translators: Spoken by Ctrl+Alt+I when the current media provides no metadata to announce.
+#: Application/Commands/Files/Info.cs:272
+msgid "No metadata is available."
+msgstr "لا تتوفر بيانات وصفية."
+
+#. Translators: Spoken by Shift+I when the current file or radio broadcast provides no artist information.
+#: Application/Commands/Files/Info.cs:283
+msgid "Unknown artist."
+msgstr "فنان غير معروف."
+
+#. Translators: Spoken by I when the live radio station supplies no programme title.
+#: Application/Commands/Files/Info.cs:301
+msgid "The current radio broadcast has no title."
+msgstr "محطة الراديو الحالية لا تحتوي على عنوان."
+
+#. Translators: Short announcement by I when the live radio station supplies no programme title.
 #. Translators: Short announcement when the current media file contains no title metadata.
-#: Application/Commands/Files/Info.cs:222
+#: Application/Commands/Files/Info.cs:303 Application/Commands/Files/Info.cs:309
 msgid "No title."
 msgstr "بلا عنوان."
+
+#. Translators: Spoken when the current media file contains no title metadata.
+#: Application/Commands/Files/Info.cs:307
+msgid "The current file has no title."
+msgstr "الملف الحالي لا يحتوي على عنوان."
 
 #. Translators: Title of the progress window shown while the marked files are being moved into another folder.
 #: Application/Commands/Files/MarkedFiles.cs:42
@@ -1696,8 +1802,7 @@ msgstr "هل تريد إزالة مصدر IPTV '{name}' ({kind})؟"
 #. Translators: Title of the window that asks the user to confirm removing a saved link.
 #. Translators: Title of the window that asks the user to confirm removing a recording source.
 #: Application/Commands/Iptv/Iptv.cs:268
-#: Application/Commands/YouTube/Favorites.cs:150
-#: UI/Recording/RecordingDialog.cs:334
+#: Application/Commands/YouTube/Favorites.cs:150 UI/Recording/RecordingDialog.cs:334
 msgid "Confirm remove"
 msgstr "تأكيد الإزالة"
 
@@ -1934,7 +2039,7 @@ msgstr "فشل التعيين."
 #. Translators: Spoken when the equalizer preset the user chose could not be applied.
 #: Application/Commands/Playback/Equalizer.cs:79
 msgid "Could not change the equalizer."
-msgstr "تعذر تغيير موازن الصوت."
+msgstr "تعذر تغيير معادل الصوت."
 
 #. Translators: The short wording spoken when the equalizer preset could not be applied.
 #: Application/Commands/Playback/Equalizer.cs:81
@@ -1942,21 +2047,19 @@ msgid "Equalizer failed."
 msgstr "فشل موازن الصوت."
 
 #. Translators: Title of the window for changing an equalizer preset. {name} is the preset's name.
-#: Application/Commands/Playback/Equalizer.cs:122
-#: UI/Equalizer/PresetsDialog.cs:144
+#: Application/Commands/Playback/Equalizer.cs:122 UI/Equalizer/PresetsDialog.cs:144
 msgid "Edit {name}"
 msgstr "تعديل {name}"
 
 #. Translators: Shown when an equalizer preset could not be saved and there is no more detail to give.
-#: Application/Commands/Playback/Equalizer.cs:164
-#: UI/Equalizer/PresetsDialog.cs:191
+#: Application/Commands/Playback/Equalizer.cs:164 UI/Equalizer/PresetsDialog.cs:191
 msgid "The preset could not be saved."
 msgstr "تعذر حفظ الإعداد المسبق."
 
 #. Translators: Title of the window shown when an equalizer preset could not be saved.
 #. Translators: Player submenu holding the equalizer presets and the commands for editing them.
-#: Application/Commands/Playback/Equalizer.cs:166
-#: UI/Equalizer/PresetsDialog.cs:193 UI/Menus/PlayerMenu.cs:72
+#: Application/Commands/Playback/Equalizer.cs:166 UI/Equalizer/PresetsDialog.cs:193
+#: UI/Menus/PlayerMenu.cs:72
 msgid "Equalizer"
 msgstr "موازن الصوت"
 
@@ -1986,10 +2089,10 @@ msgstr "الوقت الإجمالي:"
 #. Translators: Button that plays the video chosen in the list of results.
 #: Application/Commands/Playback/Playback.cs:125
 #: Application/Commands/Playback/Playback.cs:144
-#: Application/Commands/Playback/Playback.cs:153
-#: UI/Iptv/ChannelBrowserDialog.cs:118 UI/MainFrame.cs:99 UI/MainFrame.cs:180
-#: UI/Radio/BrowserDialog.cs:120 UI/Radio/BrowserDialog.cs:148
-#: UI/Spotify/TracksDialog.cs:49 UI/YouTube/ResultsDialog.cs:196
+#: Application/Commands/Playback/Playback.cs:153 UI/Iptv/ChannelBrowserDialog.cs:118
+#: UI/MainFrame.cs:99 UI/MainFrame.cs:180 UI/Radio/BrowserDialog.cs:120
+#: UI/Radio/BrowserDialog.cs:148 UI/Spotify/TracksDialog.cs:49
+#: UI/YouTube/ResultsDialog.cs:196
 msgid "Play"
 msgstr "تشغيل"
 
@@ -2002,9 +2105,8 @@ msgstr "تشغيل"
 #. Translators: Button that holds a recording where it is, and starts it again when pressed a second time.
 #. Translators: Button that holds a recording where it is.
 #: Application/Commands/Playback/Playback.cs:127
-#: Application/Commands/Playback/Playback.cs:155
-#: UI/Dialogs/SleepTimerDialog.cs:85 UI/MainFrame.cs:178
-#: UI/MenuController.cs:272 UI/Menus/RecordingMenu.cs:23
+#: Application/Commands/Playback/Playback.cs:155 UI/Dialogs/SleepTimerDialog.cs:85
+#: UI/MainFrame.cs:178 UI/MenuController.cs:272 UI/Menus/RecordingMenu.cs:23
 #: UI/Recording/RecordingDialog.cs:169 UI/Recording/RecordingDialog.cs:625
 msgid "Pause"
 msgstr "إيقاف مؤقت"
@@ -2014,8 +2116,8 @@ msgstr "إيقاف مؤقت"
 #. Translators: Title of the window for moving to a precise time in the current file.
 #. Translators: Title of an error about a time entered in the Go to time window.
 #: Application/Commands/Playback/Playback.cs:223
-#: Application/Commands/Playback/Playback.cs:236
-#: UI/Dialogs/GoToTimeDialog.cs:23 UI/Dialogs/GoToTimeDialog.cs:116
+#: Application/Commands/Playback/Playback.cs:236 UI/Dialogs/GoToTimeDialog.cs:23
+#: UI/Dialogs/GoToTimeDialog.cs:116
 msgid "Go to time"
 msgstr "الانتقال إلى وقت"
 
@@ -2118,12 +2220,12 @@ msgstr "الوضع المتقدم"
 #. Translators: Spoken when trimming the silent parts out could not be switched on or off.
 #: Application/Commands/Playback/Playback.cs:421
 msgid "Could not change silence removal filter."
-msgstr "تعذر تغيير مرشح إزالة الصمت."
+msgstr "تعذر تغيير فلتر إزالة الصمت."
 
 #. Translators: The short wording spoken when trimming the silent parts out could not be switched on or off.
 #: Application/Commands/Playback/Playback.cs:423
 msgid "Filter failed."
-msgstr "فشل المرشح."
+msgstr "فشل الفلتر."
 
 #. Translators: Spoken once the player has started trimming silent parts out.
 #. Translators: Short announcement once the player has started trimming silent parts out.
@@ -2277,8 +2379,12 @@ msgstr "حفظ التحديد"
 #. Translators: Shown when one selection is requested but the file contains several and the
 #. user is in the free slot rather than one of them.
 #: Application/Commands/Playback/SelectionSaving.cs:29
-msgid "There are multiple selection points in the current file. Save all selection points to separate files, or move to the selection point you want to save."
-msgstr "توجد نقاط تحديد متعددة في الملف الحالي. احفظ جميع نقاط التحديد في ملفات منفصلة، أو انتقل إلى نقطة التحديد التي ترغب في حفظها."
+msgid ""
+"There are multiple selection points in the current file. Save all selection "
+"points to separate files, or move to the selection point you want to save."
+msgstr ""
+"توجد نقاط تحديد متعددة في الملف الحالي. احفظ جميع نقاط التحديد في ملفات منفصلة، "
+"أو انتقل إلى نقطة التحديد التي ترغب في حفظها."
 
 #. Translators: Title of the progress window shown while a selected part is being saved.
 #: Application/Commands/Playback/SelectionSaving.cs:38
@@ -2391,16 +2497,16 @@ msgstr "تعذر حفظ بعض التحديدات. راجع التفاصيل أ�
 #. Translators: Shown when the sleep timer is set to stop at the end of the current track but
 #. nothing is playing.
 #: Application/Commands/Playback/SleepTimer.cs:64
-msgid "Open a file before setting the timer to stop at the end of the current track."
+msgid ""
+"Open a file before setting the timer to stop at the end of the current track."
 msgstr "افتح ملفاً قبل ضبط المؤقت ليتوقف عند نهاية المسار الحالي."
 
 #. Translators: Title of a message about setting the sleep timer.
 #. Translators: Title of the window used to configure the sleep timer.
 #. Translators: Title of a warning about an invalid sleep-timer length.
 #. Translators: Tools submenu holding the sleep-timer commands.
-#: Application/Commands/Playback/SleepTimer.cs:66
-#: UI/Dialogs/SleepTimerDialog.cs:49 UI/Dialogs/SleepTimerDialog.cs:239
-#: UI/Menus/ToolsMenu.cs:43
+#: Application/Commands/Playback/SleepTimer.cs:66 UI/Dialogs/SleepTimerDialog.cs:49
+#: UI/Dialogs/SleepTimerDialog.cs:239 UI/Menus/ToolsMenu.cs:43
 msgid "Sleep timer"
 msgstr "مؤقت إيقاف التشغيل"
 
@@ -2508,8 +2614,7 @@ msgstr "الترجمة {number}"
 
 #. Translators: Spoken when the user asks to start recording and a recording is already running.
 #. Translators: Shown when recording was asked for and a recording is already running.
-#: Application/Commands/Recording/Recording.cs:73
-#: Recording/RecordingSources.cs:68
+#: Application/Commands/Recording/Recording.cs:73 Recording/RecordingSources.cs:68
 msgid "A recording is already running."
 msgstr "يوجد تسجيل قيد التشغيل بالفعل."
 
@@ -2555,9 +2660,8 @@ msgstr "تعذر فتح مجلد التسجيلات."
 #. message and {reason} is the reason, which is not translated.
 #. Translators: Adds {reason}, the system's explanation, below a destination-folder error.
 #. Translators: Adds {reason}, the system's explanation, below the YouTube component error in {message}.
-#: Application/Commands/Recording/Recording.cs:193
-#: Recording/RecordingSources.cs:89 UI/Dialogs/MediaConverterDialog.cs:456
-#: YouTube/Components/Service.cs:130
+#: Application/Commands/Recording/Recording.cs:193 Recording/RecordingSources.cs:89
+#: UI/Dialogs/MediaConverterDialog.cs:456 YouTube/Components/Service.cs:130
 msgid ""
 "{message}\n"
 "{reason}"
@@ -2567,8 +2671,7 @@ msgstr ""
 
 #. Translators: Spoken when the user asks to pause or stop recording and nothing is being recorded.
 #. Translators: Shown when pausing or stopping was asked for and nothing is being recorded.
-#: Application/Commands/Recording/Recording.cs:200
-#: Recording/RecordingSources.cs:70
+#: Application/Commands/Recording/Recording.cs:200 Recording/RecordingSources.cs:70
 msgid "Nothing is being recorded."
 msgstr "لا يتم تسجيل أي شيء حالياً."
 
@@ -2581,8 +2684,7 @@ msgstr "لا يوجد تسجيل."
 #. set up, so the default microphone is used.
 #. Translators: The entry in a device list that means whichever microphone Windows is currently set
 #. to use, rather than one particular microphone.
-#: Application/Commands/Recording/Recording.cs:216
-#: UI/Recording/SourceDialog.cs:125
+#: Application/Commands/Recording/Recording.cs:216 UI/Recording/SourceDialog.cs:125
 msgid "Default input device"
 msgstr "جهاز الإدخال الافتراضي"
 
@@ -2613,7 +2715,7 @@ msgstr "جارٍ تحميل تفاصيل الفيديو..."
 #. Translators: Title of an error shown while resolving or playing a YouTube video.
 #: Application/Commands/YouTube/CurrentVideo.cs:42
 #: UI/Dialogs/PreferencesDialog.cs:57 YouTube/Playback/Browsing.cs:250
-#: YouTube/Playback/Sessions.cs:362
+#: YouTube/Playback/Sessions.cs:360
 msgid "YouTube"
 msgstr "YouTube"
 
@@ -2625,14 +2727,14 @@ msgstr "لا يوجد وصف متاح."
 #. Translators: Spoken when the playing video does not say which channel published it.
 #. Translators: Spoken when the chosen video does not say which channel published it.
 #: Application/Commands/YouTube/CurrentVideo.cs:89 YouTube/Playback/Feed.cs:55
-#: YouTube/Playback/Sessions.cs:290
+#: YouTube/Playback/Sessions.cs:288
 msgid "Channel link is not available."
 msgstr "رابط القناة غير متوفر."
 
 #. Translators: The short wording spoken when the playing video does not name its channel.
 #. Translators: The short wording spoken when the chosen video does not name its channel.
 #: Application/Commands/YouTube/CurrentVideo.cs:91 YouTube/Playback/Feed.cs:57
-#: YouTube/Playback/Sessions.cs:292
+#: YouTube/Playback/Sessions.cs:290
 msgid "No channel link."
 msgstr "لا يوجد رابط للقناة."
 
@@ -2687,7 +2789,8 @@ msgstr ""
 
 #. Translators: Shown when a download failed and no reason was given.
 #: Application/Commands/YouTube/Download.cs:119
-msgid "The download could not be completed. Check your internet connection and try again."
+msgid ""
+"The download could not be completed. Check your internet connection and try again."
 msgstr "تعذر إكمال التنزيل. يرجى التحقق من اتصالك بالإنترنت والمحاولة مجدداً."
 
 #. Translators: Shown when the address saved as a plain stream could not be played.
@@ -2700,8 +2803,8 @@ msgstr "تعذر فتح رابط البث."
 #. Translators: Title of the message shown when a saved link cannot be saved as it was typed.
 #. Translators: Title of the window listing the YouTube links and streams the user has saved.
 #: Application/Commands/YouTube/Favorites.cs:92
-#: Application/Commands/YouTube/Favorites.cs:166
-#: UI/YouTube/FavoriteEditDialog.cs:73 UI/YouTube/FavoritesDialog.cs:25
+#: Application/Commands/YouTube/Favorites.cs:166 UI/YouTube/FavoriteEditDialog.cs:73
+#: UI/YouTube/FavoritesDialog.cs:25
 msgid "Favorite videos"
 msgstr "الفيديوهات المفضلة"
 
@@ -2809,8 +2912,7 @@ msgstr "هذا ليس رابط YouTube صالحاً."
 #. Translators: Title of a message shown for an unsupported YouTube channel link.
 #. Translators: Title of a warning shown for an invalid YouTube link.
 #: Application/Commands/YouTube/YouTube.cs:103
-#: Application/Commands/YouTube/YouTube.cs:112
-#: UI/YouTube/DownloadQueueDialog.cs:432
+#: Application/Commands/YouTube/YouTube.cs:112 UI/YouTube/DownloadQueueDialog.cs:432
 msgid "Invalid YouTube link"
 msgstr "رابط YouTube غير صالح"
 
@@ -2850,18 +2952,21 @@ msgid "All items in the download queue have completed."
 msgstr "اكتملت جميع العناصر الموجودة في قائمة انتظار التنزيل."
 
 #. Translators: Shown when settings could not be read. {error} is the underlying file or data error.
-#: Application/Features.cs:195
+#: Application/Features.cs:192
 msgid ""
-"The settings file could not be loaded. Default settings will be used, and the existing file will not be overwritten. Import a valid settings file or reset the settings to replace it.\n"
+"The settings file could not be loaded. Default settings will be used, and the "
+"existing file will not be overwritten. Import a valid settings file or reset the "
+"settings to replace it.\n"
 "\n"
 "{error}"
 msgstr ""
-"تعذر تحميل ملف الإعدادات. سيتم استخدام الإعدادات الافتراضية، ولن يتم استبدال الملف الموجود. قم باستيراد ملف إعدادات صالح أو أعد تعيين الإعدادات لاستبداله.\n"
+"تعذر تحميل ملف الإعدادات. سيتم استخدام الإعدادات الافتراضية، ولن يتم استبدال "
+"الملف الموجود. قم باستيراد ملف إعدادات صالح أو أعد تعيين الإعدادات لاستبداله.\n"
 "\n"
 "{error}"
 
 #. Translators: Title of the message shown when settings could not be read.
-#: Application/Features.cs:197
+#: Application/Features.cs:194
 msgid "Settings error"
 msgstr "خطأ في الإعدادات"
 
@@ -2893,7 +2998,7 @@ msgstr "إيقاف بعد {minutes} د"
 #. Translators: Spoken when a running sleep timer is turned off.
 #: Application/Infrastructure/SleepTimer.cs:111
 msgid "Sleep timer cancelled."
-msgstr "تم إلغاء مؤقت إيقاف التشغيل."
+msgstr "تم إلغاء مؤقت النوم."
 
 #. Translators: Short announcement when a running sleep timer is turned off.
 #: Application/Infrastructure/SleepTimer.cs:113
@@ -2954,17 +3059,17 @@ msgstr "لم يتم ضبط مؤقت إيقاف التشغيل."
 #. Translators: Short announcement when no sleep timer is set.
 #: Application/Infrastructure/SleepTimer.cs:283
 msgid "No sleep timer"
-msgstr "بلا مؤقت إيقاف تشغيل"
+msgstr "لا يوجد مؤقت نوم"
 
 #. Translators: Main window title during Spotify playback. {title} is the artist and track; {app} is the program name.
-#. Translators: Window title while a track is open. {title} is the track, {app} the program name.
+#. Translators: Window title while media is open. {title} is the track or radio programme title; {app} is the program name.
 #: Application/Presentation/WindowTitlePresenter.cs:47
 #: Application/Presentation/WindowTitlePresenter.cs:64
 msgid "{title} - {app}"
 msgstr "{title} - {app}"
 
 #. Translators: Main window title while Spotify playback is paused. {title} is the artist and track; {app} is the program name.
-#. Translators: Window title while playback is paused. {title} is the track, {app} the program name.
+#. Translators: Window title while playback is paused. {title} is the track or radio programme title; {app} is the program name.
 #: Application/Presentation/WindowTitlePresenter.cs:49
 #: Application/Presentation/WindowTitlePresenter.cs:62
 msgid "[Paused]: {title} - {app}"
@@ -3113,7 +3218,7 @@ msgstr "فيديو"
 #. Translators: Type of a song collection in the Spotify browser.
 #. Translators: Marks a row in the results list as a playlist rather than a single video.
 #. Translators: Search filter: return playlists rather than videos.
-#: Favorites/FavoriteStore.cs:176 Spotify/Catalog.cs:39
+#: Favorites/FavoriteStore.cs:176 Spotify/Catalog.cs:40
 #: UI/YouTube/ResultsDialog.cs:344 UI/YouTube/SearchDialog.cs:74
 msgid "Playlist"
 msgstr "قائمة تشغيل"
@@ -3317,17 +3422,17 @@ msgid "Could not reach the radio directory. Check your internet connection."
 msgstr "تعذر الوصول إلى دليل الراديو. يرجى التحقق من اتصالك بالإنترنت."
 
 #. Translators: Title of the summary of loaded stations in a radio playback session.
-#: Radio/Playback.cs:162
+#: Radio/Playback.cs:165
 msgid "Radio session"
 msgstr "جلسة الراديو"
 
 #. Translators: Radio session summary. {count} is the number of stations loaded for the selected category.
-#: Radio/Playback.cs:164
+#: Radio/Playback.cs:167
 msgid "Loaded stations: {count}"
 msgstr "المحطات المحملة: {count}"
 
 #. Translators: Error shown when MPV could not accept the selected radio station.
-#: Radio/Playback.cs:216
+#: Radio/Playback.cs:219
 msgid "Could not open the radio station."
 msgstr "تعذر فتح محطة الراديو."
 
@@ -3335,14 +3440,14 @@ msgstr "تعذر فتح محطة الراديو."
 #. Translators: Title of a message reporting a radio station navigation or preparation failure.
 #. Translators: Title of a failure to open a radio station's website in the user's browser.
 #. Translators: Title of an error reporting a radio browser operation failure.
-#: Radio/Playback.cs:218 Radio/Playback.cs:301 UI/Radio/Actions.cs:104
+#: Radio/Playback.cs:221 Radio/Playback.cs:304 UI/Radio/Actions.cs:104
 #: UI/Radio/Loading.cs:190
 msgid "Radio error"
 msgstr "خطأ في الراديو"
 
 #. Translators: Title of a warning when local radio favorites or history could not be saved.
 #. Translators: Title of a warning that locally saved radio stations could not be read.
-#: Radio/Playback.cs:319 UI/Radio/Loading.cs:96
+#: Radio/Playback.cs:322 UI/Radio/Loading.cs:96
 msgid "Radio library"
 msgstr "مكتبة الراديو"
 
@@ -3408,7 +3513,7 @@ msgid "{name} - {kind} - {volume}%"
 msgstr "{name} - {kind} - {volume}%"
 
 #. Translators: Confirmation displayed in the browser after returning from Spotify authorization.
-#: Spotify/Auth.cs:31 Spotify/Playback.cs:60
+#: Spotify/Auth.cs:31 Spotify/Playback/Sessions.cs:61
 msgid "You can return to Luna Player now."
 msgstr "يمكنك العودة إلى Luna Player الآن."
 
@@ -3430,7 +3535,7 @@ msgstr "أدخل Client ID صالحاً لـ Spotify في التفضيلات أ�
 #. Translators: Error when Spotify authorization returns an unexpected address or mismatched sign-in request.
 #: Spotify/Auth.cs:287
 msgid "Spotify sign in returned an invalid callback. Please try again."
-msgstr "أرجع تسجيل الدخول إلى Spotify استجابة رد نداء غير صالحة. يرجى المحاولة مجدداً."
+msgstr "أرجع تسجيل الدخول إلى Spotify استجابة غير صالحة. يرجى المحاولة مجدداً."
 
 #. Translators: Error when browser authorization was denied or canceled. {reason} is the error code from Spotify.
 #: Spotify/Auth.cs:289
@@ -3463,81 +3568,87 @@ msgid "Spotify sign in was not completed. Please try again."
 msgstr "لم يكتمل تسجيل الدخول إلى Spotify. يرجى المحاولة مجدداً."
 
 #. Translators: Row in the Spotify browser. {name} is the collection name and {kind} is its translated type.
-#: Spotify/Catalog.cs:12
+#: Spotify/Catalog.cs:13
 msgid "{name} - {kind}"
 msgstr "{name} - {kind}"
 
 #. Translators: Name of the saved favorite tracks collection in the Spotify browser.
 #. Translators: Collection type in the Spotify library, containing the user's saved favorite tracks.
-#: Spotify/Catalog.cs:16 Spotify/Catalog.cs:27
+#: Spotify/Catalog.cs:17 Spotify/Catalog.cs:28
 msgid "Liked songs"
 msgstr "الأغاني المفضلة"
 
 #. Translators: Fallback name in the Spotify browser when a playlist has no name.
-#: Spotify/Catalog.cs:18
+#: Spotify/Catalog.cs:19
 msgid "Untitled playlist"
 msgstr "قائمة تشغيل بدون عنوان"
 
 #. Translators: Description of the saved favorite tracks collection in the Spotify browser.
-#: Spotify/Catalog.cs:22
+#: Spotify/Catalog.cs:23
 msgid "Tracks saved to your Spotify library."
 msgstr "المسارات المحفوظة في مكتبة Spotify الخاصة بك."
 
 #. Translators: Collection type on Spotify Home, containing the user's most played tracks.
 #. Translators: Collection name on the Spotify Home tab for the account's most played songs.
-#: Spotify/Catalog.cs:29 UI/Spotify/Browsing.cs:161
+#: Spotify/Catalog.cs:30 UI/Spotify/Browsing.cs:161
 msgid "Your top tracks"
 msgstr "أفضل مساراتك"
 
 #. Translators: Collection type on Spotify Home, containing listening history.
 #. Translators: Radio tree category containing this user's recently played stations.
 #. Translators: Collection name on the Spotify Home tab for listening history.
-#: Spotify/Catalog.cs:31 UI/Radio/Navigation.cs:23 UI/Spotify/Browsing.cs:166
+#: Spotify/Catalog.cs:32 UI/Radio/Navigation.cs:23 UI/Spotify/Browsing.cs:166
 msgid "Recently played"
 msgstr "تم تشغيلها مؤخراً"
 
 #. Translators: Type of a personalized song collection in the Spotify browser.
-#: Spotify/Catalog.cs:33
+#: Spotify/Catalog.cs:34
 msgid "Mix"
 msgstr "مزيج"
 
 #. Translators: Type of a collection of related tracks in the Spotify browser.
-#: Spotify/Catalog.cs:35
+#: Spotify/Catalog.cs:36
 msgid "Radio"
 msgstr "راديو"
 
 #. Translators: Type of a musician or group result in Spotify search.
-#: Spotify/Catalog.cs:37
+#: Spotify/Catalog.cs:38
 msgid "Artist"
 msgstr "فنان"
 
 #. Translators: Spotify track title used in the main window, opened-files list and navigation announcements. {name} is the song and {artists} lists its performers.
-#: Spotify/Catalog.cs:46
+#: Spotify/Catalog.cs:47
 msgid "{name} - {artists}"
 msgstr "{name} - {artists}"
 
 #. Translators: Track row in Spotify lists. {name} is the song, {artists} lists its performers and {duration} is its playing time.
-#: Spotify/Catalog.cs:49
+#: Spotify/Catalog.cs:50
 msgid "{name} - {artists} - {duration}"
 msgstr "{name} - {artists} - {duration}"
 
 #. Translators: A song result in Spotify search. {track} contains the name, artists and duration; Track identifies the result type.
-#: Spotify/Catalog.cs:63
+#: Spotify/Catalog.cs:64
 msgid "{track} - Track"
 msgstr "{track} - مسار"
 
 #. Translators: Error when a Spotify developer app has exhausted its quota. {wait} is the localized waiting time.
-#: Spotify/Catalog.cs:77
-msgid "Spotify's developer-app quota has been reached. Spotify says to try again in {wait}."
-msgstr "تم استنفاد حصة تطبيق المطور على Spotify. يطلب Spotify المحاولة مجدداً بعد {wait}."
+#: Spotify/Catalog.cs:78
+msgid ""
+"Spotify's developer-app quota has been reached. Spotify says to try again in "
+"{wait}."
+msgstr ""
+"تم استنفاد حصة تطبيق المطور على Spotify. يطلب Spotify المحاولة مجدداً بعد {wait}."
 
 #. Translators: Error when Spotify has exhausted a developer app's quota without saying when it resets.
-#: Spotify/Catalog.cs:79
-msgid "Spotify's developer-app quota has been reached. Spotify did not provide a reset time."
-msgstr "تم استنفاد حصة تطبيق المطور على Spotify. لم يحدد Spotify وقتاً لإعادة التعيين."
+#: Spotify/Catalog.cs:80
+msgid ""
+"Spotify's developer-app quota has been reached. Spotify did not provide a reset "
+"time."
+msgstr ""
+"تم استنفاد حصة تطبيق المطور على Spotify. لم يحدد Spotify وقتاً لإعادة التعيين."
 
 #. Translators: Waiting time in a Spotify quota error. {count} is the number of hours.
-#: Spotify/Catalog.cs:88
+#: Spotify/Catalog.cs:89
 msgid "{count} hour"
 msgid_plural "{count} hours"
 msgstr[0] "لا توجد ساعات ({count})"
@@ -3548,7 +3659,7 @@ msgstr[4] "{count} ساعة"
 msgstr[5] "{count} ساعة"
 
 #. Translators: Waiting time in a Spotify quota error. {count} is the number of minutes.
-#: Spotify/Catalog.cs:90
+#: Spotify/Catalog.cs:91
 msgid "{count} minute"
 msgid_plural "{count} minutes"
 msgstr[0] "لا توجد دقائق ({count})"
@@ -3559,78 +3670,90 @@ msgstr[4] "{count} دقيقة"
 msgstr[5] "{count} دقيقة"
 
 #. Translators: Waiting time in a Spotify quota error. {hours} and {minutes} already contain their localized number and unit.
-#: Spotify/Catalog.cs:93
+#: Spotify/Catalog.cs:94
 msgid "{hours} and {minutes}"
 msgstr "{hours} و {minutes}"
 
 #. Translators: Error when Spotify asks the app to delay requests. {seconds} is the waiting time in seconds.
-#: Spotify/Catalog.cs:104
+#: Spotify/Catalog.cs:105
 msgid "Spotify asked Luna to wait about {seconds} second before trying again."
-msgid_plural "Spotify asked Luna to wait about {seconds} seconds before trying again."
+msgid_plural ""
+"Spotify asked Luna to wait about {seconds} seconds before trying again."
 msgstr[0] "طلب Spotify من Luna الانتظار حوالي {seconds} ثانية قبل المحاولة مجدداً."
-msgstr[1] "طلب Spotify من Luna الانتظار حوالي ثانية واحدة ({seconds}) قبل المحاولة مجدداً."
-msgstr[2] "طلب Spotify من Luna الانتظار حوالي ثانيتين ({seconds}) قبل المحاولة مجدداً."
+msgstr[1] ""
+"طلب Spotify من Luna الانتظار حوالي ثانية واحدة ({seconds}) قبل المحاولة مجدداً."
+msgstr[2] ""
+"طلب Spotify من Luna الانتظار حوالي ثانيتين ({seconds}) قبل المحاولة مجدداً."
 msgstr[3] "طلب Spotify من Luna الانتظار حوالي {seconds} ثوانٍ قبل المحاولة مجدداً."
 msgstr[4] "طلب Spotify من Luna الانتظار حوالي {seconds} ثانية قبل المحاولة مجدداً."
 msgstr[5] "طلب Spotify من Luna الانتظار حوالي {seconds} ثانية قبل المحاولة مجدداً."
 
 #. Translators: Error when Spotify continues limiting requests without giving a waiting time.
-#: Spotify/Catalog.cs:109
+#: Spotify/Catalog.cs:110
 msgid "Spotify is still limiting requests. Wait a moment and try again."
 msgstr "لا يزال Spotify يحد من الطلبات. يرجى الانتظار لحظة والمحاولة مجدداً."
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:428
+#: Spotify/Catalog.cs:429
 msgid "Spotify authorization expired. Sign in again."
 msgstr "انتهت صلاحية تفويض Spotify. يرجى تسجيل الدخول مجدداً."
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:430
-msgid "Spotify does not allow this content for this developer app or account. Some playlists and recommendations are restricted."
-msgstr "لا يسمح Spotify بهذا المحتوى لتطبيق المطور هذا أو لهذا الحساب. بعض قوائم التشغيل والتوصيات مقيدة."
+#: Spotify/Catalog.cs:431
+msgid ""
+"Spotify does not allow this content for this developer app or account. Some "
+"playlists and recommendations are restricted."
+msgstr ""
+"لا يسمح Spotify بهذا المحتوى لتطبيق المطور هذا أو لهذا الحساب. بعض قوائم التشغيل "
+"والتوصيات مقيدة."
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:432
+#: Spotify/Catalog.cs:433
 msgid "Spotify rate limit reached. Wait a moment and try again."
-msgstr "تم الوصول إلى الحد الأقصى لمعدل طلبات Spotify. يرجى الانتظار لحظة والمحاولة مجدداً."
+msgstr ""
+"تم الوصول إلى الحد الأقصى لمعدل طلبات Spotify. يرجى الانتظار لحظة والمحاولة مجدداً."
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails. {code} is the HTTP status code.
-#: Spotify/Catalog.cs:434
+#: Spotify/Catalog.cs:435
 msgid "Spotify request failed ({code})."
 msgstr "فشل طلب Spotify ({code})."
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:436
+#: Spotify/Catalog.cs:437
 msgid "Could not reach Spotify. Check your internet connection."
 msgstr "تعذر الوصول إلى Spotify. تحقق من اتصالك بالإنترنت."
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:438
+#: Spotify/Catalog.cs:439
 msgid "Spotify did not respond in time."
 msgstr "لم يستجب Spotify في الوقت المحدد."
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:440
+#: Spotify/Catalog.cs:441
 msgid "Spotify refused the playback sign in. Sign in again."
 msgstr "رفض Spotify تسجيل الدخول للتشغيل. يرجى تسجيل الدخول مجدداً."
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:442
+#: Spotify/Catalog.cs:443
 msgid "Spotify could not load this track."
 msgstr "تعذر على Spotify تحميل هذا المسار."
 
 #. Translators: Error when Spotify audio/network data or protected account files cannot be read or saved.
-#: Spotify/Catalog.cs:444
-msgid "Spotify could not read or save required data. Check your connection and available storage, then try again."
-msgstr "تعذر على Spotify قراءة البيانات المطلوبة أو حفظها. تحقق من اتصالك ومساحة التخزين المتاحة، ثم حاول مجدداً."
+#: Spotify/Catalog.cs:445
+msgid ""
+"Spotify could not read or save required data. Check your connection and available "
+"storage, then try again."
+msgstr ""
+"تعذر على Spotify قراءة البيانات المطلوبة أو حفظها. تحقق من اتصالك ومساحة التخزين "
+"المتاحة، ثم حاول مجدداً."
 
 #. Translators: Error when an operation outlives its disconnected Spotify session.
-#: Spotify/Catalog.cs:446
+#: Spotify/Catalog.cs:447
 msgid "Spotify was disconnected. Sign in again to continue."
 msgstr "تم قطع الاتصال بـ Spotify. يرجى تسجيل الدخول مجدداً للمتابعة."
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails. {reason} is the failure reason returned by the service.
-#: Spotify/Catalog.cs:448
+#: Spotify/Catalog.cs:449
 msgid "Spotify request failed: {reason}"
 msgstr "فشل طلب Spotify: {reason}"
 
@@ -3641,11 +3764,14 @@ msgstr "فشل طلب Spotify: {reason}"
 #. Translators: Spoken description of the YouTube download settings page, read when the page is open.
 #. Translators: Spoken description of the general YouTube settings page, read when the page is open.
 #: UI/Audio/GeneralPreferences.cs:22 UI/Audio/PlaybackPreferences.cs:28
-#: UI/Preferences/GeneralPreferences.cs:26
-#: UI/Preferences/RecordingPreferences.cs:44
+#: UI/Preferences/GeneralPreferences.cs:26 UI/Preferences/RecordingPreferences.cs:44
 #: UI/YouTube/DownloadPreferences.cs:56 UI/YouTube/GeneralPreferences.cs:48
-msgid "Move through this page with Tab or Shift+Tab. Press F1 while a control is focused to hear what it changes."
-msgstr "تنقل في هذه الصفحة باستخدام Tab أو Shift+Tab. اضغط على F1 عند التركيز على أي عنصر تحكم لسماع وظائفه وما يغيره."
+msgid ""
+"Move through this page with Tab or Shift+Tab. Press F1 while a control is focused "
+"to hear what it changes."
+msgstr ""
+"تنقل في هذه الصفحة باستخدام Tab أو Shift+Tab. اضغط على F1 عند التركيز على أي عنصر "
+"تحكم لسماع وظائفه وما يغيره."
 
 #. Translators: Label of the box holding the seek amount used by the "Custom value" seek step, in seconds.
 #: UI/Audio/GeneralPreferences.cs:28
@@ -3685,7 +3811,7 @@ msgstr "الانتقال إلى الملف التالي"
 #. Translators: One of the things the player can do at the end of a file: play the same one again.
 #: UI/Audio/GeneralPreferences.cs:48
 msgid "Loop the file"
-msgstr "تكرار الملف الحالي في حلقة"
+msgstr "تكرار الملف الحالي "
 
 #. Translators: One of the things the player can do at the end of a file: stop there.
 #: UI/Audio/GeneralPreferences.cs:50
@@ -3704,43 +3830,79 @@ msgstr "حفظ موضع التشغيل الحالي لكل ملف"
 
 #. Translators: Help text for the box holding the seek amount used by the "Custom value" seek step.
 #: UI/Audio/GeneralPreferences.cs:69
-msgid "Enter the number of seconds skipped by the seek shortcuts when Custom value is selected. Positive whole numbers and decimals are accepted; for example, 2.5."
-msgstr "أدخل عدد الثواني التي تتخطاها اختصارات التقديم والترجيع عند تحديد 'قيمة مخصصة'. يُقبل إدخال أعداد صحيحة موجبة وقيم عشرية؛ مثلاً 2.5."
+msgid ""
+"Enter the number of seconds skipped by the seek shortcuts when Custom value is "
+"selected. Positive whole numbers and decimals are accepted; for example, 2.5."
+msgstr ""
+"أدخل عدد الثواني التي تتخطاها اختصارات التقديم والترجيع عند تحديد 'قيمة مخصصة'. "
+"يُقبل إدخال أعداد صحيحة موجبة وقيم عشرية؛ مثلاً 2.5."
 
 #. Translators: Help text for the box holding how much one press of the speed keys changes the playing speed.
 #: UI/Audio/GeneralPreferences.cs:72
-msgid "Sets how much each Speed Up or Speed Down command changes the playback rate. For example, 0.025 changes 1x speed to 1.025x."
-msgstr "يحدد المقدار الذي يغيره كل أمر لتسريع أو إبطاء سرعة التشغيل. على سبيل المثال، 0.025 يغير سرعة 1x إلى 1.025x."
+msgid ""
+"Sets how much each Speed Up or Speed Down command changes the playback rate. For "
+"example, 0.025 changes 1x speed to 1.025x."
+msgstr ""
+"يحدد المقدار الذي يغيره كل أمر لتسريع أو إبطاء سرعة التشغيل. على سبيل المثال، "
+"0.025 يغير سرعة 1x إلى 1.025x."
 
 #. Translators: Help text for the box holding how much one press of the pitch keys raises or lowers a sound.
 #: UI/Audio/GeneralPreferences.cs:75
-msgid "Sets how far each Raise Pitch or Lower Pitch command moves. One semitone is the distance between adjacent piano keys; 0.1 semitone is 10 cents. Enter a value from 0.001 to 12."
-msgstr "يحدد المقدار الذي يتحركه كل أمر لرفع أو خفض طبقة الصوت. النغمة النصفية هي المسافة بين مفتاحين متجاورين في البيانو؛ و0.1 نغمة نصفية تعادل 10 سنتات. أدخل قيمة بين 0.001 و12."
+msgid ""
+"Sets how far each Raise Pitch or Lower Pitch command moves. One semitone is the "
+"distance between adjacent piano keys; 0.1 semitone is 10 cents. Enter a value "
+"from 0.001 to 12."
+msgstr ""
+"يحدد المقدار الذي يتحركه كل أمر لرفع أو خفض طبقة الصوت. النغمة النصفية هي المسافة "
+"بين مفتاحين متجاورين في البيانو؛ و0.1 نغمة نصفية تعادل 10 سنتات. أدخل قيمة بين "
+"0.001 و12."
 
 #. Translators: Help text for the box holding how much one press of the volume keys changes the loudness.
 #: UI/Audio/GeneralPreferences.cs:78
-msgid "Sets the amount added or subtracted by each Volume Up or Volume Down command. Enter a whole number from 1 to 20."
-msgstr "يحدد المقدار المضاف أو المطروح في كل أمر لرفع مستوى الصوت أو خفضه. أدخل عدداً صحيحاً من 1 إلى 20."
+msgid ""
+"Sets the amount added or subtracted by each Volume Up or Volume Down command. "
+"Enter a whole number from 1 to 20."
+msgstr ""
+"يحدد المقدار المضاف أو المطروح في كل أمر لرفع مستوى الصوت أو خفضه. أدخل عدداً "
+"صحيحاً من 1 إلى 20."
 
 #. Translators: Help text for the box holding how far one press moves the sound left or right.
 #: UI/Audio/GeneralPreferences.cs:81
-msgid "Sets how many percentage points each Pan Left or Pan Right command moves the sound. Enter a whole number from 1 to 100."
-msgstr "يحدد عدد النقاط المئوية التي ينقل بها أمر الموازنة يميناً أو يساراً اتجاه الصوت. أدخل عدداً صحيحاً من 1 إلى 100."
+msgid ""
+"Sets how many percentage points each Pan Left or Pan Right command moves the "
+"sound. Enter a whole number from 1 to 100."
+msgstr ""
+"يحدد عدد النقاط المئوية التي ينقل بها أمر الموازنة يميناً أو يساراً اتجاه الصوت. "
+"أدخل عدداً صحيحاً من 1 إلى 100."
 
 #. Translators: Help text for the list that chooses what the player does at the end of a file.
 #: UI/Audio/GeneralPreferences.cs:84
-msgid "Choose whether reaching the end starts the next playlist item, repeats the current item, or leaves playback stopped at the end."
-msgstr "اختر ما إذا كان الوصول إلى نهاية الملف يبدأ العنصر التالي في قائمة التشغيل، أو يعيد تكرار العنصر الحالي، أو يترك التشغيل متوقفاً عند النهاية."
+msgid ""
+"Choose whether reaching the end starts the next playlist item, repeats the "
+"current item, or leaves playback stopped at the end."
+msgstr ""
+"اختر ما إذا كان الوصول إلى نهاية الملف يبدأ العنصر التالي في قائمة التشغيل، أو "
+"يعيد تكرار العنصر الحالي، أو يترك التشغيل متوقفاً عند النهاية."
 
 #. Translators: Help text for the tick box that carries on from the first file after the last one.
 #: UI/Audio/GeneralPreferences.cs:87
-msgid "With at least two items loaded, Next on the final item returns to the first and Previous on the first returns to the final item. Automatic advance follows the same rule."
-msgstr "عند تحميل عنصرين على الأقل، يؤدي الضغط على 'التالي' في العنصر الأخير إلى العودة إلى الأول، والضغط على 'السابق' في العنصر الأول إلى الانتقال إلى الأخير. وينطبق هذا أيضاً على التقدم التلقائي."
+msgid ""
+"With at least two items loaded, Next on the final item returns to the first and "
+"Previous on the first returns to the final item. Automatic advance follows the "
+"same rule."
+msgstr ""
+"عند تحميل عنصرين على الأقل، يؤدي الضغط على 'التالي' في العنصر الأخير إلى العودة "
+"إلى الأول، والضغط على 'السابق' في العنصر الأول إلى الانتقال إلى الأخير. وينطبق "
+"هذا أيضاً على التقدم التلقائي."
 
 #. Translators: Help text for the tick box that remembers where each file was stopped.
 #: UI/Audio/GeneralPreferences.cs:90
-msgid "Keeps a separate resume time for every item and returns to that time when the item is opened again during navigation."
-msgstr "يحتفظ بموضع استئناف مستقل لكل عنصر ويعود إلى ذلك الموضع عند إعادة فتح العنصر مجدداً أثناء التصفح."
+msgid ""
+"Keeps a separate resume time for every item and returns to that time when the "
+"item is opened again during navigation."
+msgstr ""
+"يحتفظ بموضع استئناف مستقل لكل عنصر ويعود إلى ذلك الموضع عند إعادة فتح العنصر "
+"مجدداً أثناء التصفح."
 
 #. Translators: Error message shown when the speed step was typed as something other than a number above zero.
 #: UI/Audio/GeneralPreferences.cs:98
@@ -3755,7 +3917,7 @@ msgstr "يجب أن يكون مقدار تغيير طبقة الصوت رقما�
 #. Translators: Tick box that evens out audio loudness and holds back the loudest peaks.
 #: UI/Audio/PlaybackPreferences.cs:34
 msgid "Enable dynamic normalize and limiter"
-msgstr "تفعيل التسوية الديناميكية والمحدد (Limiter)"
+msgstr "تفعيل الضبط الديناميكي للصوت"
 
 #. Translators: Tick box that plays the left and right audio channels mixed together.
 #: UI/Audio/PlaybackPreferences.cs:36
@@ -3810,7 +3972,7 @@ msgstr "دائماً كلما أمكن ذلك"
 #. Translators: Checkbox on Audio > Playback that overlaps adjacent audio files. Files with video are excluded.
 #: UI/Audio/PlaybackPreferences.cs:61
 msgid "Enable cross-fading for audio files"
-msgstr "تفعيل التلاشي المتقاطع (Cross-fading) للملفات الصوتية"
+msgstr "تفعيل التلاشي (Cross-fading) للملفات الصوتية"
 
 #. Translators: Label on Audio > Playback for how long two audio files overlap, measured in milliseconds.
 #: UI/Audio/PlaybackPreferences.cs:63
@@ -3835,27 +3997,43 @@ msgstr "خطي (Linear)"
 #. Translators: Checkbox on Audio > Playback that also overlaps audio when the user navigates to another file.
 #: UI/Audio/PlaybackPreferences.cs:74
 msgid "Enable cross-fading during manual navigation"
-msgstr "تفعيل التلاشي المتقاطع أثناء التنقل اليدوي"
+msgstr "تفعيل التلاشي أثناء التنقل اليدوي"
 
 #. Translators: Help text for the tick box that evens out loudness and holds back loud peaks.
 #: UI/Audio/PlaybackPreferences.cs:98
-msgid "Evens out changing loudness and restrains the loudest peaks to reduce clipping. Clear this option to hear the source without those filters."
-msgstr "يقوم بتسوية التفاوت في مستويات الصوت وكبح الذروات المرتفعة لتقليل التشويش. قم بإلغاء تحديد هذا الخيار لسماع الصوت الأصلي بدون مؤثرات."
+msgid ""
+"Evens out changing loudness and restrains the loudest peaks to reduce clipping. "
+"Clear this option to hear the source without those filters."
+msgstr ""
+"يقوم بتسوية التفاوت في مستويات الصوت وكبح الذروات المرتفعة لتقليل التشويش. قم "
+"بإلغاء تحديد هذا الخيار لسماع الصوت الأصلي بدون مؤثرات."
 
 #. Translators: Help text for the tick box that mixes the left and right channels together.
 #: UI/Audio/PlaybackPreferences.cs:101
-msgid "Combines the left and right channels into one mono output. Clear this option to preserve the source channel layout."
-msgstr "يدمج القناتين اليمنى واليسرى في مخرج أحادي (Mono) واحد. ألغِ تحديد هذا الخيار للحفاظ على توزيع القنوات الأصلي."
+msgid ""
+"Combines the left and right channels into one mono output. Clear this option to "
+"preserve the source channel layout."
+msgstr ""
+"يدمج القناتين اليمنى واليسرى في مخرج أحادي (Mono) واحد. ألغِ تحديد هذا الخيار "
+"للحفاظ على توزيع القنوات الأصلي."
 
 #. Translators: Help text for the normal playback fade duration.
 #: UI/Audio/PlaybackPreferences.cs:104
-msgid "Sets how long playback fades take. Zero disables these fades even when a related option is selected. Seek fading uses its own interval."
-msgstr "يحدد مدة تأثيرات تلاشي الصوت أثناء التشغيل. القيمة صفر تعطل هذه التأثيرات حتى لو كان الخيار مفعلاً. يستخدم تلاشي التخطي مدته الخاصة."
+msgid ""
+"Sets how long playback fades take. Zero disables these fades even when a related "
+"option is selected. Seek fading uses its own interval."
+msgstr ""
+"يحدد مدة تأثيرات تلاشي الصوت أثناء التشغيل. القيمة صفر تعطل هذه التأثيرات حتى لو "
+"كان الخيار مفعلاً. يستخدم تلاشي التخطي مدته الخاصة."
 
 #. Translators: Help text for the option that fades sound around seeking.
 #: UI/Audio/PlaybackPreferences.cs:107
-msgid "Fades the sound out before moving and back in after playback restarts at the new position."
-msgstr "يخفض الصوت تدريجياً قبل الانتقال ويعيده تدريجياً بعد استئناف التشغيل في الموضع الجديد."
+msgid ""
+"Fades the sound out before moving and back in after playback restarts at the new "
+"position."
+msgstr ""
+"يخفض الصوت تدريجياً قبل الانتقال ويعيده تدريجياً بعد استئناف التشغيل في الموضع "
+"الجديد."
 
 #. Translators: Help text for the seek fade duration.
 #: UI/Audio/PlaybackPreferences.cs:110
@@ -3864,8 +4042,12 @@ msgstr "يحدد مدة كل تلاشٍ للصوت أثناء التخطي، م�
 
 #. Translators: Help text for fading between files without mixing the files together.
 #: UI/Audio/PlaybackPreferences.cs:113
-msgid "Fades out as a file reaches its end and fades in when another file starts, including after manual navigation. This does not mix two files together."
-msgstr "يخفض الصوت تدريجياً عند اقتراب نهاية الملف ويرفعه تدريجياً عند بدء ملف آخر، بما في ذلك بعد التنقل اليدوي. هذا الإجراء لا يدمج الملفين معاً."
+msgid ""
+"Fades out as a file reaches its end and fades in when another file starts, "
+"including after manual navigation. This does not mix two files together."
+msgstr ""
+"يخفض الصوت تدريجياً عند اقتراب نهاية الملف ويرفعه تدريجياً عند بدء ملف آخر، بما في "
+"ذلك بعد التنقل اليدوي. هذا الإجراء لا يدمج الملفين معاً."
 
 #. Translators: Help text for fading when playback is paused or resumed.
 #: UI/Audio/PlaybackPreferences.cs:116
@@ -3874,28 +4056,56 @@ msgstr "يخفض الصوت تدريجياً قبل الإيقاف المؤقت 
 
 #. Translators: Help text for gapless playback modes.
 #: UI/Audio/PlaybackPreferences.cs:119
-msgid "The Compatible files mode preserves the original audio format. Always when possible may adapt later files to the first file's output format. Online streams use gapless playback only when the next stream is ready."
-msgstr "يحافظ وضع 'الملفات المتوافقة' على تنسيق الصوت الأصلي. أما خيار 'دائماً كلما أمكن' فيقوم بملاءمة الملفات اللاحقة لتنسيق أول ملف. وتستخدم عمليات البث عبر الإنترنت التشغيل المتواصل فقط عندما يكون البث التالي جاهزاً."
+msgid ""
+"The Compatible files mode preserves the original audio format. Always when "
+"possible may adapt later files to the first file's output format. Online streams "
+"use gapless playback only when the next stream is ready."
+msgstr ""
+"يحافظ وضع 'الملفات المتوافقة' على تنسيق الصوت الأصلي. أما خيار 'دائماً كلما أمكن' "
+"فيقوم بملاءمة الملفات اللاحقة لتنسيق أول ملف. وتستخدم عمليات البث عبر الإنترنت "
+"التشغيل المتواصل فقط عندما يكون البث التالي جاهزاً."
 
 #. Translators: Context help for the cross-fading checkbox on Audio > Playback.
 #: UI/Audio/PlaybackPreferences.cs:122
-msgid "Overlaps the end of one audio file with the beginning of the next. Files containing video are excluded. Cross-fading takes precedence over ordinary file-transition fading and works independently of the gapless setting."
-msgstr "يدمج نهاية ملف صوتي مع بداية الملف التالي بتداخل سلس. يُستثنى من ذلك ملفات الفيديو. يكون للتلاشي المتقاطع الأولوية على التلاشي العادي بين الملفات ويعمل بشكل مستقل عن إعداد التشغيل المتواصل."
+msgid ""
+"Overlaps the end of one audio file with the beginning of the next. Files "
+"containing video are excluded. Cross-fading takes precedence over ordinary file-"
+"transition fading and works independently of the gapless setting."
+msgstr ""
+"يدمج نهاية ملف صوتي مع بداية الملف التالي بتداخل سلس. يُستثنى من ذلك ملفات "
+"الفيديو. يكون للتلاشي المتقاطع الأولوية على التلاشي العادي بين الملفات ويعمل بشكل "
+"مستقل عن إعداد التشغيل المتواصل."
 
 #. Translators: Context help for the cross-fading duration on Audio > Playback.
 #: UI/Audio/PlaybackPreferences.cs:125
-msgid "Sets the overlap from 1 to 30000 milliseconds. The default is 3000. Short files or a stream that is not ready may produce a shorter overlap. Longer overlaps require more decoded audio buffering."
-msgstr "يحدد مدة التداخل من 1 إلى 30000 ميلي ثانية. القيمة الافتراضية هي 3000. قد ينتج عن الملفات القصيرة أو البث غير الجاهز تداخل أقصر. تتطلب فترات التداخل الأطول مساحة تخزين مؤقت أكبر للصوت."
+msgid ""
+"Sets the overlap from 1 to 30000 milliseconds. The default is 3000. Short files "
+"or a stream that is not ready may produce a shorter overlap. Longer overlaps "
+"require more decoded audio buffering."
+msgstr ""
+"يحدد مدة التداخل من 1 إلى 30000 ميلي ثانية. القيمة الافتراضية هي 3000. قد ينتج عن "
+"الملفات القصيرة أو البث غير الجاهز تداخل أقصر. تتطلب فترات التداخل الأطول مساحة "
+"تخزين مؤقت أكبر للصوت."
 
 #. Translators: Context help for the cross-fading curve on Audio > Playback.
 #: UI/Audio/PlaybackPreferences.cs:128
-msgid "Equal-power maintains perceived loudness while the files overlap. Linear changes their gains at a constant rate. Equal-power can produce higher peaks."
-msgstr "يحافظ خيار 'طاقة متساوية' على مستوى الصوت المسموع أثناء تداخل الملفات. بينما يغير خيار 'خطي' الكسب بمعدل ثابت. قد ينتج عن الطاقة المتساوية ذروات صوتية أعلى."
+msgid ""
+"Equal-power maintains perceived loudness while the files overlap. Linear changes "
+"their gains at a constant rate. Equal-power can produce higher peaks."
+msgstr ""
+"يحافظ خيار 'طاقة متساوية' على مستوى الصوت المسموع أثناء تداخل الملفات. بينما يغير "
+"خيار 'خطي' الكسب بمعدل ثابت. قد ينتج عن الطاقة المتساوية ذروات صوتية أعلى."
 
 #. Translators: Context help for cross-fading during manual navigation on Audio > Playback.
 #: UI/Audio/PlaybackPreferences.cs:131
-msgid "Also cross-fades when you move to another audio file with navigation commands. This is off by default. Navigation while paused opens the destination without an overlap."
-msgstr "يطبق التلاشي المتقاطع أيضاً عند الانتقال إلى ملف صوتي آخر باستخدام أوامر التنقل. هذا الخيار معطل افتراضياً. التنقل أثناء الإيقاف المؤقت يفتح الملف الجديد بدون تداخل."
+msgid ""
+"Also cross-fades when you move to another audio file with navigation commands. "
+"This is off by default. Navigation while paused opens the destination without an "
+"overlap."
+msgstr ""
+"يطبق التلاشي المتقاطع أيضاً عند الانتقال إلى ملف صوتي آخر باستخدام أوامر التنقل. "
+"هذا الخيار معطل افتراضياً. التنقل أثناء الإيقاف المؤقت يفتح الملف الجديد بدون "
+"تداخل."
 
 #. Translators: Error shown when the seek fade duration is not a whole number from 1 through 10000.
 #: UI/Audio/PlaybackPreferences.cs:175
@@ -3922,8 +4132,8 @@ msgstr "يجب أن تكون فترة تلاشي التخطي عدداً صحي�
 #: UI/Dialogs/SleepTimerDialog.cs:171 UI/Equalizer/EditDialog.cs:116
 #: UI/Radio/FiltersDialog.cs:78 UI/Spotify/CredentialsPrompt.cs:19
 #: UI/YouTube/DownloadDialog.cs:133 UI/YouTube/DownloadExitDialog.cs:22
-#: UI/YouTube/DownloadProgressDialog.cs:60
-#: UI/YouTube/DownloadQueueDialog.cs:380 UI/YouTube/LinkKindDialog.cs:33
+#: UI/YouTube/DownloadProgressDialog.cs:60 UI/YouTube/DownloadQueueDialog.cs:380
+#: UI/YouTube/LinkKindDialog.cs:33
 msgid "Cancel"
 msgstr "إلغاء"
 
@@ -3934,8 +4144,12 @@ msgstr "تحميل الترجمة"
 
 #. Translators: File-type filter for supported subtitle files, followed by all files.
 #: UI/DialogService.cs:89
-msgid "Subtitle files (*.srt;*.ass;*.ssa;*.vtt;*.sub)|*.srt;*.ass;*.ssa;*.vtt;*.sub|All files (*.*)|*.*"
-msgstr "ملفات الترجمة (*.srt;*.ass;*.ssa;*.vtt;*.sub)|*.srt;*.ass;*.ssa;*.vtt;*.sub|جميع الملفات (*.*)|*.*"
+msgid ""
+"Subtitle files (*.srt;*.ass;*.ssa;*.vtt;*.sub)|*.srt;*.ass;*.ssa;*.vtt;*.sub|All "
+"files (*.*)|*.*"
+msgstr ""
+"ملفات الترجمة (*.srt;*.ass;*.ssa;*.vtt;*.sub)|*.srt;*.ass;*.ssa;*.vtt;*.sub|جميع "
+"الملفات (*.*)|*.*"
 
 #. Translators: Prompt asking for a subtitle file's web address.
 #: UI/DialogService.cs:97
@@ -4020,8 +4234,14 @@ msgstr "حول Luna Player"
 
 #. Translators: Description in the Luna Player About window.
 #: UI/Dialogs/AboutDialog.cs:23
-msgid "Luna Player is a fast, accessible media player for Windows. It is designed for effortless keyboard control and a clear screen-reader experience, and plays local media, network streams, and YouTube content without getting in your way."
-msgstr "Luna Player هو مشغل وسائط سريع وسهل الوصول لنظام Windows. صُمم لتوفير تحكم سلس عبر لوحة المفاتيح وتجربة فائقة الوضوح مع قارئات الشاشة، مع تشغيل الوسائط المحلية وتدفقات الشبكة ومحتوى YouTube دون أي تعقيد."
+msgid ""
+"Luna Player is a fast, accessible media player for Windows. It is designed for "
+"effortless keyboard control and a clear screen-reader experience, and plays local "
+"media, network streams, and YouTube content without getting in your way."
+msgstr ""
+"Luna Player هو مشغل وسائط سريع وسهل الوصول لنظام Windows. صُمم لتوفير تحكم سلس عبر "
+"لوحة المفاتيح وتجربة فائقة الوضوح مع قارئات الشاشة، مع تشغيل الوسائط المحلية "
+"وتدفقات الشبكة ومحتوى YouTube دون أي تعقيد."
 
 #. Translators: Additional description in the Luna Player About window.
 #: UI/Dialogs/AboutDialog.cs:27
@@ -4032,8 +4252,20 @@ msgstr "Luna Player هو برنامج مجاني ومفتوح المصدر."
 #. python-mpv are project names and should not be translated. NOTICE.txt and licenses are names
 #. found in Luna's installation folder.
 #: UI/Dialogs/AboutDialog.cs:31
-msgid "Luna includes mpv, copyright © the mpv developers and contributors to MPlayer and mplayer2, and a C# translation of python-mpv, copyright © 2017-2024 Sebastian Götte. These components are licensed under the GNU Lesser General Public License, version 2.1 or later. FFmpeg is licensed under the GNU Lesser General Public License, version 3 or later. See NOTICE.txt and the licenses folder for complete third-party notices and terms."
-msgstr "يتضمن Luna برنامج mpv، حقوق النشر © مطورو mpv والمساهمون في MPlayer وmplayer2، وترجمة بلغة C# لمكتبة python-mpv، حقوق النشر © 2017-2024 Sebastian Götte. هذه المكونات مرخصة بموجب رخصة جنو العمومية الصغرى (LGPL) الإصدار 2.1 أو أي إصدار لاحق. ومشروع FFmpeg مرخص بموجب رخصة جنو العمومية الصغرى الإصدار 3 أو أي إصدار لاحق. راجع ملف NOTICE.txt ومجلد التراخيص للاطلاع على الإشعارات والشروط الكاملة الخاصة بالأطراف الثالثة."
+msgid ""
+"Luna includes mpv, copyright © the mpv developers and contributors to MPlayer and "
+"mplayer2, and a C# translation of python-mpv, copyright © 2017-2024 Sebastian "
+"Götte. These components are licensed under the GNU Lesser General Public License, "
+"version 2.1 or later. FFmpeg is licensed under the GNU Lesser General Public "
+"License, version 3 or later. See NOTICE.txt and the licenses folder for complete "
+"third-party notices and terms."
+msgstr ""
+"يتضمن Luna برنامج mpv، حقوق النشر © مطورو mpv والمساهمون في MPlayer وmplayer2، "
+"وترجمة بلغة C# لمكتبة python-mpv، حقوق النشر © 2017-2024 Sebastian Götte. هذه "
+"المكونات مرخصة بموجب رخصة جنو العمومية الصغرى (LGPL) الإصدار 2.1 أو أي إصدار "
+"لاحق. ومشروع FFmpeg مرخص بموجب رخصة جنو العمومية الصغرى الإصدار 3 أو أي إصدار "
+"لاحق. راجع ملف NOTICE.txt ومجلد التراخيص للاطلاع على الإشعارات والشروط الكاملة "
+"الخاصة بالأطراف الثالثة."
 
 #. Translators: Final two lines in the About window. {publisher} is the developer's name and
 #. {version} is the installed application version.
@@ -4065,8 +4297,12 @@ msgid "New version detected"
 msgstr "تم اكتشاف إصدار جديد"
 
 #: UI/Dialogs/AppUpdateDialog.cs:21
-msgid "A new version of Luna is available. Your current version is {current}. Available version: {available}. Would you like to update?"
-msgstr "يتوفر إصدار جديد من Luna. إصدارك الحالي هو {current}. الإصدار المتوفر: {available}. هل ترغب في التحديث الآن؟"
+msgid ""
+"A new version of Luna is available. Your current version is {current}. Available "
+"version: {available}. Would you like to update?"
+msgstr ""
+"يتوفر إصدار جديد من Luna. إصدارك الحالي هو {current}. الإصدار المتوفر: "
+"{available}. هل ترغب في التحديث الآن؟"
 
 #. Translators: Label above the list of changes in a new Luna Player release.
 #: UI/Dialogs/AppUpdateDialog.cs:26
@@ -4159,15 +4395,15 @@ msgstr "حذف"
 #. Translators: The button that closes a window.
 #. Translators: Closes the queue window. Active downloads continue in the background.
 #. Translators: The button that closes a window.
-#: UI/Dialogs/BookmarkManagerDialog.cs:43
-#: UI/Dialogs/ConversionReportDialog.cs:24 UI/Dialogs/CrashDialog.cs:48
-#: UI/Dialogs/MediaConverterDialog.cs:219 UI/Dialogs/TextInfoDialog.cs:19
-#: UI/Equalizer/PresetsDialog.cs:56 UI/Iptv/ChannelBrowserDialog.cs:121
-#: UI/Iptv/IptvSourcesDialog.cs:62 UI/Radio/BrowserDialog.cs:134
-#: UI/Radio/DetailsDialog.cs:55 UI/Recording/RecordingDialog.cs:171
-#: UI/Spotify/BrowserDialog.cs:153 UI/YouTube/DescriptionDialog.cs:53
-#: UI/YouTube/DownloadQueueDialog.cs:68 UI/YouTube/FavoritesDialog.cs:62
-#: UI/YouTube/ResultsDialog.cs:110 UI/YouTube/SearchDialog.cs:85
+#: UI/Dialogs/BookmarkManagerDialog.cs:43 UI/Dialogs/ConversionReportDialog.cs:24
+#: UI/Dialogs/CrashDialog.cs:48 UI/Dialogs/MediaConverterDialog.cs:219
+#: UI/Dialogs/TextInfoDialog.cs:19 UI/Equalizer/PresetsDialog.cs:56
+#: UI/Iptv/ChannelBrowserDialog.cs:121 UI/Iptv/IptvSourcesDialog.cs:62
+#: UI/Radio/BrowserDialog.cs:134 UI/Radio/DetailsDialog.cs:55
+#: UI/Recording/RecordingDialog.cs:171 UI/Spotify/BrowserDialog.cs:153
+#: UI/YouTube/DescriptionDialog.cs:53 UI/YouTube/DownloadQueueDialog.cs:68
+#: UI/YouTube/FavoritesDialog.cs:62 UI/YouTube/ResultsDialog.cs:110
+#: UI/YouTube/SearchDialog.cs:85
 msgid "Close"
 msgstr "إغلاق"
 
@@ -4193,8 +4429,7 @@ msgstr "الملفات المتبقية: {count}"
 #. not yet worth making.
 #. Translators: Estimated time left for all unfinished queue items.
 #: UI/Dialogs/ConversionProgressDialog.cs:160
-#: UI/YouTube/DownloadProgressDialog.cs:163
-#: UI/YouTube/DownloadQueueDialog.cs:306
+#: UI/YouTube/DownloadProgressDialog.cs:163 UI/YouTube/DownloadQueueDialog.cs:306
 msgid "Estimated time left: {time}"
 msgstr "الوقت المتبقي التقديري: {time}"
 
@@ -4204,16 +4439,14 @@ msgstr "الوقت المتبقي التقديري: {time}"
 #. Translators: Shown for queue speed before enough data exists to measure it.
 #. Translators: Shown for queue time remaining before enough data exists to calculate it.
 #: UI/Dialogs/ConversionProgressDialog.cs:164
-#: UI/YouTube/DownloadProgressDialog.cs:147
-#: UI/YouTube/DownloadProgressDialog.cs:151
+#: UI/YouTube/DownloadProgressDialog.cs:147 UI/YouTube/DownloadProgressDialog.cs:151
 #: UI/YouTube/DownloadQueueDialog.cs:290 UI/YouTube/DownloadQueueDialog.cs:294
 msgid "calculating…"
 msgstr "جارٍ الحساب…"
 
 #. Translators: How far the whole batch has got. {percent} is a whole number.
 #. Translators: Aggregate progress through all videos in the download queue.
-#: UI/Dialogs/ConversionProgressDialog.cs:166
-#: UI/YouTube/DownloadQueueDialog.cs:302
+#: UI/Dialogs/ConversionProgressDialog.cs:166 UI/YouTube/DownloadQueueDialog.cs:302
 msgid "Total percentage: {percent}%"
 msgstr "النسبة الإجمالية: {percent}%"
 
@@ -4240,8 +4473,12 @@ msgstr "حدث خطأ ما"
 #. Translators: Message at the top of the crash window. The player carries on where it can, so this
 #. says what happened rather than announcing that it is closing.
 #: UI/Dialogs/CrashDialog.cs:35
-msgid "Luna hit an unexpected error it could not deal with. Please copy the details below and send them to the developer."
-msgstr "واجه Luna خطأ غير متوقع تعذر التعامل معه. يرجى نسخ التفاصيل أدناه وإرسالها إلى المطور لمساعدتنا في إصلاحه."
+msgid ""
+"Luna hit an unexpected error it could not deal with. Please copy the details "
+"below and send them to the developer."
+msgstr ""
+"واجه Luna خطأ غير متوقع تعذر التعامل معه. يرجى نسخ التفاصيل أدناه وإرسالها إلى "
+"المطور لمساعدتنا في إصلاحه."
 
 #. Translators: Tells the user where the crash details have also been written. {path} is a file name.
 #: UI/Dialogs/CrashDialog.cs:42
@@ -4331,8 +4568,7 @@ msgstr "تحويل إلى"
 
 #. Translators: Label of the list that chooses the sample rate the converted files are written at.
 #. Translators: Label of the list that chooses how many times a second a recording is sampled.
-#: UI/Dialogs/MediaConverterDialog.cs:122
-#: UI/Preferences/RecordingPreferences.cs:56
+#: UI/Dialogs/MediaConverterDialog.cs:122 UI/Preferences/RecordingPreferences.cs:56
 #: UI/Recording/RecordingDialog.cs:132
 msgid "Sample rate"
 msgstr "معدل العينات"
@@ -4340,8 +4576,7 @@ msgstr "معدل العينات"
 #. Translators: First item in a converter list, meaning the file's own value is kept unchanged.
 #. Translators: First item in the converter's channel list, meaning the source channel layout is kept.
 #. Translators: First item in the converter's quality list, meaning the source quality is kept.
-#: UI/Dialogs/MediaConverterDialog.cs:125
-#: UI/Dialogs/MediaConverterDialog.cs:133
+#: UI/Dialogs/MediaConverterDialog.cs:125 UI/Dialogs/MediaConverterDialog.cs:133
 #: UI/Dialogs/MediaConverterDialog.cs:142
 msgid "Preserve original"
 msgstr "الحفاظ على الأصلي"
@@ -4355,8 +4590,7 @@ msgstr "{rate} هرتز"
 #. Translators: Label of the list that chooses whether a recording is mono or stereo.
 #. Translators: Search filter: return channels rather than videos.
 #. Translators: A channel browser tab: other channels this one features.
-#: UI/Dialogs/MediaConverterDialog.cs:130
-#: UI/Preferences/RecordingPreferences.cs:59
+#: UI/Dialogs/MediaConverterDialog.cs:130 UI/Preferences/RecordingPreferences.cs:59
 #: UI/Recording/RecordingDialog.cs:135 UI/YouTube/SearchDialog.cs:76
 #: YouTube/Client/Channels.cs:40
 msgid "Channels"
@@ -4364,19 +4598,17 @@ msgstr "القنوات"
 
 #. Translators: The one-channel choice in the converter's channels list.
 #. Translators: One of the channel counts a recording can be made in: one channel.
-#: UI/Dialogs/MediaConverterDialog.cs:135
-#: UI/Preferences/RecordingPreferences.cs:62
-#: UI/Preferences/RecordingPreferences.cs:196
-#: UI/Recording/RecordingDialog.cs:138 UI/Recording/RecordingDialog.cs:402
+#: UI/Dialogs/MediaConverterDialog.cs:135 UI/Preferences/RecordingPreferences.cs:62
+#: UI/Preferences/RecordingPreferences.cs:196 UI/Recording/RecordingDialog.cs:138
+#: UI/Recording/RecordingDialog.cs:402
 msgid "Mono"
 msgstr "أحادي (Mono)"
 
 #. Translators: The two-channel choice in the converter's channels list.
 #. Translators: One of the channel counts a recording can be made in: two channels.
-#: UI/Dialogs/MediaConverterDialog.cs:137
-#: UI/Preferences/RecordingPreferences.cs:64
-#: UI/Preferences/RecordingPreferences.cs:198
-#: UI/Recording/RecordingDialog.cs:140 UI/Recording/RecordingDialog.cs:404
+#: UI/Dialogs/MediaConverterDialog.cs:137 UI/Preferences/RecordingPreferences.cs:64
+#: UI/Preferences/RecordingPreferences.cs:198 UI/Recording/RecordingDialog.cs:140
+#: UI/Recording/RecordingDialog.cs:404
 msgid "Stereo"
 msgstr "استريو (Stereo)"
 
@@ -4419,7 +4651,7 @@ msgstr "الموسيقى"
 #. Translators: The Opus profile for speech.
 #: UI/Dialogs/MediaConverterDialog.cs:159
 msgid "Speech"
-msgstr "الكلام البشري"
+msgstr "الحديث"
 
 #. Translators: The Opus profile that keeps the delay as short as possible.
 #: UI/Dialogs/MediaConverterDialog.cs:161
@@ -4490,8 +4722,12 @@ msgstr "اختر مكان حفظ الملفات المحولة"
 #. Translators: Shown when Convert is pressed with no destination folder chosen and files
 #. are not being written beside their sources.
 #: UI/Dialogs/MediaConverterDialog.cs:443
-msgid "Choose a folder to write the converted files to, or turn on \"Preserve original file locations\"."
-msgstr "اختر مجلداً لحفظ الملفات المحولة فيه، أو فعّل خيار 'الحفاظ على مواقع الملفات الأصلية'."
+msgid ""
+"Choose a folder to write the converted files to, or turn on \"Preserve original "
+"file locations\"."
+msgstr ""
+"اختر مجلداً لحفظ الملفات المحولة فيه، أو فعّل خيار 'الحفاظ على مواقع الملفات "
+"الأصلية'."
 
 #. Translators: Shown when the chosen destination folder could not be created.
 #: UI/Dialogs/MediaConverterDialog.cs:454
@@ -4588,8 +4824,14 @@ msgstr "Spotify"
 
 #. Translators: Help text for the settings tree down the left of the Preferences window.
 #: UI/Dialogs/PreferencesDialog.cs:209
-msgid "Use the Arrow keys to move through settings pages. Press the Right Arrow key on a category to show its pages and the Left Arrow key to hide them. The selected page's controls appear on the right side of the window."
-msgstr "استخدم مفاتيح الأسهم للتنقل بين صفحات الإعدادات. اضغط على السهم الأيمن لتوسيع الفئة وعرض صفحاتها، والسهم الأيسر لطيّها. تظهر عناصر التحكم الخاصة بالصفحة المحددة في الجانب الأيسر من النافذة."
+msgid ""
+"Use the Arrow keys to move through settings pages. Press the Right Arrow key on a "
+"category to show its pages and the Left Arrow key to hide them. The selected "
+"page's controls appear on the right side of the window."
+msgstr ""
+"استخدم مفاتيح الأسهم للتنقل بين صفحات الإعدادات. اضغط على السهم الأيمن لتوسيع "
+"الفئة وعرض صفحاتها، والسهم الأيسر لطيّها. تظهر عناصر التحكم الخاصة بالصفحة المحددة "
+"في الجانب الأيسر من النافذة."
 
 #. Translators: Spoken when the user asks for help on a control that has none.
 #: UI/Dialogs/PreferencesDialog.cs:216
@@ -4611,7 +4853,7 @@ msgstr "التنسيق"
 #. Translators: Label of the spin box choosing how many selections may be saved simultaneously.
 #: UI/Dialogs/SaveSelectionsDialog.cs:72
 msgid "Maximum number of threads"
-msgstr "الحد الأقصى لعدد خيوط المعالجة"
+msgstr "الحد الأقصى لعدد مسارات المعالج"
 
 #. Translators: Button that starts saving all selection points with the chosen settings.
 #. Translators: Button in the equalizer editor that keeps the changes.
@@ -4756,12 +4998,14 @@ msgstr "معامل الجودة Q (عرض النطاق)"
 #. Translators: Title of the group of settings for the equalizer band that lifts or cuts everything below a frequency.
 #: UI/Equalizer/EditDialog.cs:185
 msgid "Low shelf"
-msgstr "مرشح الترددات المنخفضة (Low Shelf)"
+msgstr "فلتر الترددات المنخفضة (Low Shelf)"
 
 #. Translators: Title of the group of settings for the equalizer band that lifts or cuts everything above a frequency.
 #: UI/Equalizer/EditDialog.cs:187
 msgid "High shelf"
-msgstr "مرشح الترددات العالية (High Shelf)"
+msgstr ""
+"فلتر\n"
+" الترددات العالية (High Shelf)"
 
 #. Translators: Title of the group of settings for one equalizer band. {frequency} is the band's frequency in hertz, such as 250.
 #: UI/Equalizer/EditDialog.cs:189
@@ -4775,7 +5019,8 @@ msgstr "أدخل اسماً للإعداد المسبق."
 
 #. Translators: Shown when a gain typed into the equalizer editor is not a number or is out of range. {band} names the band, such as "250 Hz"; {minimum} and {maximum} are the smallest and largest allowed.
 #: UI/Equalizer/EditDialog.cs:268
-msgid "The gain for {band} must be a number between {minimum} and {maximum} decibels."
+msgid ""
+"The gain for {band} must be a number between {minimum} and {maximum} decibels."
 msgstr "يجب أن يكون الكسب لنطاق {band} رقماً بين {minimum} و{maximum} ديسيبل."
 
 #. Translators: Shown when a Q typed into the equalizer editor is not a number or is out of range. {band} names the band, such as "250 Hz"; {minimum} and {maximum} are the smallest and largest allowed. Q is the usual name for a band's width.
@@ -4805,7 +5050,7 @@ msgstr "تعديل..."
 #. Translators: Title of the window for making a new equalizer preset.
 #: UI/Equalizer/PresetsDialog.cs:117
 msgid "New equalizer preset"
-msgstr "إعداد مسبق جديد للموازن"
+msgstr "إعداد مسبق جديد للمعادل"
 
 #. Translators: Asks the user to confirm removing an equalizer preset. {name} is the preset's name.
 #: UI/Equalizer/PresetsDialog.cs:170
@@ -4908,8 +5153,14 @@ msgstr "التالي: لا توجد برامج مجدولة"
 
 #. Translators: Spoken help for the channel browser, read aloud when the user presses F1.
 #: UI/Iptv/ChannelBrowserDialog.cs:283
-msgid "Choose what to show and a category from the lists, or type part of a name in the search box to narrow the channels. Press Enter on a channel to play it. Press Control plus I to hear what is on now and next. Press Escape to close."
-msgstr "اختر ما ترغب بعرضه وحدد الفئة من القوائم، أو اكتب جزءاً من الاسم في مربع البحث لتصفية القنوات. اضغط على Enter لتشغيل القناة. اضغط على Control + I لسماع ما يعرض الآن وما يعرض تالياً. اضغط على Escape للإغلاق."
+msgid ""
+"Choose what to show and a category from the lists, or type part of a name in the "
+"search box to narrow the channels. Press Enter on a channel to play it. Press "
+"Control plus I to hear what is on now and next. Press Escape to close."
+msgstr ""
+"اختر ما ترغب بعرضه وحدد الفئة من القوائم، أو اكتب جزءاً من الاسم في مربع البحث "
+"لتصفية القنوات. اضغط على Enter لتشغيل القناة. اضغط على Control + I لسماع ما يعرض "
+"الآن وما يعرض تالياً. اضغط على Escape للإغلاق."
 
 #. Translators: Label of the list saying what kind of IPTV source is being saved.
 #. Translators: Heading of the IPTV sources list column saying what kind of source each one is.
@@ -5071,7 +5322,7 @@ msgstr "أدوات"
 #. Translators: Name of the Help menu in the menu bar.
 #: UI/MenuBuilder.cs:93
 msgid "Help"
-msgstr "تعليمات"
+msgstr "مساعدة"
 
 #. Translators: Recording menu item that starts a paused recording again.
 #. Translators: Button that starts a paused recording again.
@@ -5358,7 +5609,7 @@ msgstr "تكرار الملف"
 #. Translators: Player menu item that turns skipping silent parts of the file on or off. It is ticked while it is on.
 #: UI/Menus/PlayerMenu.cs:98
 msgid "Enable silence removal filter"
-msgstr "تفعيل مرشح إزالة الصمت"
+msgstr "تفعيل فلتر إزالة الصمت"
 
 #. Translators: Item in the A-B loop submenu: mark the start of the part to repeat.
 #. A and B name the two ends of the loop and are usually left as they are.
@@ -5561,20 +5812,17 @@ msgid "Time remaining"
 msgstr "الوقت المتبقي"
 
 #. Translators: Item in the Video options menu that opens the download window to choose how the video being played is saved.
-#. Translators: Context menu item in the results list that opens the download window to choose how the chosen video is saved.
-#: UI/Menus/VideoMenu.cs:16 UI/YouTube/ResultsDialog.cs:400
+#: UI/Menus/VideoMenu.cs:16
 msgid "Download..."
 msgstr "تنزيل..."
 
 #. Translators: Item in the Video options menu that saves the video being played straight to disk with the saved download settings.
-#. Translators: Context menu item in the results list that saves the chosen video straight to disk with the saved download settings.
-#: UI/Menus/VideoMenu.cs:18 UI/YouTube/ResultsDialog.cs:402
+#: UI/Menus/VideoMenu.cs:18
 msgid "Direct download"
 msgstr "تنزيل مباشر"
 
 #. Translators: Item in the Video options menu that adds the video being played to the download queue.
-#. Translators: Context menu item that adds the selected video to the download queue.
-#: UI/Menus/VideoMenu.cs:20 UI/YouTube/ResultsDialog.cs:404
+#: UI/Menus/VideoMenu.cs:20
 msgid "Add to download queue"
 msgstr "إضافة إلى قائمة انتظار التنزيل"
 
@@ -5594,21 +5842,23 @@ msgid "Open video in browser"
 msgstr "فتح الفيديو في المتصفح"
 
 #. Translators: Item in the Video options menu that opens the channel of the video being played in the web browser.
-#. Translators: Context menu item in the results list that opens the channel that published the video in the web browser.
-#: UI/Menus/VideoMenu.cs:28 UI/YouTube/ResultsDialog.cs:390
+#: UI/Menus/VideoMenu.cs:28
 msgid "Open channel in browser"
 msgstr "فتح القناة في المتصفح"
 
 #. Translators: Spoken description of the backup and restore settings page, read when the page is opened.
 #: UI/Preferences/BackupPreferences.cs:15
-msgid "Save portable copies of preferences and bookmarks, restore them from earlier copies, or open Luna's configuration folder."
-msgstr "احفظ نسخاً قابلة للنقل من تفضيلاتك وعلاماتك المرجعية، أو استعدها من نسخ سابقة، أو افتح مجلد إعدادات Luna."
+msgid ""
+"Save portable copies of preferences and bookmarks, restore them from earlier "
+"copies, or open Luna's configuration folder."
+msgstr ""
+"احفظ نسخاً قابلة للنقل من تفضيلاتك وعلاماتك المرجعية، أو استعدها من نسخ سابقة، أو "
+"افتح مجلد إعدادات Luna."
 
 #. Translators: Button on the backup and restore settings page that saves a copy of the settings to a file the user chooses.
 #. Translators: Title of the file picker used to export settings.
 #. Translators: Title of the message shown after settings are exported.
-#: UI/Preferences/BackupPreferences.cs:21
-#: UI/Preferences/BackupPreferences.cs:58
+#: UI/Preferences/BackupPreferences.cs:21 UI/Preferences/BackupPreferences.cs:58
 #: UI/Preferences/BackupPreferences.cs:64
 msgid "Export settings"
 msgstr "تصدير الإعدادات"
@@ -5616,8 +5866,7 @@ msgstr "تصدير الإعدادات"
 #. Translators: Button on the backup and restore settings page that loads settings back from a file the user chooses.
 #. Translators: Title of the file picker used to import settings.
 #. Translators: Title of the message shown after settings are imported.
-#: UI/Preferences/BackupPreferences.cs:23
-#: UI/Preferences/BackupPreferences.cs:74
+#: UI/Preferences/BackupPreferences.cs:23 UI/Preferences/BackupPreferences.cs:74
 #: UI/Preferences/BackupPreferences.cs:90
 msgid "Import settings"
 msgstr "استيراد الإعدادات"
@@ -5625,8 +5874,7 @@ msgstr "استيراد الإعدادات"
 #. Translators: Button on the backup and restore settings page that saves a copy of the bookmarks to a file the user chooses.
 #. Translators: Title of the file picker used to export bookmarks.
 #. Translators: Title of the message shown after bookmarks are exported.
-#: UI/Preferences/BackupPreferences.cs:25
-#: UI/Preferences/BackupPreferences.cs:99
+#: UI/Preferences/BackupPreferences.cs:25 UI/Preferences/BackupPreferences.cs:99
 #: UI/Preferences/BackupPreferences.cs:105
 msgid "Export bookmarks"
 msgstr "تصدير العلامات المرجعية"
@@ -5634,8 +5882,7 @@ msgstr "تصدير العلامات المرجعية"
 #. Translators: Button on the backup and restore settings page that loads bookmarks back from a file the user chooses.
 #. Translators: Title of the file picker used to import bookmarks.
 #. Translators: Title of the message shown after bookmarks are imported.
-#: UI/Preferences/BackupPreferences.cs:27
-#: UI/Preferences/BackupPreferences.cs:115
+#: UI/Preferences/BackupPreferences.cs:27 UI/Preferences/BackupPreferences.cs:115
 #: UI/Preferences/BackupPreferences.cs:121
 msgid "Import bookmarks"
 msgstr "استيراد العلامات المرجعية"
@@ -5643,8 +5890,7 @@ msgstr "استيراد العلامات المرجعية"
 #. Translators: Button on the backup and restore settings page that puts every setting back the way it started.
 #. Translators: Title of the confirmation shown before resetting every setting.
 #. Translators: Title of the message shown after resetting every setting.
-#: UI/Preferences/BackupPreferences.cs:29
-#: UI/Preferences/BackupPreferences.cs:133
+#: UI/Preferences/BackupPreferences.cs:29 UI/Preferences/BackupPreferences.cs:133
 #: UI/Preferences/BackupPreferences.cs:148
 msgid "Reset settings"
 msgstr "إعادة تعيين الإعدادات"
@@ -5656,33 +5902,53 @@ msgstr "فتح مجلد إعدادات المستخدم"
 
 #. Translators: Help text for the button that saves a copy of the settings, spoken when the user asks for help on it.
 #: UI/Preferences/BackupPreferences.cs:40
-msgid "Saves the current preferences to a JSON file you choose while leaving Luna's working copy in place."
-msgstr "يحفظ التفضيلات الحالية في ملف JSON من اختيارك مع الاحتفاظ بنسخة عمل Luna الحالية دون تعديل."
+msgid ""
+"Saves the current preferences to a JSON file you choose while leaving Luna's "
+"working copy in place."
+msgstr ""
+"يحفظ التفضيلات الحالية في ملف JSON من اختيارك مع الاحتفاظ بنسخة عمل Luna الحالية "
+"دون تعديل."
 
 #. Translators: Help text for the button that loads settings back from a file, spoken when the user asks for help on it.
 #: UI/Preferences/BackupPreferences.cs:42
-msgid "Loads preferences from a JSON file and replaces the values currently shown in this dialog."
-msgstr "يقوم بتحميل التفضيلات من ملف JSON ويستبدل القيم المعروضة حالياً في مربع الحوار هذا."
+msgid ""
+"Loads preferences from a JSON file and replaces the values currently shown in "
+"this dialog."
+msgstr ""
+"يقوم بتحميل التفضيلات من ملف JSON ويستبدل القيم المعروضة حالياً في مربع الحوار هذا."
 
 #. Translators: Help text for the button that saves a copy of the bookmarks, spoken when the user asks for help on it. JSON is the file format and is not translated.
 #: UI/Preferences/BackupPreferences.cs:44
-msgid "Saves all bookmarks to a JSON file you choose without moving or deleting the working copy."
-msgstr "يحفظ جميع العلامات المرجعية في ملف JSON من اختيارك دون نقل نسخة العمل أو حذفها."
+msgid ""
+"Saves all bookmarks to a JSON file you choose without moving or deleting the "
+"working copy."
+msgstr ""
+"يحفظ جميع العلامات المرجعية في ملف JSON من اختيارك دون نقل نسخة العمل أو حذفها."
 
 #. Translators: Help text for the button that loads bookmarks back from a file, spoken when the user asks for help on it.
 #: UI/Preferences/BackupPreferences.cs:46
-msgid "Loads bookmarks from a JSON file and replaces the collection Luna currently uses."
-msgstr "يقوم بتحميل العلامات المرجعية من ملف JSON ويستبدل المجموعة التي يستخدمها Luna حالياً."
+msgid ""
+"Loads bookmarks from a JSON file and replaces the collection Luna currently uses."
+msgstr ""
+"يقوم بتحميل العلامات المرجعية من ملف JSON ويستبدل المجموعة التي يستخدمها Luna "
+"حالياً."
 
 #. Translators: Help text for the button that puts every setting back the way it started, spoken when the user asks for help on it.
 #: UI/Preferences/BackupPreferences.cs:48
-msgid "Returns every preference to its original value after you confirm. This cannot be undone from the dialog."
-msgstr "يعيد كل تفضيل إلى قيمته الأصلية بعد التأكيد. لا يمكن التراجع عن هذا الإجراء من مربع الحوار."
+msgid ""
+"Returns every preference to its original value after you confirm. This cannot be "
+"undone from the dialog."
+msgstr ""
+"يعيد كل تفضيل إلى قيمته الأصلية بعد التأكيد. لا يمكن التراجع عن هذا الإجراء من "
+"مربع الحوار."
 
 #. Translators: Help text for the button that opens the folder where the player keeps its settings, spoken when the user asks for help on it.
 #: UI/Preferences/BackupPreferences.cs:50
-msgid "Opens Luna's configuration directory in File Explorer so you can inspect or copy its files directly."
-msgstr "يفتح مجلد تكوين Luna في مستكشف الملفات حتى تتمكن من معاينة ملفاته أو نسخها مباشرة."
+msgid ""
+"Opens Luna's configuration directory in File Explorer so you can inspect or copy "
+"its files directly."
+msgstr ""
+"يفتح مجلد تكوين Luna في مستكشف الملفات حتى تتمكن من معاينة ملفاته أو نسخها مباشرة."
 
 #. Translators: Message shown once the settings have been saved to the chosen file.
 #: UI/Preferences/BackupPreferences.cs:62
@@ -5696,8 +5962,7 @@ msgstr "تعذر تصدير الإعدادات."
 
 #. Translators: Title of the message shown when the settings could not be saved to the chosen file.
 #. Translators: Title of an error shown when bookmarks cannot be exported.
-#: UI/Preferences/BackupPreferences.cs:68
-#: UI/Preferences/BackupPreferences.cs:109
+#: UI/Preferences/BackupPreferences.cs:68 UI/Preferences/BackupPreferences.cs:109
 msgid "Export error"
 msgstr "خطأ في التصدير"
 
@@ -5709,8 +5974,7 @@ msgstr "ملف الإعدادات المحدد غير صالح أو تعذر ا�
 #. Translators: Title of the message shown when settings could not be loaded from the chosen file.
 #. Translators: Title of an error shown when settings cannot be imported.
 #. Translators: Title of an error shown when bookmarks cannot be imported.
-#: UI/Preferences/BackupPreferences.cs:82
-#: UI/Preferences/BackupPreferences.cs:92
+#: UI/Preferences/BackupPreferences.cs:82 UI/Preferences/BackupPreferences.cs:92
 #: UI/Preferences/BackupPreferences.cs:125
 msgid "Import error"
 msgstr "خطأ في الاستيراد"
@@ -5756,8 +6020,7 @@ msgstr "تعذر إعادة تعيين الإعدادات."
 
 #. Translators: Title of the message shown when the settings could not be put back the way they started.
 #. Translators: Title of an error shown when settings cannot be reset.
-#: UI/Preferences/BackupPreferences.cs:140
-#: UI/Preferences/BackupPreferences.cs:150
+#: UI/Preferences/BackupPreferences.cs:140 UI/Preferences/BackupPreferences.cs:150
 msgid "Reset error"
 msgstr "خطأ في إعادة التعيين"
 
@@ -5779,8 +6042,7 @@ msgstr "خطأ في فتح المجلد"
 #. Translators: The file types offered when saving a copy of the settings or bookmarks. Translate only
 #. the two names, "JSON files" and "All files"; leave everything else, including the vertical bars, as it is.
 #. Translators: File types offered when opening a settings or bookmarks backup. Translate only the two names.
-#: UI/Preferences/BackupPreferences.cs:166
-#: UI/Preferences/BackupPreferences.cs:174
+#: UI/Preferences/BackupPreferences.cs:166 UI/Preferences/BackupPreferences.cs:174
 msgid "JSON files (*.json)|*.json|All files (*.*)|*.*"
 msgstr "ملفات JSON (*.json)|*.json|جميع الملفات (*.*)|*.*"
 
@@ -5794,8 +6056,7 @@ msgstr "اللغة"
 
 #. Translators: First entry in the language list: use whatever language Windows itself is set to.
 #. Translators: Theme choice: follow whatever light or dark appearance Windows itself is set to.
-#: UI/Preferences/GeneralPreferences.cs:38
-#: UI/Preferences/GeneralPreferences.cs:44
+#: UI/Preferences/GeneralPreferences.cs:38 UI/Preferences/GeneralPreferences.cs:44
 msgid "System default"
 msgstr "افتراضي النظام"
 
@@ -5941,43 +6202,83 @@ msgstr "تعذر إلغاء تسجيل امتدادات الملفات."
 
 #. Translators: Help text for the language list, spoken when the user asks for help on it.
 #: UI/Preferences/GeneralPreferences.cs:132
-msgid "Choose System default to follow the Windows display language, or select a language included with Luna. A different choice takes effect after Luna restarts."
-msgstr "اختر 'افتراضي النظام' لاتباع لغة عرض Windows، أو حدد إحدى اللغات المضمنة في Luna. يسري مفعول التغيير بعد إعادة تشغيل Luna."
+msgid ""
+"Choose System default to follow the Windows display language, or select a "
+"language included with Luna. A different choice takes effect after Luna restarts."
+msgstr ""
+"اختر 'افتراضي النظام' لاتباع لغة عرض Windows، أو حدد إحدى اللغات المضمنة في Luna. "
+"يسري مفعول التغيير بعد إعادة تشغيل Luna."
 
 #. Translators: Help text for the theme list, spoken when the user asks for help on it.
 #: UI/Preferences/GeneralPreferences.cs:136
-msgid "Chooses whether Luna uses a light or dark appearance. System default follows the light or dark setting in Windows. A Windows high-contrast theme is always followed whatever is chosen here. A different choice takes effect after Luna restarts."
-msgstr "يحدد ما إذا كان Luna يستخدم مظهراً فاتحاً أو داكناً. يتبع خيار 'افتراضي النظام' إعداد الوضع الفاتح أو الداكن في Windows. يتم احترام سمة التباين العالي في Windows دائماً بغض النظر عما تختاره هنا. يسري مفعول التغيير بعد إعادة تشغيل Luna."
+msgid ""
+"Chooses whether Luna uses a light or dark appearance. System default follows the "
+"light or dark setting in Windows. A Windows high-contrast theme is always "
+"followed whatever is chosen here. A different choice takes effect after Luna "
+"restarts."
+msgstr ""
+"يحدد ما إذا كان Luna يستخدم مظهراً فاتحاً أو داكناً. يتبع خيار 'افتراضي النظام' "
+"إعداد الوضع الفاتح أو الداكن في Windows. يتم احترام سمة التباين العالي في Windows "
+"دائماً بغض النظر عما تختاره هنا. يسري مفعول التغيير بعد إعادة تشغيل Luna."
 
 #. Translators: Help text for the tick box that starts again where playing stopped last time.
 #: UI/Preferences/GeneralPreferences.cs:141
-msgid "Saves the active item and its playback time when Luna exits, then resumes there on the next launch. Clear this option to start without restoring the previous session."
-msgstr "يحفظ العنصر النشط ووقت تشغيله عند الخروج من Luna، ثم يستأنف التشغيل من تلك النقطة عند بدء التشغيل التالي. قم بإلغاء تحديد هذا الخيار للبدء دون استعادة الجلسة السابقة."
+msgid ""
+"Saves the active item and its playback time when Luna exits, then resumes there "
+"on the next launch. Clear this option to start without restoring the previous "
+"session."
+msgstr ""
+"يحفظ العنصر النشط ووقت تشغيله عند الخروج من Luna، ثم يستأنف التشغيل من تلك النقطة "
+"عند بدء التشغيل التالي. قم بإلغاء تحديد هذا الخيار للبدء دون استعادة الجلسة "
+"السابقة."
 
 #. Translators: Help text for the tick box that says the name of each file as the user moves through the list.
 #: UI/Preferences/GeneralPreferences.cs:145
-msgid "Announces each newly selected item when you use Previous or Next, so you do not need to request its name separately."
-msgstr "ينطق اسم كل عنصر محدد حديثاً عند استخدام السابق أو التالي، بحيث لا تضطر لطلب معرفة اسمه بشكل منفصل."
+msgid ""
+"Announces each newly selected item when you use Previous or Next, so you do not "
+"need to request its name separately."
+msgstr ""
+"ينطق اسم كل عنصر محدد حديثاً عند استخدام السابق أو التالي، بحيث لا تضطر لطلب معرفة "
+"اسمه بشكل منفصل."
 
 #. Translators: Help text for the tick box that looks for a newer version of the player when it starts.
 #: UI/Preferences/GeneralPreferences.cs:148
-msgid "Checks for a newer Luna release in the background after startup. A prompt appears only when a newer package is ready to download."
-msgstr "يتحقق من وجود إصدار أحدث من Luna في الخلفية بعد بدء التشغيل. لا يظهر تنبيه إلا عندما تكون هناك حزمة جديدة جاهزة للتنزيل."
+msgid ""
+"Checks for a newer Luna release in the background after startup. A prompt appears "
+"only when a newer package is ready to download."
+msgstr ""
+"يتحقق من وجود إصدار أحدث من Luna في الخلفية بعد بدء التشغيل. لا يظهر تنبيه إلا "
+"عندما تكون هناك حزمة جديدة جاهزة للتنزيل."
 
 #. Translators: Help text for the tick box that keeps changes such as volume and speed when the player closes.
 #: UI/Preferences/GeneralPreferences.cs:151
-msgid "Writes changes made during the session when Luna exits, including volume and speed. Clear this option if those changes should last only until the window closes."
-msgstr "يحفظ التغييرات التي تم إجراؤها أثناء الجلسة عند الخروج من Luna، بما في ذلك مستوى الصوت والسرعة. قم بإلغاء تحديد هذا الخيار إذا كنت ترغب في أن تنتهي تلك التغييرات بمجرد إغلاق النافذة."
+msgid ""
+"Writes changes made during the session when Luna exits, including volume and "
+"speed. Clear this option if those changes should last only until the window "
+"closes."
+msgstr ""
+"يحفظ التغييرات التي تم إجراؤها أثناء الجلسة عند الخروج من Luna، بما في ذلك مستوى "
+"الصوت والسرعة. قم بإلغاء تحديد هذا الخيار إذا كنت ترغب في أن تنتهي تلك التغييرات "
+"بمجرد إغلاق النافذة."
 
 #. Translators: Help text for the tick box that chooses whether a file opened from Windows uses the running Luna window.
 #: UI/Preferences/GeneralPreferences.cs:155
-msgid "When selected, opening a media file from Windows sends it to the Luna window that is already open. Clear this option to open the file in a separate Luna window."
-msgstr "عند تحديده، فإن فتح ملف وسائط من Windows يرسله إلى نافذة Luna المفتوحة بالفعل. قم بإلغاء تحديد هذا الخيار لفتح الملف في نافذة مستقلة جديدة لـ Luna."
+msgid ""
+"When selected, opening a media file from Windows sends it to the Luna window that "
+"is already open. Clear this option to open the file in a separate Luna window."
+msgstr ""
+"عند تحديده، فإن فتح ملف وسائط من Windows يرسله إلى نافذة Luna المفتوحة بالفعل. قم "
+"بإلغاء تحديد هذا الخيار لفتح الملف في نافذة مستقلة جديدة لـ Luna."
 
 #. Translators: Help text for the tick box that keeps the player out of the system's media controls.
 #: UI/Preferences/GeneralPreferences.cs:159
-msgid "Keeps Luna out of the system media controls and the play, pause and track keys on a keyboard or headset. Enable this if those keys misbehave with your headphones."
-msgstr "يبقي Luna بعيداً عن عناصر التحكم في وسائط النظام ومفاتيح التشغيل والإيقاف المؤقت والمسارات على لوحة المفاتيح أو سماعة الرأس. فعّل هذا الخيار إذا كانت تلك المفاتيح لا تعمل بشكل صحيح مع سماعاتك."
+msgid ""
+"Keeps Luna out of the system media controls and the play, pause and track keys on "
+"a keyboard or headset. Enable this if those keys misbehave with your headphones."
+msgstr ""
+"يبقي Luna بعيداً عن عناصر التحكم في وسائط النظام ومفاتيح التشغيل والإيقاف المؤقت "
+"والمسارات على لوحة المفاتيح أو سماعة الرأس. فعّل هذا الخيار إذا كانت تلك المفاتيح "
+"لا تعمل بشكل صحيح مع سماعاتك."
 
 #. Translators: Help text for the tick box that shows the playing track in the window title.
 #: UI/Preferences/GeneralPreferences.cs:163
@@ -5986,28 +6287,54 @@ msgstr "يعرض المسار المشغل في عنوان النافذة، مع
 
 #. Translators: Help text for the tick box that lets a new subtitle line cut off the one still being read.
 #: UI/Preferences/GeneralPreferences.cs:166
-msgid "When reading subtitles aloud, lets a new line stop the one still being spoken so the speech keeps pace with the picture. Leave it off, the default, to hear each line to the end before the next begins."
-msgstr "عند قراءة الترجمة بصوت عالٍ، يسمح للسطر الجديد بإيقاف السطر الذي لا يزال يُنطق حتى يواكب النطق أحداث الفيديو. اتركه معطلاً (الافتراضي) لسماع كل سطر حتى نهايته قبل بدء السطر التالي."
+msgid ""
+"When reading subtitles aloud, lets a new line stop the one still being spoken so "
+"the speech keeps pace with the picture. Leave it off, the default, to hear each "
+"line to the end before the next begins."
+msgstr ""
+"عند قراءة الترجمة بصوت عالٍ، يسمح للسطر الجديد بإيقاف السطر الذي لا يزال يُنطق حتى "
+"يواكب النطق أحداث الفيديو. اتركه معطلاً (الافتراضي) لسماع كل سطر حتى نهايته قبل "
+"بدء السطر التالي."
 
 #. Translators: Help text for the list that chooses how much detail the player speaks.
 #: UI/Preferences/GeneralPreferences.cs:170
-msgid "Beginner uses complete, explanatory announcements. Advanced keeps confirmations brief for experienced users."
-msgstr "يستخدم وضع 'مبتدئ' إعلانات صوتية كاملة وتوضيحية. بينما يحافظ وضع 'متقدم' على تأكيدات موجزة للمستخدمين المتمرسين."
+msgid ""
+"Beginner uses complete, explanatory announcements. Advanced keeps confirmations "
+"brief for experienced users."
+msgstr ""
+"يستخدم وضع 'مبتدئ' إعلانات صوتية كاملة وتوضيحية. بينما يحافظ وضع 'متقدم' على "
+"تأكيدات موجزة للمستخدمين المتمرسين."
 
 #. Translators: Help text for the list that chooses how much of a folder is loaded when one file is opened.
 #: UI/Preferences/GeneralPreferences.cs:173
-msgid "Chooses the playlist Luna builds when Windows opens one media file: only the selected file, all supported media in its folder, or supported media in that folder and every folder below it."
-msgstr "يحدد قائمة التشغيل التي ينشئها Luna عندما يفتح Windows ملف وسائط: الملف المحدد فقط، أو جميع ملفات الوسائط المدعومة في مجلده، أو الوسائط المدعومة في ذلك المجلد وجميع المجلدات الفرعية داخله."
+msgid ""
+"Chooses the playlist Luna builds when Windows opens one media file: only the "
+"selected file, all supported media in its folder, or supported media in that "
+"folder and every folder below it."
+msgstr ""
+"يحدد قائمة التشغيل التي ينشئها Luna عندما يفتح Windows ملف وسائط: الملف المحدد "
+"فقط، أو جميع ملفات الوسائط المدعومة في مجلده، أو الوسائط المدعومة في ذلك المجلد "
+"وجميع المجلدات الفرعية داخله."
 
 #. Translators: Help text for the button that tells Windows this player can open media files.
 #: UI/Preferences/GeneralPreferences.cs:177
-msgid "Adds Luna to the Windows list of applications that can open supported media files. Windows may still ask you to choose Luna in Default apps before it becomes the default player."
-msgstr "يضيف Luna إلى قائمة تطبيقات Windows القادرة على فتح ملفات الوسائط المدعومة. قد يطلب منك Windows اختيار Luna في 'التطبيقات الافتراضية' قبل أن يصبح المشغل الافتراضي."
+msgid ""
+"Adds Luna to the Windows list of applications that can open supported media "
+"files. Windows may still ask you to choose Luna in Default apps before it becomes "
+"the default player."
+msgstr ""
+"يضيف Luna إلى قائمة تطبيقات Windows القادرة على فتح ملفات الوسائط المدعومة. قد "
+"يطلب منك Windows اختيار Luna في 'التطبيقات الافتراضية' قبل أن يصبح المشغل "
+"الافتراضي."
 
 #. Translators: Help text for the button that undoes telling Windows this player can open media files.
 #: UI/Preferences/GeneralPreferences.cs:181
-msgid "Removes the media-file associations registered by Luna. It does not delete any media or change default-app choices managed separately by Windows."
-msgstr "يزيل ارتباطات ملفات الوسائط المسجلة بواسطة Luna. هذا الإجراء لا يحذف أي وسائط ولا يغير خيارات التطبيقات الافتراضية المدارة بشكل مستقل بواسطة Windows."
+msgid ""
+"Removes the media-file associations registered by Luna. It does not delete any "
+"media or change default-app choices managed separately by Windows."
+msgstr ""
+"يزيل ارتباطات ملفات الوسائط المسجلة بواسطة Luna. هذا الإجراء لا يحذف أي وسائط ولا "
+"يغير خيارات التطبيقات الافتراضية المدارة بشكل مستقل بواسطة Windows."
 
 #. Translators: Label of the list that chooses what a recording is saved as.
 #. Translators: Label of the list that chooses the file type a downloaded audio track is saved as.
@@ -6022,9 +6349,9 @@ msgstr "تنسيق الصوت"
 #. Translators: Label of the list that chooses the bitrate a downloaded audio track is saved at.
 #. Translators: Label of the list that chooses the bitrate for downloaded YouTube audio.
 #. Translators: Label of the list that chooses the sound quality a video's audio is played at.
-#: UI/Preferences/RecordingPreferences.cs:66
-#: UI/Spotify/CredentialsPreferences.cs:26 UI/YouTube/DownloadDialog.cs:88
-#: UI/YouTube/DownloadPreferences.cs:107 UI/YouTube/GeneralPreferences.cs:61
+#: UI/Preferences/RecordingPreferences.cs:66 UI/Spotify/CredentialsPreferences.cs:26
+#: UI/YouTube/DownloadDialog.cs:88 UI/YouTube/DownloadPreferences.cs:107
+#: UI/YouTube/GeneralPreferences.cs:61
 msgid "Audio quality"
 msgstr "جودة الصوت"
 
@@ -6035,32 +6362,56 @@ msgstr "مجلد التسجيلات"
 
 #. Translators: Help text for the list that chooses what a recording is saved as.
 #: UI/Preferences/RecordingPreferences.cs:89
-msgid "WAV preserves the audio without compression and usually produces the largest file. FLAC also preserves it while reducing size. MP3 and AAC trade some detail for much smaller files."
-msgstr "يحافظ تنسيق WAV على الصوت دون أي ضغط وينتج عنه عادةً أكبر حجم للملف. يحافظ FLAC عليه أيضاً ولكن مع تقليل الحجم. بينما يضحي MP3 وAAC ببعض التفاصيل للحصول على أحجام ملفات أصغر بكثير."
+msgid ""
+"WAV preserves the audio without compression and usually produces the largest "
+"file. FLAC also preserves it while reducing size. MP3 and AAC trade some detail "
+"for much smaller files."
+msgstr ""
+"يحافظ تنسيق WAV على الصوت دون أي ضغط وينتج عنه عادةً أكبر حجم للملف. يحافظ FLAC "
+"عليه أيضاً ولكن مع تقليل الحجم. بينما يضحي MP3 وAAC ببعض التفاصيل للحصول على أحجام "
+"ملفات أصغر بكثير."
 
 #. Translators: Help text for the list that chooses how many times a second a recording is sampled.
 #: UI/Preferences/RecordingPreferences.cs:93
-msgid "Controls how many audio samples are stored each second. 44100 Hz suits most recordings. Higher rates use more space; lower rates can reduce speech file sizes."
-msgstr "يتحكم في عدد عينات الصوت المخزنة في كل ثانية. 44100 هرتز مناسب لمعظم التسجيلات. تستهلك الترددات الأعلى مساحة أكبر، بينما يمكن للترددات الأقل تقليل حجم ملفات الصوت البشري والكلام."
+msgid ""
+"Controls how many audio samples are stored each second. 44100 Hz suits most "
+"recordings. Higher rates use more space; lower rates can reduce speech file sizes."
+msgstr ""
+"يتحكم في عدد عينات الصوت المخزنة في كل ثانية. 44100 هرتز مناسب لمعظم التسجيلات. "
+"تستهلك الترددات الأعلى مساحة أكبر، بينما يمكن للترددات الأقل تقليل حجم ملفات "
+"الصوت البشري والكلام."
 
 #. Translators: Help text for the list that chooses whether a recording is mono or stereo.
 #: UI/Preferences/RecordingPreferences.cs:96
-msgid "Mono stores one channel and is usually enough for a single microphone. Stereo preserves separate left and right channels for music and system audio."
-msgstr "يخزن الوضع الأحادي (Mono) قناة صوتية واحدة وهو كافٍ عادةً للميكروفون الفردي. بينما يحفظ الاستريو القناتين اليمنى واليسرى منفصلتين للموسيقى وأصوات النظام."
+msgid ""
+"Mono stores one channel and is usually enough for a single microphone. Stereo "
+"preserves separate left and right channels for music and system audio."
+msgstr ""
+"يخزن الوضع الأحادي (Mono) قناة صوتية واحدة وهو كافٍ عادةً للميكروفون الفردي. بينما "
+"يحفظ الاستريو القناتين اليمنى واليسرى منفصلتين للموسيقى وأصوات النظام."
 
 #. Translators: Help text for the list that chooses how much room a second of compressed audio may take.
 #: UI/Preferences/RecordingPreferences.cs:99
-msgid "For MP3 and AAC, a higher bitrate preserves more detail but creates a larger file. WAV and FLAC do not use this choice."
-msgstr "بالنسبة لـ MP3 وAAC، يحافظ معدل البت الأعلى على تفاصيل صوتية أكثر ولكنه ينتج ملفاً أكبر حجماً. لا يستخدم WAV وFLAC هذا الخيار."
+msgid ""
+"For MP3 and AAC, a higher bitrate preserves more detail but creates a larger "
+"file. WAV and FLAC do not use this choice."
+msgstr ""
+"بالنسبة لـ MP3 وAAC، يحافظ معدل البت الأعلى على تفاصيل صوتية أكثر ولكنه ينتج ملفاً "
+"أكبر حجماً. لا يستخدم WAV وFLAC هذا الخيار."
 
 #. Translators: Help text for the box holding the folder recordings are saved into.
 #: UI/Preferences/RecordingPreferences.cs:102
-msgid "Enter the destination directory. Luna creates it when necessary and gives each recording a timestamped name to prevent accidental replacement."
-msgstr "أدخل مجلد الوجهة. سينشئه Luna إذا لزم الأمر وسيمنح كل تسجيل اسماً مزوداً بختم زمني لمنع الاستبدال العرضي."
+msgid ""
+"Enter the destination directory. Luna creates it when necessary and gives each "
+"recording a timestamped name to prevent accidental replacement."
+msgstr ""
+"أدخل مجلد الوجهة. سينشئه Luna إذا لزم الأمر وسيمنح كل تسجيل اسماً مزوداً بختم زمني "
+"لمنع الاستبدال العرضي."
 
 #. Translators: Help text for the button that opens a window for choosing the recordings folder.
 #: UI/Preferences/RecordingPreferences.cs:105
-msgid "Opens a directory picker and puts the selected path in the recordings folder box."
+msgid ""
+"Opens a directory picker and puts the selected path in the recordings folder box."
 msgstr "يفتح أداة اختيار المجلدات ويضع المسار المحدد في مربع مجلد التسجيلات."
 
 #. Translators: Shown when the Recording settings page was left with no folder to save into.
@@ -6069,32 +6420,35 @@ msgid "Choose a folder for recordings."
 msgstr "اختر مجلداً لحفظ التسجيلات."
 
 #. Translators: Title of the window that asks where recordings should be saved.
-#: UI/Preferences/RecordingPreferences.cs:255
-#: UI/Recording/RecordingDialog.cs:469
+#: UI/Preferences/RecordingPreferences.cs:255 UI/Recording/RecordingDialog.cs:469
 msgid "Select the folder for recordings"
 msgstr "تحديد مجلد التسجيلات"
 
 #. Translators: A sample rate, as shown in a list. {value} is a number such as 44100.
-#: UI/Preferences/RecordingPreferences.cs:280
-#: UI/Recording/RecordingDialog.cs:713
+#: UI/Preferences/RecordingPreferences.cs:280 UI/Recording/RecordingDialog.cs:713
 msgid "{value} Hz"
 msgstr "{value} هرتز"
 
 #. Translators: A bitrate, as shown in a list. {value} is a number such as 192.
-#: UI/Preferences/RecordingPreferences.cs:283
-#: UI/Recording/RecordingDialog.cs:716
+#: UI/Preferences/RecordingPreferences.cs:283 UI/Recording/RecordingDialog.cs:716
 msgid "{value} kbps"
 msgstr "{value} كيلوبت/ثانية"
 
 #. Translators: Spoken description of the Keyboard shortcuts settings page, read when the page is opened.
 #: UI/Preferences/ShortcutPreferences.cs:39
-msgid "Keyboard shortcuts. Select an action, then edit its primary or secondary local shortcut."
+msgid ""
+"Keyboard shortcuts. Select an action, then edit its primary or secondary local "
+"shortcut."
 msgstr "اختصارات لوحة المفاتيح. حدد إجراءً ثم عدّل اختصاره المحلي الأساسي أو الثانوي."
 
 #. Translators: Spoken description of the Global shortcuts settings page, read when the page is opened.
 #: UI/Preferences/ShortcutPreferences.cs:41
-msgid "System-wide shortcuts. Select an action, then edit the combination that triggers it from any application."
-msgstr "اختصارات النظام العامة. حدد إجراءً ثم عدّل مجموعة المفاتيح التي تشغله من أي تطبيق آخر."
+msgid ""
+"System-wide shortcuts. Select an action, then edit the combination that triggers "
+"it from any application."
+msgstr ""
+"اختصارات النظام العامة. حدد إجراءً ثم عدّل مجموعة المفاتيح التي تشغله من أي تطبيق "
+"آخر."
 
 #. Translators: Heading above the list of shortcuts that work while the player is the program in front.
 #: UI/Preferences/ShortcutPreferences.cs:51
@@ -6184,18 +6538,29 @@ msgstr "اضغط على الاختصار المطلوب. اضغط على Escape 
 
 #. Translators: Spoken description of the box for the shortest silence that will be trimmed, on the silence removal settings page.
 #: UI/Preferences/SilencePreferences.cs:11
-msgid "Quiet sections shorter than this many seconds remain unchanged. The default is 0.5 seconds."
-msgstr "تظل المقاطع الهادئة التي تقل مدتها عن هذا العدد من الثواني بدون تغيير. القيمة الافتراضية هي 0.5 ثانية."
+msgid ""
+"Quiet sections shorter than this many seconds remain unchanged. The default is "
+"0.5 seconds."
+msgstr ""
+"تظل المقاطع الهادئة التي تقل مدتها عن هذا العدد من الثواني بدون تغيير. القيمة "
+"الافتراضية هي 0.5 ثانية."
 
 #. Translators: Spoken description of the box for the loudness under which sound counts as silence, on the silence removal settings page.
 #: UI/Preferences/SilencePreferences.cs:13
-msgid "Samples quieter than this decibel level count as silence. Enter a number such as -30."
-msgstr "تُعتبر العينات التي يقل مستواها عن هذا الحد من الديسيبل صمتاً. أدخل رقماً مثل -30."
+msgid ""
+"Samples quieter than this decibel level count as silence. Enter a number such as "
+"-30."
+msgstr ""
+"تُعتبر العينات التي يقل مستواها عن هذا الحد من الديسيبل صمتاً. أدخل رقماً مثل -30."
 
 #. Translators: Spoken description of the list of ways silence can be measured, on the silence removal settings page. Peak and RMS are the names of the two methods.
 #: UI/Preferences/SilencePreferences.cs:15
-msgid "Peak follows the loudest sample in each analysis window and reacts to brief sounds. RMS averages the window for steadier detection."
-msgstr "يتبع Peak أعلى عينة في كل نافذة تحليل ويتفاعل بسرعة مع الأصوات القصيرة. بينما يأخذ RMS المتوسط لنافذة التحليل للكشف الأكثر استقراراً."
+msgid ""
+"Peak follows the loudest sample in each analysis window and reacts to brief "
+"sounds. RMS averages the window for steadier detection."
+msgstr ""
+"يتبع Peak أعلى عينة في كل نافذة تحليل ويتفاعل بسرعة مع الأصوات القصيرة. بينما "
+"يأخذ RMS المتوسط لنافذة التحليل للكشف الأكثر استقراراً."
 
 #. Translators: Label of an advanced silence removal setting: which section of sound should end trimming at the start of the file.
 #: UI/Preferences/SilencePreferences.cs:20
@@ -6204,8 +6569,12 @@ msgstr "أجزاء الصمت الأولية المراد اقتطاعها"
 
 #. Translators: Spoken description of the advanced setting that chooses which section of sound ends trimming at the start of the file.
 #: UI/Preferences/SilencePreferences.cs:22
-msgid "Use 0 to leave the beginning untouched or 1 to remove its initial silence. Higher values continue trimming through additional sections of sound."
-msgstr "استخدم 0 لترك البداية بدون تعديل أو 1 لإزالة الصمت في البداية. وتستمر القيم الأعلى في الاقتطاع عبر مقاطع صوتية إضافية."
+msgid ""
+"Use 0 to leave the beginning untouched or 1 to remove its initial silence. Higher "
+"values continue trimming through additional sections of sound."
+msgstr ""
+"استخدم 0 لترك البداية بدون تعديل أو 1 لإزالة الصمت في البداية. وتستمر القيم "
+"الأعلى في الاقتطاع عبر مقاطع صوتية إضافية."
 
 #. Translators: Label of an advanced silence removal setting: how long sound must continue before trimming at the start stops.
 #: UI/Preferences/SilencePreferences.cs:24
@@ -6214,8 +6583,12 @@ msgstr "الصوت المطلوب قبل توقف الاقتطاع الأولي 
 
 #. Translators: Spoken description of the advanced setting for how long sound must continue before trimming at the start stops.
 #: UI/Preferences/SilencePreferences.cs:26
-msgid "Sound must stay above the threshold for this long before leading-silence trimming stops. The default is 0.2 seconds."
-msgstr "يجب أن يظل الصوت أعلى من الحد لهذه المدة قبل أن يتوقف اقتطاع الصمت الأولي. القيمة الافتراضية هي 0.2 ثانية."
+msgid ""
+"Sound must stay above the threshold for this long before leading-silence trimming "
+"stops. The default is 0.2 seconds."
+msgstr ""
+"يجب أن يظل الصوت أعلى من الحد لهذه المدة قبل أن يتوقف اقتطاع الصمت الأولي. القيمة "
+"الافتراضية هي 0.2 ثانية."
 
 #. Translators: Label of an advanced silence removal setting: how many silent parts to cut once the sound has begun.
 #: UI/Preferences/SilencePreferences.cs:28
@@ -6224,8 +6597,11 @@ msgstr "أجزاء الصمت المراد اقتطاعها بعد بدء الص
 
 #. Translators: Spoken description of the advanced silence removal setting for how many silent parts to cut once the sound has begun. Minus one means every one of them.
 #: UI/Preferences/SilencePreferences.cs:30
-msgid "Use -1 to shorten every qualifying pause after sound begins, or 0 to leave later pauses untouched."
-msgstr "استخدم -1 لتقصير كل وقفة مؤهلة بعد بدء الصوت، أو 0 لترك الوقفات اللاحقة دون تعديل."
+msgid ""
+"Use -1 to shorten every qualifying pause after sound begins, or 0 to leave later "
+"pauses untouched."
+msgstr ""
+"استخدم -1 لتقصير كل وقفة مؤهلة بعد بدء الصوت، أو 0 لترك الوقفات اللاحقة دون تعديل."
 
 #. Translators: Label of an advanced silence removal setting: how long silence in the middle or at the end must be before it is cut.
 #: UI/Preferences/SilencePreferences.cs:32
@@ -6234,8 +6610,11 @@ msgstr "الحد الأدنى لطول الصمت الداخلي (بالثوان
 
 #. Translators: Spoken description of the advanced silence removal setting for how long silence in the middle or at the end must be before it is cut.
 #: UI/Preferences/SilencePreferences.cs:34
-msgid "A quiet section after sound begins must last at least this long before it is shortened."
-msgstr "يجب أن يستمر المقطع الهادئ بعد بدء الصوت لهذه المدة على الأقل قبل أن يتم تقصيره."
+msgid ""
+"A quiet section after sound begins must last at least this long before it is "
+"shortened."
+msgstr ""
+"يجب أن يستمر المقطع الهادئ بعد بدء الصوت لهذه المدة على الأقل قبل أن يتم تقصيره."
 
 #. Translators: Label of an advanced silence removal setting: how much of a pause to leave where silence was cut.
 #: UI/Preferences/SilencePreferences.cs:36
@@ -6244,8 +6623,12 @@ msgstr "فترة التوقف المراد إبقاؤها بعد اقتطاع ا
 
 #. Translators: Spoken description of the advanced silence removal setting for how much of a pause to leave where silence was cut.
 #: UI/Preferences/SilencePreferences.cs:38
-msgid "Keeps up to this much of a pause instead of removing it completely. The default is 0.2 seconds."
-msgstr "يُبقي على هذا القدر من التوقف بدلاً من إزالته بالكامل. القيمة الافتراضية هي 0.2 ثانية."
+msgid ""
+"Keeps up to this much of a pause instead of removing it completely. The default "
+"is 0.2 seconds."
+msgstr ""
+"يُبقي على هذا القدر من التوقف بدلاً من إزالته بالكامل. القيمة الافتراضية هي 0.2 "
+"ثانية."
 
 #. Translators: Label of an advanced silence removal setting: the length of sound looked at at once when deciding whether it is silent.
 #: UI/Preferences/SilencePreferences.cs:40
@@ -6254,13 +6637,22 @@ msgstr "حجم نافذة الكشف (بالثواني)"
 
 #. Translators: Spoken description of the advanced silence removal setting for the length of sound looked at at once when deciding whether it is silent.
 #: UI/Preferences/SilencePreferences.cs:42
-msgid "Sets how many seconds of samples are measured together. Larger windows are steadier; smaller windows react faster. The default is 0.02."
-msgstr "يحدد عدد ثواني العينات التي يتم قياسها معاً. النوافذ الأكبر تكون أكثر استقراراً؛ والنوافذ الأصغر تتفاعل بشكل أسرع. القيمة الافتراضية هي 0.02."
+msgid ""
+"Sets how many seconds of samples are measured together. Larger windows are "
+"steadier; smaller windows react faster. The default is 0.02."
+msgstr ""
+"يحدد عدد ثواني العينات التي يتم قياسها معاً. النوافذ الأكبر تكون أكثر استقراراً؛ "
+"والنوافذ الأصغر تتفاعل بشكل أسرع. القيمة الافتراضية هي 0.02."
 
 #. Translators: Spoken description of the whole silence removal settings page, read when the page is opened.
 #: UI/Preferences/SilencePreferences.cs:57
-msgid "The basic controls decide how long and how quiet a pause must be before Luna shortens it. Advanced controls treat silence at the beginning and after sound starts separately."
-msgstr "تحدد عناصر التحكم الأساسية مدة وهدوء التوقف قبل أن يختصره Luna. بينما تعالج عناصر التحكم المتقدمة الصمت في البداية وبعد بدء الصوت بشكل منفصل."
+msgid ""
+"The basic controls decide how long and how quiet a pause must be before Luna "
+"shortens it. Advanced controls treat silence at the beginning and after sound "
+"starts separately."
+msgstr ""
+"تحدد عناصر التحكم الأساسية مدة وهدوء التوقف قبل أن يختصره Luna. بينما تعالج عناصر "
+"التحكم المتقدمة الصمت في البداية وبعد بدء الصوت بشكل منفصل."
 
 #. Translators: Title of the group holding the silence removal settings.
 #. "FFmpeg silenceremove" is the name of the filter doing the work and is not translated.
@@ -6300,23 +6692,42 @@ msgstr "RMS (أكثر سلاسة)"
 
 #. Translators: Help text for the box holding the shortest silence that will be trimmed, spoken when the user asks for help on it.
 #: UI/Preferences/SilencePreferences.cs:116
-msgid "Raise this value to preserve more short pauses, or lower it to remove briefer pauses. A quiet section is changed only after it lasts for the entered number of seconds."
-msgstr "ارفع هذه القيمة للاحتفاظ بمزيد من الوقفات القصيرة، أو اخفضها لإزالة الوقفات الأقصر. لا يتم تعديل أي مقطع هادئ إلا بعد استمراره لعدد الثواني المدخل."
+msgid ""
+"Raise this value to preserve more short pauses, or lower it to remove briefer "
+"pauses. A quiet section is changed only after it lasts for the entered number of "
+"seconds."
+msgstr ""
+"ارفع هذه القيمة للاحتفاظ بمزيد من الوقفات القصيرة، أو اخفضها لإزالة الوقفات "
+"الأقصر. لا يتم تعديل أي مقطع هادئ إلا بعد استمراره لعدد الثواني المدخل."
 
 #. Translators: Help text for the box holding the loudness under which sound counts as silence, spoken when the user asks for help on it.
 #: UI/Preferences/SilencePreferences.cs:120
-msgid "Enter a decibel value such as -30. A less negative value treats louder audio as silence and removes more; a more negative value limits removal to very quiet audio."
-msgstr "أدخل قيمة بالديسيبل مثل -30. القيمة الأقل سلبية تعتبر الصوت الأعلى صمتاً وتزيل المزيد؛ بينما تحصر القيمة الأكثر سلبية الإزالة في الأصوات الهادئة جداً."
+msgid ""
+"Enter a decibel value such as -30. A less negative value treats louder audio as "
+"silence and removes more; a more negative value limits removal to very quiet "
+"audio."
+msgstr ""
+"أدخل قيمة بالديسيبل مثل -30. القيمة الأقل سلبية تعتبر الصوت الأعلى صمتاً وتزيل "
+"المزيد؛ بينما تحصر القيمة الأكثر سلبية الإزالة في الأصوات الهادئة جداً."
 
 #. Translators: Help text for the tick box that shows the rest of the silence removal settings.
 #: UI/Preferences/SilencePreferences.cs:124
-msgid "Reveals separate controls for leading and later silence, the amount of each pause to retain, and the method used to measure loudness."
-msgstr "يُظهر عناصر تحكم منفصلة للصمت الأولي واللاحق، ومقدار التوقف المتبقي، والطريقة المستخدمة لقياس جهارة الصوت."
+msgid ""
+"Reveals separate controls for leading and later silence, the amount of each pause "
+"to retain, and the method used to measure loudness."
+msgstr ""
+"يُظهر عناصر تحكم منفصلة للصمت الأولي واللاحق، ومقدار التوقف المتبقي، والطريقة "
+"المستخدمة لقياس جهارة الصوت."
 
 #. Translators: Help text for the list of ways silence can be measured. Peak and RMS are the names of the two methods.
 #: UI/Preferences/SilencePreferences.cs:128
-msgid "Peak uses the loudest sample in each analysis window and responds to brief sounds. RMS uses average energy, producing a steadier result that is less affected by short spikes."
-msgstr "يستخدم Peak أعلى عينة في كل نافذة تحليل ويستجيب للأصوات الخاطفة. بينما يستخدم RMS متوسط الطاقة، مما ينتج نتيجة أكثر ثباتاً وأقل تأثراً بالذروات المفاجئة."
+msgid ""
+"Peak uses the loudest sample in each analysis window and responds to brief "
+"sounds. RMS uses average energy, producing a steadier result that is less "
+"affected by short spikes."
+msgstr ""
+"يستخدم Peak أعلى عينة في كل نافذة تحليل ويستجيب للأصوات الخاطفة. بينما يستخدم RMS "
+"متوسط الطاقة، مما ينتج نتيجة أكثر ثباتاً وأقل تأثراً بالذروات المفاجئة."
 
 #. Translators: Error message shown when the shortest silence to trim was typed as something other than a number, or as a negative one.
 #: UI/Preferences/SilencePreferences.cs:138
@@ -6354,33 +6765,58 @@ msgstr "يجب أن تكون قيمة {field} رقماً غير سالب."
 
 #. Translators: Help text for the advanced setting that chooses which section of sound ends trimming at the start of the file.
 #: UI/Preferences/SilencePreferences.cs:271
-msgid "Use 0 to preserve the beginning or 1 to remove initial silence until sustained sound is found. Values above 1 continue discarding audio through additional non-silent sections."
-msgstr "استخدم 0 للاحتفاظ بالبداية أو 1 لإزالة الصمت الأولي حتى يتم العثور على صوت مستمر. وتستمر القيم الأعلى من 1 في تجاهل الصوت عبر مقاطع صوتية إضافية."
+msgid ""
+"Use 0 to preserve the beginning or 1 to remove initial silence until sustained "
+"sound is found. Values above 1 continue discarding audio through additional non-"
+"silent sections."
+msgstr ""
+"استخدم 0 للاحتفاظ بالبداية أو 1 لإزالة الصمت الأولي حتى يتم العثور على صوت مستمر. "
+"وتستمر القيم الأعلى من 1 في تجاهل الصوت عبر مقاطع صوتية إضافية."
 
 #. Translators: Help text for the advanced setting holding how long sound must continue before trimming at the start stops.
 #: UI/Preferences/SilencePreferences.cs:274
-msgid "After initial trimming, sound must remain above the threshold for this many seconds before Luna starts keeping it. The default is 0.2."
-msgstr "بعد الاقتطاع الأولي، يجب أن يظل الصوت أعلى من العتبة لهذا العدد من الثواني قبل أن يبدأ Luna في الاحتفاظ به. القيمة الافتراضية هي 0.2."
+msgid ""
+"After initial trimming, sound must remain above the threshold for this many "
+"seconds before Luna starts keeping it. The default is 0.2."
+msgstr ""
+"بعد الاقتطاع الأولي، يجب أن يظل الصوت أعلى من العتبة لهذا العدد من الثواني قبل أن "
+"يبدأ Luna في الاحتفاظ به. القيمة الافتراضية هي 0.2."
 
 #. Translators: Help text for the advanced setting holding how many silent parts to cut once the sound has begun.
 #: UI/Preferences/SilencePreferences.cs:277
-msgid "Use -1 to shorten every qualifying pause after sound begins. Use 0 to preserve later silence; positive values limit how many sections are removed."
-msgstr "استخدم -1 لتقصير كل وقفة مؤهلة بعد بدء الصوت. استخدم 0 للحفاظ على الصمت اللاحق؛ وتحدد القيم الموجبة عدد المقاطع التي تتم إزالتها."
+msgid ""
+"Use -1 to shorten every qualifying pause after sound begins. Use 0 to preserve "
+"later silence; positive values limit how many sections are removed."
+msgstr ""
+"استخدم -1 لتقصير كل وقفة مؤهلة بعد بدء الصوت. استخدم 0 للحفاظ على الصمت اللاحق؛ "
+"وتحدد القيم الموجبة عدد المقاطع التي تتم إزالتها."
 
 #. Translators: Help text for the advanced setting holding how long silence in the middle or at the end must be before it is cut.
 #: UI/Preferences/SilencePreferences.cs:279
-msgid "A pause after sound begins must remain below the threshold for this many seconds before Luna shortens it."
-msgstr "يجب أن يظل التوقف بعد بدء الصوت أقل من العتبة لهذا العدد من الثواني قبل أن يختصره Luna."
+msgid ""
+"A pause after sound begins must remain below the threshold for this many seconds "
+"before Luna shortens it."
+msgstr ""
+"يجب أن يظل التوقف بعد بدء الصوت أقل من العتبة لهذا العدد من الثواني قبل أن يختصره "
+"Luna."
 
 #. Translators: Help text for the advanced setting holding how much of a pause to leave where silence was cut.
 #: UI/Preferences/SilencePreferences.cs:281
-msgid "Enter how many seconds of a removed pause should remain, so words do not run together. The default is 0.2."
-msgstr "أدخل عدد الثواني التي يجب أن تبقى من التوقف المقتطع حتى لا تتداخل الكلمات. القيمة الافتراضية هي 0.2."
+msgid ""
+"Enter how many seconds of a removed pause should remain, so words do not run "
+"together. The default is 0.2."
+msgstr ""
+"أدخل عدد الثواني التي يجب أن تبقى من التوقفات التي تمت إزالتها حتى لا تتداخل "
+"الكلمات. القيمة الافتراضية هي 0.2."
 
 #. Translators: Help text for the advanced setting holding the length of sound looked at at once when deciding whether it is silent.
 #: UI/Preferences/SilencePreferences.cs:283
-msgid "Sets the span of audio used for each loudness measurement. Larger values smooth sudden changes; smaller values react faster. The default is 0.02 seconds."
-msgstr "يحدد نطاق الصوت المستخدم لكل قياس لجهارة الصوت. القيم الأكبر تخفف التغيرات المفاجئة؛ بينما تتفاعل القيم الأصغر بشكل أسرع. القيمة الافتراضية هي 0.02 ثانية."
+msgid ""
+"Sets the span of audio used for each loudness measurement. Larger values smooth "
+"sudden changes; smaller values react faster. The default is 0.02 seconds."
+msgstr ""
+"يحدد نطاق الصوت المستخدم لكل قياس لجهارة الصوت. القيم الأكبر تخفف التغيرات "
+"المفاجئة؛ بينما تتفاعل القيم الأصغر بشكل أسرع. القيمة الافتراضية هي 0.02 ثانية."
 
 #. Translators: Help text used for any silence removal setting with no help text of its own.
 #: UI/Preferences/SilencePreferences.cs:286
@@ -6404,16 +6840,13 @@ msgid "Removed from favorites."
 msgstr "تمت الإزالة من المفضلة."
 
 #. Translators: Radio station context-menu action removing a saved station.
-#. Translators: Context menu item in the results list that takes the chosen video back out of the favourites.
-#: UI/Radio/Actions.cs:88 UI/YouTube/ResultsDialog.cs:416
+#: UI/Radio/Actions.cs:88
 msgid "Remove from favorites"
 msgstr "إزالة من المفضلة"
 
 #. Translators: Radio station context-menu action saving a station.
 #. Translators: Radio station context-menu action saving the selected station locally.
-#. Translators: Context menu item in the results list that saves the chosen video to the favourites.
 #: UI/Radio/Actions.cs:90 UI/Radio/BrowserDialog.cs:154
-#: UI/YouTube/ResultsDialog.cs:397 UI/YouTube/ResultsDialog.cs:418
 msgid "Add to favorites"
 msgstr "إضافة إلى المفضلة"
 
@@ -6552,25 +6985,15 @@ msgstr "الوسوم: {tags}"
 msgid "Codec: {codec}"
 msgstr "المُرمّز: {codec}"
 
-#. Translators: Radio station details. {bitrate} is the bitrate in kilobits per second.
-#: UI/Radio/DetailsDialog.cs:29
-msgid "Bitrate: {bitrate} kbps"
-msgstr "معدل البت: {bitrate} كيلوبت/ثانية"
-
 #. Translators: Radio station details. {url} is the stream address.
 #: UI/Radio/DetailsDialog.cs:31
 msgid "Stream URL: {url}"
 msgstr "رابط البث: {url}"
 
-#. Translators: Radio station details. {url} is the station's website.
-#: UI/Radio/DetailsDialog.cs:33
-msgid "Website: {url}"
-msgstr "الموقع الإلكتروني: {url}"
-
 #. Translators: Radio station details. {count} is the station's public vote count.
 #: UI/Radio/DetailsDialog.cs:35
 msgid "Votes: {count}"
-msgstr "الأصوات: {count}"
+msgstr "التصويتات: {count}"
 
 #. Translators: Radio station details. {count} is the directory's playback click count.
 #: UI/Radio/DetailsDialog.cs:37
@@ -6605,7 +7028,7 @@ msgstr "المعرف الفريد UUID للمحطة: {id}"
 #. Translators: Title of the dialog for filtering radio station lists.
 #: UI/Radio/FiltersDialog.cs:30
 msgid "Radio filters"
-msgstr "مرشحات الراديو"
+msgstr "فلاتر الراديو"
 
 #. Translators: Label for choosing whether radio filters apply to this category or every category.
 #: UI/Radio/FiltersDialog.cs:33
@@ -6619,8 +7042,10 @@ msgstr "هذه الفئة"
 
 #. Translators: Explanation in Radio filters. Category restrictions narrow the global restrictions.
 #: UI/Radio/FiltersDialog.cs:42
-msgid "Category filters are combined with the global filters. Leave a field empty to add no restriction."
-msgstr "يتم دمج مرشحات الفئة مع المرشحات العامة. اترك الحقل فارغاً لعدم تطبيق أي قيود."
+msgid ""
+"Category filters are combined with the global filters. Leave a field empty to add "
+"no restriction."
+msgstr "يتم دمج فلاتر الفئة مع الفلاتر العامة. اترك الحقل فارغاً لعدم تطبيق أي قيود."
 
 #. Translators: Label for a two-letter country code, such as EG, in Radio filters.
 #: UI/Radio/FiltersDialog.cs:46
@@ -6650,7 +7075,7 @@ msgstr "الحد الأقصى لمعدل البت (كيلوبت/ث؛ 0 لعدم 
 #. Translators: Checkbox in Radio filters excluding stations last reported as unavailable by Radio Browser.
 #: UI/Radio/FiltersDialog.cs:64
 msgid "Only working stations"
-msgstr "المحطات العاملة فقط"
+msgstr "المحطات التي تعمل فقط"
 
 #. Translators: Checkbox in Radio filters requiring an HTTPS stream address.
 #: UI/Radio/FiltersDialog.cs:67
@@ -6669,13 +7094,14 @@ msgstr "إعادة تعيين"
 
 #. Translators: Validation error in Radio filters, where country codes have two letters and bitrate limits define a range.
 #: UI/Radio/FiltersDialog.cs:137
-msgid "Enter a two-letter country code and a minimum bitrate no greater than the maximum."
+msgid ""
+"Enter a two-letter country code and a minimum bitrate no greater than the maximum."
 msgstr "أدخل رمز دولة من حرفين وحد أدنى لمعدل البت لا يتجاوز الحد الأقصى."
 
 #. Translators: Title of a validation error in Radio filters.
 #: UI/Radio/FiltersDialog.cs:139
 msgid "Invalid filters"
-msgstr "مرشحات غير صالحة"
+msgstr "فلاتر غير صالحة"
 
 #. Translators: Radio browser button clearing the current directory or station-name search.
 #: UI/Radio/Interactions.cs:76
@@ -6833,8 +7259,12 @@ msgstr "برنامج..."
 #. Translators: Shown when capturing one program's sound is asked for on a version of
 #. Windows that cannot do it. Capturing a device still works.
 #: UI/Recording/RecordingDialog.cs:301
-msgid "This version of Windows cannot capture a single program. Windows 10 version 2004 or later is needed for that; recording from a device still works."
-msgstr "لا يمكن لهذا الإصدار من Windows التقاط الصوت من برنامج محدد. يتطلب ذلك نظام Windows 10 الإصدار 2004 أو أحدث؛ والتسجيل من جهاز إدخال لا يزال يعمل كالمعتاد."
+msgid ""
+"This version of Windows cannot capture a single program. Windows 10 version 2004 "
+"or later is needed for that; recording from a device still works."
+msgstr ""
+"لا يمكن لهذا الإصدار من Windows التقاط الصوت من برنامج محدد. يتطلب ذلك نظام "
+"Windows 10 الإصدار 2004 أو أحدث؛ والتسجيل من جهاز إدخال لا يزال يعمل كالمعتاد."
 
 #. Translators: Asks the user to confirm removing a recording source. {name} is what they called it.
 #: UI/Recording/RecordingDialog.cs:332
@@ -7006,13 +7436,18 @@ msgstr "متصل بـ Spotify."
 
 #. Translators: Account connection status at the top of the Spotify browser. Keep Spotify and Client ID unchanged.
 #: UI/Spotify/Browsing.cs:120
-msgid "Spotify credentials are configured. Choose Sign in to Spotify to connect your account."
+msgid ""
+"Spotify credentials are configured. Choose Sign in to Spotify to connect your "
+"account."
 msgstr "تم تكوين بيانات اعتماد Spotify. اختر تسجيل الدخول إلى Spotify لربط حسابك."
 
 #. Translators: Account connection status at the top of the Spotify browser. Keep Spotify and Client ID unchanged.
 #: UI/Spotify/Browsing.cs:127
-msgid "Opening Spotify sign in in your browser. Return here after authorizing Luna Player."
-msgstr "جارٍ فتح تسجيل الدخول إلى Spotify في المتصفح. عُد إلى هنا بعد تفويض Luna Player."
+msgid ""
+"Opening Spotify sign in in your browser. Return here after authorizing Luna "
+"Player."
+msgstr ""
+"جارٍ فتح تسجيل الدخول إلى Spotify في المتصفح. عُد إلى هنا بعد تفويض Luna Player."
 
 #. Translators: Account library loading status at the top of the Spotify browser.
 #: UI/Spotify/Browsing.cs:150
@@ -7056,8 +7491,14 @@ msgstr "تعذر حفظ عمليات البحث الأخيرة على هذا ا�
 
 #. Translators: F1 help for the Spotify account or quality controls in Preferences.
 #: UI/Spotify/CredentialsPreferences.cs:16
-msgid "Enter the Client ID from your own Spotify developer app for Home, Search and Library. Register the redirect URI shown below. Playback signs in separately. A client secret is not needed."
-msgstr "أدخل معرّف Client ID من تطبيق المطور الخاص بك على Spotify للصفحة الرئيسية والبحث والمكتبة. سجّل redirect URI الموضح أدناه. يتم تسجيل الدخول للتشغيل بشكل منفصل. لا حاجة إلى client secret."
+msgid ""
+"Enter the Client ID from your own Spotify developer app for Home, Search and "
+"Library. Register the redirect URI shown below. Playback signs in separately. A "
+"client secret is not needed."
+msgstr ""
+"أدخل معرّف Client ID من تطبيق المطور الخاص بك على Spotify للصفحة الرئيسية والبحث "
+"والمكتبة. سجّل redirect URI الموضح أدناه. يتم تسجيل الدخول للتشغيل بشكل منفصل. لا "
+"حاجة إلى client secret."
 
 #. Translators: Label for the public application identifier in Spotify Preferences; keep Client ID unchanged.
 #: UI/Spotify/CredentialsPreferences.cs:23
@@ -7111,38 +7552,60 @@ msgstr "لا تحتاج إلى Client Secret."
 
 #. Translators: Account setup guidance in Spotify Preferences. Keep Spotify, Client ID, Client Secret and PKCE unchanged.
 #: UI/Spotify/CredentialsPreferences.cs:51
-msgid "Web API is required for Home, Search and Library. Spotify audio playback signs in separately."
-msgstr "تُعد Web API مطلوبة للصفحة الرئيسية والبحث والمكتبة. يتم تسجيل الدخول لتشغيل الصوت في Spotify بشكل منفصل."
+msgid ""
+"Web API is required for Home, Search and Library. Spotify audio playback signs in "
+"separately."
+msgstr ""
+"تُعد Web API مطلوبة للصفحة الرئيسية والبحث والمكتبة. يتم تسجيل الدخول لتشغيل الصوت "
+"في Spotify بشكل منفصل."
 
 #. Translators: Account setup guidance in Spotify Preferences. Keep Spotify, Client ID, Client Secret and PKCE unchanged.
 #: UI/Spotify/CredentialsPreferences.cs:57
 msgid "Spotify uses Authorization Code with PKCE. Never enter a client secret here."
-msgstr "يستخدم Spotify بروتوكول Authorization Code مع PKCE. لا تقم أبداً بإدخال client secret هنا."
+msgstr ""
+"يستخدم Spotify بروتوكول Authorization Code مع PKCE. لا تقم أبداً بإدخال client "
+"secret هنا."
 
 #. Translators: F1 help for the Client ID text field on the Spotify Preferences page.
 #: UI/Spotify/CredentialsPreferences.cs:69
-msgid "Paste the Client ID of your Spotify developer app. This public ID identifies your app when you sign in."
-msgstr "الصق معرّف Client ID لتطبيق المطور الخاص بك على Spotify. يحدد هذا المعرّف العام تطبيقك عند تسجيل الدخول."
+msgid ""
+"Paste the Client ID of your Spotify developer app. This public ID identifies your "
+"app when you sign in."
+msgstr ""
+"الصق معرّف Client ID لتطبيق المطور الخاص بك على Spotify. يحدد هذا المعرّف العام "
+"تطبيقك عند تسجيل الدخول."
 
 #. Translators: F1 help for the read-only developer-app setup instructions on the Spotify Preferences page.
 #: UI/Spotify/CredentialsPreferences.cs:71
-msgid "Follow these steps in the Spotify developer dashboard. The redirect URI must match exactly."
-msgstr "اتبع هذه الخطوات في لوحة تحكم مطوري Spotify. يجب أن يتطابق redirect URI تماماً."
+msgid ""
+"Follow these steps in the Spotify developer dashboard. The redirect URI must "
+"match exactly."
+msgstr ""
+"اتبع هذه الخطوات في لوحة تحكم مطوري Spotify. يجب أن يتطابق redirect URI تماماً."
 
 #. Translators: F1 help for the audio-quality selector on the Spotify Preferences page; the three numbers are stream bitrates.
 #: UI/Spotify/CredentialsPreferences.cs:73
-msgid "Select the Spotify stream quality: Normal 96 kbps, High 160 kbps, or Very high 320 kbps. Changing this while a track plays restarts that track at its current position."
-msgstr "حدد جودة بث Spotify: عادية 96 kbps، أو عالية 160 kbps، أو عالية جداً 320 kbps. سيؤدي تغيير هذا أثناء تشغيل المسار إلى إعادة تشغيل ذلك المسار من موقعه الحالي."
+msgid ""
+"Select the Spotify stream quality: Normal 96 kbps, High 160 kbps, or Very high "
+"320 kbps. Changing this while a track plays restarts that track at its current "
+"position."
+msgstr ""
+"حدد جودة بث Spotify: عادية 96 kbps، أو عالية 160 kbps، أو عالية جداً 320 kbps. "
+"سيؤدي تغيير هذا أثناء تشغيل المسار إلى إعادة تشغيل ذلك المسار من موقعه الحالي."
 
 #. Translators: Validation error for the Client ID field in Spotify Preferences.
 #: UI/Spotify/CredentialsPreferences.cs:81
 msgid "The Spotify Client ID must be empty or exactly 32 hexadecimal characters."
-msgstr "يجب أن يكون معرّف Spotify Client ID فارغاً أو مكوناً من 32 حرفاً ست عشرياً بالضبط."
+msgstr ""
+"يجب أن يكون معرّف Spotify Client ID فارغاً أو مكوناً من 32 حرفاً ست عشرياً بالضبط."
 
 #. Translators: Message in the Spotify credentials prompt before opening Preferences.
 #: UI/Spotify/CredentialsPrompt.cs:16
-msgid "Spotify credentials have not been configured. Would you like to go to Preferences to configure them?"
-msgstr "لم يتم تكوين بيانات اعتماد Spotify. هل ترغب في الانتقال إلى التفضيلات لتكوينها؟"
+msgid ""
+"Spotify credentials have not been configured. Would you like to go to Preferences "
+"to configure them?"
+msgstr ""
+"لم يتم تكوين بيانات اعتماد Spotify. هل ترغب في الانتقال إلى التفضيلات لتكوينها؟"
 
 #. Translators: Button in the Spotify credentials prompt that opens account settings.
 #: UI/Spotify/CredentialsPrompt.cs:21
@@ -7193,8 +7656,12 @@ msgstr "مكونات YouTube"
 #. Translators: Message offering to fetch the extra programs YouTube needs. Playing and saving
 #. videos cannot work without them, which is what it says.
 #: UI/YouTube/ComponentsDialog.cs:26
-msgid "Playing and downloading YouTube videos needs some extra programs that are not installed yet. Would you like to download them now?"
-msgstr "يتطلب تشغيل وتنزيل مقاطع فيديو YouTube بعض البرامج الإضافية غير المثبتة بعد. هل ترغب في تنزيلها الآن؟"
+msgid ""
+"Playing and downloading YouTube videos needs some extra programs that are not "
+"installed yet. Would you like to download them now?"
+msgstr ""
+"يتطلب تشغيل وتنزيل مقاطع فيديو YouTube بعض البرامج الإضافية غير المثبتة بعد. هل "
+"ترغب في تنزيلها الآن؟"
 
 #. Translators: Button that agrees to fetch the extra programs YouTube needs.
 #: UI/YouTube/ComponentsDialog.cs:30
@@ -7293,7 +7760,7 @@ msgstr "الأجزاء المتزامنة"
 #. Translators: Tick box on the YouTube download settings page: write details into the downloaded file.
 #: UI/YouTube/DownloadDialog.cs:102 UI/YouTube/DownloadPreferences.cs:123
 msgid "Embed metadata"
-msgstr "تضمين بيانات التعريف (Metadata)"
+msgstr "تضمين البيانات الوصفية (Metadata)"
 
 #. Translators: Tick box: embed the video's thumbnail as cover art in the downloaded file.
 #. Translators: Tick box on the YouTube download settings page: embed the thumbnail as cover art.
@@ -7317,7 +7784,7 @@ msgstr "تضمين ملفات الترجمة"
 #. Translators: Tick box on the YouTube download settings page: remove segments identified by SponsorBlock. "SponsorBlock" is a service name.
 #: UI/YouTube/DownloadDialog.cs:110 UI/YouTube/DownloadPreferences.cs:131
 msgid "Remove SponsorBlock segments"
-msgstr "إزالة مقاطع SponsorBlock الترويجية"
+msgstr "إزالة المقاطع الترويجية عبر SponsorBlock."
 
 #. Translators: The button that saves these choices as an item in the download queue.
 #: UI/YouTube/DownloadDialog.cs:130
@@ -7341,8 +7808,11 @@ msgid "Downloads still in progress"
 msgstr "عمليات التنزيل لا تزال قيد التنفيذ"
 
 #: UI/YouTube/DownloadExitDialog.cs:16
-msgid "There are items still downloading in the download queue. Closing Luna will cancel them."
-msgstr "لا تزال هناك عناصر قيد التنزيل في قائمة الانتظار. إغلاق Luna سيؤدي إلى إلغائها."
+msgid ""
+"There are items still downloading in the download queue. Closing Luna will cancel "
+"them."
+msgstr ""
+"لا تزال هناك عناصر قيد التنزيل في قائمة الانتظار. إغلاق Luna سيؤدي إلى إلغائها."
 
 #. Translators: Confirms closing Luna even though download queue work remains unfinished.
 #: UI/YouTube/DownloadExitDialog.cs:20
@@ -7396,8 +7866,12 @@ msgstr "التنزيلات المتزامنة"
 
 #. Translators: Help text for the box holding the folder YouTube downloads are saved into.
 #: UI/YouTube/DownloadPreferences.cs:162
-msgid "The base folder downloads are saved into. When empty, a Luna Player folder in your Downloads is used."
-msgstr "المجلد الأساسي الذي تُحفظ فيه التنزيلات. إذا تُرك فارغاً، فسيتم استخدام مجلد Luna Player في مجلد التنزيلات الخاص بك."
+msgid ""
+"The base folder downloads are saved into. When empty, a Luna Player folder in "
+"your Downloads is used."
+msgstr ""
+"المجلد الأساسي الذي تُحفظ فيه التنزيلات. إذا تُرك فارغاً، فسيتم استخدام مجلد Luna "
+"Player في مجلد التنزيلات الخاص بك."
 
 #. Translators: Help text for the button that picks the YouTube download folder.
 #: UI/YouTube/DownloadPreferences.cs:165
@@ -7406,74 +7880,120 @@ msgstr "يفتح أداة اختيار المجلدات لتحديد مكان ح
 
 #. Translators: Help text for the tick box that sorts YouTube downloads into video and audio subfolders.
 #: UI/YouTube/DownloadPreferences.cs:168
-msgid "When checked, downloads are sorted into 'videos' and 'audios' subfolders. When unchecked, they are saved straight into the download folder."
-msgstr "عند تحديد هذا الخيار، يتم تصنيف التنزيلات في مجلدين فرعيين هما 'videos' و'audios'. وعند إلغاء تحديده، تُحفظ الملفات مباشرة في مجلد التنزيلات الرئيسي."
+msgid ""
+"When checked, downloads are sorted into 'videos' and 'audios' subfolders. When "
+"unchecked, they are saved straight into the download folder."
+msgstr ""
+"عند تحديد هذا الخيار، يتم تصنيف التنزيلات في مجلدين فرعيين هما 'videos' "
+"و'audios'. وعند إلغاء تحديده، تُحفظ الملفات مباشرة في مجلد التنزيلات الرئيسي."
 
 #. Translators: Help text for the control that chooses whether a YouTube download saves video or audio.
 #: UI/YouTube/DownloadPreferences.cs:171
-msgid "Whether a direct download saves the video or its sound alone. The normal download dialog opens on this choice and lets you change it per download."
-msgstr "يحدد ما إذا كان التنزيل المباشر يحفظ الفيديو أم الصوت وحده. يفتح مربع حوار التنزيل العادي على هذا الخيار ويتيح لك تغييره لكل تنزيل."
+msgid ""
+"Whether a direct download saves the video or its sound alone. The normal download "
+"dialog opens on this choice and lets you change it per download."
+msgstr ""
+"يحدد ما إذا كان التنزيل المباشر يحفظ الفيديو أم الصوت وحده. يفتح مربع حوار "
+"التنزيل العادي على هذا الخيار ويتيح لك تغييره لكل تنزيل."
 
 #. Translators: Help text for the list that chooses the picture quality of downloaded YouTube videos.
 #: UI/YouTube/DownloadPreferences.cs:174
-msgid "The picture height a video download is capped at. yt-dlp saves the best quality at or below it."
-msgstr "الحد الأقصى لارتفاع صورة الفيديو الذي يتم تنزيله. يقوم yt-dlp بحفظ أفضل جودة متاحة عند هذا الحد أو أقل منه."
+msgid ""
+"The picture height a video download is capped at. yt-dlp saves the best quality "
+"at or below it."
+msgstr ""
+"الحد الأقصى لارتفاع صورة الفيديو الذي يتم تنزيله. يقوم yt-dlp بحفظ أفضل جودة "
+"متاحة عند هذا الحد أو أقل منه."
 
 #. Translators: Help text for the list that chooses a downloaded YouTube video's file type. "MP4" and "MKV" are format names.
 #: UI/YouTube/DownloadPreferences.cs:177
-msgid "The file type a downloaded video is saved as. MP4 plays almost everywhere; MKV holds more but is less widely supported."
-msgstr "تنسيق الملف الذي يُحفظ به الفيديو المُنزّل. يعمل MP4 في جميع الأجهزة والبرامج تقريباً؛ بينما يدعم MKV ميزات إضافية ولكنه أقل انتشاراً."
+msgid ""
+"The file type a downloaded video is saved as. MP4 plays almost everywhere; MKV "
+"holds more but is less widely supported."
+msgstr ""
+"تنسيق الملف الذي يُحفظ به الفيديو المُنزّل. يعمل MP4 في جميع الأجهزة والبرامج "
+"تقريباً؛ بينما يدعم MKV ميزات إضافية ولكنه أقل انتشاراً."
 
 #. Translators: Help text for the list that chooses a downloaded YouTube audio track's file type.
 #: UI/YouTube/DownloadPreferences.cs:180
-msgid "The file type a downloaded audio track is converted to. MP3 plays almost everywhere; FLAC and WAV are lossless and larger."
-msgstr "تنسيق الملف الذي يُحوّل إليه المسار الصوتي المُنزّل. يعمل MP3 في كل مكان تقريباً؛ بينما يعتبر FLAC وWAV بلا فقدان للجودة ولكنهما أكبر حجماً."
+msgid ""
+"The file type a downloaded audio track is converted to. MP3 plays almost "
+"everywhere; FLAC and WAV are lossless and larger."
+msgstr ""
+"تنسيق الملف الذي يُحوّل إليه المسار الصوتي المُنزّل. يعمل MP3 في كل مكان تقريباً؛ "
+"بينما يعتبر FLAC وWAV بلا فقدان للجودة ولكنهما أكبر حجماً."
 
 #. Translators: Help text for the list that chooses a downloaded YouTube audio track's bitrate.
 #: UI/YouTube/DownloadPreferences.cs:183
-msgid "The bitrate a downloaded audio track is converted at. It has no effect on the lossless formats."
-msgstr "معدل البت الذي يُحوّل إليه المسار الصوتي المُنزّل. ليس له أي تأثير على التنسيقات غير المضغوطة أو عديمة الفقدان."
+msgid ""
+"The bitrate a downloaded audio track is converted at. It has no effect on the "
+"lossless formats."
+msgstr ""
+"معدل البت الذي يُحوّل إليه المسار الصوتي المُنزّل. ليس له أي تأثير على التنسيقات غير "
+"المضغوطة أو عديمة الفقدان."
 
 #. Translators: Help text for the box holding how many pieces of a YouTube file are fetched at once.
 #: UI/YouTube/DownloadPreferences.cs:186
-msgid "How many pieces of a file yt-dlp fetches at once, from 1 through 16. More can be faster on a fast connection; one is gentlest."
-msgstr "عدد أجزاء الملف التي يجلبها yt-dlp في نفس الوقت، من 1 إلى 16. قد تكون القيمة الأعلى أسرع في الاتصالات السريعة؛ والجزء الواحد هو الأكثر استقراراً."
+msgid ""
+"How many pieces of a file yt-dlp fetches at once, from 1 through 16. More can be "
+"faster on a fast connection; one is gentlest."
+msgstr ""
+"عدد أجزاء الملف التي يجلبها yt-dlp في نفس الوقت، من 1 إلى 16. قد تكون القيمة "
+"الأعلى أسرع في الاتصالات السريعة؛ والجزء الواحد هو الأكثر استقراراً."
 
 #. Translators: Help text for the box holding how many YouTube videos the download queue may fetch at once.
 #: UI/YouTube/DownloadPreferences.cs:189
-msgid "How many videos the download queue may download at the same time, from 1 through 16."
-msgstr "عدد مقاطع الفيديو التي يمكن لقائمة الانتظار تنزيلها في نفس الوقت، من 1 إلى 16."
+msgid ""
+"How many videos the download queue may download at the same time, from 1 through "
+"16."
+msgstr ""
+"عدد مقاطع الفيديو التي يمكن لقائمة الانتظار تنزيلها في نفس الوقت، من 1 إلى 16."
 
 #. Translators: Help text for the tick box that writes details into a downloaded YouTube file.
 #: UI/YouTube/DownloadPreferences.cs:192
-msgid "When checked, the title, uploader and other details are written into the downloaded file."
-msgstr "عند التحديد، تتم كتابة العنوان واسم الناشر والتفاصيل الأخرى كبيانات وصفية داخل الملف المُنزّل."
+msgid ""
+"When checked, the title, uploader and other details are written into the "
+"downloaded file."
+msgstr ""
+"عند التحديد، تتم كتابة العنوان واسم الناشر والتفاصيل الأخرى كبيانات وصفية داخل "
+"الملف المُنزّل."
 
 #. Translators: Help text for the tick box that embeds a YouTube thumbnail as cover art.
 #: UI/YouTube/DownloadPreferences.cs:195
-msgid "When checked, the video's thumbnail is embedded as cover art in the downloaded file."
+msgid ""
+"When checked, the video's thumbnail is embedded as cover art in the downloaded "
+"file."
 msgstr "عند التحديد، يتم تضمين الصورة المصغرة للفيديو كغلاف داخل الملف المُنزّل."
 
 #. Translators: Help text for the tick box that writes chapter marks into a downloaded YouTube file.
 #: UI/YouTube/DownloadPreferences.cs:198
-msgid "When checked, the video's chapter marks are written into the downloaded file, where the format supports them."
-msgstr "عند التحديد، يتم تضمين علامات فصول الفيديو داخل الملف المُنزّل، إذا كان التنسيق يدعم ذلك."
+msgid ""
+"When checked, the video's chapter marks are written into the downloaded file, "
+"where the format supports them."
+msgstr ""
+"عند التحديد، يتم تضمين علامات فصول الفيديو داخل الملف المُنزّل، إذا كان التنسيق "
+"يدعم ذلك."
 
 #. Translators: Help text for the tick box that embeds subtitles into a downloaded YouTube file.
 #: UI/YouTube/DownloadPreferences.cs:201
-msgid "When checked, the video's available subtitles are embedded into the downloaded file."
+msgid ""
+"When checked, the video's available subtitles are embedded into the downloaded "
+"file."
 msgstr "عند التحديد، يتم تضمين ملفات الترجمة المتوفرة للفيديو داخل الملف المُنزّل."
 
 #. Translators: Help text for the tick box that removes SponsorBlock segments from a YouTube download. "SponsorBlock" is a service name.
 #: UI/YouTube/DownloadPreferences.cs:204
-msgid "When checked, SponsorBlock data is used to cut sponsor reads, intros and similar segments out of the download."
-msgstr "عند التحديد، تُستخدم بيانات SponsorBlock لاقتطاع إعلانات الرعاة والمقدمات والمقاطع المشابهة من التنزيل."
+msgid ""
+"When checked, SponsorBlock data is used to cut sponsor reads, intros and similar "
+"segments out of the download."
+msgstr ""
+"عند التحديد، تُستخدم بيانات SponsorBlock لاقتطاع إعلانات الرعاة والمقدمات والمقاطع "
+"المشابهة من التنزيل."
 
 #. Translators: Title of the window showing progress for one YouTube download.
 #. Translators: Title of the progress window while a YouTube file is downloading.
 #. Translators: Status of a queue item while it is downloading.
-#: UI/YouTube/DownloadProgressDialog.cs:38
-#: UI/YouTube/DownloadProgressDialog.cs:138
+#: UI/YouTube/DownloadProgressDialog.cs:38 UI/YouTube/DownloadProgressDialog.cs:138
 #: UI/YouTube/DownloadQueueDialog.cs:319
 msgid "Downloading"
 msgstr "جارٍ التنزيل"
@@ -7496,8 +8016,7 @@ msgstr "غير معروف"
 
 #. Translators: Download speed. {size} is a file size and "/s" means per second.
 #. Translators: Combined queue speed. {size} is a file size and "/s" means per second.
-#: UI/YouTube/DownloadProgressDialog.cs:145
-#: UI/YouTube/DownloadQueueDialog.cs:288
+#: UI/YouTube/DownloadProgressDialog.cs:145 UI/YouTube/DownloadQueueDialog.cs:288
 msgid "{size}/s"
 msgstr "{size}/ثانية"
 
@@ -7508,15 +8027,13 @@ msgstr "تم تنزيل: {done} من {total}"
 
 #. Translators: The current download speed. {speed} is a size per second such as "1.3 MB/s".
 #. Translators: Combined download speed of all active queue items.
-#: UI/YouTube/DownloadProgressDialog.cs:160
-#: UI/YouTube/DownloadQueueDialog.cs:304
+#: UI/YouTube/DownloadProgressDialog.cs:160 UI/YouTube/DownloadQueueDialog.cs:304
 msgid "Speed: {speed}"
 msgstr "السرعة: {speed}"
 
 #. Translators: A download has finished conversion and is being finalized.
 #. Translators: yt-dlp is moving the finished file to its destination.
-#: UI/YouTube/DownloadProgressDialog.cs:170
-#: UI/YouTube/DownloadProgressDialog.cs:188
+#: UI/YouTube/DownloadProgressDialog.cs:170 UI/YouTube/DownloadProgressDialog.cs:188
 msgid "Finishing…"
 msgstr "جارٍ الإنهاء…"
 
@@ -7724,67 +8241,123 @@ msgstr "تنزيل مكونات YouTube"
 
 #. Translators: Help text for the list that chooses the picture quality a video is played at.
 #: UI/YouTube/GeneralPreferences.cs:149
-msgid "Sets the picture height Luna asks for when you play a video with Enter. A lower height starts sooner and uses less network; Luna falls back to the closest the video offers."
-msgstr "يحدد ارتفاع الصورة الذي يطلبه Luna عند تشغيل مقطع فيديو باستخدام مفتاح Enter. الارتفاع الأقل يبدأ التشغيل بشكل أسرع ويستهلك بيانات شبكة أقل؛ ويعود Luna لأقرب جودة متوفرة في الفيديو."
+msgid ""
+"Sets the picture height Luna asks for when you play a video with Enter. A lower "
+"height starts sooner and uses less network; Luna falls back to the closest the "
+"video offers."
+msgstr ""
+"يحدد ارتفاع الصورة الذي يطلبه Luna عند تشغيل مقطع فيديو باستخدام مفتاح Enter. "
+"الارتفاع الأقل يبدأ التشغيل بشكل أسرع ويستهلك بيانات شبكة أقل؛ ويعود Luna لأقرب "
+"جودة متوفرة في الفيديو."
 
 #. Translators: Help text for the list that chooses the sound quality a video's audio is played at.
 #: UI/YouTube/GeneralPreferences.cs:152
-msgid "Sets the bitrate Luna asks for when you play a video's sound alone with Ctrl+Enter. Luna falls back to the closest the video offers."
-msgstr "يحدد معدل البت الذي يطلبه Luna عند تشغيل صوت الفيديو فقط باستخدام اختصار Ctrl+Enter. ويعود Luna لأقرب جودة متوفرة في الفيديو."
+msgid ""
+"Sets the bitrate Luna asks for when you play a video's sound alone with "
+"Ctrl+Enter. Luna falls back to the closest the video offers."
+msgstr ""
+"يحدد معدل البت الذي يطلبه Luna عند تشغيل صوت الفيديو فقط باستخدام اختصار "
+"Ctrl+Enter. ويعود Luna لأقرب جودة متوفرة في الفيديو."
 
 #. Translators: Help text for the box holding how many videos a search should look for. The two numbers are
 #. the smallest and largest it accepts.
 #: UI/YouTube/GeneralPreferences.cs:156
-msgid "Sets the size of the first result page, from 5 through 100 videos. Larger pages take longer to fetch; reaching the end still loads more results."
-msgstr "يحدد حجم صفحة النتائج الأولى، من 5 إلى 100 فيديو. تستغرق الصفحات الأكبر وقتاً أطول في الجلب؛ والوصول إلى النهاية يواصل تحميل المزيد من النتائج."
+msgid ""
+"Sets the size of the first result page, from 5 through 100 videos. Larger pages "
+"take longer to fetch; reaching the end still loads more results."
+msgstr ""
+"يحدد حجم صفحة النتائج الأولى، من 5 إلى 100 فيديو. تستغرق الصفحات الأكبر وقتاً أطول "
+"في الجلب؛ والوصول إلى النهاية يواصل تحميل المزيد من النتائج."
 
 #. Translators: Help text for the tick box that offers search suggestions while typing.
 #: UI/YouTube/GeneralPreferences.cs:159
-msgid "When checked, a list of completions is offered as you type, fetched from YouTube. When unchecked, no completions are fetched and typing makes no background network requests."
-msgstr "عند التحديد، يتم عرض قائمة باقتراحات الإكمال التلقائي أثناء الكتابة، مأخوذة من YouTube. وعند إلغاء التحديد، لا يتم جلب أي اقتراحات ولا تُجرى أي طلبات شبكة في الخلفية."
+msgid ""
+"When checked, a list of completions is offered as you type, fetched from YouTube. "
+"When unchecked, no completions are fetched and typing makes no background network "
+"requests."
+msgstr ""
+"عند التحديد، يتم عرض قائمة باقتراحات الإكمال التلقائي أثناء الكتابة، مأخوذة من "
+"YouTube. وعند إلغاء التحديد، لا يتم جلب أي اقتراحات ولا تُجرى أي طلبات شبكة في "
+"الخلفية."
 
 #. Translators: Help text for the list that chooses what to do with a link naming a video and a playlist at once.
 #: UI/YouTube/GeneralPreferences.cs:162
-msgid "For an address containing both a video and a playlist, Luna can ask each time, open only that video, or list the complete playlist."
-msgstr "بالنسبة للعنوان الذي يحتوي على فيديو وقائمة تشغيل معاً، يمكن لـ Luna السؤال في كل مرة، أو فتح ذلك الفيديو فقط، أو فتح قائمة التشغيل الكاملة."
+msgid ""
+"For an address containing both a video and a playlist, Luna can ask each time, "
+"open only that video, or list the complete playlist."
+msgstr ""
+"بالنسبة للعنوان الذي يحتوي على فيديو وقائمة تشغيل معاً، يمكن لـ Luna السؤال في كل "
+"مرة، أو فتح ذلك الفيديو فقط، أو فتح قائمة التشغيل الكاملة."
 
 #. Translators: Help text for the list that chooses which line of yt-dlp releases to follow. "yt-dlp" is a program name and is not translated.
 #: UI/YouTube/GeneralPreferences.cs:165
-msgid "Stable changes least often and is intended for normal use. Nightly is rebuilt each night. Master follows the newest source and may be unreliable."
-msgstr "القناة المستقرة تتغير بشكل أقل وهي مخصصة للاستخدام العادي. وتُعاد بناء قناة Nightly كل ليلة. بينما تتبع قناة Master أحدث كود مصدري وقد تكون غير مستقرة."
+msgid ""
+"Stable changes least often and is intended for normal use. Nightly is rebuilt "
+"each night. Master follows the newest source and may be unreliable."
+msgstr ""
+"القناة المستقرة تتغير بشكل أقل وهي مخصصة للاستخدام العادي. وتُعاد بناء قناة "
+"Nightly كل ليلة. بينما تتبع قناة Master أحدث كود مصدري وقد تكون غير مستقرة."
 
 #. Translators: Help text for the tick box that looks for a newer yt-dlp at startup. "yt-dlp" is a program
 #. name and is not translated.
 #: UI/YouTube/GeneralPreferences.cs:169
-msgid "When checked, Luna looks for a newer yt-dlp when it starts and offers to download it. When unchecked, no update check runs at startup."
-msgstr "عند التحديد، يبحث Luna عن إصدار أحدث من yt-dlp عند بدء تشغيله ويعرض تنزيله. وعند إلغاء التحديد، لا يتم فحص التحديثات عند بدء التشغيل."
+msgid ""
+"When checked, Luna looks for a newer yt-dlp when it starts and offers to download "
+"it. When unchecked, no update check runs at startup."
+msgstr ""
+"عند التحديد، يبحث Luna عن إصدار أحدث من yt-dlp عند بدء تشغيله ويعرض تنزيله. وعند "
+"إلغاء التحديد، لا يتم فحص التحديثات عند بدء التشغيل."
 
 #. Translators: Help text for the button that fetches the extra programs YouTube downloads need. "yt-dlp" is
 #. a program name and is not translated.
 #: UI/YouTube/GeneralPreferences.cs:173
-msgid "Fetches yt-dlp and the JavaScript runtime it needs. YouTube playback and downloads do not work until these are installed."
-msgstr "يقوم بجلب أداة yt-dlp وبيئة تشغيل JavaScript التي تحتاجها. لن يعمل تشغيل وتنزيل YouTube حتى يتم تثبيت هذه المكونات."
+msgid ""
+"Fetches yt-dlp and the JavaScript runtime it needs. YouTube playback and "
+"downloads do not work until these are installed."
+msgstr ""
+"يقوم بجلب أداة yt-dlp وبيئة تشغيل JavaScript التي تحتاجها. لن يعمل تشغيل وتنزيل "
+"YouTube حتى يتم تثبيت هذه المكونات."
 
 #. Translators: Help text for the box holding the cookie file yt-dlp will use.
 #: UI/YouTube/GeneralPreferences.cs:176
-msgid "The cookie file, in Netscape format, that YouTube requests are sent with. Use it for age-restricted or members-only videos. Choosing a file turns off reading cookies from Firefox."
-msgstr "ملف تعريف الارتباط بتنسيق Netscape الذي تُرسل معه طلبات YouTube. يُستخدم للمقاطع المقيدة بالفئات العمرية أو الخاصة بالأعضاء. تحديد ملف يلغي قراءة ملفات تعريف الارتباط من Firefox."
+msgid ""
+"The cookie file, in Netscape format, that YouTube requests are sent with. Use it "
+"for age-restricted or members-only videos. Choosing a file turns off reading "
+"cookies from Firefox."
+msgstr ""
+"ملف تعريف الارتباط بتنسيق Netscape الذي تُرسل معه طلبات YouTube. يُستخدم للمقاطع "
+"المقيدة بالفئات العمرية أو الخاصة بالأعضاء. تحديد ملف يلغي قراءة ملفات تعريف "
+"الارتباط من Firefox."
 
 #. Translators: Help text for the button that picks a cookie file by hand.
 #: UI/YouTube/GeneralPreferences.cs:179
-msgid "Opens a file picker to choose a cookie file saved from your browser. This turns off reading cookies from Firefox."
-msgstr "يفتح أداة اختيار الملفات لاختيار ملف تعريف الارتباط المحفوظ من متصفحك. يؤدي هذا إلى إلغاء قراءة ملفات تعريف الارتباط من Firefox."
+msgid ""
+"Opens a file picker to choose a cookie file saved from your browser. This turns "
+"off reading cookies from Firefox."
+msgstr ""
+"يفتح أداة اختيار الملفات لاختيار ملف تعريف الارتباط المحفوظ من متصفحك. يؤدي هذا "
+"إلى إلغاء قراءة ملفات تعريف الارتباط من Firefox."
 
 #. Translators: Help text for the button that switches to reading cookies from Firefox. "Firefox" is a
 #. program name and is not translated.
 #: UI/YouTube/GeneralPreferences.cs:183
-msgid "Reads cookies straight from Firefox each time, always up to date, with no file to keep. This clears any cookie file you chose. Firefox must be installed and signed in to YouTube."
-msgstr "يقرأ ملفات تعريف الارتباط مباشرة من Firefox في كل مرة، فتكون محدثة دائماً دون الحاجة للاحتفاظ بملف. يؤدي هذا إلى مسح أي ملف تم اختياره. يجب أن يكون Firefox مثبتاً ومسجلاً الدخول إلى YouTube."
+msgid ""
+"Reads cookies straight from Firefox each time, always up to date, with no file to "
+"keep. This clears any cookie file you chose. Firefox must be installed and signed "
+"in to YouTube."
+msgstr ""
+"يقرأ ملفات تعريف الارتباط مباشرة من Firefox في كل مرة، فتكون محدثة دائماً دون "
+"الحاجة للاحتفاظ بملف. يؤدي هذا إلى مسح أي ملف تم اختياره. يجب أن يكون Firefox "
+"مثبتاً ومسجلاً الدخول إلى YouTube."
 
 #. Translators: Help text for the read-only box that reports which cookie source is in use.
 #: UI/YouTube/GeneralPreferences.cs:186
-msgid "Reports whether YouTube requests currently use Firefox cookies, a cookie file, or no cookies at all."
-msgstr "يوضح ما إذا كانت طلبات YouTube تستخدم حالياً ملفات تعريف الارتباط من Firefox، أم ملفاً مخصصاً، أم لا تستخدم أي ملفات تعريف ارتباط."
+msgid ""
+"Reports whether YouTube requests currently use Firefox cookies, a cookie file, or "
+"no cookies at all."
+msgstr ""
+"يوضح ما إذا كانت طلبات YouTube تستخدم حالياً ملفات تعريف الارتباط من Firefox، أم "
+"ملفاً مخصصاً، أم لا تستخدم أي ملفات تعريف ارتباط."
 
 #. Translators: File type name in the cookie-file picker on the general YouTube settings page.
 #: UI/YouTube/GeneralPreferences.cs:194
@@ -7800,7 +8373,7 @@ msgstr "استخدام ملفات تعريف ارتباط Firefox"
 #. Translators: Cookie status naming the file in use. {path} is a file path.
 #: UI/YouTube/GeneralPreferences.cs:229
 msgid "Using cookie file: {path}"
-msgstr "استخدام ملف ملفات تعريف الارتباط: {path}"
+msgstr "استخدام ملف تعريف الارتباط: {path}"
 
 #. Translators: Cookie status: no cookies are sent with YouTube requests.
 #: UI/YouTube/GeneralPreferences.cs:231
@@ -7810,8 +8383,12 @@ msgstr "بلا ملفات تعريف ارتباط"
 #. Translators: Message shown when a YouTube address names a video and a playlist at the same time,
 #. asking which of the two the user wants.
 #: UI/YouTube/LinkKindDialog.cs:25
-msgid "This address points to one video and also includes a playlist. Choose which content Luna should open."
-msgstr "يشير هذا العنوان إلى فيديو فردي ويتضمن أيضاً قائمة تشغيل. اختر المحتوى الذي يجب أن يفتحه Luna."
+msgid ""
+"This address points to one video and also includes a playlist. Choose which "
+"content Luna should open."
+msgstr ""
+"يشير هذا العنوان إلى فيديو فردي ويتضمن أيضاً قائمة تشغيل. اختر المحتوى الذي يجب أن "
+"يفتحه Luna."
 
 #. Translators: Quality choice that takes the best the video offers, with no cap.
 #: UI/YouTube/QualityLabels.cs:11 UI/YouTube/QualityLabels.cs:24
@@ -7891,16 +8468,6 @@ msgstr "يحتوي على {count} فيديو"
 msgid "Channel"
 msgstr "القناة"
 
-#. Translators: Context menu item in the results list that copies the address of the chosen video.
-#: UI/YouTube/ResultsDialog.cs:386
-msgid "Copy link"
-msgstr "نسخ الرابط"
-
-#. Translators: Context menu item in the results list that shows the chosen video in the web browser.
-#: UI/YouTube/ResultsDialog.cs:388
-msgid "Open in browser"
-msgstr "فتح في المتصفح"
-
 #. Translators: Label of the box where the user types what to search YouTube for.
 #: UI/YouTube/SearchDialog.cs:53
 msgid "Search for"
@@ -7933,7 +8500,7 @@ msgstr "عدد المشاهدات"
 
 #. Translators: A channel browser tab: the channel's ordinary videos.
 #. Translators: Title of the window listing the videos a search or a playlist turned up.
-#: YouTube/Client/Channels.cs:30 YouTube/Playback/Sessions.cs:262
+#: YouTube/Client/Channels.cs:30 YouTube/Playback/Sessions.cs:259
 msgid "Videos"
 msgstr "الفيديوهات"
 
@@ -8148,39 +8715,39 @@ msgid "Loading more videos..."
 msgstr "جارٍ تحميل المزيد من الفيديوهات..."
 
 #. Translators: Shown when a video was found but the player could not start playing it.
-#: YouTube/Playback/Playing.cs:69
+#: YouTube/Playback/Playing.cs:75
 msgid "Could not open YouTube stream."
-msgstr "تعذر فتح بث YouTube."
+msgstr "تعذر فتح رابط تشغيل مباشر لـYouTube."
 
 #. Translators: Spoken when the video before this one is being fetched before it can be played.
 #. Translators: The short wording spoken while the video before this one is being fetched.
-#: YouTube/Playback/Playing.cs:90 YouTube/Playback/Playing.cs:95
+#: YouTube/Playback/Playing.cs:96 YouTube/Playback/Playing.cs:101
 msgid "Loading previous video..."
 msgstr "جارٍ تحميل الفيديو السابق..."
 
 #. Translators: Spoken when the video after this one is being fetched before it can be played.
 #. Translators: The short wording spoken while the video after this one is being fetched.
-#: YouTube/Playback/Playing.cs:92 YouTube/Playback/Playing.cs:97
+#: YouTube/Playback/Playing.cs:98 YouTube/Playback/Playing.cs:103
 msgid "Loading next video..."
 msgstr "جارٍ تحميل الفيديو التالي..."
 
 #. Translators: Spoken when the video before this one could not be fetched.
-#: YouTube/Playback/Playing.cs:137
+#: YouTube/Playback/Playing.cs:143
 msgid "Could not load the previous video."
 msgstr "تعذر تحميل الفيديو السابق."
 
 #. Translators: Spoken when the video after this one could not be fetched, so playback stops.
-#: YouTube/Playback/Playing.cs:139
+#: YouTube/Playback/Playing.cs:145
 msgid "Could not load the next video."
 msgstr "تعذر تحميل الفيديو التالي."
 
 #. Translators: The short wording spoken when the previous video could not be fetched.
-#: YouTube/Playback/Playing.cs:142
+#: YouTube/Playback/Playing.cs:148
 msgid "Previous video failed."
 msgstr "فشل الفيديو السابق."
 
 #. Translators: The short wording spoken when the next video could not be fetched.
-#: YouTube/Playback/Playing.cs:144
+#: YouTube/Playback/Playing.cs:150
 msgid "Next video failed."
 msgstr "فشل الفيديو التالي."
 
@@ -8195,12 +8762,12 @@ msgid "This link does not include a YouTube video."
 msgstr "هذا الرابط لا يتضمن فيديو YouTube."
 
 #. Translators: Title of the window shown while the address of a video is being looked up.
-#: YouTube/Playback/Sessions.cs:351
+#: YouTube/Playback/Sessions.cs:349
 msgid "Loading YouTube stream"
 msgstr "جارٍ تحميل بث YouTube"
 
 #. Translators: First message shown while the address of a video is being looked up.
-#: YouTube/Playback/Sessions.cs:353
+#: YouTube/Playback/Sessions.cs:351
 msgid "Fetching stream URL..."
 msgstr "جارٍ جلب عنوان URL للبث..."
 
@@ -8223,14 +8790,22 @@ msgstr "تعذر استخراج بث قابل للتشغيل."
 #. Translators: Shown when the programs YouTube playback needs are not installed. "yt-dlp" is a
 #. program name and is not translated.
 #: YouTube/Utils.cs:161
-msgid "YouTube components are missing. Download them from the YouTube settings to play or download videos."
-msgstr "مكونات YouTube مفقودة. يرجى تنزيلها من إعدادات YouTube لتشغيل مقاطع الفيديو أو تنزيلها."
+msgid ""
+"YouTube components are missing. Download them from the YouTube settings to play "
+"or download videos."
+msgstr ""
+"مكونات YouTube مفقودة. يرجى تنزيلها من إعدادات YouTube لتشغيل مقاطع الفيديو أو "
+"تنزيلها."
 
 #. Translators: Shown when YouTube is refusing requests from this computer for the time being.
 #. "HTTP 429" is the numbered error it answers with and is not translated.
 #: YouTube/Utils.cs:164
-msgid "YouTube returned HTTP 429 (Too Many Requests). Your IP may be temporarily rate-limited."
-msgstr "أرجع YouTube الخطأ HTTP 429 (طلبات كثيرة جداً). قد يكون عنوان IP الخاص بك مقيداً مؤقتاً."
+msgid ""
+"YouTube returned HTTP 429 (Too Many Requests). Your IP may be temporarily rate-"
+"limited."
+msgstr ""
+"أرجع YouTube الخطأ HTTP 429 (طلبات كثيرة جداً). قد يكون عنوان IP الخاص بك مقيداً "
+"مؤقتاً."
 
 #. Translators: Shown when the request never reached YouTube or its answer never arrived.
 #: YouTube/Utils.cs:166
@@ -8255,7 +8830,13 @@ msgstr ""
 #. Translators: Shown when a video could not be turned into something playable and nothing said why.
 #: YouTube/Utils.cs:191
 msgid "Could not resolve YouTube stream."
-msgstr "تعذر استخراج بث YouTube."
+msgstr "تعذر استخراج رابط تشغيل YouTube."
+
+#~ msgid "Copy link"
+#~ msgstr "نسخ الرابط"
+
+#~ msgid "Open in browser"
+#~ msgstr "فتح في المتصفح"
 
 #~ msgid "Radio browser…"
 #~ msgstr "استعراض محطات الراديو…"
