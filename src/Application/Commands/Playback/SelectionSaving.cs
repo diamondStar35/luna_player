@@ -30,6 +30,7 @@ internal sealed partial class Playback
                 title);
             return;
         }
+        range = new SelectionRange(_player.ToSourceTime(range.Start), _player.ToSourceTime(range.End));
         var destination = _view.Dialogs.ChooseSelectionDestination(source, video);
         if (string.IsNullOrWhiteSpace(destination))
             return;
@@ -57,7 +58,7 @@ internal sealed partial class Playback
             return;
         var request = new SelectionExportBatchRequest(
             source,
-            ranges,
+            ranges.Select(range => new SelectionRange(_player.ToSourceTime(range.Start), _player.ToSourceTime(range.End))).ToArray(),
             options.Folder,
             options.Name,
             options.Extension,

@@ -130,6 +130,15 @@ internal sealed partial class Player
         return _playlist.GoToIndex(index) && LoadCurrent(fadeTransition: true);
     }
 
+    internal bool GoToItem(Playlist.PlaylistItem item)
+    {
+        var target = Items.FirstOrDefault(candidate => candidate.Id == item.Id)
+            ?? Items.FirstOrDefault(candidate => candidate.SourceId == item.SourceId);
+        if (target is null) return false;
+        SavePosition();
+        return _playlist.GoToItem(target.Id) && LoadCurrent(fadeTransition: true);
+    }
+
     internal bool Reload() => LoadCurrent();
 
     /// <summary>Reloads the current file from the very beginning, ignoring any remembered position. This is
@@ -160,18 +169,28 @@ internal sealed partial class Player
 
     private bool LoadCurrent(double? startPosition, bool paused, bool fadeTransition = false)
     {
+        Interlocked.Increment(ref _playbackRevision);
         _queuedSessionStream = null;
         var path = _playlist.CurrentPath;
         if (path is null)
             return false;
+        if (!startPosition.HasValue && _playlist.CurrentItem?.Chapter is Chapter chapter)
+            startPosition = chapter.Start;
         if (!startPosition.HasValue && _trackPositions && _positions is not null && File.Exists(path))
             startPosition = _positions.Get(path);
         // A replacement load supplies its own end-behaviour options. Restoring them on the outgoing file
         // can turn a completed selection's artificial EOF into another playlist advance before loadfile.
         _engine.ClearSelectionRange(restoreEndBehavior: false);
         _engine.ClearLoop();
+        if (_playlist.CurrentItem?.Chapter is Chapter bounds && startPosition is double requested)
+            startPosition = Math.Clamp(requested, bounds.Start, bounds.End);
+        _chapterStopHeld = false;
+        _requestedSourcePosition = startPosition ?? 0;
+        var item = _playlist.CurrentItem!;
+        var stop = _stopAtChapterEnd ? Media.Chapters.At(_playlist.ChaptersFor(path), _requestedSourcePosition)?.End : null;
+        _armedChapterEnd = stop;
         if (!_engine.Load(path, startPosition, paused, _playlist.GetAudioFile(path),
-                _playlist.GetAudioOnly(path), fadeTransition))
+                _playlist.GetAudioOnly(path), fadeTransition, RangeFor(item), item.Id, stop))
             return false;
         _engine.SetNormalization(_normalizationEnabled);
         _engine.SetMono(_monoEnabled);
@@ -202,7 +221,7 @@ internal sealed partial class Player
         else
         {
             SavePosition(CurrentPath, advance.PreviousPosition);
-            if (_playlist.PeekNext(_wrapPlaylist) is string next && Paths.AreSame(advance.Path, next))
+            if (_playlist.PeekNext(_wrapPlaylist) is { } next && advance.ItemId == next.Id)
             {
                 if (!_playlist.MoveNext(_wrapPlaylist))
                     return false;
@@ -211,11 +230,11 @@ internal sealed partial class Player
             {
                 // Shuffle or a removal can change the visible order after mpv commits a transition.
                 // Follow the entry it actually started without shuffling again or reloading that file.
-                var files = _playlist.Files;
+                var files = _playlist.Items;
                 var index = -1;
                 for (var item = 0; item < files.Count; item++)
                 {
-                    if (Paths.AreSame(files[item], advance.Path))
+                    if (files[item].Id == advance.ItemId)
                     {
                         index = item;
                         break;
@@ -243,7 +262,7 @@ internal sealed partial class Player
     {
         _engine.SetRepeatFile(_playlist.IsRepeatFileEnabled);
         if (_radioSession || !_loaded || (!_crossfade && _gaplessPlayback == GaplessPlaybackMode.Disabled) || _holdAutomaticAdvance
-            || _endBehavior != EndBehavior.Advance || _playlist.IsRepeatFileEnabled)
+            || _stopAtChapterEnd || _chapterStopHeld || _endBehavior != EndBehavior.Advance || _playlist.IsRepeatFileEnabled)
         {
             _engine.ClearQueuedNext();
             return;
@@ -254,15 +273,17 @@ internal sealed partial class Player
             _engine.QueueNext(stream.Url, audioFile: stream.AudioFile, noVideo: stream.AudioOnly);
             return;
         }
-        if (_playlist.PeekNext(_wrapPlaylist) is not string path)
+        if (_playlist.PeekNext(_wrapPlaylist) is not { } next)
         {
             _engine.ClearQueuedNext();
             return;
         }
-        double? start = null;
-        if (_trackPositions && _positions is not null && File.Exists(path))
+        var path = next.Path;
+        double? start = next.Chapter?.Start;
+        if (start is null && _trackPositions && _positions is not null && File.Exists(path))
             start = _positions.Get(path);
-        _engine.QueueNext(path, start, _playlist.GetAudioFile(path), _playlist.GetAudioOnly(path));
+        _engine.QueueNext(path, start, _playlist.GetAudioFile(path), _playlist.GetAudioOnly(path),
+            RangeFor(next), next.Id);
     }
 
     internal void HoldAutomaticAdvance(bool hold, bool prepare = true)

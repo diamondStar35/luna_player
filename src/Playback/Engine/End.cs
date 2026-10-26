@@ -22,6 +22,18 @@ internal sealed partial class Engine
             || !_awaitingLoadRestart && endFile.PlaylistEntryId > 0
                 && _activeEntryId.HasValue && _activeEntryId != endFile.PlaylistEntryId)
             return;
+        if (endFile.Reason == MpvEndFileReason.Eof && _chapterStopEnd is double chapterEnd
+            && (!_selectionRangeActive || _selectionRangeEnd >= chapterEnd))
+        {
+            if (!_chapterStopCompleted)
+            {
+                _chapterStopCompleted = true;
+                Ended?.Invoke(EndReason.ChapterStop);
+            }
+            return;
+        }
+        if (endFile.Reason == MpvEndFileReason.Eof && _heldEndNotified)
+            return;
         var releasedSelectionEnd = false;
         var continueReleasedSelection = false;
         var releasedSelectionEndPosition = 0d;
@@ -53,6 +65,8 @@ internal sealed partial class Engine
                 && _selectionRangeActive
                 && !_selectionRangeRepeats)
         {
+            if (!releasedSelectionEnd && _selectionRangeCompleted)
+                return;
             if (!releasedSelectionEnd)
                 _selectionRangeCompleted = true;
             // Selection completion has its own channel. It must never be mistaken for the real end of a

@@ -43,7 +43,7 @@ internal sealed partial class Engine
         _selectionRangeCompleted = false;
         _selectionRangeEnd = end;
         _selectionRangeEntryId = PositiveEntryId();
-        var endSet = TrySetProperty("end", repeat ? "none" : end);
+        var endSet = TrySetProperty("end", EffectiveEnd(repeat ? null : end));
         var fileLoopCleared = TrySetProperty("loop-file", "no");
         // A one-shot selection reaches an artificial EOF. keep-open makes mpv hold the exact boundary so
         // Play can later clear it and continue from that same timestamp.
@@ -116,7 +116,7 @@ internal sealed partial class Engine
         _selectionRangeCompleted = false;
         _selectionRangeEnd = 0;
         _selectionRangeEntryId = null;
-        var endCleared = TrySetProperty("end", "none");
+        var endCleared = TrySetProperty("end", EffectiveEnd());
         var loopCleared = ClearLoop();
         if (restoreEndBehavior)
         {

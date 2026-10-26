@@ -17,7 +17,11 @@ internal sealed class MediaTagsCache
     private MediaTags _tags = MediaTags.None;
 
     internal MediaTags For(Player player)
-        => player.InRadioSession ? player.CurrentBroadcast : ForFile(player.CurrentPath);
+    {
+        var tags = player.InRadioSession ? player.CurrentBroadcast : ForFile(player.CurrentPath);
+        return player.AudiobookMode && player.CurrentChapter is Chapter chapter
+            ? tags with { Title = Player.ChapterTitle(chapter) } : tags;
+    }
 
     private MediaTags ForFile(string? path)
     {

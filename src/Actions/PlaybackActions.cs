@@ -86,7 +86,17 @@ internal static class PlaybackActions
             new(ActionId.ToggleFullScreen, Tr("Full screen"), new("f11")),
             // Translators: Name of the command that opens the window listing the file's audio tracks to switch between.
             new(ActionId.OpenAudioTracks, Tr("Audio tracks dialog"), new("t", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
-            // Translators: Name of the command that switches to the next audio track in the file.
+            // Translators: Shortcut command that jumps to the previous chapter in the current source file.
+            new(ActionId.PreviousChapter, Tr("Go to the previous chapter"), new("page_up", ShortcutModifiers.Control)),
+            // Translators: Shortcut command that jumps to the next chapter in the current source file.
+            new(ActionId.NextChapter, Tr("Go to the next chapter"), new("page_down", ShortcutModifiers.Control)),
+            // Translators: Shortcut command that speaks the current chapter name.
+            new(ActionId.AnnounceChapter, Tr("Speak current chapter name"), new("c")),
+            // Translators: Shortcut command that pauses once at the current chapter's end.
+            new(ActionId.ToggleChapterStop, Tr("Stop playback at the end of current chapter")),
+            // Translators: Shortcut command that treats chapters as individual playlist items.
+            new(ActionId.ToggleAudiobookMode, Tr("Turn audiobook mode on or off")),
+            // Translators: Shortcut command that selects the next audio track within the current media file.
             new(ActionId.NextAudioTrack, Tr("Next audio track"), new("page_down", ShortcutModifiers.Shift)),
             // Translators: Name of the command that switches to the previous audio track in the file.
             new(ActionId.PreviousAudioTrack, Tr("Previous audio track"), new("page_up", ShortcutModifiers.Shift)),

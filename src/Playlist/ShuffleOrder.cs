@@ -11,7 +11,7 @@ internal sealed class ShuffleOrder
     internal int Count => _indexes.Count;
     internal int this[int position] => _indexes[position];
 
-    internal IReadOnlyList<string> Arrange(IReadOnlyList<string> files)
+    internal IReadOnlyList<T> Arrange<T>(IReadOnlyList<T> files)
         => _indexes.Select(index => files[index]).ToArray();
 
     internal int IndexOf(int fileIndex) => _indexes.IndexOf(fileIndex);

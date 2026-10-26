@@ -138,6 +138,13 @@ internal sealed partial class Engine
             _holdAutomaticAdvance = hold;
             if (hold)
                 ClearQueuedNext();
+            if (!hold && _heldEndNotified && EndReached)
+            {
+                // Releasing a fired sleep timer must not unload its paused item. A subsequent explicit
+                // Play or seek will replace or release the held boundary safely.
+                _endBehaviorRestorePending = true;
+                return;
+            }
             if (!_selectionRangeActive && !_endBehaviorRestorePending)
                 ApplyEndBehavior();
         }

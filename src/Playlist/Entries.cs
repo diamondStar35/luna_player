@@ -1,7 +1,7 @@
 namespace LunaPlayer.Playlist;
 
-/// <summary>Metadata associated with playlist paths. The playlist itself stays a simple path list while
-/// titles and source-stream details are forgotten whenever their path leaves that list.</summary>
+/// <summary>Source metadata shared by playlist items. Chapter titles live on individual items; the
+/// source title and stream details are forgotten when their real path leaves the playlist.</summary>
 internal sealed class PlaylistEntries
 {
     private readonly Dictionary<string, EntryInfo> _items = new(StringComparer.OrdinalIgnoreCase);

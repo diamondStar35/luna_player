@@ -36,6 +36,9 @@ internal interface IMenuState
     /// are opened.</summary>
     event Action<RecentCommand>? RecentRequested;
 
+    event Action<int>? ChapterRequested;
+    void SetChapterState(IReadOnlyList<ChapterMenuEntry> entries, int? current, bool stop, bool audiobook);
+
     void SetMediaLoaded(bool loaded);
     void SetShuffleChecked(bool isChecked);
     void SetRepeatFileChecked(bool isChecked);

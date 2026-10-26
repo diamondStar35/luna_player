@@ -8,7 +8,7 @@ namespace LunaPlayer.Media;
 /// cached results can be inspected without waiting for the demuxer.</summary>
 internal sealed class Probe : IDisposable
 {
-    internal readonly record struct Result(double? Duration, bool HasAudio, bool HasVideo)
+    internal readonly record struct Result(double? Duration, bool HasAudio, bool HasVideo, IReadOnlyList<Chapter>? Chapters = null)
     {
         internal bool AudioOnly => HasAudio && !HasVideo;
     }
@@ -82,6 +82,7 @@ internal sealed class Probe : IDisposable
                 if (_mpv.GetProperty("track-list") is not IEnumerable<object?> tracks)
                     return null;
                 var result = Tracks(tracks, _mpv.GetProperty("duration"));
+                result = result with { Chapters = Chapters.Read(_mpv.GetProperty("chapter-list"), result.Duration) };
                 long length = 0;
                 var modified = DateTime.MinValue;
                 if (!IsRemote(path))

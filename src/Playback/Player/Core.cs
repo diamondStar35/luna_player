@@ -15,6 +15,8 @@ internal sealed partial class Player : IDisposable
     /// <summary>The playlist a session was put in front of, or null when there is no session.</summary>
     private SuspendedPlaylist? _suspendedPlaylist;
 
+    private long _playbackRevision;
+    internal long PlaybackRevision => Interlocked.Read(ref _playbackRevision);
     private bool _disposed;
     private bool _normalizationEnabled;
     private bool _monoEnabled;
@@ -39,6 +41,7 @@ internal sealed partial class Player : IDisposable
         _engine.SelectionSeekCompleted += OnSelectionSeekCompleted;
         _engine.VideoAvailabilityChanged += OnVideoAvailabilityChanged;
         _engine.MetadataChanged += OnMetadataChanged;
+        _engine.ChaptersChanged += OnChaptersChanged;
         _engine.AudioTracksChanged += OnAudioTracksChanged;
         _engine.SubtitleTracksChanged += OnSubtitleTracksChanged;
         _engine.SubtitleTextChanged += OnSubtitleTextChanged;
@@ -55,6 +58,7 @@ internal sealed partial class Player : IDisposable
     internal event Action? VideoAvailabilityChanged;
 
     internal event Action? MetadataChanged;
+    internal event Action? ChaptersChanged;
 
     /// <summary>Raised when the audio tracks the current file offers may have changed, a moment after a file
     /// loads.</summary>
@@ -72,7 +76,10 @@ internal sealed partial class Player : IDisposable
     internal string? CurrentPath => _playlist.CurrentPath;
     internal int Count => _playlist.Count;
     internal int CurrentIndex => _playlist.CurrentIndex;
-    internal IReadOnlyList<string> Files => _playlist.Files;
+    internal IReadOnlyList<PlaylistItem> Items => _playlist.Items;
+    internal string SourceIdentity => _playlist.SourceIdentity;
+    internal IReadOnlyList<string> SourceFiles => _playlist.SourceFiles;
+    internal string? CurrentItemId => _playlist.CurrentItem?.Id;
     internal bool IsPaused => _engine.IsPaused;
     internal bool SelectionRangeCompleted => _engine.SelectionRangeCompleted;
 
@@ -95,10 +102,10 @@ internal sealed partial class Player : IDisposable
         ? MediaKind.Audio
         : _loaded ? (_engine.HasVideo ? MediaKind.Video : MediaKind.Audio) : MediaLibrary.KindOf(path);
 
-    internal double? Duration => _engine.Duration;
-    internal double? Elapsed => _engine.Elapsed;
-    internal double? Remaining => Precision.Normalize(_engine.Remaining
-        ?? (Duration is double duration && Elapsed is double elapsed ? duration - elapsed : null));
+    internal double? Duration => _loaded ? _playlist.CurrentItem?.Chapter?.Duration ?? _engine.Duration : null;
+    internal double? Elapsed => SourceElapsed is double elapsed ? ToPlaybackTime(elapsed) : null;
+    internal double? Remaining => Precision.Normalize(_playlist.CurrentItem?.Chapter is not null
+        ? Duration - Elapsed : _engine.Remaining ?? (Duration - Elapsed));
     internal double Volume => _engine.Volume;
     internal double Speed => _engine.Speed;
     internal double Pitch => _engine.Pitch;
@@ -114,6 +121,7 @@ internal sealed partial class Player : IDisposable
         _engine.SelectionSeekCompleted -= OnSelectionSeekCompleted;
         _engine.VideoAvailabilityChanged -= OnVideoAvailabilityChanged;
         _engine.MetadataChanged -= OnMetadataChanged;
+        _engine.ChaptersChanged -= OnChaptersChanged;
         _engine.AudioTracksChanged -= OnAudioTracksChanged;
         _engine.SubtitleTracksChanged -= OnSubtitleTracksChanged;
         _engine.SubtitleTextChanged -= OnSubtitleTextChanged;
@@ -129,7 +137,7 @@ internal sealed partial class Player : IDisposable
     private void OnSelectionEnded(double end)
     {
         if (!_disposed)
-            SelectionEnded?.Invoke(end);
+            SelectionEnded?.Invoke(ToPlaybackTime(end));
     }
 
     private void OnSelectionSeekCompleted()
@@ -142,6 +150,11 @@ internal sealed partial class Player : IDisposable
     {
         if (!_disposed)
             VideoAvailabilityChanged?.Invoke();
+    }
+
+    private void OnChaptersChanged()
+    {
+        if (!_disposed) ChaptersChanged?.Invoke();
     }
 
     private void OnMetadataChanged()
@@ -169,7 +182,9 @@ internal sealed partial class Player : IDisposable
 
     private void StopEngine()
     {
+        Interlocked.Increment(ref _playbackRevision);
         _queuedSessionStream = null;
+        _chapterStopHeld = false;
         _engine.Stop();
         _loaded = false;
     }

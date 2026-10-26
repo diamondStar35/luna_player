@@ -43,10 +43,10 @@
 ; The file types the player opens, as Media\MediaLibrary.cs lists them. The entries at the end are written
 ; out by looping over this rather than by hand: there are four registrations per type, and a list kept in
 ; four places is a list that will disagree with itself.
-#dim Extensions[51] { \
+#dim Extensions[52] { \
   ".3g2", ".3gp", ".aac", ".ac3", ".aiff", ".alac", ".ape", ".asx", \
   ".au", ".avi", ".cue", ".dts", ".eac3", ".flac", ".flv", ".ivf", \
-  ".m2ts", ".m3u", ".m3u8", ".m4a", ".m4v", ".mj2", ".mka", ".mkv", \
+  ".m2ts", ".m3u", ".m3u8", ".m4a", ".m4b", ".m4v", ".mj2", ".mka", ".mkv", \
   ".mov", ".mp1", ".mp2", ".mp3", ".mp4", ".mpc", ".mpeg", ".mpg", \
   ".mxf", ".oga", ".ogg", ".ogm", ".ogv", ".opus", ".pls", ".rmvb", \
   ".tak", ".thd", ".ts", ".tta", ".wav", ".webm", ".wma", ".wmv", \

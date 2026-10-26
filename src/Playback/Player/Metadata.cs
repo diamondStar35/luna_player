@@ -25,6 +25,8 @@ internal sealed partial class Player
     {
         get
         {
+            if (_playlist.CurrentItem?.Chapter is Chapter chapter)
+                return ChapterTitle(chapter);
             if (CurrentPath is not string path)
                 return null;
             if (_playlist.GetSource(path) is null && _playlist.GetTitle(path) is null)
@@ -34,7 +36,10 @@ internal sealed partial class Player
     }
 
     /// <summary>The display name of whatever is playing, or null when nothing is.</summary>
-    internal string? CurrentDisplayName => CurrentPath is string path ? DisplayName(path) : null;
+    internal string DisplayName(Playlist.PlaylistItem item)
+        => item.Chapter is Chapter chapter ? ChapterTitle(chapter) : DisplayName(item.Path);
+
+    internal string? CurrentDisplayName => _playlist.CurrentItem is { } item ? DisplayName(item) : null;
 
     internal string? CurrentArtist => CurrentMetadata.Display.Artist;
 
@@ -63,7 +68,8 @@ internal sealed partial class Player
     }
 
     /// <summary>The file name for local media, or the stored title for a network entry.</summary>
-    internal string? CurrentName => CurrentPath is string path
+    internal string? CurrentName => _playlist.CurrentItem?.Chapter is Chapter chapter ? ChapterTitle(chapter)
+        : CurrentPath is string path
         ? LinkValidator.IsHttpUrl(path) ? DisplayName(path) : MediaLibrary.DisplayName(path)
         : null;
 

@@ -12,6 +12,9 @@ internal sealed partial class Engine : IEngine
     private readonly MPV _mpv;
     private readonly IDisposable _endRegistration;
     private readonly IDisposable _playbackRestartRegistration;
+    private readonly IDisposable _fileLoadedRegistration;
+    private bool _loadingFileSeen;
+    private long? _loadingEntryId;
     private IDisposable? _metadataRegistration;
     private IDisposable? _mediaTitleRegistration;
     private readonly IDisposable _positionRegistration;
@@ -19,6 +22,14 @@ internal sealed partial class Engine : IEngine
     private readonly IDisposable _videoParamsRegistration;
     private readonly IDisposable _trackListRegistration;
     private readonly IDisposable _subTextRegistration;
+    private readonly IDisposable _chapterListRegistration;
+    private readonly IDisposable _chapterRegistration;
+    private readonly IDisposable _durationRegistration;
+    private readonly IDisposable _eofRegistration;
+    private bool _heldEndNotified;
+    private PlaybackRange? _playbackRange;
+    private double? _chapterStopEnd;
+    private bool _chapterStopCompleted;
 
     // Cached from the video-params observer; mpv learns it asynchronously after a load, not on demand.
     private bool _hasVideo;
@@ -119,6 +130,7 @@ internal sealed partial class Engine : IEngine
         SetPropertySafely("network-timeout", 10);
         _endRegistration = _mpv.OnEvent(HandleEndFile, MpvEventId.EndFile);
         _playbackRestartRegistration = _mpv.OnEvent(HandlePlaybackRestart, MpvEventId.PlaybackRestart);
+        _fileLoadedRegistration = _mpv.OnEvent(HandleFileLoaded, MpvEventId.FileLoaded);
         _positionRegistration = _mpv.ObserveProperty("time-pos", HandlePositionChange);
         // The equalizer is left out of the chain entirely until a preset asks for it, and which bands it
         // then carries depends on the file's sample rate: a band at the Nyquist frequency rings rather
@@ -133,6 +145,10 @@ internal sealed partial class Engine : IEngine
         // The text of the subtitle currently on screen. Watching it turns each cue into a line to announce as
         // it comes up; mpv leaves it empty between cues and whenever no subtitle track is selected.
         _subTextRegistration = _mpv.ObserveProperty("sub-text", HandleSubTextChange);
+        _chapterListRegistration = _mpv.ObserveProperty("chapter-list", HandleChapterChange);
+        _chapterRegistration = _mpv.ObserveProperty("chapter", HandleChapterChange);
+        _durationRegistration = _mpv.ObserveProperty("duration", HandleChapterChange);
+        _eofRegistration = _mpv.ObserveProperty("eof-reached", HandleHeldEnd);
     }
 
     public event Action<EndReason>? Ended;
@@ -144,6 +160,8 @@ internal sealed partial class Engine : IEngine
     public event Action? VideoAvailabilityChanged;
 
     public event Action? MetadataChanged;
+
+    public event Action? ChaptersChanged;
 
     public event Action? AudioTracksChanged;
 
@@ -164,6 +182,7 @@ internal sealed partial class Engine : IEngine
             _ = Task.Run(probe.Dispose);
         _endRegistration.Dispose();
         _playbackRestartRegistration.Dispose();
+        _fileLoadedRegistration.Dispose();
         _metadataRegistration?.Dispose();
         _mediaTitleRegistration?.Dispose();
         _positionRegistration.Dispose();
@@ -171,6 +190,10 @@ internal sealed partial class Engine : IEngine
         _videoParamsRegistration.Dispose();
         _trackListRegistration.Dispose();
         _subTextRegistration.Dispose();
+        _chapterListRegistration.Dispose();
+        _chapterRegistration.Dispose();
+        _durationRegistration.Dispose();
+        _eofRegistration.Dispose();
         if (_spotifyAudio is { } streams)
             foreach (var pending in streams)
                 if (streams.TryRemove(pending.Key, out var unused)) unused.Dispose();
@@ -238,8 +261,9 @@ internal sealed partial class Engine : IEngine
 
     private void ApplyEndBehavior()
     {
-        SetPropertySafely("keep-open", _endBehavior == EndBehavior.None ? "yes" : "no");
-        SetPropertySafely("loop-file", !_holdAutomaticAdvance && _endBehavior == EndBehavior.Loop ? "inf" : "no");
+        SetPropertySafely("keep-open", _chapterStopEnd.HasValue || _holdAutomaticAdvance
+            || _endBehavior == EndBehavior.None ? "yes" : "no");
+        SetPropertySafely("loop-file", !_holdAutomaticAdvance && _playbackRange is null && _chapterStopEnd is null && _endBehavior == EndBehavior.Loop ? "inf" : "no");
     }
 
     private void SetPropertySafely(string name, object value) => TrySetProperty(name, value);

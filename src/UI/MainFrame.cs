@@ -138,6 +138,14 @@ internal sealed class MainFrame : IMainView
         add => Input.SubtitleTrackRequested += value;
         remove => Input.SubtitleTrackRequested -= value;
     }
+    public event Action<int>? ChapterRequested
+    {
+        add => Input.ChapterRequested += value;
+        remove => Input.ChapterRequested -= value;
+    }
+    public void SetChapterState(IReadOnlyList<ChapterMenuEntry> entries, int? current, bool stop, bool audiobook)
+        => Menus.SetChapterState(entries, current, stop, audiobook);
+
     public event Action<RecentCommand>? RecentRequested
     {
         add => Input.RecentRequested += value;

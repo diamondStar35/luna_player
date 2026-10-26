@@ -271,6 +271,21 @@ Enable **Remember subtitle for this session**, or press <kbd>Ctrl</kbd>+<kbd>Shi
 
 By default, Luna finishes speaking a subtitle line before reading the next one. Enable **Interrupt the current line when a new subtitle appears** on the General Preferences page if keeping pace with the picture is more important than hearing every line in full.
 
+### Chapters and audiobooks
+
+M4B audiobooks open like other audio files. **Player > Chapters** lists the current file's chapters as **number. title: duration**. The duration is the whole chapter's length. This menu is unavailable when the file has no chapters.
+
+- Press <kbd>Ctrl</kbd>+<kbd>Page Up</kbd> for the previous chapter or <kbd>Ctrl</kbd>+<kbd>Page Down</kbd> for the next chapter. These commands stay within the current book and announce the destination chapter.
+- Press <kbd>C</kbd> to hear the current chapter name.
+- Select a chapter in the menu to jump to its beginning. Ordinary playback does not announce chapter names as they change naturally.
+- Check **Stop playback at the end of current chapter** to pause once at that chapter's end. If you move to another chapter while it is checked, the stop follows that chapter. It takes priority over repeat and automatic advance, then clears itself. Press Play to continue to the following chapter.
+
+Check **Player > Chapters > Audiobook mode** to treat chapters as individual playlist items. Luna remembers this choice. Enabling or disabling it keeps the same listening position and pause state.
+
+In audiobook mode, the opened-files list expands each book into its chapters; files without chapters remain single items. Previous/next file commands, shuffle, repeat, end-of-file behavior, and end-of-track sleep timers apply to the active chapter. Elapsed, remaining, and total time refer to that chapter. Seeking backward stops at its beginning; reaching its end, including by seeking, follows the configured end behavior. A-B loops and selection points stay within the chapter, and selecting a different chapter clears them. Automatic chapter announcements follow **Speak file name when navigating (Previous/Next)**.
+
+Bookmarks and remembered listening positions belong to the whole book. A bookmark in another chapter selects that chapter and its saved position. Copying, renaming, deleting, marking, or closing a chapter acts on its complete source book, including all its chapter entries.
+
 ## 6. Working with several files
 
 ### Previous, next, first, and last
@@ -923,6 +938,11 @@ These are the factory defaults. Your current bindings may differ after customiza
 | Choose sound card | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>A</kbd> | — |
 | Enter or leave full screen | <kbd>F11</kbd> | — |
 | Open audio track list | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>T</kbd> | — |
+| Previous chapter | <kbd>Ctrl</kbd>+<kbd>Page Up</kbd> | — |
+| Next chapter | <kbd>Ctrl</kbd>+<kbd>Page Down</kbd> | — |
+| Speak current chapter | <kbd>C</kbd> | — |
+| Audiobook mode | None | — |
+| Stop at current chapter end | None | — |
 | Previous audio track | <kbd>Shift</kbd>+<kbd>Page Up</kbd> | — |
 | Next audio track | <kbd>Shift</kbd>+<kbd>Page Down</kbd> | — |
 | Turn subtitle reading on or off | <kbd>Ctrl</kbd>+<kbd>U</kbd> | — |
@@ -1076,7 +1096,7 @@ These commands work system-wide when Luna is running, even if another program ha
 
 Luna filters file and folder selection using the following extensions. Playback is handled by mpv, so other formats supported by that engine may also play when opened directly.
 
-**Audio:** AAC, AC-3, AIFF, ALAC, APE, AU, DTS, E-AC-3, FLAC, M4A, MKA, MP1, MP2, MP3, MPC, OGA, OGG, OGM, Opus, TAK, TrueHD (`.thd`), TTA, WAV, WMA, and WavPack.
+**Audio:** AAC, AC-3, AIFF, ALAC, APE, AU, DTS, E-AC-3, FLAC, M4A, M4B, MKA, MP1, MP2, MP3, MPC, OGA, OGG, OGM, Opus, TAK, TrueHD (`.thd`), TTA, WAV, WMA, and WavPack.
 
 **Video:** 3G2, 3GP, AVI, FLV, IVF, M2TS, M4V, MJ2, MKV, MOV, MP4, MPEG, MPG, MXF, OGV, RMVB, TS, WebM, WMV, and Y4M.
 

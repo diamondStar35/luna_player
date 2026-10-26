@@ -73,25 +73,25 @@ internal sealed partial class Player
     internal bool AddSubtitle(string source, string? title = null, string? language = null)
         => _loaded && _engine.AddSubtitle(source, title, language);
 
-    internal bool SetLoopStart(double seconds) => _engine.SetLoopStart(seconds);
-    internal bool SetLoopEnd(double seconds) => _engine.SetLoopEnd(seconds);
+    internal bool SetLoopStart(double seconds) => _engine.SetLoopStart(ToSourceTime(seconds));
+    internal bool SetLoopEnd(double seconds) => _engine.SetLoopEnd(ToSourceTime(seconds));
     internal bool ClearLoop() => _engine.ClearLoop();
 
     internal bool SetSelectionRange(double start, double end, bool repeat)
     {
         _engine.ClearQueuedNext();
-        return _engine.SetSelectionRange(start, end, repeat);
+        return _engine.SetSelectionRange(ToSourceTime(start), ToSourceTime(end), repeat);
     }
 
     internal bool PlaySelectionRange(double start, double end, bool repeat)
     {
         _engine.ClearQueuedNext();
-        return _engine.PlaySelectionRange(start, end, repeat);
+        return _engine.PlaySelectionRange(ToSourceTime(start), ToSourceTime(end), repeat);
     }
 
     internal bool ExitSelectionRange(double end, bool play)
     {
-        var exited = _engine.ExitSelectionRange(end, play);
+        var exited = _engine.ExitSelectionRange(ToSourceTime(end), play);
         PrepareNext();
         return exited;
     }
