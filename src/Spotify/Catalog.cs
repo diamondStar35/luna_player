@@ -2,6 +2,7 @@ using System.Net;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using LunaPlayer.Configuration.Models;
+using LunaPlayer.Spotify.Playback;
 
 namespace LunaPlayer.Spotify;
 

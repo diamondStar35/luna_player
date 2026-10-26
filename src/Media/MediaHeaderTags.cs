@@ -2,14 +2,14 @@ using System.Text;
 
 namespace LunaPlayer.Media;
 
-/// <summary>What a file says about itself: the three fields the Windows media overlay shows.</summary>
+/// <summary>The title, artist and album reported by a file or live stream.</summary>
 /// <remarks>
 /// Empty strings rather than nulls, because every consumer wants to display them and none of them wants to
 /// tell "no artist" apart from "an artist of nothing".
 /// </remarks>
 internal readonly record struct MediaTags(string Title, string Artist, string Album)
 {
-    /// <summary>What a file that says nothing about itself reads as.</summary>
+    /// <summary>No metadata was provided by the current source.</summary>
     internal static MediaTags None { get; } = new(string.Empty, string.Empty, string.Empty);
 }
 

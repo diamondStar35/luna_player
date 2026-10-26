@@ -58,6 +58,7 @@ internal sealed partial class Sessions : IDisposable
     private readonly Action<string> _browse;
     private readonly Browsing _browsing;
     private Session? _session;
+    private Session? _browsingSession;
     private PendingMove? _pending;
 
     /// <param name="directDownload">Downloads a row straight to disk with the saved settings.</param>
@@ -128,10 +129,9 @@ internal sealed partial class Sessions : IDisposable
 
     /// <summary>Plays one video, named by a link rather than chosen from a list.</summary>
     /// <remarks>There is no session: nothing follows a single video, so there is no next and Escape has
-    /// nothing to go back to. Any session already open is closed.</remarks>
+    /// nothing to go back to. The current session is replaced only once the link resolves.</remarks>
     internal void PlayLink(string link)
     {
-        Clear();
         var watchUrl = Utils.Canonical(link);
         if (watchUrl is null)
         {
@@ -201,6 +201,10 @@ internal sealed partial class Sessions : IDisposable
         if (session.IndexOf(playing) < 0)
             return false;
         _pending = null;
+        // Escape releases playback ownership. The browser retains this list until it is closed or a
+        // video is selected again, while an ordinary browser command leaves the playing list alone.
+        _session = null;
+        _activeChannelUrl = string.Empty;
         // The whole stage goes, list and all, and the playlist the user opened comes back exactly as it
         // was - paused where it was paused. There is nothing to unpick, because nothing was mixed in.
         _player.LeaveSession();
@@ -214,11 +218,15 @@ internal sealed partial class Sessions : IDisposable
         _pending = null;
         _activeChannelUrl = string.Empty;
         var session = _session;
+        var browsing = _browsingSession;
         _session = null;
+        _browsingSession = null;
         session?.Dispose();
-        // Whatever the session was playing goes with it. Opening a file or a plain stream does this for
-        // itself, so by the time a new one starts there is usually nothing left to take away.
-        _player.LeaveSession();
+        if (!ReferenceEquals(browsing, session)) browsing?.Dispose();
+        // Browsing can coexist with another source. Only the owner of the active playback may restore
+        // the suspended playlist; clearing YouTube results must never stop radio or Spotify.
+        if (_player.InSession && !_player.InRadioSession && !_player.InSpotifySession)
+            _player.LeaveSession();
     }
 
     public void Dispose()
@@ -227,31 +235,20 @@ internal sealed partial class Sessions : IDisposable
         Clear();
     }
 
-    // ---- showing the list ----
+    private bool Owns(Session session)
+        => ReferenceEquals(_session, session) || ReferenceEquals(_browsingSession, session);
 
-    /// <remarks>
-    /// The session is installed before the window opens, not when something is first played. Installing it
-    /// on first play would leave a first search with no session - so the page of
-    /// results its "load more" fetches is dropped by the guard that checks the session is still the current
-    /// one, after the continuation has already been consumed. Paging a fresh search therefore does nothing
-    /// there and cannot be made to by trying again.
-    /// </remarks>
-    /// <remarks>
-    /// Re-entrant, and has to be. The progress window is modeless, so the main window keeps taking
-    /// commands while a search runs: the user can press Escape, land back in a list, and have the search
-    /// they started arrive and open a second list over the top of it. When that happens the outer loop is
-    /// left holding a session that is no longer the current one, and every iteration below re-checks that
-    /// rather than carrying on with it - a session that has been replaced has already been disposed, and
-    /// anything done to it from here would be done to something dead.
-    /// </remarks>
+    /// <summary>Keeps browsing separate from the playing list until a video is chosen. A newer browser
+    /// invalidates pending results for the old browser without canceling the active playback session.</summary>
     private void Show(Session session)
     {
-        if (!ReferenceEquals(_session, session))
+        if (!ReferenceEquals(_browsingSession, session))
         {
-            Clear();
-            _session = session;
+            var previous = _browsingSession;
+            _browsingSession = session;
+            if (!ReferenceEquals(previous, _session)) previous?.Dispose();
         }
-        while (ReferenceEquals(_session, session))
+        while (ReferenceEquals(_browsingSession, session))
         {
             Prefetch(session, 0, OpeningPrefetch);
             using var feed = new Feed(this, session);
@@ -262,11 +259,12 @@ internal sealed partial class Sessions : IDisposable
                 Tr("Videos"), session.Label, session.Items, session.Selected, feed, tabs, session.CurrentTab));
             // Another list opened over this one while it was up, and closing it took this session with
             // it. Whatever was chosen here belongs to a session that has gone.
-            if (!ReferenceEquals(_session, session))
+            if (!ReferenceEquals(_browsingSession, session))
                 return;
             if (chosen is not ResultChoice choice || choice.Index >= session.Items.Count)
             {
-                Clear();
+                _browsingSession = null;
+                if (!ReferenceEquals(_session, session)) session.Dispose();
                 return;
             }
             var index = choice.Index;
@@ -323,12 +321,12 @@ internal sealed partial class Sessions : IDisposable
     /// comes back, so the user is never left with nothing open.</summary>
     private void PlayAt(Session session, int index, YouTubeResult item)
     {
-        if (!ReferenceEquals(_session, session))
+        if (!ReferenceEquals(_browsingSession, session))
             return;
         Resolve(item.Url, item, Session.AudioFor(session.Mode), session.QualityFor(session.Mode),
             session.Token, outcome =>
         {
-            if (!ReferenceEquals(_session, session))
+            if (!ReferenceEquals(_browsingSession, session))
                 return;
             if (outcome.Value is Resolved ready && Start(session, index, ready))
                 return;

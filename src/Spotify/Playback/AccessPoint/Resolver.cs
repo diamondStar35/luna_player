@@ -1,9 +1,9 @@
 using System.Text.Json;
 
-namespace LunaPlayer.Spotify;
+namespace LunaPlayer.Spotify.Playback.AccessPoint;
 
 /// <summary>Finds Spotify access points in the order returned by its resolver.</summary>
-internal sealed class AccessPointResolver(HttpClient http)
+internal sealed class Resolver(HttpClient http)
 {
     private const string ResolveUrl =
         "https://apresolve.spotify.com/?type=accesspoint&type=dealer&type=spclient";

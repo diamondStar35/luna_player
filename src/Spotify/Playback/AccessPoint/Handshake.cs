@@ -3,10 +3,10 @@ using System.Net.Sockets;
 using System.Numerics;
 using System.Security.Cryptography;
 
-namespace LunaPlayer.Spotify;
+namespace LunaPlayer.Spotify.Playback.AccessPoint;
 
 /// <summary>Establishes the signed Diffie-Hellman session used before Spotify login.</summary>
-internal static class AccessPointHandshake
+internal static class Handshake
 {
     private const ulong SpotifyVersion = 124200290;
     private static readonly byte[] Prime = Convert.FromHexString(
@@ -24,12 +24,12 @@ internal static class AccessPointHandshake
         "3C275804B6B219F9C12F02E94863ECA1B642A09D4825F8B39DD0E86AF9484DA1" +
         "C2BA863042EA9DB3086C190E48B39D66EB0006A25AEEA11B13873CD719E655BD");
 
-    static AccessPointHandshake()
+    static Handshake()
     {
         if (Prime.Length != 96 || ServerKey.Length != 256) throw new InvalidDataException();
     }
 
-    internal static async Task<AccessPointCodec> ConnectAsync(string host, int port,
+    internal static async Task<Codec> ConnectAsync(string host, int port,
         CancellationToken cancellationToken)
     {
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -86,7 +86,7 @@ internal static class AccessPointHandshake
             {
                 var confirmation = CreateConfirmation(proof);
                 await stream.WriteAsync(confirmation, cancellationToken).ConfigureAwait(false);
-                return new AccessPointCodec(stream, sendKey, receiveKey);
+                return new Codec(stream, sendKey, receiveKey);
             }
             finally
             {

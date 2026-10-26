@@ -185,7 +185,7 @@ internal sealed partial class Sessions
             // The window closed, or another list replaced this session, while the tab was on its way. The
             // page that came back has no home now, so it is closed here rather than leaked, and the caller
             // is not told - its callback belongs to a dialog that has gone.
-            if (_closed || _session.IsCancelled || !ReferenceEquals(_owner._session, _session))
+            if (_closed || _session.IsCancelled || !_owner.Owns(_session))
             {
                 if (finished.IsCompletedSuccessfully && finished.Result.Page is IAsyncDisposable page)
                     _ = page.DisposeAsync().AsTask();
@@ -205,7 +205,7 @@ internal sealed partial class Sessions
         private void Arrived(Task<IReadOnlyList<YouTubeResult>> finished, Action<IReadOnlyList<YouTubeResult>> appended)
         {
             _loading = false;
-            if (_session.IsCancelled || !ReferenceEquals(_owner._session, _session))
+            if (_session.IsCancelled || !_owner.Owns(_session))
                 return;
             // A page that failed is not the end of the results, only the end of this attempt: leaving
             // _exhausted alone lets the user try again by arrowing off the last row and back onto it.

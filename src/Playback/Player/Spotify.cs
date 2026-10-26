@@ -23,7 +23,7 @@ internal sealed partial class Player
     }
 
     /// <summary>Opens a decrypted Spotify file through the same mpv audio chain as local music.</summary>
-    internal bool OpenSpotifyAudio(LunaPlayer.Spotify.AudioDecryptStream audio, string title,
+    internal bool OpenSpotifyAudio(LunaPlayer.Spotify.Playback.AudioDecryptStream audio, string title,
         string source, double? startPosition = null)
     {
         if (_engine is not Engine mpv) { audio.Dispose(); return false; }

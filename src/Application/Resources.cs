@@ -166,7 +166,7 @@ internal static class Resources
 
     private static Player CreatePlayer(nint nativeHandle, Settings settings)
     {
-        var engine = new Engine(nativeHandle, !settings.General.DisableMediaControls);
+        var engine = new Engine(nativeHandle);
         try
         {
             var player = new Player(engine, new PositionStore(Paths.PositionsFile));

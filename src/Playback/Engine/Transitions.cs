@@ -38,6 +38,9 @@ internal sealed partial class Engine
             _lastPosition = null;
             _activeEntryId = PositiveEntryId();
             _activePath = ReadString("path");
+            // Initial tags may arrive before playback-restart, while reads still reject the outgoing
+            // entry's metadata. Refresh again now that the new stream's tags can be read safely.
+            MetadataChanged?.Invoke();
             if (_queuedNext)
                 _queuedSourceEntryId = PositiveEntryId();
             if (_crossfade && _nextRequest is LoadRequest next)

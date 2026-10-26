@@ -12,6 +12,8 @@ internal sealed partial class Engine : IEngine
     private readonly MPV _mpv;
     private readonly IDisposable _endRegistration;
     private readonly IDisposable _playbackRestartRegistration;
+    private IDisposable? _metadataRegistration;
+    private IDisposable? _mediaTitleRegistration;
     private readonly IDisposable _positionRegistration;
     private readonly IDisposable _sampleRateRegistration;
     private readonly IDisposable _videoParamsRegistration;
@@ -91,7 +93,7 @@ internal sealed partial class Engine : IEngine
     private string? _lastSubText;
     private bool _disposed;
 
-    internal Engine(nint windowHandle, bool mediaControls = true)
+    internal Engine(nint windowHandle)
     {
         var options = new Dictionary<string, object?>
         {
@@ -100,6 +102,10 @@ internal sealed partial class Engine : IEngine
             ["keep_open"] = "no",
             ["input_default_bindings"] = false,
             ["input_vo_keyboard"] = false,
+            // Luna owns the Windows media session and routes its buttons through the active source.
+            // A second session from mpv duplicates the overlay and bypasses that command routing.
+            ["media_controls"] = false,
+            ["input_media_keys"] = false,
             // Subtitles start off: nothing is read until the user picks a track. sub-auto keeps mpv from
             // pulling in sidecar .srt files, and sid=no leaves every embedded track unselected on load.
             ["sub_auto"] = "no",
@@ -111,7 +117,6 @@ internal sealed partial class Engine : IEngine
 
         _mpv = new MPV(options: options);
         SetPropertySafely("network-timeout", 10);
-        ApplyMediaControls(mediaControls);
         _endRegistration = _mpv.OnEvent(HandleEndFile, MpvEventId.EndFile);
         _playbackRestartRegistration = _mpv.OnEvent(HandlePlaybackRestart, MpvEventId.PlaybackRestart);
         _positionRegistration = _mpv.ObserveProperty("time-pos", HandlePositionChange);
@@ -138,6 +143,8 @@ internal sealed partial class Engine : IEngine
 
     public event Action? VideoAvailabilityChanged;
 
+    public event Action? MetadataChanged;
+
     public event Action? AudioTracksChanged;
 
     public event Action? SubtitleTracksChanged;
@@ -157,6 +164,8 @@ internal sealed partial class Engine : IEngine
             _ = Task.Run(probe.Dispose);
         _endRegistration.Dispose();
         _playbackRestartRegistration.Dispose();
+        _metadataRegistration?.Dispose();
+        _mediaTitleRegistration?.Dispose();
         _positionRegistration.Dispose();
         _sampleRateRegistration.Dispose();
         _videoParamsRegistration.Dispose();
@@ -173,6 +182,31 @@ internal sealed partial class Engine : IEngine
     public string? MediaTitle => ReadString("media-title")?.Trim() is { Length: > 0 } title
         ? LegacyMetadataEncoding.RepairArabicMojibake(title)
         : null;
+
+    public Metadata GetMetadata()
+    {
+        lock (_loadSync)
+        {
+            if (_disposed || !_loaded || _awaitingLoadRestart) return Metadata.None;
+            // Observe on the first metadata read, when a consumer actually needs live updates.
+            _metadataRegistration ??= _mpv.ObserveProperty("metadata", HandleMetadataChange);
+            _mediaTitleRegistration ??= _mpv.ObserveProperty("media-title", HandleMetadataChange);
+            var fields = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+            if (ReadObject("metadata") is IDictionary<string, object?> tags)
+                foreach (var (key, value) in tags)
+                    if (value is string text && !string.IsNullOrWhiteSpace(text))
+                        fields[key] = LegacyMetadataEncoding.RepairArabicMojibake(text.Trim());
+            // mpv resolves ICY titles, overrides and fallbacks through media-title. Keep that decision
+            // native; the tag snapshot provides artist, album and any additional broadcast fields.
+            var title = MediaTitle ?? string.Empty;
+            // A filename fallback is not title metadata. Let each caller use its file or station name
+            // when mpv has no actual title, comparing mpv's own filename rather than guessing from URLs.
+            if (string.Equals(title, ReadString("filename"), StringComparison.Ordinal)) title = string.Empty;
+            return new Metadata(new MediaTags(title,
+                fields.GetValueOrDefault("artist", string.Empty),
+                fields.GetValueOrDefault("album", string.Empty)), fields);
+        }
+    }
 
     // mpv owns both halves of this: keep-open leaves a finished file loaded so it can still be seeked,
     // and loop-file repeats it without the gap a reload would leave. The managed end-of-file handler still
@@ -206,19 +240,6 @@ internal sealed partial class Engine : IEngine
     {
         SetPropertySafely("keep-open", _endBehavior == EndBehavior.None ? "yes" : "no");
         SetPropertySafely("loop-file", !_holdAutomaticAdvance && _endBehavior == EndBehavior.Loop ? "inf" : "no");
-    }
-
-    public void SetMediaControls(bool enabled) => ApplyMediaControls(enabled);
-
-    // Both halves are set together: media-controls is the OS transport overlay mpv publishes, and
-    // input-media-keys is whether it answers the play/pause keys on a keyboard or headset. Disabling the
-    // controls while still capturing the keys is the arrangement that surprises people, so the setting
-    // moves them as one.
-    private void ApplyMediaControls(bool enabled)
-    {
-        var value = enabled ? "yes" : "no";
-        SetPropertySafely("media-controls", value);
-        SetPropertySafely("input-media-keys", value);
     }
 
     private void SetPropertySafely(string name, object value) => TrySetProperty(name, value);

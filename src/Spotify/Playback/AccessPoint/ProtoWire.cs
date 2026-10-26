@@ -1,4 +1,4 @@
-namespace LunaPlayer.Spotify;
+namespace LunaPlayer.Spotify.Playback.AccessPoint;
 
 /// <summary>The small protobuf wire subset needed by Spotify's playback messages.</summary>
 internal static class ProtoWire

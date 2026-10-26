@@ -37,6 +37,4 @@ internal sealed partial class Player
         _radioSession = false;
         _suspendedPlaylist = null;
     }
-
-    internal void RefreshSessionState() => StateChanged?.Invoke();
 }

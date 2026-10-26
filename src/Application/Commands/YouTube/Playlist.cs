@@ -17,7 +17,7 @@ internal sealed class Playlist
     private readonly ISpeechOutput _speech;
     private readonly MediaGuard _guard;
     private readonly PlaybackSessions _sessions;
-    private LunaPlayer.Spotify.Playback Spotify => _sessions.Spotify;
+    private LunaPlayer.Spotify.Playback.Sessions Spotify => _sessions.Spotify;
 
     internal Playlist(
         ActionRouter router,

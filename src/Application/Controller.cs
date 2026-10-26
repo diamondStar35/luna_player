@@ -32,7 +32,7 @@ internal sealed class ApplicationController : IDisposable
     private readonly ViewStatePresenter _viewState;
     private readonly WindowTitlePresenter _title;
     private readonly MediaOverlayPresenter _overlay;
-    private readonly LunaPlayer.Spotify.Playback _spotify;
+    private readonly LunaPlayer.Spotify.Playback.Sessions _spotify;
     private string? _selectionPath;
     private int _selectionPlaylistIndex = -1;
     private Task? _shutdownTask;
@@ -52,7 +52,7 @@ internal sealed class ApplicationController : IDisposable
         SleepTimer sleepTimer,
         ISpeechOutput speech,
         SystemMediaControls mediaControls,
-        LunaPlayer.Spotify.Playback spotify)
+        LunaPlayer.Spotify.Playback.Sessions spotify)
     {
         _view = view;
         _player = player;
@@ -77,6 +77,7 @@ internal sealed class ApplicationController : IDisposable
             dispatcher,
             _tags,
             mediaControls,
+            spotify,
             () => sessions.CanMoveNext,
             () => sessions.CanMovePrevious,
             HandleAction);
@@ -90,6 +91,7 @@ internal sealed class ApplicationController : IDisposable
         _player.Ended += OnPlaybackEnded;
         _player.VideoAvailabilityChanged += OnVideoAvailabilityChanged;
         _player.AudioTracksChanged += OnAudioTracksChanged;
+        _player.MetadataChanged += OnMetadataChanged;
         _viewState.PushInitial();
         _overlay.ApplySetting();
         _overlay.Sync();
@@ -152,6 +154,7 @@ internal sealed class ApplicationController : IDisposable
         _player.Ended -= OnPlaybackEnded;
         _player.VideoAvailabilityChanged -= OnVideoAvailabilityChanged;
         _player.AudioTracksChanged -= OnAudioTracksChanged;
+        _player.MetadataChanged -= OnMetadataChanged;
         _view.EscapePressed -= _sessions.HandleEscape;
         ShutdownAsync().GetAwaiter().GetResult();
         _overlay.Dispose();
@@ -221,6 +224,13 @@ internal sealed class ApplicationController : IDisposable
 
     private void OnAudioTracksChanged()
         => _dispatcher.Post(SyncViewState);
+
+    private void OnMetadataChanged() => _dispatcher.Post(() =>
+    {
+        if (_shutDown || !_player.InRadioSession) return;
+        _overlay.Sync();
+        _title.Update();
+    });
 
     private void OnPlaybackEnded(EndReason reason)
     {

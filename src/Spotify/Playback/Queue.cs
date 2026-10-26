@@ -1,9 +1,9 @@
 using LunaPlayer.Configuration.Models;
 
-namespace LunaPlayer.Spotify;
+namespace LunaPlayer.Spotify.Playback;
 
 /// <summary>Keeps the Spotify queue order and paged navigation separate from its audio transport.</summary>
-internal sealed partial class Playback
+internal sealed partial class Sessions
 {
     private readonly object _navigationLock = new();
     private Session? _session;

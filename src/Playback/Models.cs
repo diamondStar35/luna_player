@@ -1,4 +1,5 @@
 using System.Globalization;
+using LunaPlayer.Media;
 
 namespace LunaPlayer.Playback;
 
@@ -12,6 +13,20 @@ internal enum EndReason
 internal readonly record struct QueuedAdvance(string Path, double? PreviousPosition);
 
 internal readonly record struct AudioDevice(string Name, string Description);
+
+/// <summary>A snapshot of mpv's resolved title and native metadata, including live stream fields.</summary>
+internal sealed record Metadata(MediaTags Display, IReadOnlyDictionary<string, string> Fields)
+{
+    internal static Metadata None { get; } = new(MediaTags.None,
+        new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase));
+
+    internal string Value(params string[] names)
+    {
+        foreach (var name in names)
+            if (Fields.TryGetValue(name, out var value) && value.Length > 0) return value;
+        return string.Empty;
+    }
+}
 
 /// <param name="Id">mpv's track ID, written to <c>aid</c> when selecting this track.</param>
 /// <param name="Title">The title stored in the media, or null when it has none.</param>

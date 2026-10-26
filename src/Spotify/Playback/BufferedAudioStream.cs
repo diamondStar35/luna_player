@@ -1,7 +1,7 @@
 using System.Net;
 using System.Net.Http.Headers;
 
-namespace LunaPlayer.Spotify;
+namespace LunaPlayer.Spotify.Playback;
 
 /// <summary>Fetches requested encrypted audio blocks with bounded, memory-only read-ahead.</summary>
 /// <remarks>Demand reads use their own request, cancelling speculative work before a miss or seek.

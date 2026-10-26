@@ -2,7 +2,7 @@ using System.Buffers.Binary;
 using System.Numerics;
 using System.Security.Cryptography;
 
-namespace LunaPlayer.Spotify;
+namespace LunaPlayer.Spotify.Playback.AccessPoint;
 
 /// <summary>The Shannon packet cipher used by Spotify's access point connection.</summary>
 /// <remarks>Ported from the MIT-licensed shannon 0.2.0 crate used by Luna's pinned librespot.</remarks>

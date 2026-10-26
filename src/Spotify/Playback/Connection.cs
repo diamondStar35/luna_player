@@ -1,41 +1,43 @@
-namespace LunaPlayer.Spotify;
+using LunaPlayer.Spotify.Playback.AccessPoint;
+
+namespace LunaPlayer.Spotify.Playback;
 
 /// <summary>Owns the authenticated access point used to unlock Spotify audio.</summary>
-internal sealed class ManagedAudioSession : IDisposable
+internal sealed class Connection : IDisposable
 {
     private const string ClientId = "65b708073fc0480ea92a077233ca87bd";
     private readonly HttpClient _http;
-    private readonly AccessPointResolver _resolver;
-    private readonly AccessPointLogin.Credentials _credentials;
+    private readonly Resolver _resolver;
+    private readonly Login.Credentials _credentials;
     private readonly string _deviceId;
     private readonly SemaphoreSlim _reconnectGate = new(1, 1);
     private readonly object _stateLock = new();
     private readonly CancellationTokenSource _stop = new();
     private readonly CancellationToken _stopToken;
-    private AccessPointRequests _requests;
-    private readonly PlaybackFiles _files;
+    private Requests _requests;
+    private readonly Files _files;
     private volatile bool _disposed;
 
-    internal static async Task<ManagedAudioSession> ConnectAsync(
-        AccessPointLogin.Credentials credentials, CancellationToken cancellationToken)
+    internal static async Task<Connection> ConnectAsync(
+        Login.Credentials credentials, CancellationToken cancellationToken)
     {
         var http = new HttpClient { Timeout = TimeSpan.FromSeconds(30) };
-        AccessPointCodec? connection = null;
+        Codec? connection = null;
         try
         {
-            var resolver = new AccessPointResolver(http);
+            var resolver = new Resolver(http);
             var (host, port) = await resolver.ResolveAsync("accesspoint", cancellationToken)
                 .ConfigureAwait(false);
-            connection = await AccessPointHandshake.ConnectAsync(host, port, cancellationToken)
+            connection = await Handshake.ConnectAsync(host, port, cancellationToken)
                 .ConfigureAwait(false);
             var deviceId = Guid.NewGuid().ToString();
-            var reusable = await AccessPointLogin.LoginAsync(connection, credentials, deviceId,
+            var reusable = await Login.LoginAsync(connection, credentials, deviceId,
                 cancellationToken).ConfigureAwait(false);
-            var requests = new AccessPointRequests(connection);
+            var requests = new Requests(connection);
             connection = null;
-            var tokens = new PlaybackHttpTokens(http, ClientId, deviceId);
-            var files = new PlaybackFiles(http, resolver, tokens, reusable);
-            return new ManagedAudioSession(requests, files, http, resolver, reusable, deviceId);
+            var tokens = new HttpTokens(http, ClientId, deviceId);
+            var files = new Files(http, resolver, tokens, reusable);
+            return new Connection(requests, files, http, resolver, reusable, deviceId);
         }
         catch
         {
@@ -45,8 +47,8 @@ internal sealed class ManagedAudioSession : IDisposable
         }
     }
 
-    private ManagedAudioSession(AccessPointRequests requests, PlaybackFiles files, HttpClient http,
-        AccessPointResolver resolver, AccessPointLogin.Credentials credentials, string deviceId)
+    private Connection(Requests requests, Files files, HttpClient http,
+        Resolver resolver, Login.Credentials credentials, string deviceId)
     {
         _requests = requests;
         _files = files;
@@ -59,14 +61,14 @@ internal sealed class ManagedAudioSession : IDisposable
 
     internal void SaveCredentials()
     {
-        PlaybackCredentialStore.Save(_credentials);
-        PlaybackCredentialStore.DeleteLegacy();
+        CredentialStore.Save(_credentials);
+        CredentialStore.DeleteLegacy();
     }
 
     internal async Task<AudioDecryptStream> GetAudioAsync(string uri, int bitrate,
         CancellationToken cancellationToken)
     {
-        if (_disposed) throw new ObjectDisposedException(nameof(ManagedAudioSession));
+        if (_disposed) throw new ObjectDisposedException(nameof(Connection));
         var (track, fileId, format) = await _files.GetTrackFileAsync(uri, bitrate, cancellationToken)
             .ConfigureAwait(false);
         var key = await GetAudioKeyAsync(track, fileId, cancellationToken).ConfigureAwait(false);
@@ -104,17 +106,17 @@ internal sealed class ManagedAudioSession : IDisposable
                     if (!ReferenceEquals(_requests, requests)) continue;
                     var (host, port) = await _resolver.ResolveAsync("accesspoint", cancellationToken)
                         .ConfigureAwait(false);
-                    AccessPointCodec? connection = null;
+                    Codec? connection = null;
                     try
                     {
-                        connection = await AccessPointHandshake.ConnectAsync(host, port, cancellationToken)
+                        connection = await Handshake.ConnectAsync(host, port, cancellationToken)
                             .ConfigureAwait(false);
-                        await AccessPointLogin.LoginAsync(connection, _credentials, _deviceId,
+                        await Login.LoginAsync(connection, _credentials, _deviceId,
                             cancellationToken).ConfigureAwait(false);
                         lock (_stateLock)
                         {
                             ObjectDisposedException.ThrowIf(_disposed, this);
-                            _requests = new AccessPointRequests(connection);
+                            _requests = new Requests(connection);
                             connection = null;
                         }
                         requests.Dispose();
@@ -128,7 +130,7 @@ internal sealed class ManagedAudioSession : IDisposable
 
     public void Dispose()
     {
-        AccessPointRequests requests;
+        Requests requests;
         lock (_stateLock)
         {
             if (_disposed) return;

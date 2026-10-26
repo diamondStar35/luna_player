@@ -1,6 +1,6 @@
 using System.Security.Cryptography;
 
-namespace LunaPlayer.Spotify;
+namespace LunaPlayer.Spotify.Playback;
 
 /// <summary>Exposes the audio body of a seekable Spotify file after AES-128-CTR decryption.</summary>
 /// <remarks>The cipher counter follows the underlying file position, so seeking does not require

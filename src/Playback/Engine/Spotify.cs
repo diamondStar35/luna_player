@@ -1,6 +1,6 @@
 using System.Collections.Concurrent;
 using System.Globalization;
-using LunaPlayer.Spotify;
+using LunaPlayer.Spotify.Playback;
 using MpvNet;
 
 namespace LunaPlayer.Playback;
