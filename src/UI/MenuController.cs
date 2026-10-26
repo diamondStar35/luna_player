@@ -50,6 +50,10 @@ internal sealed class MenuController
     private readonly MenuItem _startRecordingItem;
     private readonly MenuItem _pauseRecordingItem;
     private readonly MenuItem _stopRecordingItem;
+    private readonly ChapterMenuComponents _chapters;
+    private readonly Dictionary<int, int> _chapterCommands = [];
+    private readonly List<MenuItem> _chapterItems = [];
+    private IReadOnlyList<ChapterMenuEntry> _chapterEntries = [];
     private ShortcutManager _shortcuts;
     internal MenuController(
         Frame frame,
@@ -63,6 +67,7 @@ internal sealed class MenuController
         BuildCommandIds(actions);
         var menu = MainMenuBuilder.Build(_commandIds, shortcuts, presets, recents);
         _menuBar = menu.MenuBar;
+        _chapters = menu.Chapters;
         _selectionMenuIndex = menu.SelectionMenuIndex;
         _bookmarksMenuIndex = menu.BookmarksMenuIndex;
         _markedMenuIndex = menu.MarkedMenuIndex;
@@ -138,7 +143,34 @@ internal sealed class MenuController
     }
 
     /// <summary>Resolves a menu-command id to the recents command it stands for.</summary>
+    internal bool TryGetChapter(int commandId, out int index) => _chapterCommands.TryGetValue(commandId, out index);
+
     internal bool TryGetRecent(int commandId, out RecentCommand recent) => _recentCommands.TryGetValue(commandId, out recent);
+
+    internal void SetChapterState(IReadOnlyList<ChapterMenuEntry> entries, int? current, bool stop, bool audiobook)
+    {
+        if (!_chapterEntries.SequenceEqual(entries))
+        {
+            foreach (var item in _chapterItems)
+                _chapters.Menu.Delete(item);
+            _chapterCommands.Clear();
+            _chapterItems.Clear();
+            for (var index = 0; index < entries.Count; index++)
+            {
+                var id = IdManager.NewId();
+                _chapterCommands[id] = entries[index].Index;
+                _chapterItems.Add(_chapters.Menu.Insert(index, id, entries[index].Label, kind: MenuItemKind.Radio));
+            }
+            _chapterEntries = entries.ToArray();
+        }
+        for (var index = 0; index < _chapterItems.Count; index++)
+            if (entries[index].Index == current) _chapterItems[index].Checked = true;
+        _chapters.Root.Enabled = entries.Count > 0;
+        _chapters.Stop.Checked = stop;
+        _chapters.Previous.Enabled = current is > 0;
+        _chapters.Next.Enabled = current is int active && active + 1 < entries.Count;
+        _chapters.Audiobook.Checked = audiobook;
+    }
 
     internal void SetShuffleChecked(bool isChecked) => _shuffleItem.Checked = isChecked;
 

@@ -26,6 +26,7 @@ internal sealed class WindowInput : IDisposable
     internal event Action<string?>? EqualizerPresetRequested;
     internal event Action<int?>? SubtitleTrackRequested;
     internal event Action<RecentCommand>? RecentRequested;
+    internal event Action<int>? ChapterRequested;
 
     /// <summary>True means Escape was handled and should go no further.</summary>
     internal event Func<bool>? EscapePressed;
@@ -79,6 +80,11 @@ internal sealed class WindowInput : IDisposable
         if (_menus.TryGetSubtitleTrack(args.Id, out var trackId))
         {
             LunaPlayer.Application.CrashReport.Guard(() => SubtitleTrackRequested?.Invoke(trackId));
+            return;
+        }
+        if (_menus.TryGetChapter(args.Id, out var chapter))
+        {
+            LunaPlayer.Application.CrashReport.Guard(() => ChapterRequested?.Invoke(chapter));
             return;
         }
         if (_menus.TryGetRecent(args.Id, out var recent))

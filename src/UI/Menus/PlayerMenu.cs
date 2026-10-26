@@ -23,7 +23,8 @@ internal static partial class MainMenuBuilder
         MenuItem ShuffleItem,
         MenuItem RepeatItem,
         MenuItem SilenceItem,
-        MenuItem FullScreenItem);
+        MenuItem FullScreenItem,
+        ChapterMenuComponents Chapters);
 
     private static PlayerMenuParts BuildPlayerMenu(
         IReadOnlyDictionary<ActionId, int> commandIds, ShortcutManager shortcuts, IReadOnlyList<PresetEntry> presets)
@@ -151,6 +152,7 @@ internal static partial class MainMenuBuilder
         Add(audioTrackMenu, audioTrackItems, commandIds, shortcuts, ActionId.OpenAudioTracks, Tr("Track list..."));
         // Translators: Player submenu holding the commands that switch between a file's audio tracks.
         playerMenu.AppendSubMenu(audioTrackMenu, Tr("Audio track"));
+        var chapters = BuildChaptersMenu(playerMenu, commandIds, shortcuts);
         // The subtitles to read aloud. The dynamic region - Off, then one radio item per track - is rebuilt
         // per file; the fixed tail below it (load from file, load from URL, the remember tick box) is built
         // once here and never deleted, so its permanent action ids stay reserved. Off and the tracks carry no
@@ -171,7 +173,7 @@ internal static partial class MainMenuBuilder
         return new PlayerMenuParts(
             playerMenu, playbackItems, audioTrackItems, equalizerCommands, equalizerItems, equalizerMenu,
             subtitleCommands, subtitleItems, subtitleMenu, subtitleMenuItem, subtitleRememberItem,
-            shuffleItem, repeatItem, silenceItem, fullScreenItem);
+            shuffleItem, repeatItem, silenceItem, fullScreenItem, chapters);
     }
     /// <summary>What <see cref="MainMenuComponents.EqualizerCommands"/> holds for the item that switches
     /// the equalizer off, in place of a preset name. Not a name any preset can have, because a preset

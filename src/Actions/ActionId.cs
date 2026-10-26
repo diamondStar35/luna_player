@@ -40,4 +40,5 @@ internal enum ActionId
     OpenIptvSources, OpenIptvChannels,
     OpenSleepTimer, CancelSleepTimer, AnnounceSleepTimerRemaining,
     OpenSpotifyBrowser, OpenSpotifyCredentials,
+    PreviousChapter, NextChapter, AnnounceChapter, ToggleChapterStop, ToggleAudiobookMode,
 }

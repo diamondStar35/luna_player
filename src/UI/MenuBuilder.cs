@@ -40,7 +40,8 @@ internal sealed record MainMenuComponents(
     MenuItem FullScreenItem,
     MenuItem StartRecordingItem,
     MenuItem PauseRecordingItem,
-    MenuItem StopRecordingItem);
+    MenuItem StopRecordingItem,
+    ChapterMenuComponents Chapters);
 /// <summary>Assembles the menu bar from one builder per top-level menu (see Menus/). Holds the shared Build
 /// orchestrator and the Add/Label helpers; each menu lives in its own file.</summary>
 internal static partial class MainMenuBuilder
@@ -100,7 +101,7 @@ internal static partial class MainMenuBuilder
             player.SubtitleRememberItem, file.RecentCommands, file.RecentFilesMenu, file.RecentFoldersMenu,
             file.RecentPlaylistsMenu, player.EqualizerCommands, player.EqualizerItems, player.EqualizerMenu,
             edit.MarkCurrentItem, edit.MarkAllItem, player.ShuffleItem, player.RepeatItem, player.SilenceItem,
-            player.FullScreenItem, recording.StartItem, recording.PauseItem, recording.StopItem);
+            player.FullScreenItem, recording.StartItem, recording.PauseItem, recording.StopItem, player.Chapters);
     }
 
     /// <summary>Appends an action item (labelled with its shortcut) and records it for group enable/disable.</summary>

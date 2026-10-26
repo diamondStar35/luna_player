@@ -26,6 +26,7 @@ internal sealed partial class Features : IDisposable
     private readonly ShortcutManager _globalShortcuts;
     private ApplicationController? _controller;
     private Subtitles? _subtitles;
+    private Commands.Playback.Chapters? _chapters;
     private LunaPlayer.YouTube.Playback.ResolveCache? _resolveCache;
     private LunaPlayer.YouTube.Components.Service _components = null!;
     private Updates? _appUpdates;
@@ -105,6 +106,7 @@ internal sealed partial class Features : IDisposable
         _ = new Commands.Playback.Bookmarks(router, _view, player, speech, bookmarks, selections);
         _ = new Devices(router, _view, player, _settings, _settingsStore, speech);
         _ = new AudioTracks(router, _view, player, speech);
+        _chapters = new Commands.Playback.Chapters(router, _view, player, _settings, _settingsStore, speech, _dispatcher);
         _subtitles = new Subtitles(router, _view, player, speech, _settings, _dispatcher);
         var equalizer = new Commands.Playback.Equalizer(
             router, _view, player, _settings, _settingsStore, speech, window.Equalizer);
@@ -234,6 +236,7 @@ internal sealed partial class Features : IDisposable
             return;
         _disposed = true;
         _spotifyStart?.Cancel();
+        _chapters?.Dispose();
         _controller?.Dispose();
         _spotifyStart?.Dispose();
         if (_spotifyPlayback is not null)
