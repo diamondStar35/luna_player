@@ -15,7 +15,7 @@ internal static class MediaLibrary
     private static readonly HashSet<string> AudioExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
         ".aac", ".ac3", ".aiff", ".alac", ".ape", ".au", ".dts", ".eac3",
-        ".flac", ".m4a", ".mka", ".mp1", ".mp2", ".mp3", ".mpc", ".oga",
+        ".flac", ".m4a", ".m4b", ".mka", ".mp1", ".mp2", ".mp3", ".mpc", ".oga",
         ".ogg", ".ogm", ".opus", ".tak", ".thd", ".tta", ".wav", ".wma", ".wv",
     };
 
