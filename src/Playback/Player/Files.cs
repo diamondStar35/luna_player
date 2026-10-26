@@ -9,7 +9,7 @@ internal sealed partial class Player
         var oldPath = CurrentPath;
         if (oldPath is null || !File.Exists(oldPath))
             return false;
-        var elapsed = Elapsed;
+        var elapsed = SourceElapsed;
         StopEngine();
         try
         {
@@ -17,7 +17,7 @@ internal sealed partial class Player
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
         {
-            _engine.Load(oldPath, elapsed, paused: false);
+            LoadCurrent(elapsed, paused: false);
             return false;
         }
         _playlist.ReplaceCurrent(newPath);
@@ -29,7 +29,7 @@ internal sealed partial class Player
         var path = CurrentPath;
         if (path is null || !File.Exists(path))
             return false;
-        var elapsed = Elapsed;
+        var elapsed = SourceElapsed;
         StopEngine();
         try
         {
@@ -37,7 +37,7 @@ internal sealed partial class Player
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
         {
-            _engine.Load(path, elapsed, paused: false);
+            LoadCurrent(elapsed, paused: false);
             return false;
         }
         _playlist.RemoveCurrent();

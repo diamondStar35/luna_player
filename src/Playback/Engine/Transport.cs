@@ -81,6 +81,10 @@ internal sealed partial class Engine
         }
     }
 
+    public bool EndReached => ReadBoolean("eof-reached") == true;
+
+    public bool IsLoading => _awaitingLoadRestart || _manualRequest is not null;
+
     public bool IsPaused => _loadingPaused ?? ReadBoolean("audio-fade/paused") ?? ReadBoolean("pause") ?? false;
 
     public bool SelectionRangeCompleted

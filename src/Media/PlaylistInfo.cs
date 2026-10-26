@@ -1,5 +1,6 @@
 using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
+using LunaPlayer.Playlist;
 
 namespace LunaPlayer.Media;
 
@@ -18,7 +19,7 @@ internal sealed class PlaylistInfoService
     /// <summary>Reads every file in the playlist and adds up its size and length. Runs on a worker thread.
     /// </summary>
     internal PlaylistTotals Build(
-        IReadOnlyList<string> files,
+        IReadOnlyList<PlaylistItem> files,
         string? currentPath,
         int currentIndex,
         double? currentDuration,
@@ -30,17 +31,20 @@ internal sealed class PlaylistInfoService
         var durations = new double?[files.Count];
         long totalSize = 0;
         using var probe = new Probe();
+        var measuredPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         for (var index = 0; index < files.Count; index++)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var path = files[index];
-            try { totalSize += new FileInfo(path).Length; }
+            var item = files[index];
+            var path = item.Path;
+            try { if (measuredPaths.Add(Paths.Key(path))) totalSize += new FileInfo(path).Length; }
             catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
             {
                 // An inaccessible size does not prevent the file's duration from contributing to the totals.
             }
             // What is playing already knows its own length; asking mpv beats reading the file again.
-            durations[index] = string.Equals(path, currentPath, StringComparison.Ordinal) && currentDuration is > 0
+            durations[index] = item.Chapter is Chapter chapter ? chapter.Duration
+                : index == currentIndex && string.Equals(path, currentPath, StringComparison.Ordinal) && currentDuration is > 0
                 ? currentDuration
                 : Duration(probe, path, cancellationToken);
             report(new ProgressUpdate(index + 1, files.Count, MediaLibrary.DisplayName(path)));

@@ -35,6 +35,7 @@ internal sealed class ApplicationController : IDisposable
     private readonly LunaPlayer.Spotify.Playback.Sessions _spotify;
     private string? _selectionPath;
     private int _selectionPlaylistIndex = -1;
+    private string? _selectionItemId;
     private Task? _shutdownTask;
     private bool _shutDown;
 
@@ -68,6 +69,7 @@ internal sealed class ApplicationController : IDisposable
         _speech = speech;
         _spotify = spotify;
         _selectionPath = player.CurrentPath;
+        _selectionItemId = player.CurrentItemId;
         _selectionPlaylistIndex = player.CurrentIndex;
         _viewState = new ViewStatePresenter(view, player, speech, sessions, spotify);
         _title = new WindowTitlePresenter(view, player, settings, _tags, spotify);
@@ -122,7 +124,7 @@ internal sealed class ApplicationController : IDisposable
         _settings.Audio.Pitch = _player.Pitch;
         _settings.Audio.Pan = _player.Pan;
         var path = _player.CurrentPath;
-        var elapsed = _player.Elapsed;
+        var elapsed = _player.SourceElapsed;
         // Stop before touching the filesystem: saving a position or checking a path on slow storage can
         // stall, but neither operation needs playback to remain active once its values have been captured.
         var radioTask = _sessions.Radio.ShutdownAsync();
@@ -176,10 +178,12 @@ internal sealed class ApplicationController : IDisposable
         var playlistIndex = _player.CurrentIndex;
         if (_selectionPath is not null
             && (path is null
+                || _player.CurrentItemId != _selectionItemId
                 || playlistIndex != _selectionPlaylistIndex
                 || !Paths.AreSame(_selectionPath, path)))
             _selections.ClearAll();
         _selectionPath = path;
+        _selectionItemId = _player.CurrentItemId;
         _selectionPlaylistIndex = playlistIndex;
         _selection.Reset();
         _selections.SwitchTo(path);
@@ -236,6 +240,8 @@ internal sealed class ApplicationController : IDisposable
     {
         var spotifyEnd = _spotify.IsActive;
         var generation = _spotify.CurrentLoadGeneration;
+        var itemId = _player.CurrentItemId;
+        var playbackRevision = _player.PlaybackRevision;
         _dispatcher.Post(() =>
         {
             if (spotifyEnd)
@@ -244,6 +250,8 @@ internal sealed class ApplicationController : IDisposable
                 SyncViewState();
                 return;
             }
+            if (reason != EndReason.QueuedAdvance
+                && (itemId != _player.CurrentItemId || playbackRevision != _player.PlaybackRevision)) return;
             HandlePlaybackEnded(reason);
         });
     }
@@ -252,6 +260,18 @@ internal sealed class ApplicationController : IDisposable
     {
         if (_shutDown)
             return;
+        if (reason == EndReason.ChapterStop)
+        {
+            _player.HoldAtChapterEnd();
+            if (!_sleepTimer.OnTrackEnded())
+                _speech.Speak(
+                    // Translators: Spoken when the one-time chapter-end stop pauses playback.
+                    Tr("Playback paused at the end of the chapter."),
+                    // Translators: Brief announcement after pausing at a chapter boundary.
+                    Tr("Chapter ended. Paused."));
+            SyncViewState();
+            return;
+        }
         if (reason == EndReason.QueuedAdvance)
         {
             if (!_player.AcceptQueuedAdvance())

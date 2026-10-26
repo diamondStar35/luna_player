@@ -2,6 +2,7 @@ using LunaPlayer.Accessibility;
 using LunaPlayer.Actions;
 using LunaPlayer.Bookmarks;
 using LunaPlayer.Playback;
+using LunaPlayer.Media;
 using LunaPlayer.UI;
 
 namespace LunaPlayer.Application.Commands.Playback;
@@ -178,8 +179,11 @@ internal sealed class Bookmarks
 
     private void Jump(Bookmark bookmark)
     {
-        var position = _selections.Bound(bookmark.Position);
-        _player.SeekAbsolute(position);
+        var position = bookmark.Position;
+        if (!_player.AudiobookMode || _player.CurrentChapter is Chapter chapter
+            && position >= chapter.Start && position < chapter.End)
+            position = _player.ToSourceTime(_selections.Bound(_player.ToPlaybackTime(position)));
+        _player.SeekSourcePosition(position);
         _speech.Speak(
             // Translators: Spoken once playing has moved to a bookmark. {name} is what the bookmark is called.
             TrFormat("Jumped to bookmark {name}.", bookmark.Name),
@@ -191,7 +195,7 @@ internal sealed class Bookmarks
     private bool TryGetContext(out string path, out double position)
     {
         path = _player.CurrentPath ?? string.Empty;
-        position = Math.Max(0, _player.Elapsed ?? 0);
+        position = Math.Max(0, _player.SourceElapsed ?? 0);
         if (path.Length > 0 && File.Exists(path))
             return true;
         _speech.Speak(

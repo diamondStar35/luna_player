@@ -8,9 +8,13 @@ internal enum EndReason
     EndOfFile,
     Error,
     QueuedAdvance,
+    ChapterStop,
 }
 
-internal readonly record struct QueuedAdvance(string Path, double? PreviousPosition);
+internal readonly record struct QueuedAdvance(string Path, double? PreviousPosition, string? ItemId = null);
+
+/// <summary>The outer bounds of one playable item, in source-file seconds.</summary>
+internal readonly record struct PlaybackRange(double Start, double End);
 
 internal readonly record struct AudioDevice(string Name, string Description);
 

@@ -87,15 +87,15 @@ internal sealed partial class Files
         if (_player.Count == 0)
             return;
         // The names are not worked out here: the list asks for the ones it is about to draw.
-        var files = _player.Files;
-        var request = _view.Dialogs.ChooseOpenedFile(files.Count,
-            index => index >= 0 && index < files.Count ? _player.DisplayName(files[index]) : string.Empty,
+        var files = _player.Items.ToArray();
+        var request = _view.Dialogs.ChooseOpenedFile(files.Length,
+            index => index >= 0 && index < files.Length ? _player.DisplayName(files[index]) : string.Empty,
             selected);
         if (request is null)
             return;
         if (request.Value.Action == OpenedFilesAction.Jump)
         {
-            _player.GoToIndex(request.Value.SelectedIndex);
+            _player.GoToItem(files[request.Value.SelectedIndex]);
             return;
         }
         ShowPlaylistInformation(() => ShowOpenedFiles(request.Value.SelectedIndex));
@@ -112,7 +112,7 @@ internal sealed partial class Files
             update => TrFormat("Reading: {name}", update.Name));
         // Everything the scan needs is read here, on the UI thread. mpv's properties belong to it, and the
         // scan itself only gets plain numbers to work from.
-        var files = _player.Files;
+        var files = _player.Items.ToArray();
         var currentPath = _player.CurrentPath;
         var currentIndex = _player.CurrentIndex;
         var duration = _player.Duration;

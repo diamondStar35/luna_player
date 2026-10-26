@@ -186,6 +186,7 @@ internal static class Resources
         settings.Audio.Pitch = player.SetPitch(settings.Audio.Pitch);
         player.SetSpeed(settings.Audio.Speed);
         player.TrackPositions(settings.Audio.SaveFilePositions);
+        player.SetAudiobookMode(settings.Audio.AudiobookMode);
         player.SetEndBehavior(settings.Audio.EndBehavior);
         player.ConfigurePlaybackEffects(settings.Audio);
         player.ConfigureSilence(settings.Silence);

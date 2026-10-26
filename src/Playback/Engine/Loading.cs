@@ -11,20 +11,22 @@ internal sealed partial class Engine
     /// audio URL cannot be safely flattened into those options, so <c>audio-files</c> is queued first; mpv
     /// processes both requests in order.</remarks>
     public bool Load(string path, double? startPosition = null, bool paused = false, string? audioFile = null,
-        bool noVideo = false, bool fadeTransition = false)
+        bool noVideo = false, bool fadeTransition = false, PlaybackRange? range = null, string? itemId = null, double? chapterStop = null)
     {
         lock (_loadSync)
-            return BeginLoad(path, startPosition, paused, audioFile, noVideo, fadeTransition);
+            return BeginLoad(path, startPosition, paused, audioFile, noVideo, fadeTransition, range, itemId, chapterStop);
     }
 
     private bool BeginLoad(string path, double? startPosition, bool paused, string? audioFile,
-        bool noVideo, bool fadeTransition)
+        bool noVideo, bool fadeTransition, PlaybackRange? range, string? itemId, double? chapterStop)
     {
         var overlap = fadeTransition && _crossfade && _crossfadeManual && _loaded && !IsPaused
             && !_awaitingLoadRestart && !_currentUsesAudioFile && audioFile is null && CurrentIsAudio();
         var generation = ++_loadGeneration;
         ++_queueGeneration;
         _loadingSourceEntryId = PositiveEntryId();
+        _loadingFileSeen = false;
+        _loadingEntryId = null;
         _pendingAdvance = null;
         _completedAdvance = null;
         _manualRequest = null;
@@ -35,7 +37,7 @@ internal sealed partial class Engine
         // seeking the newly loaded entry to the old selection's timestamp.
         _releasedSelectionWasPlaying = false;
         _releasedSelectionWasCompleted = false;
-        var request = new LoadRequest(path, startPosition, audioFile, noVideo);
+        var request = new LoadRequest(path, startPosition, audioFile, noVideo, range, itemId, chapterStop);
         _nextRequest = null;
         _queuedNext = false;
         _queuedSourceEntryId = null;
@@ -59,13 +61,13 @@ internal sealed partial class Engine
         return loaded;
     }
 
-    public bool QueueNext(string path, double? startPosition = null, string? audioFile = null, bool noVideo = false)
+    public bool QueueNext(string path, double? startPosition = null, string? audioFile = null, bool noVideo = false, PlaybackRange? range = null, string? itemId = null)
     {
         lock (_loadSync)
-            return QueueNextCore(path, startPosition, audioFile, noVideo);
+            return QueueNextCore(path, startPosition, audioFile, noVideo, range, itemId);
     }
 
-    private bool QueueNextCore(string path, double? startPosition, string? audioFile, bool noVideo)
+    private bool QueueNextCore(string path, double? startPosition, string? audioFile, bool noVideo, PlaybackRange? range, string? itemId)
     {
         if ((!_crossfade && _gaplessPlayback == GaplessPlaybackMode.Disabled) || _holdAutomaticAdvance
             || string.IsNullOrWhiteSpace(path)
@@ -78,7 +80,7 @@ internal sealed partial class Engine
             ClearQueuedNext();
             return false;
         }
-        var request = new LoadRequest(path, startPosition, null, noVideo);
+        var request = new LoadRequest(path, startPosition, null, noVideo, range, itemId);
         if (_queuedNext && _nextRequest == request)
             return true;
         // Invalidate the old native entry before waiting for replacement metadata. Otherwise it could
@@ -152,11 +154,15 @@ internal sealed partial class Engine
 
     private bool LoadCore(LoadRequest request, bool paused, bool crossfade = false)
     {
+        _playbackRange = request.Range;
+        _chapterStopEnd = request.ChapterStop;
+        _chapterStopCompleted = false;
+        _heldEndNotified = false;
         var loaded = TryDo(mpv =>
         {
             mpv.SetPropertyAsync(0, "audio-files",
                 request.AudioFile is null ? Array.Empty<string>() : new[] { request.AudioFile });
-            var options = LoadOptions(request.StartPosition, paused, request.NoVideo);
+            var options = LoadOptions(request, paused);
             if (crossfade)
                 mpv.CrossfadeLoadFileAsync(request.Path, _crossfadeMilliseconds / 1000.0, _crossfadeEqualPower, options);
             else
@@ -178,13 +184,13 @@ internal sealed partial class Engine
         {
             mpv.CommandAsync(0, "playlist-clear");
             mpv.LoadFileAsync(request.Path, "append",
-                LoadOptions(request.StartPosition, paused: false, request.NoVideo));
+                LoadOptions(request, paused: false));
         });
         _queuedNext = appended;
         return appended;
     }
 
-    private Dictionary<string, object?> LoadOptions(double? startPosition, bool paused, bool noVideo)
+    private Dictionary<string, object?> LoadOptions(LoadRequest request, bool paused)
     {
         var options = new Dictionary<string, object?>
         {
@@ -193,20 +199,21 @@ internal sealed partial class Engine
             ["pause"] = paused ? "yes" : "no",
             // A YouTube video opened as audio can still resolve to a stream containing a picture. Leave it
             // undecoded for that item without affecting the video choice on the items around it.
-            ["vid"] = noVideo ? "no" : "auto",
+            ["vid"] = request.NoVideo ? "no" : "auto",
             // A one-shot selection sets this dynamically. Never let that boundary leak into another file.
-            ["end"] = "none",
-            ["keep-open"] = _endBehavior == EndBehavior.None ? "yes" : "no",
-            ["loop-file"] = !_holdAutomaticAdvance && _endBehavior == EndBehavior.Loop ? "inf" : "no",
+            ["end"] = (request.ChapterStop ?? request.Range?.End) is double end ? end : "none",
+            ["keep-open"] = request.ChapterStop.HasValue || _holdAutomaticAdvance || _endBehavior == EndBehavior.None ? "yes" : "no",
+            ["loop-file"] = !_holdAutomaticAdvance && request.ChapterStop is null && request.Range is null && _endBehavior == EndBehavior.Loop ? "inf" : "no",
         };
-        if (startPosition.HasValue)
-            options["start"] = Precision.Normalize(startPosition.Value);
+        if (request.StartPosition.HasValue || request.Range.HasValue)
+            options["start"] = Precision.Normalize(request.StartPosition ?? request.Range!.Value.Start);
         return options;
     }
 
     private bool ShouldFadeTransitions => _fadeFileTransitions && _fadeIntervalMilliseconds > 0;
 
-    private sealed record LoadRequest(string Path, double? StartPosition, string? AudioFile, bool NoVideo);
+    private sealed record LoadRequest(string Path, double? StartPosition, string? AudioFile, bool NoVideo,
+        PlaybackRange? Range = null, string? ItemId = null, double? ChapterStop = null);
 
     public void Stop()
     {
@@ -221,6 +228,10 @@ internal sealed partial class Engine
         _pendingAdvance = null;
         _completedAdvance = null;
         _manualRequest = null;
+        _playbackRange = null;
+        _chapterStopEnd = null;
+        _chapterStopCompleted = false;
+        _heldEndNotified = false;
         _loaded = false;
         _currentUsesAudioFile = false;
         _awaitingLoadRestart = false;

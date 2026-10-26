@@ -1,5 +1,6 @@
 using LunaPlayer.Configuration.Models;
 using LunaPlayer.Equalizer;
+using LunaPlayer.Media;
 
 namespace LunaPlayer.Playback;
 
@@ -21,6 +22,10 @@ internal interface IEngine : IDisposable
     /// <summary>Raised when the loaded media's metadata changes, including a new live radio programme.</summary>
     event Action? MetadataChanged;
 
+    event Action? ChaptersChanged;
+    IReadOnlyList<Chapter> GetChapters();
+    void SetChapterStop(double? end);
+
     /// <summary>Raised when the set of tracks may have changed - a file's tracks are learned after the load
     /// returns, so <see cref="GetAudioTracks"/> is not settled the moment a file opens.</summary>
     event Action? AudioTracksChanged;
@@ -37,10 +42,10 @@ internal interface IEngine : IDisposable
     /// <paramref name="path"/>. Null for anything that carries its own sound, which is everything but a
     /// YouTube video above 360p.</param>
     bool Load(string path, double? startPosition = null, bool paused = false, string? audioFile = null,
-        bool noVideo = false, bool fadeTransition = false);
+        bool noVideo = false, bool fadeTransition = false, PlaybackRange? range = null, string? itemId = null, double? chapterStop = null);
     /// <summary>Appends the next item to mpv's internal playlist so its audio can start without waiting for
     /// the application to react to end-of-file. Returns false when the item cannot be queued safely.</summary>
-    bool QueueNext(string path, double? startPosition = null, string? audioFile = null, bool noVideo = false);
+    bool QueueNext(string path, double? startPosition = null, string? audioFile = null, bool noVideo = false, PlaybackRange? range = null, string? itemId = null);
     void ClearQueuedNext();
     QueuedAdvance? TakeQueuedAdvance();
     double? PositionFor(string path);
@@ -52,6 +57,8 @@ internal interface IEngine : IDisposable
     void Play();
     void Pause();
     bool IsPaused { get; }
+    bool IsLoading { get; }
+    bool EndReached { get; }
     bool SelectionRangeCompleted { get; }
     double? Duration { get; }
     double? Elapsed { get; }

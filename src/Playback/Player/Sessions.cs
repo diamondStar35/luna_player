@@ -22,8 +22,9 @@ internal sealed partial class Player
         // Written to the store as well as remembered, so a session that ends in a crash still leaves the
         // position behind for the next launch.
         SavePosition();
-        _suspendedPlaylist = new SuspendedPlaylist(_playlist, _playlist.CurrentPath, Elapsed ?? 0, _loaded);
+        _suspendedPlaylist = new SuspendedPlaylist(_playlist, _playlist.CurrentPath, SourceElapsed ?? 0, _loaded);
         _playlist = new PlaylistState();
+        _playlist.SetAudiobookMode(_audiobookMode, 0);
         _loaded = false;
         // Nothing is announced here. The list is empty for the moment between this and the video being
         // loaded, and telling the rest of the player that nothing is playing - only to tell it again a

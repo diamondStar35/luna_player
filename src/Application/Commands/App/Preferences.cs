@@ -31,6 +31,7 @@ internal sealed class Preferences
         {
             settings.Apply(source);
             player.TrackPositions(settings.Audio.SaveFilePositions);
+            player.SetAudiobookMode(settings.Audio.AudiobookMode);
             player.SetEndBehavior(settings.Audio.EndBehavior);
             player.ConfigurePlaybackEffects(settings.Audio);
             player.ConfigureSilence(settings.Silence);

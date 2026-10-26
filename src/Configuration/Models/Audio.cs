@@ -35,6 +35,7 @@ internal sealed class AudioSettings
     public EndBehavior EndBehavior { get; set; } = EndBehavior.Advance;
     public bool WrapPlaylist { get; set; }
     public bool SaveFilePositions { get; set; }
+    public bool AudiobookMode { get; set; }
     public bool NormalizeAudio { get; set; } = true;
     public bool MonoAudio { get; set; }
     public int FadeIntervalMilliseconds { get; set; }
@@ -66,6 +67,7 @@ internal sealed class AudioSettings
         EndBehavior = source.EndBehavior;
         WrapPlaylist = source.WrapPlaylist;
         SaveFilePositions = source.SaveFilePositions;
+        AudiobookMode = source.AudiobookMode;
         NormalizeAudio = source.NormalizeAudio;
         MonoAudio = source.MonoAudio;
         FadeIntervalMilliseconds = source.FadeIntervalMilliseconds;

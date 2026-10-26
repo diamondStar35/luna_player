@@ -19,7 +19,7 @@ internal sealed partial class Player
     {
         BeginRadioSession();
         if (existing is int index && index >= 0 && index < _playlist.Count
-            && _playlist.Files[index] == url)
+            && _playlist.Items[index].Path == url)
             _playlist.GoToIndex(index);
         else if (!_playlist.Append(url, jump: true))
         {

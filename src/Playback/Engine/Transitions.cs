@@ -19,6 +19,20 @@ internal sealed partial class Engine
         return false;
     }
 
+    private void HandleFileLoaded(MpvEvent _)
+    {
+        lock (_loadSync)
+        {
+            if (_disposed || !_awaitingLoadRestart || !Paths.AreSame(ReadString("path"), _loadingPath))
+                return;
+            var entryId = PositiveEntryId();
+            if (_loadingSourceEntryId.HasValue && entryId == _loadingSourceEntryId)
+                return;
+            _loadingFileSeen = true;
+            _loadingEntryId = entryId;
+        }
+    }
+
     private void HandlePlaybackRestart(MpvEvent _)
     {
         lock (_loadSync)
@@ -29,7 +43,10 @@ internal sealed partial class Engine
     {
         if (_disposed)
             return;
-        if (_awaitingLoadRestart && Paths.AreSame(ReadString("path"), _loadingPath))
+        // Chapters share a path. A queued restart from an outgoing seek is not proof that the new
+        // chapter loaded: wait for that replacement's FILE_LOADED and native entry identity first.
+        if (_awaitingLoadRestart && _loadingFileSeen && Paths.AreSame(ReadString("path"), _loadingPath)
+            && (!_loadingEntryId.HasValue || PositiveEntryId() == _loadingEntryId))
         {
             _awaitingLoadRestart = false;
             _loadingPath = null;
@@ -41,6 +58,7 @@ internal sealed partial class Engine
             // Initial tags may arrive before playback-restart, while reads still reject the outgoing
             // entry's metadata. Refresh again now that the new stream's tags can be read safely.
             MetadataChanged?.Invoke();
+            ChaptersChanged?.Invoke();
             if (_queuedNext)
                 _queuedSourceEntryId = PositiveEntryId();
             if (_crossfade && _nextRequest is LoadRequest next)
@@ -81,8 +99,11 @@ internal sealed partial class Engine
             _pendingAdvance = null;
             _activeEntryId = PositiveEntryId();
             _activePath = advance.Path;
+            _playbackRange = advance.Range;
+            _chapterStopEnd = null;
+            _chapterStopCompleted = false;
             _lastPosition = null;
-            _completedAdvance = new QueuedAdvance(advance.Path, _pendingSourcePosition);
+            _completedAdvance = new QueuedAdvance(advance.Path, _pendingSourcePosition, advance.ItemId);
             Ended?.Invoke(EndReason.QueuedAdvance);
         }
     }
@@ -122,12 +143,12 @@ internal sealed partial class Engine
     private void UpdateEndFade(object? value)
     {
         if (_disposed || _awaitingLoadRestart || !ShouldFadeTransitions || _selectionRangeActive || _repeatFile
-            || _endBehavior != EndBehavior.Advance || _queuedNext || IsPaused
+            || _endBehavior != EndBehavior.Advance || _queuedNext || _chapterStopEnd.HasValue || IsPaused
             || ReadBoolean("audio-fade/transport-active") == true
             || (!_endFadeActive && ReadBoolean("audio-fade/active") == true)
             || !TryConvertDouble(value, out var position) || Duration is not double duration)
             return;
-        var remaining = duration - position;
+        var remaining = (_playbackRange?.End ?? duration) - position;
         var interval = _fadeIntervalMilliseconds / 1000.0;
         if (remaining > interval)
         {
