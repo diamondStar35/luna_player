@@ -5,10 +5,10 @@ namespace LunaPlayer.Application;
 
 /// <summary>Routes session commands to their owner instead of chaining competing Escape or navigation handlers.</summary>
 internal sealed class PlaybackSessions(Sessions youTube, Radio.Playback radio, Player player,
-    Spotify.Playback spotify, Func<bool> returnToSpotify)
+    Spotify.Playback.Sessions spotify, Func<bool> returnToSpotify)
 {
     internal Radio.Playback Radio => radio;
-    internal Spotify.Playback Spotify => spotify;
+    internal Spotify.Playback.Sessions Spotify => spotify;
     internal bool CanMoveNext => spotify.HasSession ? spotify.CanMoveNext
         : radio.IsActive ? radio.CanMoveNext : youTube.CanMoveNext;
     internal bool CanMovePrevious => spotify.HasSession ? spotify.CanMovePrevious

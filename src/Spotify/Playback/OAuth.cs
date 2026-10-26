@@ -4,17 +4,18 @@ using System.Net.Sockets;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using LunaPlayer.Spotify.Playback.AccessPoint;
 
-namespace LunaPlayer.Spotify;
+namespace LunaPlayer.Spotify.Playback;
 
 /// <summary>Authorizes the playback connection through a browser PKCE flow.</summary>
-internal static class PlaybackOAuth
+internal static class OAuth
 {
     private const string ClientId = "65b708073fc0480ea92a077233ca87bd";
     private const string Redirect = "http://127.0.0.1:5588/login";
     private const string Scopes = "streaming user-read-playback-state user-modify-playback-state user-read-currently-playing";
 
-    internal static async Task<AccessPointLogin.Credentials> SignInAsync(string responseText, CancellationToken cancellationToken)
+    internal static async Task<Login.Credentials> SignInAsync(string responseText, CancellationToken cancellationToken)
     {
         using var listener = new TcpListener(IPAddress.Loopback, 5588);
         listener.Start();
@@ -59,7 +60,7 @@ internal static class PlaybackOAuth
             .ConfigureAwait(false));
         var token = json.RootElement.GetProperty("access_token").GetString();
         if (string.IsNullOrEmpty(token)) throw new InvalidDataException();
-        return AccessPointLogin.Credentials.FromToken(token);
+        return Login.Credentials.FromToken(token);
     }
 
     private static string Base64Url(byte[] bytes) => Convert.ToBase64String(bytes).TrimEnd('=')

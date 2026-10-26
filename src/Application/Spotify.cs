@@ -19,7 +19,7 @@ internal sealed partial class Features
             return _spotifyAuth;
         }
     }
-    private LunaPlayer.Spotify.Playback _spotifyPlayback = null!;
+    private LunaPlayer.Spotify.Playback.Sessions _spotifyPlayback = null!;
     private SleepTimer _sleepTimer = null!;
     private bool _spotifyEventsBound;
 

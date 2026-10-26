@@ -1,16 +1,17 @@
 using System.Net.Http.Headers;
 using System.Text;
+using LunaPlayer.Spotify.Playback.AccessPoint;
 
-namespace LunaPlayer.Spotify;
+namespace LunaPlayer.Spotify.Playback;
 
 /// <summary>Resolves playable encrypted audio files through Spotify's metadata service.</summary>
-internal sealed class PlaybackFiles(HttpClient http, AccessPointResolver resolver,
-    PlaybackHttpTokens tokens, AccessPointLogin.Credentials credentials)
+internal sealed class Files(HttpClient http, Resolver resolver,
+    HttpTokens tokens, Login.Credentials credentials)
 {
     private readonly HttpClient _http = http;
-    private readonly AccessPointResolver _resolver = resolver;
-    private readonly PlaybackHttpTokens _tokens = tokens;
-    private readonly AccessPointLogin.Credentials _credentials = credentials;
+    private readonly Resolver _resolver = resolver;
+    private readonly HttpTokens _tokens = tokens;
+    private readonly Login.Credentials _credentials = credentials;
 
     internal async Task<(TrackId KeyTrack, byte[] FileId, int Format)> GetTrackFileAsync(string uri, int bitrate,
         CancellationToken cancellationToken)

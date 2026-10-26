@@ -32,7 +32,7 @@ internal sealed class ApplicationController : IDisposable
     private readonly ViewStatePresenter _viewState;
     private readonly WindowTitlePresenter _title;
     private readonly MediaOverlayPresenter _overlay;
-    private readonly LunaPlayer.Spotify.Playback _spotify;
+    private readonly LunaPlayer.Spotify.Playback.Sessions _spotify;
     private string? _selectionPath;
     private int _selectionPlaylistIndex = -1;
     private Task? _shutdownTask;
@@ -52,7 +52,7 @@ internal sealed class ApplicationController : IDisposable
         SleepTimer sleepTimer,
         ISpeechOutput speech,
         SystemMediaControls mediaControls,
-        LunaPlayer.Spotify.Playback spotify)
+        LunaPlayer.Spotify.Playback.Sessions spotify)
     {
         _view = view;
         _player = player;

@@ -1,9 +1,9 @@
 using System.Buffers.Binary;
 
-namespace LunaPlayer.Spotify;
+namespace LunaPlayer.Spotify.Playback.AccessPoint;
 
 /// <summary>Frames and authenticates packets on Spotify's encrypted access point connection.</summary>
-internal sealed class AccessPointCodec(Stream connection, ReadOnlySpan<byte> sendKey,
+internal sealed class Codec(Stream connection, ReadOnlySpan<byte> sendKey,
     ReadOnlySpan<byte> receiveKey) : IDisposable
 {
     private readonly Stream _connection = connection;

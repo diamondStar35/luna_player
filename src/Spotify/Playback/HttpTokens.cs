@@ -1,10 +1,11 @@
 using System.Net.Http.Headers;
 using System.Text;
+using LunaPlayer.Spotify.Playback.AccessPoint;
 
-namespace LunaPlayer.Spotify;
+namespace LunaPlayer.Spotify.Playback;
 
 /// <summary>Obtains the HTTP tokens used by the Spotify metadata and storage endpoints.</summary>
-internal sealed class PlaybackHttpTokens(HttpClient http, string clientId, string deviceId)
+internal sealed class HttpTokens(HttpClient http, string clientId, string deviceId)
 {
     private readonly HttpClient _http = http;
     private readonly string _clientId = clientId;
@@ -75,7 +76,7 @@ internal sealed class PlaybackHttpTokens(HttpClient http, string clientId, strin
         throw new InvalidDataException();
     }
 
-    internal async Task<string> AccessTokenAsync(AccessPointLogin.Credentials credentials,
+    internal async Task<string> AccessTokenAsync(Login.Credentials credentials,
         CancellationToken cancellationToken)
     {
         await _accessGate.WaitAsync(cancellationToken).ConfigureAwait(false);
@@ -83,7 +84,7 @@ internal sealed class PlaybackHttpTokens(HttpClient http, string clientId, strin
         finally { _accessGate.Release(); }
     }
 
-    private async Task<string> LoadAccessTokenAsync(AccessPointLogin.Credentials credentials,
+    private async Task<string> LoadAccessTokenAsync(Login.Credentials credentials,
         CancellationToken cancellationToken)
     {
         if (_accessToken is not null && DateTimeOffset.UtcNow < _accessExpires) return _accessToken;

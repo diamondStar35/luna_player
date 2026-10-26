@@ -1,16 +1,17 @@
+using LunaPlayer.Application;
 using LunaPlayer.Configuration.Models;
 using LunaPlayer.Playback;
-using LunaPlayer.Application;
+using LunaPlayer.Spotify.Playback.AccessPoint;
 
-namespace LunaPlayer.Spotify;
+namespace LunaPlayer.Spotify.Playback;
 
 /// <summary>Owns Spotify playback sessions and their shared authenticated audio connection.</summary>
-internal sealed partial class Playback : IDisposable
+internal sealed partial class Sessions : IDisposable
 {
     private readonly SpotifySettings _settings;
     private readonly Player _player;
     private readonly IApplicationDispatcher _dispatcher;
-    private ManagedAudioSession? _connection;
+    private Connection? _connection;
     private CancellationTokenSource? _loadCancellation;
     private SemaphoreSlim? _prepareGate;
     private readonly object _connectionLock = new();
@@ -19,7 +20,7 @@ internal sealed partial class Playback : IDisposable
     private readonly object _positionLock = new();
     private volatile bool _active;
     private string _authorizationMessage = string.Empty;
-    private PlaybackClock? _clock;
+    private Clock? _clock;
     private volatile Track? _current;
     private volatile string? _loadedUri;
     private double? _pendingSeek;
@@ -39,7 +40,7 @@ internal sealed partial class Playback : IDisposable
     internal event Action? QueueEmpty;
     internal Func<bool>? BeforeTrackEnd { get; set; }
 
-    internal Playback(SpotifySettings settings, Player player,
+    internal Sessions(SpotifySettings settings, Player player,
         IApplicationDispatcher dispatcher)
     {
         _settings = settings;
@@ -135,7 +136,7 @@ internal sealed partial class Playback : IDisposable
             gate = _prepareGate ??= new SemaphoreSlim(1, 1);
         }
         await gate.WaitAsync(cancellationToken).ConfigureAwait(false);
-        ManagedAudioSession? prepared = null;
+        Connection? prepared = null;
         try
         {
             int version;
@@ -145,23 +146,23 @@ internal sealed partial class Playback : IDisposable
                 if (_connection is not null) return;
                 version = _connectionVersion;
             }
-            var credentials = PlaybackCredentialStore.Load() ?? PlaybackCredentialStore.LoadLegacy();
+            var credentials = CredentialStore.Load() ?? CredentialStore.LoadLegacy();
             if (credentials is not null)
             {
                 try
                 {
-                    prepared = await ManagedAudioSession.ConnectAsync(credentials.Value,
+                    prepared = await Connection.ConnectAsync(credentials.Value,
                         cancellationToken).ConfigureAwait(false);
                 }
-                catch (PlaybackAuthenticationException)
+                catch (AuthenticationException)
                 {
-                    PlaybackCredentialStore.Delete();
+                    CredentialStore.Delete();
                 }
             }
             if (prepared is null)
             {
-                var signedIn = await PlaybackOAuth.SignInAsync(_authorizationMessage, cancellationToken).ConfigureAwait(false);
-                prepared = await ManagedAudioSession.ConnectAsync(signedIn, cancellationToken)
+                var signedIn = await OAuth.SignInAsync(_authorizationMessage, cancellationToken).ConfigureAwait(false);
+                prepared = await Connection.ConnectAsync(signedIn, cancellationToken)
                     .ConfigureAwait(false);
             }
             lock (_connectionLock)
@@ -309,7 +310,7 @@ internal sealed partial class Playback : IDisposable
         _playRequested = true;
         _current = track;
         _clock = track.DurationMs > 0
-            ? new PlaybackClock(track.DurationMs / 1000.0, 0, playing, DateTimeOffset.UtcNow) : null;
+            ? new Clock(track.DurationMs / 1000.0, 0, playing, DateTimeOffset.UtcNow) : null;
         TrackChanged?.Invoke(track);
         PlayingChanged?.Invoke(playing);
     }
@@ -462,20 +463,20 @@ internal sealed partial class Playback : IDisposable
     internal void SignOut()
     {
         Stop();
-        ManagedAudioSession? previous;
+        Connection? previous;
         lock (_connectionLock)
         {
             _connectionVersion++;
             previous = _connection;
             _connection = null;
-            try { PlaybackCredentialStore.Delete(); }
+            try { CredentialStore.Delete(); }
             finally { previous?.Dispose(); }
         }
     }
 
     public void Dispose()
     {
-        ManagedAudioSession? previous;
+        Connection? previous;
         lock (_connectionLock)
         {
             if (_disposed) return;
@@ -489,5 +490,5 @@ internal sealed partial class Playback : IDisposable
         // A canceled preparation still needs to release its managed gate on the worker thread.
     }
 
-    private sealed record PlaybackClock(double Duration, double Elapsed, bool Playing, DateTimeOffset ObservedAt);
+    private sealed record Clock(double Duration, double Elapsed, bool Playing, DateTimeOffset ObservedAt);
 }

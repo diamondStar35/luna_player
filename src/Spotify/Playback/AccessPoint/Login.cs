@@ -1,11 +1,11 @@
 using System.Text;
 
-namespace LunaPlayer.Spotify;
+namespace LunaPlayer.Spotify.Playback.AccessPoint;
 
-internal sealed class PlaybackAuthenticationException : Exception;
+internal sealed class AuthenticationException : Exception;
 
 /// <summary>Authenticates a Spotify access point and returns credentials usable by keymaster.</summary>
-internal static class AccessPointLogin
+internal static class Login
 {
     internal readonly record struct Credentials(string? Username, int Type, byte[] Data)
     {
@@ -13,7 +13,7 @@ internal static class AccessPointLogin
             new(null, 3, Encoding.UTF8.GetBytes(token));
     }
 
-    internal static async Task<Credentials> LoginAsync(AccessPointCodec connection,
+    internal static async Task<Credentials> LoginAsync(Codec connection,
         Credentials credentials, string deviceId, CancellationToken cancellationToken)
     {
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
@@ -37,7 +37,7 @@ internal static class AccessPointLogin
         await connection.SendAsync(0xab, login.ToArray(), cancellationToken).ConfigureAwait(false);
 
         var (kind, payload) = await connection.ReceiveAsync(cancellationToken).ConfigureAwait(false);
-        if (kind == 0xad) throw new PlaybackAuthenticationException();
+        if (kind == 0xad) throw new AuthenticationException();
         if (kind != 0xac) throw new InvalidDataException();
         var reader = new ProtoReader(payload);
         string? username = null;

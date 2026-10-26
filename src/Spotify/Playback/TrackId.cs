@@ -1,6 +1,6 @@
 using System.Buffers.Binary;
 
-namespace LunaPlayer.Spotify;
+namespace LunaPlayer.Spotify.Playback;
 
 /// <summary>The 128-bit ID in a Spotify track URI, decoded from its 22-character base62 form.</summary>
 internal readonly record struct TrackId(UInt128 Value)

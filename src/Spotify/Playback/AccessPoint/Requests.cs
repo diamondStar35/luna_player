@@ -1,11 +1,11 @@
 using System.Buffers.Binary;
 
-namespace LunaPlayer.Spotify;
+namespace LunaPlayer.Spotify.Playback.AccessPoint;
 
 /// <summary>Serializes playback requests on one authenticated Spotify access point.</summary>
-internal sealed class AccessPointRequests : IDisposable
+internal sealed class Requests : IDisposable
 {
-    private readonly AccessPointCodec _connection;
+    private readonly Codec _connection;
     private readonly SemaphoreSlim _gate = new(1, 1);
     private readonly CancellationTokenSource _stop = new();
     private readonly CancellationToken _stopToken;
@@ -19,7 +19,7 @@ internal sealed class AccessPointRequests : IDisposable
 
     // Spotify sends keepalive packets even while a track is playing. Read them throughout the
     // session so the access point remains usable when the next track needs its audio key.
-    internal AccessPointRequests(AccessPointCodec connection)
+    internal Requests(Codec connection)
     {
         _connection = connection;
         _stopToken = _stop.Token;
@@ -108,7 +108,7 @@ internal sealed class AccessPointRequests : IDisposable
         if (Interlocked.Exchange(ref _disposed, 1) != 0) return;
         lock (_stateLock)
         {
-            _failure = new ObjectDisposedException(nameof(AccessPointRequests));
+            _failure = new ObjectDisposedException(nameof(Requests));
             _pending?.TrySetException(_failure);
         }
         _stop.Cancel();

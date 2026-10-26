@@ -1,15 +1,16 @@
 using System.Security.Cryptography;
 using System.Text.Json;
 using LunaPlayer.Configuration;
+using LunaPlayer.Spotify.Playback.AccessPoint;
 
-namespace LunaPlayer.Spotify;
+namespace LunaPlayer.Spotify.Playback;
 
 /// <summary>Keeps reusable Spotify playback credentials protected for the Windows user.</summary>
-internal static class PlaybackCredentialStore
+internal static class CredentialStore
 {
     private static string FilePath => Path.Combine(Paths.RootDirectory, "spotify-playback-credentials.dat");
 
-    internal static AccessPointLogin.Credentials? Load()
+    internal static Login.Credentials? Load()
     {
         try
         {
@@ -27,7 +28,7 @@ internal static class PlaybackCredentialStore
                 if (string.IsNullOrWhiteSpace(username) || type < 0
                     || length is < 1 or > 65_536 || stream.Length - stream.Position != length) return null;
                 var data = reader.ReadBytes(length);
-                return new AccessPointLogin.Credentials(username, type, data);
+                return new Login.Credentials(username, type, data);
             }
             finally { CryptographicOperations.ZeroMemory(plain); }
         }
@@ -36,7 +37,7 @@ internal static class PlaybackCredentialStore
     }
 
     /// <summary>Reads the old librespot cache during migration without copying its unprotected JSON.</summary>
-    internal static AccessPointLogin.Credentials? LoadLegacy()
+    internal static Login.Credentials? LoadLegacy()
     {
         try
         {
@@ -48,13 +49,13 @@ internal static class PlaybackCredentialStore
             var type = root.GetProperty("auth_type").GetInt32();
             var data = Convert.FromBase64String(root.GetProperty("auth_data").GetString() ?? string.Empty);
             if (string.IsNullOrWhiteSpace(username) || type < 0 || data.Length is < 1 or > 65_536) return null;
-            return new AccessPointLogin.Credentials(username, type, data);
+            return new Login.Credentials(username, type, data);
         }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException
             or JsonException or FormatException or KeyNotFoundException) { return null; }
     }
 
-    internal static void Save(AccessPointLogin.Credentials credentials)
+    internal static void Save(Login.Credentials credentials)
     {
         using var stream = new MemoryStream();
         using (var writer = new BinaryWriter(stream, System.Text.Encoding.UTF8, leaveOpen: true))

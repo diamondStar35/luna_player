@@ -82,7 +82,7 @@ internal sealed partial class Features : IDisposable
         var clipboard = new WxClipboardService();
         // Now that there is a toolkit, the crash window can offer to copy.
         CrashReport.SetClipboard(clipboard);
-        _spotifyPlayback = new LunaPlayer.Spotify.Playback(_settings.Spotify, player, _dispatcher);
+        _spotifyPlayback = new LunaPlayer.Spotify.Playback.Sessions(_settings.Spotify, player, _dispatcher);
         var selection = features.Selection;
         var selections = features.Selections;
         var router = new ActionRouter();
