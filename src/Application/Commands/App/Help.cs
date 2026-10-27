@@ -17,6 +17,7 @@ internal sealed class Help
         router.Register(ActionId.UserGuide, OpenUserGuide);
         router.Register(ActionId.About, view.Dialogs.ShowAbout);
         router.Register(ActionId.ReleaseNotes, OpenReleaseNotes);
+        router.Register(ActionId.Donate, OpenDonate);
     }
 
     private void OpenUserGuide()
@@ -52,6 +53,16 @@ internal sealed class Help
             Tr("The release notes could not be opened."),
             // Translators: Title of an error about opening the release notes.
             Tr("Release notes"));
+    }
+
+    private void OpenDonate()
+    {
+        Open(
+            "https://paypal.me/diamondStar35",
+            // Translators: Shown when Windows cannot open the PayPal donation page in a web browser.
+            Tr("The donation page could not be opened."),
+            // Translators: Title of an error about opening the donation page.
+            Tr("Donate"));
     }
 
     private void Open(string target, string failureMessage, string caption)

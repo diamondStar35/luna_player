@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-10-26 18:08+0300\n"
+"POT-Creation-Date: 2026-10-27 05:23+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -635,8 +636,8 @@ msgstr ""
 #. Translators: Title of an error about opening the user guide.
 #. Translators: Title of an error about the user guide.
 #. Translators: Help menu item that opens the user guide matching the application language.
-#: Actions/Registry.cs:16 Application/Commands/App/Help.cs:35
-#: Application/Commands/App/Help.cs:43 UI/Menus/HelpMenu.cs:18
+#: Actions/Registry.cs:16 Application/Commands/App/Help.cs:36
+#: Application/Commands/App/Help.cs:44 UI/Menus/HelpMenu.cs:18
 msgid "User guide"
 msgstr ""
 
@@ -649,34 +650,42 @@ msgstr ""
 #. Translators: Name of the command that opens the notes for the installed Luna Player release.
 #. Translators: Title of an error about opening the release notes.
 #. Translators: Help menu item that opens the GitHub page for the installed release.
-#: Actions/Registry.cs:20 Application/Commands/App/Help.cs:54
+#: Actions/Registry.cs:20 Application/Commands/App/Help.cs:55
 #: UI/Menus/HelpMenu.cs:22
 msgid "Release notes"
 msgstr ""
 
+#. Translators: Name of the command that opens the PayPal donation page in a web browser.
+#. Translators: Title of an error about opening the donation page.
+#. Translators: Help menu item that opens the PayPal donation page in a web browser.
+#: Actions/Registry.cs:22 Application/Commands/App/Help.cs:65
+#: UI/Menus/HelpMenu.cs:24
+msgid "Donate"
+msgstr ""
+
 #. Translators: Name of the command that checks whether a newer Luna Player release is available.
 #. Translators: Help menu item that checks whether a newer Luna Player release is available.
-#: Actions/Registry.cs:30 UI/Menus/HelpMenu.cs:13
+#: Actions/Registry.cs:32 UI/Menus/HelpMenu.cs:13
 msgid "Check for app updates"
 msgstr ""
 
 #. Translators: Name of the command that opens the window for converting files to another audio format.
-#: Actions/Registry.cs:40
+#: Actions/Registry.cs:42
 msgid "Open the media converter"
 msgstr ""
 
 #. Translators: Name of the command opening the internet radio browser.
-#: Actions/Registry.cs:42
+#: Actions/Registry.cs:44
 msgid "Open the radio browser"
 msgstr ""
 
 #. Translators: Command in shortcut preferences that opens the Spotify home, search and library browser. Keep Spotify unchanged.
-#: Actions/Registry.cs:44
+#: Actions/Registry.cs:46
 msgid "Open the Spotify browser"
 msgstr ""
 
 #. Translators: Command opening the Spotify account and audio-quality page in Preferences. Keep Spotify unchanged.
-#: Actions/Registry.cs:46
+#: Actions/Registry.cs:48
 msgid "Spotify preferences"
 msgstr ""
 
@@ -756,7 +765,9 @@ msgstr ""
 
 #. Translators: Name of the command that opens the channel of the video being played inside the player.
 #. Translators: Item in the Video options menu that opens the channel of the video being played inside the player.
+#. Translators: Context menu item in the results list that opens the channel that published the video inside the player.
 #: Actions/YouTubeActions.cs:45 UI/Menus/VideoMenu.cs:30
+#: UI/YouTube/ResultsDialog.cs:392
 msgid "Go to channel"
 msgstr ""
 
@@ -768,22 +779,27 @@ msgid "Update YouTube components"
 msgstr ""
 
 #. Translators: Shown when Windows cannot open the installed HTML user guide.
-#: Application/Commands/App/Help.cs:33
+#: Application/Commands/App/Help.cs:34
 msgid "The user guide could not be opened."
 msgstr ""
 
 #. Translators: Shown when no local user-guide HTML file was included with the application.
-#: Application/Commands/App/Help.cs:41
+#: Application/Commands/App/Help.cs:42
 msgid "The user guide is not installed."
 msgstr ""
 
 #. Translators: Shown when Windows cannot open the release page in a web browser.
-#: Application/Commands/App/Help.cs:52
+#: Application/Commands/App/Help.cs:53
 msgid "The release notes could not be opened."
 msgstr ""
 
+#. Translators: Shown when Windows cannot open the PayPal donation page in a web browser.
+#: Application/Commands/App/Help.cs:63
+msgid "The donation page could not be opened."
+msgstr ""
+
 #. Translators: Detail shown when Windows accepts an item to open but starts no application.
-#: Application/Commands/App/Help.cs:64
+#: Application/Commands/App/Help.cs:75
 msgid "Windows did not start an application for this item."
 msgstr ""
 
@@ -1341,8 +1357,7 @@ msgstr ""
 
 #. Translators: Title of the information dialog for the current Spotify queue.
 #. Translators: Title of the window listing details of every file in the playlist.
-#: Application/Commands/Files/Info.cs:73
-#: Application/Commands/Files/Info.cs:127
+#: Application/Commands/Files/Info.cs:73 Application/Commands/Files/Info.cs:127
 msgid "Playlist Info"
 msgstr ""
 
@@ -1353,8 +1368,7 @@ msgstr ""
 
 #. Translators: Line in the Spotify queue information dialog. {value} is the formatted combined playing time.
 #. Translators: The playlist summary. {value} is a duration as hours:minutes:seconds.
-#: Application/Commands/Files/Info.cs:77
-#: Application/Commands/Files/Info.cs:140
+#: Application/Commands/Files/Info.cs:77 Application/Commands/Files/Info.cs:140
 msgid "Total duration: {value}"
 msgstr ""
 
@@ -2430,8 +2444,7 @@ msgstr ""
 #. Translators: Title of the error shown after one selection could not be saved.
 #. Translators: Title of the file picker used to save the currently selected part of a file.
 #: Application/Commands/Playback/SelectionSaving.cs:16
-#: Application/Commands/Playback/SelectionSaving.cs:122
-#: UI/DialogService.cs:158
+#: Application/Commands/Playback/SelectionSaving.cs:122 UI/DialogService.cs:158
 msgid "Save selection"
 msgstr ""
 
@@ -2462,8 +2475,7 @@ msgstr ""
 #. Translators: Title of the dialog for saving every selection point as a separate media file.
 #. Translators: Title of validation warnings in the save-selection-points dialog.
 #: Application/Commands/Playback/SelectionSaving.cs:54
-#: UI/Dialogs/SaveSelectionsDialog.cs:38
-#: UI/Dialogs/SaveSelectionsDialog.cs:186
+#: UI/Dialogs/SaveSelectionsDialog.cs:38 UI/Dialogs/SaveSelectionsDialog.cs:186
 msgid "Save selection points"
 msgstr ""
 
@@ -4247,11 +4259,12 @@ msgstr ""
 #: UI/Dialogs/AboutDialog.cs:31
 msgid ""
 "Luna includes mpv, copyright © the mpv developers and contributors to "
-"MPlayer and mplayer2, and a C# translation of python-mpv, copyright © 2017-"
-"2024 Sebastian Götte. These components are licensed under the GNU Lesser "
-"General Public License, version 2.1 or later. FFmpeg is licensed under the "
-"GNU Lesser General Public License, version 3 or later. See NOTICE.txt and "
-"the licenses folder for complete third-party notices and terms."
+"MPlayer and mplayer2, and a C# translation of python-mpv, copyright © "
+"2017-2024 Sebastian Götte. These components are licensed under the GNU "
+"Lesser General Public License, version 2.1 or later. FFmpeg is licensed "
+"under the GNU Lesser General Public License, version 3 or later. See "
+"NOTICE.txt and the licenses folder for complete third-party notices and "
+"terms."
 msgstr ""
 
 #. Translators: Final two lines in the About window. {publisher} is the developer's name and
@@ -4332,12 +4345,11 @@ msgstr ""
 #. Translators: Label of the box holding what the user calls a recording source.
 #. Translators: Label of the box holding what a saved link is called.
 #. Translators: Heading of the favourites list column holding what each saved link is called.
-#: UI/Dialogs/BookmarkManagerDialog.cs:20
-#: UI/Dialogs/SaveSelectionsDialog.cs:43 UI/Equalizer/EditDialog.cs:87
-#: UI/Iptv/ChannelBrowserDialog.cs:79 UI/Iptv/IptvSourceEditDialog.cs:56
-#: UI/Iptv/IptvSourcesDialog.cs:29 UI/Radio/BrowserDialog.cs:108
-#: UI/Recording/SourceDialog.cs:49 UI/YouTube/FavoriteEditDialog.cs:26
-#: UI/YouTube/FavoritesDialog.cs:29
+#: UI/Dialogs/BookmarkManagerDialog.cs:20 UI/Dialogs/SaveSelectionsDialog.cs:43
+#: UI/Equalizer/EditDialog.cs:87 UI/Iptv/ChannelBrowserDialog.cs:79
+#: UI/Iptv/IptvSourceEditDialog.cs:56 UI/Iptv/IptvSourcesDialog.cs:29
+#: UI/Radio/BrowserDialog.cs:108 UI/Recording/SourceDialog.cs:49
+#: UI/YouTube/FavoriteEditDialog.cs:26 UI/YouTube/FavoritesDialog.cs:29
 msgid "Name"
 msgstr ""
 
@@ -4516,8 +4528,7 @@ msgstr ""
 
 #. Translators: Title of the window where files are converted to another audio format.
 #. Translators: Title of the messages the media converter shows.
-#: UI/Dialogs/MediaConverterDialog.cs:94
-#: UI/Dialogs/MediaConverterDialog.cs:515
+#: UI/Dialogs/MediaConverterDialog.cs:94 UI/Dialogs/MediaConverterDialog.cs:515
 msgid "Media converter"
 msgstr ""
 
@@ -4678,9 +4689,8 @@ msgstr ""
 #. Translators: Button that opens a folder picker to choose where the download is saved.
 #. Translators: Button on the YouTube download settings page that opens a folder picker.
 #. Translators: Button that opens a file picker to choose a cookie file by hand.
-#: UI/Dialogs/MediaConverterDialog.cs:177
-#: UI/Dialogs/SaveSelectionsDialog.cs:54 UI/Iptv/IptvSourceEditDialog.cs:72
-#: UI/Preferences/RecordingPreferences.cs:72
+#: UI/Dialogs/MediaConverterDialog.cs:177 UI/Dialogs/SaveSelectionsDialog.cs:54
+#: UI/Iptv/IptvSourceEditDialog.cs:72 UI/Preferences/RecordingPreferences.cs:72
 #: UI/Recording/RecordingDialog.cs:148 UI/YouTube/DownloadDialog.cs:96
 #: UI/YouTube/DownloadPreferences.cs:66 UI/YouTube/GeneralPreferences.cs:90
 msgid "Browse..."
@@ -5480,7 +5490,7 @@ msgid "Clear recent playlists"
 msgstr ""
 
 #. Translators: Help submenu containing the commands that update Luna Player and its YouTube tools.
-#: UI/Menus/HelpMenu.cs:25
+#: UI/Menus/HelpMenu.cs:27
 msgid "Updates"
 msgstr ""
 
@@ -5809,17 +5819,20 @@ msgid "Time remaining"
 msgstr ""
 
 #. Translators: Item in the Video options menu that opens the download window to choose how the video being played is saved.
-#: UI/Menus/VideoMenu.cs:16
+#. Translators: Context menu item in the results list that opens the download window to choose how the chosen video is saved.
+#: UI/Menus/VideoMenu.cs:16 UI/YouTube/ResultsDialog.cs:400
 msgid "Download..."
 msgstr ""
 
 #. Translators: Item in the Video options menu that saves the video being played straight to disk with the saved download settings.
-#: UI/Menus/VideoMenu.cs:18
+#. Translators: Context menu item in the results list that saves the chosen video straight to disk with the saved download settings.
+#: UI/Menus/VideoMenu.cs:18 UI/YouTube/ResultsDialog.cs:402
 msgid "Direct download"
 msgstr ""
 
 #. Translators: Item in the Video options menu that adds the video being played to the download queue.
-#: UI/Menus/VideoMenu.cs:20
+#. Translators: Context menu item that adds the selected video to the download queue.
+#: UI/Menus/VideoMenu.cs:20 UI/YouTube/ResultsDialog.cs:404
 msgid "Add to download queue"
 msgstr ""
 
@@ -5839,7 +5852,8 @@ msgid "Open video in browser"
 msgstr ""
 
 #. Translators: Item in the Video options menu that opens the channel of the video being played in the web browser.
-#: UI/Menus/VideoMenu.cs:28
+#. Translators: Context menu item in the results list that opens the channel that published the video in the web browser.
+#: UI/Menus/VideoMenu.cs:28 UI/YouTube/ResultsDialog.cs:390
 msgid "Open channel in browser"
 msgstr ""
 
@@ -6761,13 +6775,16 @@ msgid "Removed from favorites."
 msgstr ""
 
 #. Translators: Radio station context-menu action removing a saved station.
-#: UI/Radio/Actions.cs:88
+#. Translators: Context menu item in the results list that takes the chosen video back out of the favourites.
+#: UI/Radio/Actions.cs:88 UI/YouTube/ResultsDialog.cs:416
 msgid "Remove from favorites"
 msgstr ""
 
 #. Translators: Radio station context-menu action saving a station.
 #. Translators: Radio station context-menu action saving the selected station locally.
+#. Translators: Context menu item in the results list that saves the chosen video to the favourites.
 #: UI/Radio/Actions.cs:90 UI/Radio/BrowserDialog.cs:154
+#: UI/YouTube/ResultsDialog.cs:397 UI/YouTube/ResultsDialog.cs:418
 msgid "Add to favorites"
 msgstr ""
 
@@ -8131,8 +8148,8 @@ msgstr ""
 #. Translators: Help text for the list that chooses the sound quality a video's audio is played at.
 #: UI/YouTube/GeneralPreferences.cs:152
 msgid ""
-"Sets the bitrate Luna asks for when you play a video's sound alone with Ctrl"
-"+Enter. Luna falls back to the closest the video offers."
+"Sets the bitrate Luna asks for when you play a video's sound alone with "
+"Ctrl+Enter. Luna falls back to the closest the video offers."
 msgstr ""
 
 #. Translators: Help text for the box holding how many videos a search should look for. The two numbers are
@@ -8317,6 +8334,16 @@ msgstr ""
 #. Translators: Heading above a YouTube channel's browser when the channel's name is not known.
 #: UI/YouTube/ResultsDialog.cs:354 YouTube/Playback/Session.cs:93
 msgid "Channel"
+msgstr ""
+
+#. Translators: Context menu item in the results list that copies the address of the chosen video.
+#: UI/YouTube/ResultsDialog.cs:386
+msgid "Copy link"
+msgstr ""
+
+#. Translators: Context menu item in the results list that shows the chosen video in the web browser.
+#: UI/YouTube/ResultsDialog.cs:388
+msgid "Open in browser"
 msgstr ""
 
 #. Translators: Label of the box where the user types what to search YouTube for.

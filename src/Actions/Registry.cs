@@ -18,6 +18,8 @@ internal static class HelpActions
         new(ActionId.About, Tr("About")),
         // Translators: Name of the command that opens the notes for the installed Luna Player release.
         new(ActionId.ReleaseNotes, Tr("Release notes")),
+        // Translators: Name of the command that opens the PayPal donation page in a web browser.
+        new(ActionId.Donate, Tr("Donate")),
     ];
 }
 

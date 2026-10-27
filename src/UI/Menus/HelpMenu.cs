@@ -20,6 +20,8 @@ internal static partial class MainMenuBuilder
         helpMenu.Append(commandIds[ActionId.About], Label(Tr("About"), ActionId.About, shortcuts));
         // Translators: Help menu item that opens the GitHub page for the installed release.
         helpMenu.Append(commandIds[ActionId.ReleaseNotes], Label(Tr("Release notes"), ActionId.ReleaseNotes, shortcuts));
+        // Translators: Help menu item that opens the PayPal donation page in a web browser.
+        helpMenu.Append(commandIds[ActionId.Donate], Label(Tr("Donate"), ActionId.Donate, shortcuts));
         helpMenu.AppendSeparator();
         // Translators: Help submenu containing the commands that update Luna Player and its YouTube tools.
         helpMenu.AppendSubMenu(updatesMenu, Tr("Updates"));
