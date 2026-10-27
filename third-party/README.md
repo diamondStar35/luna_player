@@ -23,20 +23,24 @@ crate. Its MIT license is included separately in `licenses/shannon-LICENSE.txt`.
 Media decoding and playback.
 
 - Source: https://github.com/mpv-player/mpv
-- Build project: https://github.com/diamondStar35/mpv-winbuild
-- Binary: https://github.com/diamondStar35/mpv-winbuild/actions/runs/39941247955/artifacts/12502681752
-- Version: v0.41.0-1292-gb225a4238, shared LGPL x86-64-v2 build
-- Licence: LGPL-2.1-or-later
+- Build revision: https://github.com/diamondStar35/mpv-winbuild/tree/b27346e3f504c713adfe5993c2bafb728cf7d7e2
+- Binary: https://github.com/diamondStar35/mpv-winbuild/actions/runs/40492335903/artifacts/12733716109
+- Version: v0.41.0-1321-g8dea34900, shared GPL x86-64-v2 build
+- Licence: GPL-3.0-or-later for this build; see the root [LICENSE](../LICENSE).
+
+Includes DVD-Audio/DVD-Video readers and Luna's native fade, transport and
+cross-fading patches. Upstream mpv is GPL-2.0-or-later; this build links against
+GPL-3.0-or-later FFmpeg.
 
 ## FFmpeg
 
 Media decoding libraries used by mpv, plus the command-line tool used for conversion and export.
 
 - Source: https://github.com/FFmpeg/FFmpeg
-- Build project: https://github.com/diamondStar35/mpv-winbuild
-- Binary: https://github.com/diamondStar35/mpv-winbuild/actions/runs/39941247955/artifacts/12502631834
-- Version: N-127957-g935f29eaa, shared LGPL x86-64-v2 build
-- Licence: LGPL-3.0-or-later
+- Build revision: https://github.com/diamondStar35/mpv-winbuild/tree/b27346e3f504c713adfe5993c2bafb728cf7d7e2
+- Binary: https://github.com/diamondStar35/mpv-winbuild/actions/runs/40492335903/artifacts/12733726076
+- Version: N-128110-gfa4daf630, shared GPL x86-64-v2 build
+- Licence: GPL-3.0-or-later (`--enable-gpl --enable-version3`); see the root [LICENSE](../LICENSE).
 
 ## wxWidgets
 

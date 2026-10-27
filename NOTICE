@@ -49,22 +49,26 @@ mpv                                                                    mpv.dll
 Copyright (c) the mpv developers and the contributors to MPlayer and mplayer2,
 from which mpv is derived.
 
-  Version:   v0.41.0-1292-gb225a4238
+  Version:   v0.41.0-1321-g8dea34900
   Home page: https://mpv.io/
   Source:    https://github.com/mpv-player/mpv
-  Build:     https://github.com/diamondStar35/mpv-winbuild
-  Binary:    https://github.com/diamondStar35/mpv-winbuild/actions/runs/39941247955/artifacts/12502681752
-  Licence:   GNU Lesser General Public License, version 2.1 or later
-             third-party/licenses/LGPL-2.1.txt
+  Build:     https://github.com/diamondStar35/mpv-winbuild/tree/b27346e3f504c713adfe5993c2bafb728cf7d7e2
+  Binary:    https://github.com/diamondStar35/mpv-winbuild/actions/runs/40492335903/artifacts/12733716109
+  Licence:   GNU General Public License, version 3 or later
+             LICENSE (installed as LICENSE.txt)
 
 mpv is used through its client API to decode and play media. Luna Player
 dynamically links to it at run time as a separate, replaceable shared library.
 
-The Lesser General Public License entitles a recipient of this distribution to
-the corresponding source code for mpv and to modify and replace that component.
-The source project, build project and binary artifact are linked above. The
-shared library also remains separate and replaceable: substituting a compatible
-mpv.dll requires no change to Luna Player.
+Upstream mpv is licensed under GPL-2.0-or-later by default. This GPL-enabled
+build links against GPL-3.0-or-later FFmpeg and is distributed under
+GPL-3.0-or-later. It includes the DVD-Audio/DVD-Video readers and Luna's native
+fade, transport and cross-fading patches from the build project.
+
+The General Public License entitles a recipient of this distribution to the
+corresponding source code and to modify and redistribute the component under
+its terms. The source project, build revision, patches and binary artifact are
+linked above. Substituting a compatible mpv.dll requires no change to Luna Player.
 
 
 -------------------------------------------------------------------------------
@@ -129,18 +133,23 @@ FFmpeg                              ffmpeg.exe, avcodec-63.dll, avdevice-63.dll,
 
 Copyright (c) the FFmpeg developers.
 
-  Version:   N-127957-g935f29eaa
+  Version:   N-128110-gfa4daf630
   Home page: https://ffmpeg.org/
   Source:    https://github.com/FFmpeg/FFmpeg
-  Build:     https://github.com/diamondStar35/mpv-winbuild
-  Binary:    https://github.com/diamondStar35/mpv-winbuild/actions/runs/39941247955/artifacts/12502631834
-  Licence:   GNU Lesser General Public License, version 3 or later
-             third-party/licenses/LGPL-3.0.txt
+  Build:     https://github.com/diamondStar35/mpv-winbuild/tree/b27346e3f504c713adfe5993c2bafb728cf7d7e2
+  Binary:    https://github.com/diamondStar35/mpv-winbuild/actions/runs/40492335903/artifacts/12733726076
+  Licence:   GNU General Public License, version 3 or later
+             LICENSE (installed as LICENSE.txt)
 
 mpv dynamically loads these FFmpeg libraries for media processing. The small
 ffmpeg.exe command-line front end uses the same libraries and is included for
 media conversion and export features. FFmpeg and its libraries remain separate
 from the LunaPlayer executable and may be replaced with compatible builds.
+
+This shared x86-64-v2 build enables GPL components and version 3 of the licence
+(--enable-gpl --enable-version3). Corresponding source and build instructions,
+including the additional codec and disc-reader dependencies, are available from
+the source project and build revision linked above.
 
 
 -------------------------------------------------------------------------------
