@@ -9,13 +9,13 @@ internal sealed class WindowInput : IDisposable
 {
     private readonly Frame _frame;
     private readonly MenuController _menus;
-    private readonly GlobalShortcuts _globalShortcuts;
+    private readonly LunaPlayer.UI.Services.GlobalShortcuts _globalShortcuts;
 
     internal WindowInput(Frame frame, MenuController menus, ShortcutManager shortcuts)
     {
         _frame = frame;
         _menus = menus;
-        _globalShortcuts = new GlobalShortcuts();
+        _globalShortcuts = new LunaPlayer.UI.Services.GlobalShortcuts();
         _globalShortcuts.Pressed += Request;
         BuildAccelerators(shortcuts);
         _frame.MenuCommand += OnMenuCommand;
@@ -25,14 +25,14 @@ internal sealed class WindowInput : IDisposable
     internal event Action<ActionId>? ActionRequested;
     internal event Action<string?>? EqualizerPresetRequested;
     internal event Action<int?>? SubtitleTrackRequested;
-    internal event Action<RecentCommand>? RecentRequested;
+    internal event Action<LunaPlayer.UI.Playlists.RecentCommand>? RecentRequested;
     internal event Action<int>? ChapterRequested;
 
     /// <summary>True means Escape was handled and should go no further.</summary>
     internal event Func<bool>? EscapePressed;
 
     /// <summary>The system-wide shortcut watcher, shared with the dialogs. Owned and disposed here.</summary>
-    internal GlobalShortcuts GlobalShortcuts => _globalShortcuts;
+    internal LunaPlayer.UI.Services.GlobalShortcuts GlobalShortcuts => _globalShortcuts;
 
     /// <summary>Raises an action request from outside the keyboard (the transport buttons).</summary>
     internal void Request(ActionId action) => ActionRequested?.Invoke(action);

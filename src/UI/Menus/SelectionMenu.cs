@@ -1,14 +1,14 @@
 using LunaPlayer.Actions;
 using WxSharp;
 
-namespace LunaPlayer.UI;
+namespace LunaPlayer.UI.Menus;
 
 internal sealed record SelectionMenuParts(
     Menu Menu,
     IReadOnlyDictionary<ActionId, MenuItem> Items,
     MenuItem RepeatItem);
 
-internal static partial class MainMenuBuilder
+internal static partial class Builder
 {
     internal static SelectionMenuParts BuildSelectionMenu(
         IReadOnlyDictionary<ActionId, int> commandIds, ShortcutManager shortcuts)

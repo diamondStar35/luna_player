@@ -34,10 +34,10 @@ internal interface IMenuState
     /// <summary>The user picked an item in a Recents submenu - to open, or to clear that kind. Not an
     /// <see cref="ActionId"/>, like the equalizer and subtitle entries: which recents exist changes as files
     /// are opened.</summary>
-    event Action<RecentCommand>? RecentRequested;
+    event Action<LunaPlayer.UI.Playlists.RecentCommand>? RecentRequested;
 
     event Action<int>? ChapterRequested;
-    void SetChapterState(IReadOnlyList<ChapterMenuEntry> entries, int? current, bool stop, bool audiobook);
+    void SetChapterState(IReadOnlyList<LunaPlayer.UI.Menus.ChapterMenuEntry> entries, int? current, bool stop, bool audiobook);
 
     void SetMediaLoaded(bool loaded);
     void SetShuffleChecked(bool isChecked);
@@ -69,7 +69,7 @@ internal interface IMenuState
     /// <summary>Rebuilds the Subtitles submenu's track list from the file's tracks, ticking the active one
     /// (or Off when <paramref name="activeId"/> is null). The fixed load/remember commands below are left in
     /// place. Called a moment after each file loads.</summary>
-    void RebuildSubtitleMenu(IReadOnlyList<SubtitleMenuEntry> entries, int? activeId);
+    void RebuildSubtitleMenu(IReadOnlyList<LunaPlayer.UI.Playback.SubtitleMenuEntry> entries, int? activeId);
 
     /// <summary>Ticks or clears the "remember subtitle for this session" box.</summary>
     void SetSubtitleRemember(bool on);
@@ -77,9 +77,9 @@ internal interface IMenuState
     /// <summary>Rebuilds the three Recents submenus (files, folders, playlists) from newest-first entries
     /// whose labels are already numbered and worded. An empty kind shows a disabled placeholder.</summary>
     void RebuildRecentsMenu(
-        IReadOnlyList<RecentMenuEntry> files,
-        IReadOnlyList<RecentMenuEntry> folders,
-        IReadOnlyList<RecentMenuEntry> playlists);
+        IReadOnlyList<LunaPlayer.UI.Playlists.RecentMenuEntry> files,
+        IReadOnlyList<LunaPlayer.UI.Playlists.RecentMenuEntry> folders,
+        IReadOnlyList<LunaPlayer.UI.Playlists.RecentMenuEntry> playlists);
 
     /// <summary>Ticks the subtitle track being read, or the Off item when <paramref name="activeId"/> is null,
     /// without rebuilding the submenu - for when the choice changes but the track list has not.</summary>

@@ -1,7 +1,7 @@
 using LunaPlayer.Actions;
 using WxSharp;
 
-namespace LunaPlayer.UI;
+namespace LunaPlayer.UI.Menus;
 
 internal readonly record struct ChapterMenuEntry(int Index, string Label);
 
@@ -13,7 +13,7 @@ internal sealed record ChapterMenuComponents(
     MenuItem Next,
     MenuItem Audiobook);
 
-internal static partial class MainMenuBuilder
+internal static partial class Builder
 {
     internal static ChapterMenuComponents BuildChaptersMenu(
         Menu player, IReadOnlyDictionary<ActionId, int> commandIds, ShortcutManager shortcuts)

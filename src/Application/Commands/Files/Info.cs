@@ -63,7 +63,7 @@ internal sealed partial class Files
                     ? tracks[index].Title : string.Empty,
                 selected);
             if (request is null) return;
-            if (request.Value.Action == OpenedFilesAction.Jump)
+            if (request.Value.Action == LunaPlayer.UI.Playlists.OpenedFilesAction.Jump)
             {
                 _spotify.GoToIndex(request.Value.SelectedIndex);
                 return;
@@ -93,7 +93,7 @@ internal sealed partial class Files
             selected);
         if (request is null)
             return;
-        if (request.Value.Action == OpenedFilesAction.Jump)
+        if (request.Value.Action == LunaPlayer.UI.Playlists.OpenedFilesAction.Jump)
         {
             _player.GoToItem(files[request.Value.SelectedIndex]);
             return;

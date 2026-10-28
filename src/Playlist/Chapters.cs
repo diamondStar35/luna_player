@@ -6,14 +6,14 @@ namespace LunaPlayer.Playlist;
 internal sealed partial class PlaylistState
 {
     internal IReadOnlyList<Chapter> ChaptersFor(string? path)
-        => path is not null && _chapters.TryGetValue(Paths.Key(path), out var chapters) ? chapters : [];
+        => _projection.For(path);
 
     internal bool SetChapters(string path, IReadOnlyList<Chapter> chapters, double position)
     {
         var key = Paths.Key(path);
         if (ChaptersFor(path).SequenceEqual(chapters))
             return false;
-        _chapters[key] = chapters;
+        _projection.Set(path, chapters);
         if (_audiobookMode)
             RebuildItems(position);
         return true;
@@ -49,14 +49,7 @@ internal sealed partial class PlaylistState
         var current = CurrentItem;
         var previousOrder = Items.ToArray();
         _items.Clear();
-        foreach (var source in _sources)
-        {
-            var chapters = ChaptersFor(source.Path);
-            if (_audiobookMode && chapters.Count > 0)
-                _items.AddRange(chapters.Select(chapter => source with { Chapter = chapter }));
-            else
-                _items.Add(source);
-        }
+        _items.AddRange(_projection.Expand(_sources));
         var chapterIndex = current is null ? null : Chapters.At(ChaptersFor(current.Path), position)?.Index;
         _currentIndex = _items.FindIndex(item => item.SourceId == current?.SourceId
             && (!_audiobookMode || item.Chapter is null || item.Chapter.Index == chapterIndex));

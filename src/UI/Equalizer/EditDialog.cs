@@ -6,20 +6,6 @@ using WxSharp;
 namespace LunaPlayer.UI.Equalizer;
 
 /// <summary>What the user settled on, or null when they cancelled.</summary>
-internal sealed record EqualizerEditResult(string Name, IReadOnlyList<Band> Slots);
-
-/// <summary>Everything the editor needs to open on one preset.</summary>
-/// <param name="Preview">Applies what is on screen to what is playing. Null when the preset being edited
-/// is not the one in force, since previewing it would change the sound to something the user did not
-/// ask for.</param>
-internal sealed record EqualizerEditContext(
-    string Title,
-    string Name,
-    bool CanRename,
-    string BasePresetId,
-    IReadOnlyList<Band> Slots,
-    Library Library,
-    Action<IReadOnlyList<Band>>? Preview);
 
 /// <summary>The window for editing one preset, band by band.</summary>
 ///
@@ -34,7 +20,7 @@ internal sealed record EqualizerEditContext(
 /// an unnamed input from the order its siblings were created in, so building all the labels first and all
 /// the inputs afterwards would leave every field unnamed however the sizer arranged them.
 /// </remarks>
-internal sealed class EqualizerEditDialog : IDisposable
+internal sealed class EditDialog : IDisposable
 {
     private const int ResetId = 17001;
 
@@ -56,7 +42,7 @@ internal sealed class EqualizerEditDialog : IDisposable
     /// the player, so it is shown but not editable.</param>
     /// <param name="preview">Applies what is on screen to what is playing, so the user can judge a change
     /// by ear instead of having to save first. Null when nothing is playing this would affect.</param>
-    internal EqualizerEditDialog(
+    internal EditDialog(
         Window parent,
         string title,
         string name,

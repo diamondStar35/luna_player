@@ -254,14 +254,14 @@ internal sealed partial class Sessions : IDisposable
             using var feed = new Feed(this, session);
             // A channel session carries a tab bar; a search or playlist does not.
             var tabs = session.Kind is SessionKind.Channel ? Client.Tabs.DisplayNames() : null;
-            var chosen = _view.Dialogs.ShowYouTubeResults(new YouTubeResultsPrompt(
+            var chosen = _view.Dialogs.ShowYouTubeResults(new LunaPlayer.UI.YouTube.YouTubeResultsPrompt(
                 // Translators: Title of the window listing the videos a search or a playlist turned up.
                 Tr("Videos"), session.Label, session.Items, session.Selected, feed, tabs, session.CurrentTab));
             // Another list opened over this one while it was up, and closing it took this session with
             // it. Whatever was chosen here belongs to a session that has gone.
             if (!ReferenceEquals(_browsingSession, session))
                 return;
-            if (chosen is not ResultChoice choice || choice.Index >= session.Items.Count)
+            if (chosen is not LunaPlayer.UI.YouTube.ResultChoice choice || choice.Index >= session.Items.Count)
             {
                 _browsingSession = null;
                 if (!ReferenceEquals(_session, session)) session.Dispose();

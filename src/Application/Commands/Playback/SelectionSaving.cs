@@ -54,7 +54,7 @@ internal sealed partial class Playback
         var title = Tr("Save selection points");
         if (!TryGetSelectionSource(title, out var source, out var video)
             || _selections.Snapshot() is not { Count: > 0 } ranges
-            || _view.Dialogs.ChooseSelectionBatch(source, video) is not SelectionSaveOptions options)
+            || _view.Dialogs.ChooseSelectionBatch(source, video) is not LunaPlayer.UI.Selections.SelectionSaveOptions options)
             return;
         var request = new SelectionExportBatchRequest(
             source,

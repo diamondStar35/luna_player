@@ -5,7 +5,7 @@ using WxSharp;
 namespace LunaPlayer.UI.YouTube;
 
 /// <summary>The general page of the YouTube settings category.</summary>
-internal sealed class GeneralPreferences : UI.PreferencesPage
+internal sealed class GeneralPreferences : LunaPlayer.UI.Preferences.PreferencesPage
 {
     private readonly YouTubeSettings _settings;
     private readonly Choice _videoQuality;
@@ -43,7 +43,7 @@ internal sealed class GeneralPreferences : UI.PreferencesPage
         AudioQuality.Best,
     ];
 
-    internal GeneralPreferences(Window parent, YouTubeSettings settings, PrefsOps operations)
+    internal GeneralPreferences(Window parent, YouTubeSettings settings, LunaPlayer.UI.Preferences.PrefsOps operations)
         // Translators: Spoken description of the general YouTube settings page, read when the page is open.
         : base(new ScrolledWindow(parent), Tr("Move through this page with Tab or Shift+Tab. Press F1 while a control is focused to hear what it changes."))
     {

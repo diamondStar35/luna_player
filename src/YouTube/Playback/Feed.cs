@@ -20,7 +20,7 @@ internal sealed partial class Sessions
     /// <see cref="IApplicationDispatcher.Post"/> - which is why one plain field is guard enough and no
     /// lock appears here.
     /// </remarks>
-    private sealed class Feed : IYouTubeResultsFeed, IDisposable
+    private sealed class Feed : LunaPlayer.UI.YouTube.IYouTubeResultsFeed, IDisposable
     {
         private readonly Sessions _owner;
         private readonly Session _session;

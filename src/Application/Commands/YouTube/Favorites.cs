@@ -49,22 +49,22 @@ internal sealed class Favorites
             if (ReportStoreFailure())
                 return;
             var request = _view.Dialogs.ManageFavorites(favorites, selectedId);
-            if (request is not FavoriteRequest chosen)
+            if (request is not LunaPlayer.UI.YouTube.FavoriteRequest chosen)
                 return;
             selectedId = chosen.Id;
             switch (chosen.Action)
             {
-                case FavoriteAction.Open:
+                case LunaPlayer.UI.YouTube.FavoriteAction.Open:
                     if (Open(chosen.Id))
                         return;
                     break;
-                case FavoriteAction.Add:
+                case LunaPlayer.UI.YouTube.FavoriteAction.Add:
                     selectedId = Add() ?? selectedId;
                     break;
-                case FavoriteAction.Edit:
+                case LunaPlayer.UI.YouTube.FavoriteAction.Edit:
                     Edit(chosen.Id);
                     break;
-                case FavoriteAction.Remove:
+                case LunaPlayer.UI.YouTube.FavoriteAction.Remove:
                     if (Remove(chosen.Id))
                         selectedId = string.Empty;
                     break;
@@ -72,9 +72,9 @@ internal sealed class Favorites
         }
     }
 
-    private IReadOnlyList<FavoriteListItem> List()
+    private IReadOnlyList<LunaPlayer.UI.YouTube.FavoriteListItem> List()
         => [.. _store.ListAll().Select(favorite =>
-            new FavoriteListItem(favorite.Id, favorite.Name, FavoriteStore.Describe(favorite.Kind), favorite.Link))];
+            new LunaPlayer.UI.YouTube.FavoriteListItem(favorite.Id, favorite.Name, FavoriteStore.Describe(favorite.Kind), favorite.Link))];
 
     /// <summary>Plays what a saved link points at. True when the window should close behind it.</summary>
     private bool Open(string id)
@@ -114,8 +114,8 @@ internal sealed class Favorites
         var draft = _view.Dialogs.EditFavorite(
             // Translators: Title of the window for saving a new link.
             Tr("Add favorite"),
-            new FavoriteDraft(string.Empty, FavoriteKind.Video, string.Empty));
-        if (draft is not FavoriteDraft value)
+            new LunaPlayer.UI.YouTube.FavoriteDraft(string.Empty, FavoriteKind.Video, string.Empty));
+        if (draft is not LunaPlayer.UI.YouTube.FavoriteDraft value)
             return null;
         var added = _store.Add(value.Name, value.Kind, value.Link);
         if (added is not null)
@@ -131,8 +131,8 @@ internal sealed class Favorites
         var draft = _view.Dialogs.EditFavorite(
             // Translators: Title of the window for changing a link already saved.
             Tr("Edit favorite"),
-            new FavoriteDraft(favorite.Name, favorite.Kind, favorite.Link));
-        if (draft is not FavoriteDraft value)
+            new LunaPlayer.UI.YouTube.FavoriteDraft(favorite.Name, favorite.Kind, favorite.Link));
+        if (draft is not LunaPlayer.UI.YouTube.FavoriteDraft value)
             return;
         if (!_store.Update(id, value.Name, value.Kind, value.Link))
             ReportStoreFailure();

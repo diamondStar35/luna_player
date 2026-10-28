@@ -61,7 +61,7 @@ internal sealed class SleepTimer : IDisposable
             : null;
 
     /// <summary>Starts a timer, replacing any already running, and announces what was set.</summary>
-    internal void Arm(SleepTimerRequest request)
+    internal void Arm(LunaPlayer.UI.Playback.SleepTimerRequest request)
     {
         RestoreVolume();
         StopTick();

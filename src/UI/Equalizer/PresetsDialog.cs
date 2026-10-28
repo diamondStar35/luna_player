@@ -16,7 +16,7 @@ namespace LunaPlayer.UI.Equalizer;
 /// There is no button for copying a preset. Making a new one already asks which preset to start from, so
 /// a copy is a new preset with a base chosen and nothing else touched.
 /// </remarks>
-internal sealed class EqualizerPresetsDialog : IDisposable
+internal sealed class PresetsDialog : IDisposable
 {
     private const int NewId = 17010;
     private const int EditId = 17011;
@@ -29,7 +29,7 @@ internal sealed class EqualizerPresetsDialog : IDisposable
     private readonly Library _library;
     private IReadOnlyList<PresetEntry> _entries = [];
 
-    internal EqualizerPresetsDialog(Window parent, Library library)
+    internal PresetsDialog(Window parent, Library library)
     {
         _library = library;
         _dialog = new Dialog(parent,
@@ -111,7 +111,7 @@ internal sealed class EqualizerPresetsDialog : IDisposable
 
     private void Create()
     {
-        using var editor = new EqualizerEditDialog(
+        using var editor = new EditDialog(
             _dialog,
             // Translators: Title of the window for making a new equalizer preset.
             Tr("New equalizer preset"),
@@ -138,7 +138,7 @@ internal sealed class EqualizerPresetsDialog : IDisposable
     {
         if (Selected() is not PresetEntry entry || entry.IsSystem)
             return;
-        using var editor = new EqualizerEditDialog(
+        using var editor = new EditDialog(
             _dialog,
             // Translators: Title of the window for changing an equalizer preset. {name} is the preset's name.
             TrFormat("Edit {name}", entry.Name),

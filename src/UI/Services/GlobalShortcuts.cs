@@ -2,7 +2,7 @@ using System.Runtime.InteropServices;
 using LunaPlayer.Actions;
 using WxSharp;
 
-namespace LunaPlayer.UI;
+namespace LunaPlayer.UI.Services;
 
 /// <summary>Watches the whole keyboard for the configured system-wide shortcuts and reports them as actions.
 /// </summary>

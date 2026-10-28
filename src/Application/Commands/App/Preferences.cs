@@ -81,7 +81,7 @@ internal sealed class Preferences
             }
         }
 
-        UiOperation Register(bool unregister)
+        LunaPlayer.UI.Contracts.UiOperation Register(bool unregister)
         {
             string error;
             var success = unregister ? associations.Unregister(out error) : associations.Register(out error);
@@ -92,7 +92,7 @@ internal sealed class Preferences
         // window, which is what keeps the Preferences window answering for the length of a download.
         void DownloadYouTubeComponents(YtDlpChannel channel) => youTubeComponents.Install(channel);
 
-        var operations = new PrefsOps(
+        var operations = new LunaPlayer.UI.Preferences.PrefsOps(
             backup.SettingsPath,
             backup.BookmarksPath,
             Paths.RootDirectory,

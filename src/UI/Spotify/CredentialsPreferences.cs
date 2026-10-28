@@ -4,7 +4,7 @@ using WxSharp;
 
 namespace LunaPlayer.UI.Spotify;
 
-internal sealed class CredentialsPreferences : PreferencesPage
+internal sealed class CredentialsPreferences : LunaPlayer.UI.Preferences.PreferencesPage
 {
     private readonly SpotifySettings _settings;
     private readonly TextCtrl _clientId;

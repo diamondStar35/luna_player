@@ -1,6 +1,6 @@
 using WxSharp;
 
-namespace LunaPlayer.UI;
+namespace LunaPlayer.UI.Controls;
 
 /// <summary>A transport button whose whole face is its icon, with no visible text, but which still carries a
 /// spoken name for screen readers (wxBitmapButton draws only the bitmap and uses the label purely as the

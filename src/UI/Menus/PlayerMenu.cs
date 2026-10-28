@@ -4,9 +4,9 @@ using LunaPlayer.Equalizer;
 using LunaPlayer.Playback;
 using WxSharp;
 
-namespace LunaPlayer.UI;
+namespace LunaPlayer.UI.Menus;
 
-internal static partial class MainMenuBuilder
+internal static partial class Builder
 {
     private sealed record PlayerMenuParts(
         Menu Menu,
@@ -243,7 +243,7 @@ internal static partial class MainMenuBuilder
     /// </remarks>
     internal static void FillSubtitleTracks(
         Menu menu,
-        IReadOnlyList<SubtitleMenuEntry> entries,
+        IReadOnlyList<LunaPlayer.UI.Playback.SubtitleMenuEntry> entries,
         int? activeId,
         IDictionary<int, string> commands,
         IDictionary<string, MenuItem> items)

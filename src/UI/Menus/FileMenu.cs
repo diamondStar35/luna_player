@@ -2,13 +2,13 @@ using LunaPlayer.Actions;
 using LunaPlayer.Configuration;
 using WxSharp;
 
-namespace LunaPlayer.UI;
+namespace LunaPlayer.UI.Menus;
 
-internal static partial class MainMenuBuilder
+internal static partial class Builder
 {
     private sealed record FileMenuParts(
         Menu Menu,
-        IReadOnlyDictionary<int, RecentCommand> RecentCommands,
+        IReadOnlyDictionary<int, LunaPlayer.UI.Playlists.RecentCommand> RecentCommands,
         Menu RecentFilesMenu,
         Menu RecentFoldersMenu,
         Menu RecentPlaylistsMenu,
@@ -18,7 +18,7 @@ internal static partial class MainMenuBuilder
     private static FileMenuParts BuildFileMenu(
         IReadOnlyDictionary<ActionId, int> commandIds,
         ShortcutManager shortcuts,
-        RecentMenuState recents)
+        LunaPlayer.UI.Playlists.RecentMenuState recents)
     {
         var fileMenu = new Menu();
         var playlists = new Menu();
@@ -43,7 +43,7 @@ internal static partial class MainMenuBuilder
         // recents.json and rebuilt as things open; entries carry no fixed ActionId (which recents exist
         // changes), so they are routed by command id like the equalizer and subtitle entries. Existing rows
         // keep their ids when the list changes; newly inserted rows always receive fresh ids.
-        var recentCommands = new Dictionary<int, RecentCommand>();
+        var recentCommands = new Dictionary<int, LunaPlayer.UI.Playlists.RecentCommand>();
         var recentMenu = new Menu();
         var recentFilesMenu = new Menu();
         var recentFoldersMenu = new Menu();
@@ -82,17 +82,17 @@ internal static partial class MainMenuBuilder
         Menu filesMenu,
         Menu foldersMenu,
         Menu playlistsMenu,
-        RecentMenuState recents,
-        IDictionary<int, RecentCommand> commands)
+        LunaPlayer.UI.Playlists.RecentMenuState recents,
+        IDictionary<int, LunaPlayer.UI.Playlists.RecentCommand> commands)
         => UpdateRecentsMenus(filesMenu, foldersMenu, playlistsMenu, null, recents, commands);
 
     internal static void UpdateRecentsMenus(
         Menu filesMenu,
         Menu foldersMenu,
         Menu playlistsMenu,
-        RecentMenuState? previous,
-        RecentMenuState recents,
-        IDictionary<int, RecentCommand> commands)
+        LunaPlayer.UI.Playlists.RecentMenuState? previous,
+        LunaPlayer.UI.Playlists.RecentMenuState recents,
+        IDictionary<int, LunaPlayer.UI.Playlists.RecentCommand> commands)
     {
         UpdateRecentsSubmenu(filesMenu, RecentKind.File, previous?.Files, recents.Files,
             // Translators: Shown in the Recent files submenu when no files have been opened yet.
@@ -117,11 +117,11 @@ internal static partial class MainMenuBuilder
     private static void UpdateRecentsSubmenu(
         Menu menu,
         RecentKind kind,
-        IReadOnlyList<RecentMenuEntry>? previous,
-        IReadOnlyList<RecentMenuEntry> entries,
+        IReadOnlyList<LunaPlayer.UI.Playlists.RecentMenuEntry>? previous,
+        IReadOnlyList<LunaPlayer.UI.Playlists.RecentMenuEntry> entries,
         string emptyLabel,
         string clearLabel,
-        IDictionary<int, RecentCommand> commands)
+        IDictionary<int, LunaPlayer.UI.Playlists.RecentCommand> commands)
     {
         if (previous is not null && previous.SequenceEqual(entries))
             return;
@@ -143,7 +143,7 @@ internal static partial class MainMenuBuilder
                     : menu.Insert(index, IdManager.NewId(), entry.Label);
                 if (index < previous.Count && previous[index].Label != entry.Label)
                     item.Label = entry.Label;
-                commands[item.Id] = new RecentCommand(RecentAction.Open, kind, entry.Path);
+                commands[item.Id] = new LunaPlayer.UI.Playlists.RecentCommand(LunaPlayer.UI.Playlists.RecentAction.Open, kind, entry.Path);
             }
             return;
         }
@@ -163,12 +163,12 @@ internal static partial class MainMenuBuilder
         foreach (var entry in entries)
         {
             var id = IdManager.NewId();
-            commands[id] = new RecentCommand(RecentAction.Open, kind, entry.Path);
+            commands[id] = new LunaPlayer.UI.Playlists.RecentCommand(LunaPlayer.UI.Playlists.RecentAction.Open, kind, entry.Path);
             menu.Append(id, entry.Label);
         }
         menu.AppendSeparator();
         var clearId = IdManager.NewId();
-        commands[clearId] = new RecentCommand(RecentAction.Clear, kind, string.Empty);
+        commands[clearId] = new LunaPlayer.UI.Playlists.RecentCommand(LunaPlayer.UI.Playlists.RecentAction.Clear, kind, string.Empty);
         menu.Append(clearId, clearLabel);
     }
 }

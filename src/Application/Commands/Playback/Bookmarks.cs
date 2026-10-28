@@ -98,13 +98,13 @@ internal sealed class Bookmarks
                 continue;
             switch (request.Value.Action)
             {
-                case BookmarkManagementAction.Jump:
+                case LunaPlayer.UI.Bookmarks.BookmarkManagementAction.Jump:
                     Jump(bookmark);
                     return;
-                case BookmarkManagementAction.Rename:
+                case LunaPlayer.UI.Bookmarks.BookmarkManagementAction.Rename:
                     Rename(path, bookmark);
                     break;
-                case BookmarkManagementAction.Delete:
+                case LunaPlayer.UI.Bookmarks.BookmarkManagementAction.Delete:
                     if (_view.Dialogs.Confirm(
                         // Translators: Asks the user to confirm removing one bookmark. {name} is what the bookmark is called.
                         TrFormat("Delete bookmark '{name}'?", bookmark.Name),
@@ -206,7 +206,7 @@ internal sealed class Bookmarks
         return false;
     }
 
-    private static BookmarkListItem ToListItem(Bookmark bookmark)
+    private static LunaPlayer.UI.Bookmarks.BookmarkListItem ToListItem(Bookmark bookmark)
         => new(bookmark.Id, bookmark.Name, PlaybackTimeFormatter.Format(bookmark.Position) ?? "00:00");
 
     /// <summary>Shows a bookmark storage failure, when there is one. True means the caller must stop: the

@@ -3,7 +3,7 @@ using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
 using WxSharp;
 
-namespace LunaPlayer.UI;
+namespace LunaPlayer.UI.Services;
 
 /// <summary>Applies the user's theme choice through the wxWidgets <c>msw.dark-mode</c> system option.
 /// wxWidgets reads that option while the application initializes, so this must run before the App is

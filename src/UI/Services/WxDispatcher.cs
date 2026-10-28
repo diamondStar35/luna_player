@@ -1,7 +1,7 @@
 using LunaPlayer.Application;
 using WxSharp;
 
-namespace LunaPlayer.UI;
+namespace LunaPlayer.UI.Services;
 
 internal sealed class WxDispatcher : IApplicationDispatcher
 {

@@ -153,7 +153,7 @@ internal sealed class Playback : IDisposable
             var request = _view.Dialogs.ChooseOpenedFile(stations.Count,
                 index => index >= 0 && index < stations.Count ? stations[index].Name : string.Empty, CurrentIndex);
             if (request is null) return;
-            if (request.Value.Action == OpenedFilesAction.Jump)
+            if (request.Value.Action == LunaPlayer.UI.Playlists.OpenedFilesAction.Jump)
             {
                 if (GoToIndex(request.Value.SelectedIndex) == NavigationOutcome.Advanced
                     && _session is { } session) Announce(session.View.Stations[session.Index]);

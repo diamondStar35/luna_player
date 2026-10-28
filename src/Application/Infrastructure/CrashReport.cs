@@ -138,7 +138,7 @@ internal static partial class CrashReport
                 ShowWithoutToolkit(failure);
                 return;
             }
-            using var dialog = new UI.CrashDialog(Describe(failure, "caught"), Path, _clipboard);
+            using var dialog = new LunaPlayer.UI.Diagnostics.CrashDialog(Describe(failure, "caught"), Path, _clipboard);
             dialog.Show();
         }
         catch (Exception exception)

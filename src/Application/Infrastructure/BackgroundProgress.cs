@@ -85,7 +85,7 @@ internal static class BackgroundProgress
         private readonly CancellationTokenSource _cancellation = new();
         private readonly IApplicationDispatcher _dispatcher;
         private readonly ProgressPrompt _prompt;
-        private readonly IProgressView _progress;
+        private readonly LunaPlayer.UI.Contracts.IProgressView _progress;
         private readonly Task<TResult> _task;
         private readonly Action<TResult> _completed;
         private IDisposable? _ticker;

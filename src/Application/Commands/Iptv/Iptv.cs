@@ -63,21 +63,21 @@ internal sealed class Iptv
             if (ReportStoreFailure())
                 return;
             var request = _view.Dialogs.ManageIptvSources(sources, selectedId);
-            if (request is not IptvSourceRequest chosen)
+            if (request is not LunaPlayer.UI.Iptv.IptvSourceRequest chosen)
                 return;
             selectedId = chosen.Id;
             switch (chosen.Action)
             {
-                case IptvSourceAction.Open:
+                case LunaPlayer.UI.Iptv.IptvSourceAction.Open:
                     OpenSource(chosen.Id);
                     return;
-                case IptvSourceAction.Add:
+                case LunaPlayer.UI.Iptv.IptvSourceAction.Add:
                     selectedId = Add() ?? selectedId;
                     break;
-                case IptvSourceAction.Edit:
+                case LunaPlayer.UI.Iptv.IptvSourceAction.Edit:
                     Edit(chosen.Id);
                     break;
-                case IptvSourceAction.Remove:
+                case LunaPlayer.UI.Iptv.IptvSourceAction.Remove:
                     if (Remove(chosen.Id))
                         selectedId = string.Empty;
                     break;
@@ -97,8 +97,8 @@ internal sealed class Iptv
         Manage();
     }
 
-    private IReadOnlyList<IptvSourceListItem> List()
-        => [.. _store.ListAll().Select(source => new IptvSourceListItem(
+    private IReadOnlyList<LunaPlayer.UI.Iptv.IptvSourceListItem> List()
+        => [.. _store.ListAll().Select(source => new LunaPlayer.UI.Iptv.IptvSourceListItem(
             source.Id, source.Name, IptvSourceStore.Describe(source.Kind), source.Url))];
 
     /// <summary>Loads a source's channels behind a progress window, then opens the browser on them. Returns
@@ -152,7 +152,7 @@ internal sealed class Iptv
                 Tr("IPTV"));
             return;
         }
-        var chosen = _view.Dialogs.BrowseChannels(new ChannelBrowserPrompt(
+        var chosen = _view.Dialogs.BrowseChannels(new LunaPlayer.UI.Iptv.ChannelBrowserPrompt(
             // Translators: Title of the channel browser window. {name} is the source being browsed.
             TrFormat("Channels - {name}", source.Name),
             catalog.Categories,

@@ -98,7 +98,7 @@ internal sealed class SavedPlaylists
         {
             var resolved = DocumentResolver.Resolve(document.Entries);
             Report(resolved);
-            DocumentResolver.Export(document, path, resolved);
+            DocumentWriter.Export(document, path, resolved);
         }
     }
     private void Manage()

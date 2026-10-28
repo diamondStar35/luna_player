@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-10-29 02:45+0300\n"
+"POT-Creation-Date: 2026-10-29 00:54+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -844,8 +844,8 @@ msgstr ""
 #: Application/Commands/App/Preferences.cs:49
 #: Application/Commands/App/Preferences.cs:57
 #: Application/Commands/App/Preferences.cs:129
-#: Application/Commands/App/Preferences.cs:138
-#: UI/Dialogs/PreferencesDialog.cs:38 UI/Dialogs/PreferencesDialog.cs:232
+#: Application/Commands/App/Preferences.cs:138 UI/Preferences/MainDialog.cs:38
+#: UI/Preferences/MainDialog.cs:232
 msgid "Preferences"
 msgstr ""
 
@@ -897,7 +897,7 @@ msgstr ""
 #. Translators: Title of the prompt shown when the user tries to stop a running download.
 #: Application/Commands/App/Tools.cs:69
 #: Application/Commands/Playback/SelectionSaving.cs:160
-#: UI/Dialogs/ConversionProgressDialog.cs:180 UI/Spotify/Browsing.cs:254
+#: UI/Conversion/ProgressDialog.cs:180 UI/Spotify/Browsing.cs:254
 #: UI/YouTube/DownloadDialog.cs:171 UI/YouTube/DownloadProgressDialog.cs:209
 msgid "Warning"
 msgstr ""
@@ -1784,8 +1784,8 @@ msgstr ""
 #. Translators: Option in the Spotify search filter to show playlists.
 #. Translators: A channel browser tab: the playlists the channel publishes.
 #: Application/Commands/Files/SavedPlaylists.cs:40
-#: UI/Iptv/IptvSourceEditDialog.cs:182 UI/Menus/FileMenu.cs:28
-#: UI/Spotify/BrowserDialog.cs:111 YouTube/Client/Channels.cs:36
+#: UI/Iptv/SourceEditDialog.cs:182 UI/Menus/FileMenu.cs:28
+#: UI/Spotify/BrowserDialog.cs:107 YouTube/Client/Channels.cs:36
 msgid "Playlists"
 msgstr ""
 
@@ -1906,8 +1906,7 @@ msgstr ""
 #. Translators: Title of the window that asks the user to confirm removing a saved link.
 #. Translators: Title of the window that asks the user to confirm removing a recording source.
 #: Application/Commands/Iptv/Iptv.cs:268
-#: Application/Commands/YouTube/Favorites.cs:150
-#: UI/Recording/RecordingDialog.cs:334
+#: Application/Commands/YouTube/Favorites.cs:150 UI/Recording/Sources.cs:130
 msgid "Confirm remove"
 msgstr ""
 
@@ -2030,7 +2029,7 @@ msgstr ""
 #: Application/Commands/Playback/Bookmarks.cs:58
 #: Application/Commands/Playback/Bookmarks.cs:90
 #: Application/Commands/Playback/Bookmarks.cs:129
-#: Application/Commands/Playback/Bookmarks.cs:221 UI/MenuBuilder.cs:75
+#: Application/Commands/Playback/Bookmarks.cs:221 UI/Menus/Builder.cs:75
 msgid "Bookmarks"
 msgstr ""
 
@@ -2069,7 +2068,7 @@ msgstr ""
 #. Translators: Title of the window used to manage bookmarks for the current file.
 #. Translators: Bookmarks menu item that opens the window for renaming and deleting bookmarks.
 #: Application/Commands/Playback/Bookmarks.cs:144
-#: UI/Dialogs/BookmarkManagerDialog.cs:17 UI/Menus/BookmarksMenu.cs:18
+#: UI/Bookmarks/ManagerDialog.cs:17 UI/Menus/BookmarksMenu.cs:18
 msgid "Manage bookmarks"
 msgstr ""
 
@@ -2257,17 +2256,17 @@ msgstr ""
 
 #. Translators: Spoken announcement after pausing Spotify playback.
 #. Translators: Spoken when playing is held where it is.
-#. Translators: The timer action that pauses playback.
 #. Translators: Spoken name of the play/pause button while a track is playing, so the key pauses it.
 #. Translators: Recording menu item that holds a recording where it is.
 #. Translators: Recording menu item that holds a recording where it is, or starts it again.
+#. Translators: The timer action that pauses playback.
 #. Translators: Button that holds a recording where it is, and starts it again when pressed a second time.
 #. Translators: Button that holds a recording where it is.
 #: Application/Commands/Playback/Playback.cs:127
-#: Application/Commands/Playback/Playback.cs:155
-#: UI/Dialogs/SleepTimerDialog.cs:85 UI/MainFrame.cs:186
+#: Application/Commands/Playback/Playback.cs:155 UI/MainFrame.cs:186
 #: UI/MenuController.cs:304 UI/Menus/RecordingMenu.cs:23
-#: UI/Recording/RecordingDialog.cs:169 UI/Recording/RecordingDialog.cs:625
+#: UI/Playback/SleepTimerDialog.cs:79 UI/Recording/MainDialog.cs:172
+#: UI/Recording/Transport.cs:116
 msgid "Pause"
 msgstr ""
 
@@ -2276,8 +2275,8 @@ msgstr ""
 #. Translators: Title of the window for moving to a precise time in the current file.
 #. Translators: Title of an error about a time entered in the Go to time window.
 #: Application/Commands/Playback/Playback.cs:223
-#: Application/Commands/Playback/Playback.cs:236
-#: UI/Dialogs/GoToTimeDialog.cs:23 UI/Dialogs/GoToTimeDialog.cs:116
+#: Application/Commands/Playback/Playback.cs:236 UI/Playback/TimeDialog.cs:23
+#: UI/Playback/TimeDialog.cs:116
 msgid "Go to time"
 msgstr ""
 
@@ -2533,7 +2532,7 @@ msgstr ""
 #. Translators: Title of the file picker used to save the currently selected part of a file.
 #: Application/Commands/Playback/SelectionSaving.cs:16
 #: Application/Commands/Playback/SelectionSaving.cs:122
-#: UI/DialogService.cs:160
+#: UI/Services/Dialogs/Selections.cs:40
 msgid "Save selection"
 msgstr ""
 
@@ -2564,8 +2563,7 @@ msgstr ""
 #. Translators: Title of the dialog for saving every selection point as a separate media file.
 #. Translators: Title of validation warnings in the save-selection-points dialog.
 #: Application/Commands/Playback/SelectionSaving.cs:54
-#: UI/Dialogs/SaveSelectionsDialog.cs:38
-#: UI/Dialogs/SaveSelectionsDialog.cs:186
+#: UI/Selections/SaveDialog.cs:30 UI/Selections/SaveDialog.cs:178
 msgid "Save selection points"
 msgstr ""
 
@@ -2590,7 +2588,7 @@ msgstr ""
 #. Translators: How far the file being converted right now has got. {percent} is a whole number.
 #. Translators: How far the download has got. {percent} is a whole number.
 #: Application/Commands/Playback/SelectionSaving.cs:78
-#: UI/Dialogs/ConversionProgressDialog.cs:155
+#: UI/Conversion/ProgressDialog.cs:155
 #: UI/YouTube/DownloadProgressDialog.cs:158
 msgid "Percentage: {percent}%"
 msgstr ""
@@ -2655,12 +2653,11 @@ msgid ""
 msgstr ""
 
 #. Translators: Title of a message about setting the sleep timer.
+#. Translators: Tools submenu holding the sleep-timer commands.
 #. Translators: Title of the window used to configure the sleep timer.
 #. Translators: Title of a warning about an invalid sleep-timer length.
-#. Translators: Tools submenu holding the sleep-timer commands.
-#: Application/Commands/Playback/SleepTimer.cs:66
-#: UI/Dialogs/SleepTimerDialog.cs:49 UI/Dialogs/SleepTimerDialog.cs:239
-#: UI/Menus/ToolsMenu.cs:43
+#: Application/Commands/Playback/SleepTimer.cs:66 UI/Menus/ToolsMenu.cs:43
+#: UI/Playback/SleepTimerDialog.cs:43 UI/Playback/SleepTimerDialog.cs:233
 msgid "Sleep timer"
 msgstr ""
 
@@ -2781,7 +2778,7 @@ msgstr ""
 #. Translators: Shown when recording started but some sources would not open. {names} is a
 #. list of what the user called them, separated by commas.
 #: Application/Commands/Recording/Recording.cs:116
-#: UI/Recording/RecordingDialog.cs:558
+#: UI/Recording/Transport.cs:61
 msgid "Recording started, but these sources could not be opened: {names}"
 msgstr ""
 
@@ -2816,7 +2813,7 @@ msgstr ""
 #. Translators: Adds {reason}, the system's explanation, below a destination-folder error.
 #. Translators: Adds {reason}, the system's explanation, below the YouTube component error in {message}.
 #: Application/Commands/Recording/Recording.cs:193
-#: Recording/RecordingSources.cs:89 UI/Dialogs/MediaConverterDialog.cs:456
+#: Recording/RecordingSources.cs:89 UI/Conversion/Submit.cs:39
 #: YouTube/Components/Service.cs:130
 msgid ""
 "{message}\n"
@@ -2845,13 +2842,13 @@ msgid "Default input device"
 msgstr ""
 
 #. Translators: Title of the messages the player shows about recording.
-#. Translators: Name of the settings category for recording sound.
 #. Translators: Name of the menu bar menu holding what can be recorded and how.
+#. Translators: Name of the settings category for recording sound.
 #. Translators: Title of the window where recording is set up and started.
 #. Translators: Title of the messages shown about recording.
-#: Application/Commands/Recording/Recording.cs:221
-#: UI/Dialogs/PreferencesDialog.cs:63 UI/MenuBuilder.cs:89
-#: UI/Recording/RecordingDialog.cs:83 UI/Recording/RecordingDialog.cs:720
+#: Application/Commands/Recording/Recording.cs:221 UI/Menus/Builder.cs:89
+#: UI/Preferences/MainDialog.cs:63 UI/Recording/MainDialog.cs:86
+#: UI/Recording/MainDialog.cs:218
 msgid "Recording"
 msgstr ""
 
@@ -2870,7 +2867,7 @@ msgstr ""
 #. Translators: Title of the messages the player shows about YouTube.
 #. Translators: Title of an error shown while resolving or playing a YouTube video.
 #: Application/Commands/YouTube/CurrentVideo.cs:42
-#: UI/Dialogs/PreferencesDialog.cs:57 YouTube/Playback/Browsing.cs:250
+#: UI/Preferences/MainDialog.cs:57 YouTube/Playback/Browsing.cs:250
 #: YouTube/Playback/Sessions.cs:360
 msgid "YouTube"
 msgstr ""
@@ -3136,7 +3133,7 @@ msgstr ""
 #. Translators: Name of the settings category for the key combinations that work while another program is in front.
 #. Translators: Heading above the list of shortcuts that work while another program is in front.
 #: Application/Infrastructure/GlobalShortcutBinder.cs:35
-#: UI/Dialogs/PreferencesDialog.cs:67 UI/Preferences/ShortcutPreferences.cs:53
+#: UI/Preferences/MainDialog.cs:67 UI/Preferences/ShortcutPreferences.cs:53
 msgid "Global Shortcuts"
 msgstr ""
 
@@ -3319,7 +3316,7 @@ msgstr ""
 
 #. Translators: Name of the equalizer preset that changes nothing, and which the user is meant to edit into whatever they want.
 #. Translators: The entry in the length list that lets the user type their own hours and minutes.
-#: Equalizer/Presets.cs:161 UI/Dialogs/SleepTimerDialog.cs:72
+#: Equalizer/Presets.cs:161 UI/Playback/SleepTimerDialog.cs:66
 msgid "Custom"
 msgstr ""
 
@@ -3537,7 +3534,7 @@ msgstr ""
 #. Translators: File-type name for the entry that shows every file in an Open dialog.
 #. Translators: File-type name for the entry that shows every file in a picker.
 #. Translators: File type name for showing every file in the cookie-file picker on the general YouTube settings page.
-#: Media/MediaLibrary.cs:70 UI/Iptv/IptvSourceEditDialog.cs:184
+#: Media/MediaLibrary.cs:70 UI/Iptv/SourceEditDialog.cs:184
 #: UI/YouTube/GeneralPreferences.cs:196
 msgid "All Files"
 msgstr ""
@@ -3896,6 +3893,16 @@ msgstr ""
 msgid "Spotify request failed: {reason}"
 msgstr ""
 
+#. Translators: Title of the window listing the sound cards the player can send its sound to.
+#: UI/Audio/DeviceDialog.cs:15
+msgid "Sound Cards"
+msgstr ""
+
+#. Translators: Label above the list of sound cards the player can send its sound to.
+#: UI/Audio/DeviceDialog.cs:19
+msgid "Select sound card"
+msgstr ""
+
 #. Translators: Spoken description of the General page inside Audio settings.
 #. Translators: Spoken description of the Playback page inside Audio settings.
 #. Translators: Spoken description of the General settings page, read when the page is opened.
@@ -4211,283 +4218,73 @@ msgid ""
 "Seek fading interval must be a whole number from 1 to 10000 milliseconds."
 msgstr ""
 
-#. Translators: The button that stops a job that is running behind a progress window.
-#. Translators: The button that stops a running conversion. It asks for confirmation first.
-#. Translators: The button that closes a window and leaves everything as it was.
-#. Translators: Button that closes the Opened Files window without taking action.
-#. Translators: Playlist editor button discarding changes.
-#. Translators: Button that closes the save-selection-points dialog without saving anything.
-#. Translators: Button that closes a selection time dialog without changing anything.
-#. Translators: The button that closes a window and leaves everything as it was.
-#. Translators: Button closing Radio filters without applying changes.
-#. Translators: Button that dismisses the Spotify credentials prompt.
-#. Translators: The button that closes a window and leaves everything as it was.
-#. Translators: Dismisses the close warning and keeps Luna and its downloads running.
-#. Translators: The button that stops a running download. It asks for confirmation first.
-#. Translators: Closes the link-entry window without adding anything.
-#. Translators: The button that closes a window and leaves everything as it was.
-#: UI/Controls/ProgressView.cs:66 UI/Dialogs/ConversionProgressDialog.cs:84
-#: UI/Dialogs/GoToTimeDialog.cs:72 UI/Dialogs/OpenedFilesDialog.cs:51
-#: UI/Dialogs/PlaylistEditorDialog.cs:60 UI/Dialogs/SaveSelectionsDialog.cs:89
-#: UI/Dialogs/SelectionTimeDialog.cs:61 UI/Dialogs/SleepTimerDialog.cs:171
-#: UI/Equalizer/EditDialog.cs:116 UI/Radio/FiltersDialog.cs:78
-#: UI/Spotify/CredentialsPrompt.cs:19 UI/YouTube/DownloadDialog.cs:133
-#: UI/YouTube/DownloadExitDialog.cs:22 UI/YouTube/DownloadProgressDialog.cs:60
-#: UI/YouTube/DownloadQueueDialog.cs:380 UI/YouTube/LinkKindDialog.cs:33
-msgid "Cancel"
-msgstr ""
-
-#. Translators: Extra Open File filter for Luna playlist documents; keep JSON and the wildcard unchanged.
-#: UI/DialogService.cs:80
-msgid "JSON playlists (*.json)|*.json"
-msgstr ""
-
-#. Translators: Title of the window that picks a subtitle file to load, and its file-type filter.
-#: UI/DialogService.cs:89
-msgid "Load subtitle"
-msgstr ""
-
-#. Translators: File-type filter for supported subtitle files, followed by all files.
-#: UI/DialogService.cs:91
-msgid ""
-"Subtitle files (*.srt;*.ass;*.ssa;*.vtt;*.sub)|*.srt;*.ass;*.ssa;*.vtt;*.sub|"
-"All files (*.*)|*.*"
-msgstr ""
-
-#. Translators: Prompt asking for a subtitle file's web address.
-#: UI/DialogService.cs:99
-msgid "Enter the web address of a subtitle file:"
-msgstr ""
-
-#. Translators: Title of the box asking for a subtitle file's web address.
-#: UI/DialogService.cs:101
-msgid "Load subtitle from URL"
-msgstr ""
-
-#. Translators: Default base name for a selected part when the source has no usable file name.
-#. Translators: Default common name for numbered files created by Save Selection Points.
-#: UI/DialogService.cs:146 UI/DialogService.cs:185
-msgid "selection"
-msgstr ""
-
-#. Translators: Default file name for a saved selection. {name} is the source file's base name.
-#: UI/DialogService.cs:148
-msgid "{name} - selection"
-msgstr ""
-
-#. Translators: MP4 choice in the format list when saving selected parts of a video.
-#: UI/DialogService.cs:195
-msgid "MP4 video (*.mp4)"
-msgstr ""
-
-#. Translators: Matroska choice in the format list when saving selected parts of a video.
-#: UI/DialogService.cs:197
-msgid "Matroska video (*.mkv)"
-msgstr ""
-
-#. Translators: WebM choice in the format list when saving selected parts of a video.
-#: UI/DialogService.cs:199
-msgid "WebM video (*.webm)"
-msgstr ""
-
-#. Translators: QuickTime choice in the format list when saving selected parts of a video.
-#: UI/DialogService.cs:201
-msgid "QuickTime video (*.mov)"
-msgstr ""
-
-#. Translators: AVI choice in the format list when saving selected parts of a video.
-#: UI/DialogService.cs:203
-msgid "AVI video (*.avi)"
-msgstr ""
-
-#. Translators: MP3 choice in the format list when saving selected parts of an audio file.
-#: UI/DialogService.cs:208
-msgid "MP3 audio (*.mp3)"
-msgstr ""
-
-#. Translators: M4A choice in the format list when saving selected parts of an audio file.
-#: UI/DialogService.cs:210
-msgid "M4A audio (*.m4a)"
-msgstr ""
-
-#. Translators: FLAC choice in the format list when saving selected parts of an audio file.
-#: UI/DialogService.cs:212
-msgid "FLAC audio (*.flac)"
-msgstr ""
-
-#. Translators: WAV choice in the format list when saving selected parts of an audio file.
-#: UI/DialogService.cs:214
-msgid "WAV audio (*.wav)"
-msgstr ""
-
-#. Translators: Ogg Vorbis choice in the format list when saving selected parts of an audio file.
-#: UI/DialogService.cs:216
-msgid "Ogg Vorbis audio (*.ogg)"
-msgstr ""
-
-#. Translators: Opus choice in the format list when saving selected parts of an audio file.
-#: UI/DialogService.cs:218
-msgid "Opus audio (*.opus)"
-msgstr ""
-
-#. Translators: Title of the window containing Luna Player's version and website.
-#: UI/Dialogs/AboutDialog.cs:17
-msgid "About Luna Player"
-msgstr ""
-
-#. Translators: Description in the Luna Player About window.
-#: UI/Dialogs/AboutDialog.cs:23
-msgid ""
-"Luna Player is a fast, accessible media player for Windows. It is designed "
-"for effortless keyboard control and a clear screen-reader experience, and "
-"plays local media, network streams, and YouTube content without getting in "
-"your way."
-msgstr ""
-
-#. Translators: Additional description in the Luna Player About window.
-#: UI/Dialogs/AboutDialog.cs:27
-msgid "Luna Player is free and open-source software."
-msgstr ""
-
-#. Translators: Third-party copyright and licensing information in the About window. mpv and
-#. python-mpv are project names and should not be translated. NOTICE.txt and licenses are names
-#. found in Luna's installation folder.
-#: UI/Dialogs/AboutDialog.cs:31
-msgid ""
-"Luna includes mpv, copyright © the mpv developers and contributors to "
-"MPlayer and mplayer2, and a C# translation of python-mpv, copyright © 2017-"
-"2024 Sebastian Götte. These components are licensed under the GNU Lesser "
-"General Public License, version 2.1 or later. FFmpeg is licensed under the "
-"GNU Lesser General Public License, version 3 or later. See NOTICE.txt and "
-"the licenses folder for complete third-party notices and terms."
-msgstr ""
-
-#. Translators: Final two lines in the About window. {publisher} is the developer's name and
-#. {version} is the installed application version.
-#: UI/Dialogs/AboutDialog.cs:38
-msgid ""
-"Copyright © 2026 {publisher}\n"
-"Version: {version}"
-msgstr ""
-
-#. Translators: Link in the About window that opens the Luna Player project website.
-#: UI/Dialogs/AboutDialog.cs:46
-msgid "Visit the Luna Player website"
-msgstr ""
-
-#. Translators: Button that closes the About window.
-#. Translators: The button that accepts a window and carries the change out.
-#. Translators: Button that accepts the time entered in a selection time dialog.
-#. Translators: The button that accepts a window and carries the change out.
-#: UI/Dialogs/AboutDialog.cs:50 UI/Dialogs/GoToTimeDialog.cs:67
-#: UI/Dialogs/SelectionTimeDialog.cs:56 UI/Dialogs/SleepTimerDialog.cs:166
-msgid "OK"
-msgstr ""
-
-#. Translators: Title of the window offering a newer Luna Player release.
-#: UI/Dialogs/AppUpdateDialog.cs:15
-msgid "New version detected"
-msgstr ""
-
-#: UI/Dialogs/AppUpdateDialog.cs:21
-msgid ""
-"A new version of Luna is available. Your current version is {current}. "
-"Available version: {available}. Would you like to update?"
-msgstr ""
-
-#. Translators: Label above the list of changes in a new Luna Player release.
-#: UI/Dialogs/AppUpdateDialog.cs:26
-msgid "What's new"
-msgstr ""
-
-#. Translators: Button that downloads and installs the offered Luna Player release.
-#: UI/Dialogs/AppUpdateDialog.cs:34
-msgid "Update"
-msgstr ""
-
-#. Translators: Button that dismisses an available update without installing it.
-#: UI/Dialogs/AppUpdateDialog.cs:37
-msgid "Later"
-msgstr ""
-
-#. Translators: Title of the window listing the sound cards the player can send its sound to.
-#: UI/Dialogs/AudioDeviceDialog.cs:15
-msgid "Sound Cards"
-msgstr ""
-
-#. Translators: Label above the list of sound cards the player can send its sound to.
-#: UI/Dialogs/AudioDeviceDialog.cs:19
-msgid "Select sound card"
-msgstr ""
-
 #. Translators: Title of the window listing the audio tracks in the file to switch between.
-#: UI/Dialogs/AudioTrackDialog.cs:15
+#: UI/Audio/TracksDialog.cs:15
 msgid "Audio Tracks"
 msgstr ""
 
 #. Translators: Label above the list of audio tracks in the file to switch between.
-#: UI/Dialogs/AudioTrackDialog.cs:19
+#: UI/Audio/TracksDialog.cs:19
 msgid "Select audio track"
 msgstr ""
 
 #. Translators: Heading of the bookmark list column holding what each bookmark is called.
-#. Translators: Label of the playlist name text field in the editor.
-#. Translators: Column heading for the file or folder name in the playlist editor.
-#. Translators: Column heading for saved playlist names in the manager.
-#. Translators: Label of the name placed before each number in selection file names.
 #. Translators: Label of the box holding the name of the equalizer preset being edited.
 #. Translators: Heading of the channel list column holding each channel's name.
 #. Translators: Label of the box holding what an IPTV source is called.
 #. Translators: Heading of the IPTV sources list column holding what each source is called.
+#. Translators: Label of the playlist name text field in the editor.
+#. Translators: Column heading for the file or folder name in the playlist editor.
+#. Translators: Column heading for saved playlist names in the manager.
 #. Translators: Column heading for a radio station's name.
 #. Translators: Label of the box holding what the user calls a recording source.
+#. Translators: Label of the name placed before each number in selection file names.
 #. Translators: Label of the box holding what a saved link is called.
 #. Translators: Heading of the favourites list column holding what each saved link is called.
-#: UI/Dialogs/BookmarkManagerDialog.cs:20
-#: UI/Dialogs/PlaylistEditorDialog.cs:29 UI/Dialogs/PlaylistEditorDialog.cs:38
-#: UI/Dialogs/PlaylistManagerDialog.cs:18
-#: UI/Dialogs/SaveSelectionsDialog.cs:43 UI/Equalizer/EditDialog.cs:87
-#: UI/Iptv/ChannelBrowserDialog.cs:79 UI/Iptv/IptvSourceEditDialog.cs:56
-#: UI/Iptv/IptvSourcesDialog.cs:29 UI/Radio/BrowserDialog.cs:108
-#: UI/Recording/SourceDialog.cs:49 UI/YouTube/FavoriteEditDialog.cs:26
+#: UI/Bookmarks/ManagerDialog.cs:20 UI/Equalizer/EditDialog.cs:73
+#: UI/Iptv/ChannelBrowserDialog.cs:79 UI/Iptv/SourceEditDialog.cs:56
+#: UI/Iptv/SourcesDialog.cs:29 UI/Playlists/EditorDialog.cs:29
+#: UI/Playlists/EditorDialog.cs:38 UI/Playlists/ManagerDialog.cs:17
+#: UI/Radio/BrowserDialog.cs:108 UI/Recording/SourceDialog.cs:49
+#: UI/Selections/SaveDialog.cs:35 UI/YouTube/FavoriteEditDialog.cs:26
 #: UI/YouTube/FavoritesDialog.cs:29
 msgid "Name"
 msgstr ""
 
 #. Translators: Heading of the bookmark list column holding the point in the file each bookmark sits at.
-#: UI/Dialogs/BookmarkManagerDialog.cs:22
+#: UI/Bookmarks/ManagerDialog.cs:22
 msgid "Position"
 msgstr ""
 
 #. Translators: Button that moves playing to the chosen bookmark.
-#: UI/Dialogs/BookmarkManagerDialog.cs:36
+#: UI/Bookmarks/ManagerDialog.cs:36
 msgid "Jump"
 msgstr ""
 
 #. Translators: Button that renames the chosen bookmark.
-#. Translators: Playlist manager button editing the selected saved playlist.
 #. Translators: Name of the Edit menu in the menu bar.
-#: UI/Dialogs/BookmarkManagerDialog.cs:38
-#: UI/Dialogs/PlaylistManagerDialog.cs:31 UI/MenuBuilder.cs:70
+#. Translators: Playlist manager button editing the selected saved playlist.
+#: UI/Bookmarks/ManagerDialog.cs:38 UI/Menus/Builder.cs:70
+#: UI/Playlists/ManagerDialog.cs:30
 msgid "Edit"
 msgstr ""
 
 #. Translators: Button that removes the chosen bookmark.
 #. Translators: Button that removes the chosen equalizer preset.
 #. Translators: Edit menu item that deletes the current file from the disk.
-#: UI/Dialogs/BookmarkManagerDialog.cs:40 UI/Equalizer/PresetsDialog.cs:53
+#: UI/Bookmarks/ManagerDialog.cs:40 UI/Equalizer/PresetsDialog.cs:53
 #: UI/Menus/EditMenu.cs:22
 msgid "Delete"
 msgstr ""
 
 #. Translators: The button that closes a window.
+#. Translators: Button that closes the media converter without converting anything.
 #. Translators: Button that closes the media conversion report.
 #. Translators: The button that closes a window.
-#. Translators: Button that closes the media converter without converting anything.
-#. Translators: Button closing the playlist manager.
-#. Translators: Button that closes a read-only information window.
 #. Translators: Button that closes a window when there is nothing to accept or cancel.
+#. Translators: Button that closes a read-only information window.
 #. Translators: The button that closes a window.
+#. Translators: Button closing the playlist manager.
 #. Translators: Button closing the radio browser without choosing a station.
 #. Translators: Button closing the radio station details window.
 #. Translators: The button that closes a window.
@@ -4495,32 +4292,239 @@ msgstr ""
 #. Translators: The button that closes a window.
 #. Translators: Closes the queue window. Active downloads continue in the background.
 #. Translators: The button that closes a window.
-#: UI/Dialogs/BookmarkManagerDialog.cs:43
-#: UI/Dialogs/ConversionReportDialog.cs:24 UI/Dialogs/CrashDialog.cs:48
-#: UI/Dialogs/MediaConverterDialog.cs:219
-#: UI/Dialogs/PlaylistManagerDialog.cs:39 UI/Dialogs/TextInfoDialog.cs:19
-#: UI/Equalizer/PresetsDialog.cs:56 UI/Iptv/ChannelBrowserDialog.cs:121
-#: UI/Iptv/IptvSourcesDialog.cs:62 UI/Radio/BrowserDialog.cs:134
-#: UI/Radio/DetailsDialog.cs:55 UI/Recording/RecordingDialog.cs:171
-#: UI/Spotify/BrowserDialog.cs:153 UI/YouTube/DescriptionDialog.cs:53
+#: UI/Bookmarks/ManagerDialog.cs:43 UI/Conversion/MainDialog.cs:219
+#: UI/Conversion/ReportDialog.cs:24 UI/Diagnostics/CrashDialog.cs:48
+#: UI/Equalizer/PresetsDialog.cs:56 UI/Help/TextDialog.cs:19
+#: UI/Iptv/ChannelBrowserDialog.cs:121 UI/Iptv/SourcesDialog.cs:62
+#: UI/Playlists/ManagerDialog.cs:38 UI/Radio/BrowserDialog.cs:134
+#: UI/Radio/DetailsDialog.cs:55 UI/Recording/MainDialog.cs:174
+#: UI/Spotify/BrowserDialog.cs:149 UI/YouTube/DescriptionDialog.cs:53
 #: UI/YouTube/DownloadQueueDialog.cs:68 UI/YouTube/FavoritesDialog.cs:62
 #: UI/YouTube/ResultsDialog.cs:110 UI/YouTube/SearchDialog.cs:85
 msgid "Close"
 msgstr ""
 
+#. Translators: The button that stops a job that is running behind a progress window.
+#. Translators: The button that stops a running conversion. It asks for confirmation first.
+#. Translators: The button that closes a window and leaves everything as it was.
+#. Translators: Playlist editor button discarding changes.
+#. Translators: Button that closes the Opened Files window without taking action.
+#. Translators: Button closing Radio filters without applying changes.
+#. Translators: Button that closes the save-selection-points dialog without saving anything.
+#. Translators: Button that closes a selection time dialog without changing anything.
+#. Translators: Button that dismisses the Spotify credentials prompt.
+#. Translators: The button that closes a window and leaves everything as it was.
+#. Translators: Dismisses the close warning and keeps Luna and its downloads running.
+#. Translators: The button that stops a running download. It asks for confirmation first.
+#. Translators: Closes the link-entry window without adding anything.
+#. Translators: The button that closes a window and leaves everything as it was.
+#: UI/Controls/ProgressView.cs:66 UI/Conversion/ProgressDialog.cs:84
+#: UI/Equalizer/EditDialog.cs:102 UI/Playback/SleepTimerDialog.cs:165
+#: UI/Playback/TimeDialog.cs:72 UI/Playlists/EditorDialog.cs:60
+#: UI/Playlists/OpenedFilesDialog.cs:51 UI/Radio/FiltersDialog.cs:78
+#: UI/Selections/SaveDialog.cs:81 UI/Selections/TimeDialog.cs:61
+#: UI/Spotify/CredentialsPrompt.cs:19 UI/YouTube/DownloadDialog.cs:133
+#: UI/YouTube/DownloadExitDialog.cs:22 UI/YouTube/DownloadProgressDialog.cs:60
+#: UI/YouTube/DownloadQueueDialog.cs:380 UI/YouTube/LinkKindDialog.cs:33
+msgid "Cancel"
+msgstr ""
+
+#. Translators: Title of the window where files are converted to another audio format.
+#. Translators: Title of the messages the media converter shows.
+#: UI/Conversion/MainDialog.cs:94 UI/Conversion/Submit.cs:52
+msgid "Media converter"
+msgstr ""
+
+#. Translators: Title of the group holding the list of files to be converted and its buttons.
+#. Translators: Title of the group of the recording window holding what to record from.
+#: UI/Conversion/MainDialog.cs:102 UI/Recording/MainDialog.cs:91
+msgid "Sources"
+msgstr ""
+
+#. Translators: Button on the media converter that adds one or more files to the list to convert.
+#: UI/Conversion/MainDialog.cs:108
+msgid "Add file..."
+msgstr ""
+
+#. Translators: Button on the media converter that adds every supported file in a folder to the list.
+#: UI/Conversion/MainDialog.cs:110
+msgid "Add folder..."
+msgstr ""
+
+#. Translators: Button on the media converter that takes the selected files back out of the list.
+#. Translators: Playlist editor button removing selected entries without deleting media files.
+#. Translators: Playlist manager button removing the selected saved playlist.
+#: UI/Conversion/MainDialog.cs:112 UI/Playlists/EditorDialog.cs:48
+#: UI/Playlists/ManagerDialog.cs:34
+msgid "Remove"
+msgstr ""
+
+#. Translators: Title of the group holding the format the files are converted to and its options.
+#: UI/Conversion/MainDialog.cs:115
+msgid "Output"
+msgstr ""
+
+#. Translators: Label of the list that chooses the format the files are converted to.
+#: UI/Conversion/MainDialog.cs:117
+msgid "Convert to"
+msgstr ""
+
+#. Translators: Label of the list that chooses the sample rate the converted files are written at.
+#. Translators: Label of the list that chooses how many times a second a recording is sampled.
+#: UI/Conversion/MainDialog.cs:122 UI/Preferences/RecordingPreferences.cs:56
+#: UI/Recording/MainDialog.cs:135
+msgid "Sample rate"
+msgstr ""
+
+#. Translators: First item in a converter list, meaning the file's own value is kept unchanged.
+#. Translators: First item in the converter's channel list, meaning the source channel layout is kept.
+#. Translators: First item in the converter's quality list, meaning the source quality is kept.
+#: UI/Conversion/MainDialog.cs:125 UI/Conversion/MainDialog.cs:133
+#: UI/Conversion/MainDialog.cs:142
+msgid "Preserve original"
+msgstr ""
+
+#. Translators: One sample rate in the converter's sample-rate list. {rate} is a number in hertz.
+#: UI/Conversion/MainDialog.cs:128
+msgid "{rate} Hz"
+msgstr ""
+
+#. Translators: Label of the list that chooses how many channels the converted files have.
+#. Translators: Label of the list that chooses whether a recording is mono or stereo.
+#. Translators: Search filter: return channels rather than videos.
+#. Translators: A channel browser tab: other channels this one features.
+#: UI/Conversion/MainDialog.cs:130 UI/Preferences/RecordingPreferences.cs:59
+#: UI/Recording/MainDialog.cs:138 UI/YouTube/SearchDialog.cs:76
+#: YouTube/Client/Channels.cs:40
+msgid "Channels"
+msgstr ""
+
+#. Translators: The one-channel choice in the converter's channels list.
+#. Translators: One of the channel counts a recording can be made in: one channel.
+#: UI/Conversion/MainDialog.cs:135 UI/Preferences/RecordingPreferences.cs:62
+#: UI/Preferences/RecordingPreferences.cs:196 UI/Recording/MainDialog.cs:141
+#: UI/Recording/Options.cs:69
+msgid "Mono"
+msgstr ""
+
+#. Translators: The two-channel choice in the converter's channels list.
+#. Translators: One of the channel counts a recording can be made in: two channels.
+#: UI/Conversion/MainDialog.cs:137 UI/Preferences/RecordingPreferences.cs:64
+#: UI/Preferences/RecordingPreferences.cs:198 UI/Recording/MainDialog.cs:143
+#: UI/Recording/Options.cs:71
+msgid "Stereo"
+msgstr ""
+
+#. Translators: Label of the list that chooses the audio quality (bitrate) of the converted files.
+#: UI/Conversion/MainDialog.cs:139
+msgid "Quality"
+msgstr ""
+
+#. Translators: One bitrate in the converter's quality list. {rate} is a number in kilobits per second.
+#. Translators: One audio-bitrate choice. {rate} is a number of kilobits per second.
+#: UI/Conversion/MainDialog.cs:145 UI/YouTube/QualityLabels.cs:15
+msgid "{rate} kbps"
+msgstr ""
+
+#. Translators: Label of the list that chooses whether Opus uses a constant or variable bitrate.
+#: UI/Conversion/MainDialog.cs:147
+msgid "Bitrate mode"
+msgstr ""
+
+#. Translators: The Opus bitrate mode that holds one steady rate. Written in full rather than as "CBR".
+#: UI/Conversion/MainDialog.cs:150
+msgid "Constant bitrate"
+msgstr ""
+
+#. Translators: The Opus bitrate mode that varies the rate with the sound. Written in full rather than as "VBR".
+#: UI/Conversion/MainDialog.cs:152
+msgid "Variable bitrate"
+msgstr ""
+
+#. Translators: Label of the list that chooses what Opus tunes its variable bitrate for.
+#: UI/Conversion/MainDialog.cs:154
+msgid "Optimize for"
+msgstr ""
+
+#. Translators: The Opus profile for music and general audio.
+#: UI/Conversion/MainDialog.cs:157
+msgid "Music"
+msgstr ""
+
+#. Translators: The Opus profile for speech.
+#: UI/Conversion/MainDialog.cs:159
+msgid "Speech"
+msgstr ""
+
+#. Translators: The Opus profile that keeps the delay as short as possible.
+#: UI/Conversion/MainDialog.cs:161
+msgid "Low delay"
+msgstr ""
+
+#. Translators: Label of the box that chooses how many files are converted at the same time.
+#: UI/Conversion/MainDialog.cs:163
+msgid "Maximum simultaneous conversions"
+msgstr ""
+
+#. Translators: Title of the group holding where the converted files are written and what happens to
+#. the originals.
+#: UI/Conversion/MainDialog.cs:168
+msgid "Location"
+msgstr ""
+
+#. Translators: Tick box on the converter. When on, each converted file is written beside the file it
+#. came from; when off, they all go to one chosen folder instead.
+#: UI/Conversion/MainDialog.cs:171
+msgid "Preserve original file locations"
+msgstr ""
+
+#. Translators: Label of the box holding the folder the converted files are written to.
+#: UI/Conversion/MainDialog.cs:174
+msgid "Destination folder"
+msgstr ""
+
+#. Translators: Button on the converter that opens a folder picker for the destination folder.
+#. Translators: Button beside the file box that opens a dialog to choose a playlist file.
+#. Translators: Button that opens a window for choosing the folder recordings are saved into.
+#. Translators: Button that opens a folder picker for selection files.
+#. Translators: Button that opens a folder picker to choose where the download is saved.
+#. Translators: Button on the YouTube download settings page that opens a folder picker.
+#. Translators: Button that opens a file picker to choose a cookie file by hand.
+#: UI/Conversion/MainDialog.cs:177 UI/Iptv/SourceEditDialog.cs:72
+#: UI/Preferences/RecordingPreferences.cs:72 UI/Recording/MainDialog.cs:151
+#: UI/Selections/SaveDialog.cs:46 UI/YouTube/DownloadDialog.cs:96
+#: UI/YouTube/DownloadPreferences.cs:66 UI/YouTube/GeneralPreferences.cs:90
+msgid "Browse..."
+msgstr ""
+
+#. Translators: Tick box on the converter that removes each source file once it has been converted.
+#: UI/Conversion/MainDialog.cs:179
+msgid "Delete original files after conversion"
+msgstr ""
+
+#. Translators: Button that starts the conversion and closes the window.
+#: UI/Conversion/MainDialog.cs:216
+msgid "Convert"
+msgstr ""
+
+#. Translators: Title of the picker the converter's "Browse" button opens for the destination folder.
+#: UI/Conversion/Options.cs:85
+msgid "Choose where converted files are written"
+msgstr ""
+
 #. Translators: Shown in the converter's progress window before the first file has reported.
-#: UI/Dialogs/ConversionProgressDialog.cs:73
+#: UI/Conversion/ProgressDialog.cs:73
 msgid "Preparing to convert…"
 msgstr ""
 
 #. Translators: The converter's progress. {number} is the file's place, {total} how many files
 #. there are, {name} the file being converted right now.
-#: UI/Dialogs/ConversionProgressDialog.cs:152
+#: UI/Conversion/ProgressDialog.cs:152
 msgid "Converting file {number} of {total}: {name}"
 msgstr ""
 
 #. Translators: How many files have not been converted yet. {count} is a whole number.
-#: UI/Dialogs/ConversionProgressDialog.cs:157
+#: UI/Conversion/ProgressDialog.cs:157
 msgid "Remaining files: {count}"
 msgstr ""
 
@@ -4529,7 +4533,7 @@ msgstr ""
 #. Translators: A guess at the time left. {time} is a clock such as 3:20, or the word for a guess
 #. not yet worth making.
 #. Translators: Estimated time left for all unfinished queue items.
-#: UI/Dialogs/ConversionProgressDialog.cs:160
+#: UI/Conversion/ProgressDialog.cs:160
 #: UI/YouTube/DownloadProgressDialog.cs:163
 #: UI/YouTube/DownloadQueueDialog.cs:306
 msgid "Estimated time left: {time}"
@@ -4540,7 +4544,7 @@ msgstr ""
 #. Translators: Shown for estimated time left before enough data exists to calculate it.
 #. Translators: Shown for queue speed before enough data exists to measure it.
 #. Translators: Shown for queue time remaining before enough data exists to calculate it.
-#: UI/Dialogs/ConversionProgressDialog.cs:164
+#: UI/Conversion/ProgressDialog.cs:164
 #: UI/YouTube/DownloadProgressDialog.cs:147
 #: UI/YouTube/DownloadProgressDialog.cs:151
 #: UI/YouTube/DownloadQueueDialog.cs:290 UI/YouTube/DownloadQueueDialog.cs:294
@@ -4549,687 +4553,144 @@ msgstr ""
 
 #. Translators: How far the whole batch has got. {percent} is a whole number.
 #. Translators: Aggregate progress through all videos in the download queue.
-#: UI/Dialogs/ConversionProgressDialog.cs:166
-#: UI/YouTube/DownloadQueueDialog.cs:302
+#: UI/Conversion/ProgressDialog.cs:166 UI/YouTube/DownloadQueueDialog.cs:302
 msgid "Total percentage: {percent}%"
 msgstr ""
 
 #. Translators: Asks the user to confirm stopping a conversion that is still running.
-#: UI/Dialogs/ConversionProgressDialog.cs:178
+#: UI/Conversion/ProgressDialog.cs:178
 msgid "The conversion is still running. Would you like to stop it?"
 msgstr ""
 
 #. Translators: Title of the window shown while files are being converted.
-#: UI/Dialogs/ConversionProgressDialog.cs:235
+#: UI/Conversion/ProgressDialog.cs:235
 msgid "Converting files"
 msgstr ""
 
 #. Translators: Label of the box listing the files a conversion could not convert.
-#: UI/Dialogs/ConversionReportDialog.cs:18
+#: UI/Conversion/ReportDialog.cs:18
 msgid "Details"
 msgstr ""
 
-#. Translators: Title of the window shown when the player has hit an error it cannot carry on from.
-#: UI/Dialogs/CrashDialog.cs:30 UI/Dialogs/CrashDialog.cs:81
-msgid "Something went wrong"
-msgstr ""
-
-#. Translators: Message at the top of the crash window. The player carries on where it can, so this
-#. says what happened rather than announcing that it is closing.
-#: UI/Dialogs/CrashDialog.cs:35
-msgid ""
-"Luna hit an unexpected error it could not deal with. Please copy the details "
-"below and send them to the developer."
-msgstr ""
-
-#. Translators: Tells the user where the crash details have also been written. {path} is a file name.
-#: UI/Dialogs/CrashDialog.cs:42
-msgid "This has also been written to {path}"
-msgstr ""
-
-#. Translators: Button on the crash window that puts the details on the clipboard.
-#: UI/Dialogs/CrashDialog.cs:45
-msgid "Copy details"
-msgstr ""
-
-#. Translators: Shown when the crash details could not be put on the clipboard. The file named
-#. on the window still has them.
-#: UI/Dialogs/CrashDialog.cs:79
-msgid "The details could not be copied. They are in the file named above."
-msgstr ""
-
-#. Translators: Label above the boxes where the user types the point in the file to move to.
-#: UI/Dialogs/GoToTimeDialog.cs:29
-msgid "Choose time position:"
-msgstr ""
-
-#. Translators: Label of the box holding the hours part of the point in the file to move to.
-#. Translators: Label of the hours box in a selection time dialog.
-#. Translators: Label of the box holding the hours part of a custom timer length.
-#: UI/Dialogs/GoToTimeDialog.cs:31 UI/Dialogs/SelectionTimeDialog.cs:26
-#: UI/Dialogs/SleepTimerDialog.cs:75
-msgid "Hours"
-msgstr ""
-
-#. Translators: Label of the box holding the minutes part of the point in the file to move to.
-#. Translators: Label of the minutes box in a selection time dialog.
-#. Translators: Label of the box holding the minutes part of a custom timer length.
-#: UI/Dialogs/GoToTimeDialog.cs:34 UI/Dialogs/SelectionTimeDialog.cs:29
-#: UI/Dialogs/SleepTimerDialog.cs:78
-msgid "Minutes"
-msgstr ""
-
-#. Translators: Label of the box holding the seconds part of the point in the file to move to.
-#. Translators: Label of the seconds box in a selection time dialog.
-#: UI/Dialogs/GoToTimeDialog.cs:37 UI/Dialogs/SelectionTimeDialog.cs:33
-msgid "Seconds"
-msgstr ""
-
-#. Translators: Shown when the point in the file the user typed lies past the end of the file.
-#. Translators: Shown when a manually entered selection marker lies beyond the file's end.
-#: UI/Dialogs/GoToTimeDialog.cs:114 UI/Dialogs/SelectionTimeDialog.cs:92
-msgid "The selected time exceeds the file duration."
-msgstr ""
-
-#. Translators: Title of the window where files are converted to another audio format.
-#. Translators: Title of the messages the media converter shows.
-#: UI/Dialogs/MediaConverterDialog.cs:94
-#: UI/Dialogs/MediaConverterDialog.cs:515
-msgid "Media converter"
-msgstr ""
-
-#. Translators: Title of the group holding the list of files to be converted and its buttons.
-#. Translators: Title of the group of the recording window holding what to record from.
-#: UI/Dialogs/MediaConverterDialog.cs:102 UI/Recording/RecordingDialog.cs:88
-msgid "Sources"
-msgstr ""
-
-#. Translators: Button on the media converter that adds one or more files to the list to convert.
-#: UI/Dialogs/MediaConverterDialog.cs:108
-msgid "Add file..."
-msgstr ""
-
-#. Translators: Button on the media converter that adds every supported file in a folder to the list.
-#: UI/Dialogs/MediaConverterDialog.cs:110
-msgid "Add folder..."
-msgstr ""
-
-#. Translators: Button on the media converter that takes the selected files back out of the list.
-#. Translators: Playlist editor button removing selected entries without deleting media files.
-#. Translators: Playlist manager button removing the selected saved playlist.
-#: UI/Dialogs/MediaConverterDialog.cs:112
-#: UI/Dialogs/PlaylistEditorDialog.cs:48
-#: UI/Dialogs/PlaylistManagerDialog.cs:35
-msgid "Remove"
-msgstr ""
-
-#. Translators: Title of the group holding the format the files are converted to and its options.
-#: UI/Dialogs/MediaConverterDialog.cs:115
-msgid "Output"
-msgstr ""
-
-#. Translators: Label of the list that chooses the format the files are converted to.
-#: UI/Dialogs/MediaConverterDialog.cs:117
-msgid "Convert to"
-msgstr ""
-
-#. Translators: Label of the list that chooses the sample rate the converted files are written at.
-#. Translators: Label of the list that chooses how many times a second a recording is sampled.
-#: UI/Dialogs/MediaConverterDialog.cs:122
-#: UI/Preferences/RecordingPreferences.cs:56
-#: UI/Recording/RecordingDialog.cs:132
-msgid "Sample rate"
-msgstr ""
-
-#. Translators: First item in a converter list, meaning the file's own value is kept unchanged.
-#. Translators: First item in the converter's channel list, meaning the source channel layout is kept.
-#. Translators: First item in the converter's quality list, meaning the source quality is kept.
-#: UI/Dialogs/MediaConverterDialog.cs:125
-#: UI/Dialogs/MediaConverterDialog.cs:133
-#: UI/Dialogs/MediaConverterDialog.cs:142
-msgid "Preserve original"
-msgstr ""
-
-#. Translators: One sample rate in the converter's sample-rate list. {rate} is a number in hertz.
-#: UI/Dialogs/MediaConverterDialog.cs:128
-msgid "{rate} Hz"
-msgstr ""
-
-#. Translators: Label of the list that chooses how many channels the converted files have.
-#. Translators: Label of the list that chooses whether a recording is mono or stereo.
-#. Translators: Search filter: return channels rather than videos.
-#. Translators: A channel browser tab: other channels this one features.
-#: UI/Dialogs/MediaConverterDialog.cs:130
-#: UI/Preferences/RecordingPreferences.cs:59
-#: UI/Recording/RecordingDialog.cs:135 UI/YouTube/SearchDialog.cs:76
-#: YouTube/Client/Channels.cs:40
-msgid "Channels"
-msgstr ""
-
-#. Translators: The one-channel choice in the converter's channels list.
-#. Translators: One of the channel counts a recording can be made in: one channel.
-#: UI/Dialogs/MediaConverterDialog.cs:135
-#: UI/Preferences/RecordingPreferences.cs:62
-#: UI/Preferences/RecordingPreferences.cs:196
-#: UI/Recording/RecordingDialog.cs:138 UI/Recording/RecordingDialog.cs:402
-msgid "Mono"
-msgstr ""
-
-#. Translators: The two-channel choice in the converter's channels list.
-#. Translators: One of the channel counts a recording can be made in: two channels.
-#: UI/Dialogs/MediaConverterDialog.cs:137
-#: UI/Preferences/RecordingPreferences.cs:64
-#: UI/Preferences/RecordingPreferences.cs:198
-#: UI/Recording/RecordingDialog.cs:140 UI/Recording/RecordingDialog.cs:404
-msgid "Stereo"
-msgstr ""
-
-#. Translators: Label of the list that chooses the audio quality (bitrate) of the converted files.
-#: UI/Dialogs/MediaConverterDialog.cs:139
-msgid "Quality"
-msgstr ""
-
-#. Translators: One bitrate in the converter's quality list. {rate} is a number in kilobits per second.
-#. Translators: One audio-bitrate choice. {rate} is a number of kilobits per second.
-#: UI/Dialogs/MediaConverterDialog.cs:145 UI/YouTube/QualityLabels.cs:15
-msgid "{rate} kbps"
-msgstr ""
-
-#. Translators: Label of the list that chooses whether Opus uses a constant or variable bitrate.
-#: UI/Dialogs/MediaConverterDialog.cs:147
-msgid "Bitrate mode"
-msgstr ""
-
-#. Translators: The Opus bitrate mode that holds one steady rate. Written in full rather than as "CBR".
-#: UI/Dialogs/MediaConverterDialog.cs:150
-msgid "Constant bitrate"
-msgstr ""
-
-#. Translators: The Opus bitrate mode that varies the rate with the sound. Written in full rather than as "VBR".
-#: UI/Dialogs/MediaConverterDialog.cs:152
-msgid "Variable bitrate"
-msgstr ""
-
-#. Translators: Label of the list that chooses what Opus tunes its variable bitrate for.
-#: UI/Dialogs/MediaConverterDialog.cs:154
-msgid "Optimize for"
-msgstr ""
-
-#. Translators: The Opus profile for music and general audio.
-#: UI/Dialogs/MediaConverterDialog.cs:157
-msgid "Music"
-msgstr ""
-
-#. Translators: The Opus profile for speech.
-#: UI/Dialogs/MediaConverterDialog.cs:159
-msgid "Speech"
-msgstr ""
-
-#. Translators: The Opus profile that keeps the delay as short as possible.
-#: UI/Dialogs/MediaConverterDialog.cs:161
-msgid "Low delay"
-msgstr ""
-
-#. Translators: Label of the box that chooses how many files are converted at the same time.
-#: UI/Dialogs/MediaConverterDialog.cs:163
-msgid "Maximum simultaneous conversions"
-msgstr ""
-
-#. Translators: Title of the group holding where the converted files are written and what happens to
-#. the originals.
-#: UI/Dialogs/MediaConverterDialog.cs:168
-msgid "Location"
-msgstr ""
-
-#. Translators: Tick box on the converter. When on, each converted file is written beside the file it
-#. came from; when off, they all go to one chosen folder instead.
-#: UI/Dialogs/MediaConverterDialog.cs:171
-msgid "Preserve original file locations"
-msgstr ""
-
-#. Translators: Label of the box holding the folder the converted files are written to.
-#: UI/Dialogs/MediaConverterDialog.cs:174
-msgid "Destination folder"
-msgstr ""
-
-#. Translators: Button on the converter that opens a folder picker for the destination folder.
-#. Translators: Button that opens a folder picker for selection files.
-#. Translators: Button beside the file box that opens a dialog to choose a playlist file.
-#. Translators: Button that opens a window for choosing the folder recordings are saved into.
-#. Translators: Button that opens a folder picker to choose where the download is saved.
-#. Translators: Button on the YouTube download settings page that opens a folder picker.
-#. Translators: Button that opens a file picker to choose a cookie file by hand.
-#: UI/Dialogs/MediaConverterDialog.cs:177
-#: UI/Dialogs/SaveSelectionsDialog.cs:54 UI/Iptv/IptvSourceEditDialog.cs:72
-#: UI/Preferences/RecordingPreferences.cs:72
-#: UI/Recording/RecordingDialog.cs:148 UI/YouTube/DownloadDialog.cs:96
-#: UI/YouTube/DownloadPreferences.cs:66 UI/YouTube/GeneralPreferences.cs:90
-msgid "Browse..."
-msgstr ""
-
-#. Translators: Tick box on the converter that removes each source file once it has been converted.
-#: UI/Dialogs/MediaConverterDialog.cs:179
-msgid "Delete original files after conversion"
-msgstr ""
-
-#. Translators: Button that starts the conversion and closes the window.
-#: UI/Dialogs/MediaConverterDialog.cs:216
-msgid "Convert"
-msgstr ""
-
 #. Translators: Title of the picker the converter's "Add file" button opens.
-#: UI/Dialogs/MediaConverterDialog.cs:300
+#: UI/Conversion/Sources.cs:19
 msgid "Add files to convert"
 msgstr ""
 
 #. Translators: Title of the picker the converter's "Add folder" button opens.
-#: UI/Dialogs/MediaConverterDialog.cs:315
+#: UI/Conversion/Sources.cs:34
 msgid "Add a folder of files to convert"
-msgstr ""
-
-#. Translators: Title of the picker the converter's "Browse" button opens for the destination folder.
-#: UI/Dialogs/MediaConverterDialog.cs:418
-msgid "Choose where converted files are written"
 msgstr ""
 
 #. Translators: Shown when Convert is pressed with no destination folder chosen and files
 #. are not being written beside their sources.
-#: UI/Dialogs/MediaConverterDialog.cs:443
+#: UI/Conversion/Submit.cs:26
 msgid ""
 "Choose a folder to write the converted files to, or turn on \"Preserve "
 "original file locations\"."
 msgstr ""
 
 #. Translators: Shown when the chosen destination folder could not be created.
-#: UI/Dialogs/MediaConverterDialog.cs:454
+#: UI/Conversion/Submit.cs:37
 msgid "The destination folder could not be created."
 msgstr ""
 
-#. Translators: Title of the window listing the files currently loaded in the player.
-#: UI/Dialogs/OpenedFilesDialog.cs:27
-msgid "Opened Files"
+#. Translators: Title of the window shown when the player has hit an error it cannot carry on from.
+#: UI/Diagnostics/CrashDialog.cs:30 UI/Diagnostics/CrashDialog.cs:81
+msgid "Something went wrong"
 msgstr ""
 
-#. Translators: Label of the box that filters the loaded files by part of their name as the user types.
-#. Translators: Label of the box that filters channels by part of their name as the user types.
-#. Translators: Label of the radio browser box for searching the station list.
-#. Translators: Button searching the current radio directory or station list.
-#. Translators: Radio browser button searching the current directory or station list.
-#. Translators: Search button or tab in the Spotify browser.
-#. Translators: Button that runs the YouTube search with the text and filter chosen.
-#: UI/Dialogs/OpenedFilesDialog.cs:30 UI/Iptv/ChannelBrowserDialog.cs:74
-#: UI/Radio/BrowserDialog.cs:80 UI/Radio/BrowserDialog.cs:84
-#: UI/Radio/Interactions.cs:78 UI/Spotify/BrowserDialog.cs:114
-#: UI/Spotify/BrowserDialog.cs:134 UI/YouTube/SearchDialog.cs:80
-msgid "Search"
-msgstr ""
-
-#. Translators: Button that shows details of every file in the playlist.
-#: UI/Dialogs/OpenedFilesDialog.cs:47
-msgid "Playlist info"
-msgstr ""
-
-#. Translators: Button that starts playing the file chosen in the list.
-#: UI/Dialogs/OpenedFilesDialog.cs:49
-msgid "Jump to selected"
-msgstr ""
-
-#. Translators: Label above the list of loaded files, telling the user to pick the one to play.
-#: UI/Dialogs/OpenedFilesDialog.cs:68
-msgid "Select file to jump to."
-msgstr ""
-
-#. Translators: Title of the dialog editing a playlist's name, description and entries.
-#: UI/Dialogs/PlaylistEditorDialog.cs:26
-msgid "Playlist editor"
-msgstr ""
-
-#. Translators: Label of the optional playlist description text field.
-#: UI/Dialogs/PlaylistEditorDialog.cs:33
-msgid "Description (optional)"
-msgstr ""
-
-#. Translators: Column heading for the complete file or folder location in the playlist editor.
-#: UI/Dialogs/PlaylistEditorDialog.cs:40
-msgid "Full Path"
-msgstr ""
-
-#. Translators: Playlist editor button opening a menu to add files or a folder.
-#. Translators: Button that saves a new IPTV source. The three dots mean it opens a window to type it in.
-#. Translators: Opens a box where one or more YouTube links can be added to the queue.
-#. Translators: Button that saves a new link. The three dots mean it opens a window to type it in.
-#: UI/Dialogs/PlaylistEditorDialog.cs:46 UI/Iptv/IptvSourcesDialog.cs:55
-#: UI/YouTube/DownloadQueueDialog.cs:59 UI/YouTube/FavoritesDialog.cs:55
-msgid "Add..."
-msgstr ""
-
-#. Translators: Playlist editor button moving selected entries earlier.
-#: UI/Dialogs/PlaylistEditorDialog.cs:50
-msgid "Move Up"
-msgstr ""
-
-#. Translators: Playlist editor button moving selected entries later.
-#: UI/Dialogs/PlaylistEditorDialog.cs:52
-msgid "Move Down"
-msgstr ""
-
-#. Translators: Playlist editor button accepting the draft and saving it.
-#. Translators: Button that starts saving all selection points with the chosen settings.
-#. Translators: Button in the equalizer editor that keeps the changes.
-#: UI/Dialogs/PlaylistEditorDialog.cs:58 UI/Dialogs/SaveSelectionsDialog.cs:87
-#: UI/Equalizer/EditDialog.cs:111
-msgid "Save"
-msgstr ""
-
-#. Translators: Question shown when closing a modified playlist editor.
-#: UI/Dialogs/PlaylistEditorDialog.cs:74
-msgid "Save changes to this playlist?"
-msgstr ""
-
-#. Translators: Playlist Add menu item selecting multiple files.
-#: UI/Dialogs/PlaylistEditorDialog.cs:116
-msgid "Files..."
-msgstr ""
-
-#. Translators: Playlist Add menu item selecting a folder reference.
-#: UI/Dialogs/PlaylistEditorDialog.cs:118
-msgid "Folder..."
-msgstr ""
-
-#. Translators: Spoken after adding entries to a playlist. {count} is the number added.
-#: UI/Dialogs/PlaylistEditorDialog.cs:138
-msgid "{count} entries added to playlist."
-msgstr ""
-
-#. Translators: Spoken after removing entries from a playlist only. {count} is the number removed.
-#: UI/Dialogs/PlaylistEditorDialog.cs:148
-msgid "{count} entries removed from playlist."
-msgstr ""
-
-#. Translators: Spoken after reordering the selected playlist entries.
-#: UI/Dialogs/PlaylistEditorDialog.cs:160
-msgid "Playlist entries moved."
-msgstr ""
-
-#. Translators: Validation warning for an empty playlist name in the editor.
-#: UI/Dialogs/PlaylistEditorDialog.cs:180
-msgid "A playlist name is required."
-msgstr ""
-
-#. Translators: Title of the saved playlist manager.
-#: UI/Dialogs/PlaylistManagerDialog.cs:15
-msgid "My Playlists"
-msgstr ""
-
-#. Translators: Column heading for optional descriptions in the playlist manager.
-#. Translators: Label before the box that shows the text written under a video.
-#: UI/Dialogs/PlaylistManagerDialog.cs:20 UI/YouTube/DescriptionDialog.cs:40
-msgid "Description"
-msgstr ""
-
-#. Translators: Playlist manager button opening the selected playlist for playback.
-#. Translators: Button that opens the source chosen in the list and browses its channels.
-#. Translators: Button that plays the saved link chosen in the list.
-#: UI/Dialogs/PlaylistManagerDialog.cs:29 UI/Iptv/IptvSourcesDialog.cs:53
-#: UI/YouTube/FavoritesDialog.cs:53
-msgid "Open"
-msgstr ""
-
-#. Translators: Playlist manager button creating a new playlist.
-#: UI/Dialogs/PlaylistManagerDialog.cs:33
-msgid "New"
-msgstr ""
-
-#. Translators: Playlist manager button exporting the selected playlist to a file.
-#: UI/Dialogs/PlaylistManagerDialog.cs:37
-msgid "Export"
-msgstr ""
-
-#. Translators: Name of the settings category holding the language, speech and file-opening settings.
-#. Translators: Name of the general settings page inside the Audio category.
-#. Translators: Name of the general settings page inside the YouTube category.
-#: UI/Dialogs/PreferencesDialog.cs:45 UI/Dialogs/PreferencesDialog.cs:51
-#: UI/Dialogs/PreferencesDialog.cs:59
-msgid "General"
-msgstr ""
-
-#. Translators: Name of the settings category for saving a copy of the settings and bookmarks and putting them back.
-#: UI/Dialogs/PreferencesDialog.cs:47
-msgid "Backup and restore"
-msgstr ""
-
-#. Translators: Name of the expandable settings category containing general and playback audio pages.
-#. Translators: One of the download types: save the sound alone as an audio file.
-#. Translators: One of the YouTube download types: save the sound alone as an audio file.
-#: UI/Dialogs/PreferencesDialog.cs:49 UI/YouTube/DownloadDialog.cs:65
-#: UI/YouTube/DownloadPreferences.cs:75
-msgid "Audio"
-msgstr ""
-
-#. Translators: Name of the playback settings page inside the Audio category.
-#: UI/Dialogs/PreferencesDialog.cs:53
-msgid "Playback"
-msgstr ""
-
-#. Translators: Name of the settings category for trimming the silent parts out of what is played.
-#: UI/Dialogs/PreferencesDialog.cs:55
-msgid "Silence removal"
-msgstr ""
-
-#. Translators: Name of the download settings page inside the YouTube category.
-#. Translators: Title of the window where a download's name, type, format and quality are chosen.
-#. Translators: The button that starts this download immediately.
-#. Translators: Button that saves the video chosen in the list of results to a folder on this computer.
-#: UI/Dialogs/PreferencesDialog.cs:61 UI/YouTube/DownloadDialog.cs:55
-#: UI/YouTube/DownloadDialog.cs:126 UI/YouTube/ResultsDialog.cs:202
-msgid "Download"
-msgstr ""
-
-#. Translators: Name of the settings category for the key combinations that work while the player is the program in front.
-#: UI/Dialogs/PreferencesDialog.cs:65
-msgid "Keyboard Shortcuts"
-msgstr ""
-
-#. Translators: Name of the Spotify credentials and audio-quality category in Preferences. Keep Spotify unchanged.
-#. Translators: Title of the Spotify home, search and library browser. Keep Spotify unchanged.
-#. Translators: Heading on the Spotify preferences page. Keep Spotify unchanged.
-#. Translators: Title of the dialog offering to configure Spotify credentials. Keep Spotify unchanged.
-#: UI/Dialogs/PreferencesDialog.cs:86 UI/Spotify/BrowserDialog.cs:63
-#: UI/Spotify/CredentialsPreferences.cs:21 UI/Spotify/CredentialsPrompt.cs:12
-msgid "Spotify"
-msgstr ""
-
-#. Translators: Help text for the settings tree down the left of the Preferences window.
-#: UI/Dialogs/PreferencesDialog.cs:209
+#. Translators: Message at the top of the crash window. The player carries on where it can, so this
+#. says what happened rather than announcing that it is closing.
+#: UI/Diagnostics/CrashDialog.cs:35
 msgid ""
-"Use the Arrow keys to move through settings pages. Press the Right Arrow key "
-"on a category to show its pages and the Left Arrow key to hide them. The "
-"selected page's controls appear on the right side of the window."
+"Luna hit an unexpected error it could not deal with. Please copy the details "
+"below and send them to the developer."
 msgstr ""
 
-#. Translators: Spoken when the user asks for help on a control that has none.
-#: UI/Dialogs/PreferencesDialog.cs:216
-msgid "No detailed help is available for this control."
+#. Translators: Tells the user where the crash details have also been written. {path} is a file name.
+#: UI/Diagnostics/CrashDialog.cs:42
+msgid "This has also been written to {path}"
 msgstr ""
 
-#. Translators: Label of the read-only folder box in the save-selection-points dialog.
-#. Translators: Label of the box holding the folder recordings are saved into.
-#: UI/Dialogs/SaveSelectionsDialog.cs:47 UI/Recording/RecordingDialog.cs:145
-msgid "Folder"
+#. Translators: Button on the crash window that puts the details on the clipboard.
+#: UI/Diagnostics/CrashDialog.cs:45
+msgid "Copy details"
 msgstr ""
 
-#. Translators: Label of the combo box choosing the media format for saved selections.
-#. Translators: Label of the list that chooses what a recording is saved as.
-#: UI/Dialogs/SaveSelectionsDialog.cs:57 UI/Recording/RecordingDialog.cs:129
-msgid "Format"
+#. Translators: Shown when the crash details could not be put on the clipboard. The file named
+#. on the window still has them.
+#: UI/Diagnostics/CrashDialog.cs:79
+msgid "The details could not be copied. They are in the file named above."
 msgstr ""
 
-#. Translators: Label of the spin box choosing how many selections may be saved simultaneously.
-#: UI/Dialogs/SaveSelectionsDialog.cs:72
-msgid "Maximum number of threads"
-msgstr ""
-
-#. Translators: Title of the folder picker opened while choosing where selection files are saved.
-#: UI/Dialogs/SaveSelectionsDialog.cs:129
-msgid "Choose a folder for saved selections"
-msgstr ""
-
-#. Translators: Warning shown when the common name for saved selection files is empty.
-#: UI/Dialogs/SaveSelectionsDialog.cs:142
-msgid "Enter a name for the selection files."
-msgstr ""
-
-#. Translators: Warning shown when the common name for saved selection files is too long.
-#: UI/Dialogs/SaveSelectionsDialog.cs:148
-msgid "The name is too long."
-msgstr ""
-
-#. Translators: Warning shown when the common name contains characters Windows forbids in files.
-#: UI/Dialogs/SaveSelectionsDialog.cs:154
-msgid "The name contains characters that cannot be used in a file name."
-msgstr ""
-
-#. Translators: Warning shown when no output folder was chosen for selection files.
-#: UI/Dialogs/SaveSelectionsDialog.cs:161
-msgid "Choose a folder for the selection files."
-msgstr ""
-
-#. Translators: Warning when the selection folder cannot be created. {message} is the operating system's explanation.
-#: UI/Dialogs/SaveSelectionsDialog.cs:172
-msgid ""
-"The folder could not be created.\n"
-"{message}"
-msgstr ""
-
-#. Translators: Label of the milliseconds box in a selection time dialog.
-#: UI/Dialogs/SelectionTimeDialog.cs:37
-msgid "Milliseconds"
-msgstr ""
-
-#. Translators: Title of the error for a selection time entered beyond the file's end.
-#: UI/Dialogs/SelectionTimeDialog.cs:94
-msgid "Selection time"
-msgstr ""
-
-#. Translators: Label of the list choosing whether the sleep timer ends after a length of time or when
-#. the current track finishes.
-#: UI/Dialogs/SleepTimerDialog.cs:57
-msgid "End the timer"
-msgstr ""
-
-#. Translators: The sleep-timer option that fires after a chosen length of time.
-#: UI/Dialogs/SleepTimerDialog.cs:60
-msgid "After a length of time"
-msgstr ""
-
-#. Translators: The sleep-timer option that fires when the current track finishes.
-#: UI/Dialogs/SleepTimerDialog.cs:62
-msgid "At the end of the current track"
-msgstr ""
-
-#. Translators: Label of the list of ready-made timer lengths.
-#: UI/Dialogs/SleepTimerDialog.cs:66
-msgid "Length"
-msgstr ""
-
-#. Translators: One ready-made timer length. {minutes} is a number of minutes.
-#: UI/Dialogs/SleepTimerDialog.cs:70
-msgid "{minutes} minutes"
-msgstr ""
-
-#. Translators: Label of the list choosing what happens when the timer fires.
-#: UI/Dialogs/SleepTimerDialog.cs:82
-msgid "When the timer fires"
-msgstr ""
-
-#. Translators: The timer action that stops playback.
-#. Translators: Recording menu item that ends a recording and closes the file.
-#. Translators: Button that ends a recording and closes the file.
-#. Translators: Stops the selected download and returns it to the queue.
-#: UI/Dialogs/SleepTimerDialog.cs:87 UI/Menus/RecordingMenu.cs:25
-#: UI/Recording/RecordingDialog.cs:619 UI/YouTube/DownloadQueueDialog.cs:56
-msgid "Stop"
-msgstr ""
-
-#. Translators: Tick box that fades the volume down over the last seconds before the timer fires.
-#: UI/Dialogs/SleepTimerDialog.cs:92
-msgid "Fade the volume out before firing"
-msgstr ""
-
-#. Translators: Label of the box holding how many seconds the fade lasts.
-#: UI/Dialogs/SleepTimerDialog.cs:94
-msgid "Fade length (seconds)"
-msgstr ""
-
-#. Translators: Button in the sleep-timer window that turns off a timer already running.
-#: UI/Dialogs/SleepTimerDialog.cs:160
-msgid "Turn off timer"
-msgstr ""
-
-#. Translators: Shown when a timed sleep timer is set to a length of zero.
-#: UI/Dialogs/SleepTimerDialog.cs:237
-msgid "Choose a length of at least one minute."
-msgstr ""
-
-#. Translators: Title used for a window of read-only text when the caller supplies none.
-#: UI/Dialogs/TextInfoDialog.cs:13
-msgid "Information"
+#. Translators: Extra Open File filter for Luna playlist documents; keep JSON and the wildcard unchanged.
+#: UI/DialogService.cs:68
+msgid "JSON playlists (*.json)|*.json"
 msgstr ""
 
 #. Translators: Label of the list for choosing which preset a preset being edited starts out from.
-#: UI/Equalizer/EditDialog.cs:79
+#: UI/Equalizer/EditDialog.cs:65
 msgid "Base preset"
 msgstr ""
 
 #. Translators: Button in the equalizer editor that puts every band back the way the chosen base preset ships.
-#: UI/Equalizer/EditDialog.cs:106
+#: UI/Equalizer/EditDialog.cs:92
 msgid "Reset to defaults"
 msgstr ""
 
+#. Translators: Button in the equalizer editor that keeps the changes.
+#. Translators: Playlist editor button accepting the draft and saving it.
+#. Translators: Button that starts saving all selection points with the chosen settings.
+#: UI/Equalizer/EditDialog.cs:97 UI/Playlists/EditorDialog.cs:58
+#: UI/Selections/SaveDialog.cs:79
+msgid "Save"
+msgstr ""
+
 #. Translators: Label of the box holding the centre frequency of one equalizer band, in hertz.
-#: UI/Equalizer/EditDialog.cs:152
+#: UI/Equalizer/EditDialog.cs:138
 msgid "Frequency (Hz)"
 msgstr ""
 
 #. Translators: Label of the box holding how far one equalizer band lifts or cuts, in decibels.
-#: UI/Equalizer/EditDialog.cs:158
+#: UI/Equalizer/EditDialog.cs:144
 msgid "Gain (dB)"
 msgstr ""
 
 #. Translators: Label of the box holding how wide one equalizer band is. Q is the usual name for it and is normally left as it is.
-#: UI/Equalizer/EditDialog.cs:161
+#: UI/Equalizer/EditDialog.cs:147
 msgid "Q (width)"
 msgstr ""
 
 #. Translators: Title of the group of settings for the equalizer band that lifts or cuts everything below a frequency.
-#: UI/Equalizer/EditDialog.cs:185
+#: UI/Equalizer/EditDialog.cs:171
 msgid "Low shelf"
 msgstr ""
 
 #. Translators: Title of the group of settings for the equalizer band that lifts or cuts everything above a frequency.
-#: UI/Equalizer/EditDialog.cs:187
+#: UI/Equalizer/EditDialog.cs:173
 msgid "High shelf"
 msgstr ""
 
 #. Translators: Title of the group of settings for one equalizer band. {frequency} is the band's frequency in hertz, such as 250.
-#: UI/Equalizer/EditDialog.cs:189
+#: UI/Equalizer/EditDialog.cs:175
 msgid "{frequency} Hz"
 msgstr ""
 
 #. Translators: Shown when the user saves an equalizer preset without giving it a name.
-#: UI/Equalizer/EditDialog.cs:234
+#: UI/Equalizer/EditDialog.cs:220
 msgid "Enter a name for the preset."
 msgstr ""
 
 #. Translators: Shown when a gain typed into the equalizer editor is not a number or is out of range. {band} names the band, such as "250 Hz"; {minimum} and {maximum} are the smallest and largest allowed.
-#: UI/Equalizer/EditDialog.cs:268
+#: UI/Equalizer/EditDialog.cs:254
 msgid ""
 "The gain for {band} must be a number between {minimum} and {maximum} "
 "decibels."
 msgstr ""
 
 #. Translators: Shown when a Q typed into the equalizer editor is not a number or is out of range. {band} names the band, such as "250 Hz"; {minimum} and {maximum} are the smallest and largest allowed. Q is the usual name for a band's width.
-#: UI/Equalizer/EditDialog.cs:278
+#: UI/Equalizer/EditDialog.cs:264
 msgid "The Q for {band} must be a number between {minimum} and {maximum}."
 msgstr ""
 
@@ -5247,8 +4708,8 @@ msgstr ""
 #. Translators: Button that changes a saved IPTV source. The three dots mean it opens a window to change it in.
 #. Translators: Button that changes the recording source chosen in the list.
 #. Translators: Button that changes a saved link. The three dots mean it opens a window to change it in.
-#: UI/Equalizer/PresetsDialog.cs:50 UI/Iptv/IptvSourcesDialog.cs:57
-#: UI/Recording/RecordingDialog.cs:93 UI/YouTube/FavoritesDialog.cs:57
+#: UI/Equalizer/PresetsDialog.cs:50 UI/Iptv/SourcesDialog.cs:57
+#: UI/Recording/MainDialog.cs:96 UI/YouTube/FavoritesDialog.cs:57
 msgid "Edit..."
 msgstr ""
 
@@ -5267,6 +4728,64 @@ msgstr ""
 msgid "Delete preset"
 msgstr ""
 
+#. Translators: Title of the window containing Luna Player's version and website.
+#: UI/Help/AboutDialog.cs:17
+msgid "About Luna Player"
+msgstr ""
+
+#. Translators: Description in the Luna Player About window.
+#: UI/Help/AboutDialog.cs:23
+msgid ""
+"Luna Player is a fast, accessible media player for Windows. It is designed "
+"for effortless keyboard control and a clear screen-reader experience, and "
+"plays local media, network streams, and YouTube content without getting in "
+"your way."
+msgstr ""
+
+#. Translators: Additional description in the Luna Player About window.
+#: UI/Help/AboutDialog.cs:27
+msgid "Luna Player is free and open-source software."
+msgstr ""
+
+#. Translators: Third-party copyright and licensing information in the About window. mpv and
+#. python-mpv are project names and should not be translated. NOTICE.txt and licenses are names
+#. found in Luna's installation folder.
+#: UI/Help/AboutDialog.cs:31
+msgid ""
+"Luna includes mpv, copyright © the mpv developers and contributors to "
+"MPlayer and mplayer2, and a C# translation of python-mpv, copyright © 2017-"
+"2024 Sebastian Götte. These components are licensed under the GNU Lesser "
+"General Public License, version 2.1 or later. FFmpeg is licensed under the "
+"GNU Lesser General Public License, version 3 or later. See NOTICE.txt and "
+"the licenses folder for complete third-party notices and terms."
+msgstr ""
+
+#. Translators: Final two lines in the About window. {publisher} is the developer's name and
+#. {version} is the installed application version.
+#: UI/Help/AboutDialog.cs:38
+msgid ""
+"Copyright © 2026 {publisher}\n"
+"Version: {version}"
+msgstr ""
+
+#. Translators: Link in the About window that opens the Luna Player project website.
+#: UI/Help/AboutDialog.cs:46
+msgid "Visit the Luna Player website"
+msgstr ""
+
+#. Translators: Button that closes the About window.
+#. Translators: The button that accepts a window and carries the change out.
+#. Translators: Button that accepts the time entered in a selection time dialog.
+#: UI/Help/AboutDialog.cs:50 UI/Playback/SleepTimerDialog.cs:160
+#: UI/Playback/TimeDialog.cs:67 UI/Selections/TimeDialog.cs:56
+msgid "OK"
+msgstr ""
+
+#. Translators: Title used for a window of read-only text when the caller supplies none.
+#: UI/Help/TextDialog.cs:13
+msgid "Information"
+msgstr ""
+
 #. Translators: Label of the list that filters channels by whether they are live TV, films or series.
 #: UI/Iptv/ChannelBrowserDialog.cs:51
 msgid "Show"
@@ -5274,7 +4793,7 @@ msgstr ""
 
 #. Translators: Channel-browser filter choice: show channels of every kind.
 #. Translators: Option in the Spotify search filter to include every result type.
-#: UI/Iptv/ChannelBrowserDialog.cs:54 UI/Spotify/BrowserDialog.cs:105
+#: UI/Iptv/ChannelBrowserDialog.cs:54 UI/Spotify/BrowserDialog.cs:101
 msgid "All"
 msgstr ""
 
@@ -5303,6 +4822,20 @@ msgstr ""
 #. Translators: Scope option in Radio filters that affects every category, including favorites and history.
 #: UI/Iptv/ChannelBrowserDialog.cs:67 UI/Radio/FiltersDialog.cs:38
 msgid "All categories"
+msgstr ""
+
+#. Translators: Label of the box that filters channels by part of their name as the user types.
+#. Translators: Label of the box that filters the loaded files by part of their name as the user types.
+#. Translators: Label of the radio browser box for searching the station list.
+#. Translators: Button searching the current radio directory or station list.
+#. Translators: Radio browser button searching the current directory or station list.
+#. Translators: Search button or tab in the Spotify browser.
+#. Translators: Button that runs the YouTube search with the text and filter chosen.
+#: UI/Iptv/ChannelBrowserDialog.cs:74 UI/Playlists/OpenedFilesDialog.cs:30
+#: UI/Radio/BrowserDialog.cs:80 UI/Radio/BrowserDialog.cs:84
+#: UI/Radio/Interactions.cs:78 UI/Spotify/BrowserDialog.cs:110
+#: UI/Spotify/BrowserDialog.cs:130 UI/YouTube/SearchDialog.cs:80
+msgid "Search"
 msgstr ""
 
 #. Translators: Heading of the channel list column holding each channel's number.
@@ -5364,77 +4897,94 @@ msgstr ""
 #. Translators: Heading of the IPTV sources list column saying what kind of source each one is.
 #. Translators: Label of the list saying what kind of thing a saved link points at.
 #. Translators: Heading of the favourites list column saying what kind of thing each saved link points at.
-#: UI/Iptv/IptvSourceEditDialog.cs:60 UI/Iptv/IptvSourcesDialog.cs:31
+#: UI/Iptv/SourceEditDialog.cs:60 UI/Iptv/SourcesDialog.cs:31
 #: UI/YouTube/FavoriteEditDialog.cs:29 UI/YouTube/FavoritesDialog.cs:31
 msgid "Type"
 msgstr ""
 
 #. Translators: Initial label of the box holding an IPTV source's web address.
 #. Translators: Label of the address box when the source is an M3U playlist at a web address.
-#: UI/Iptv/IptvSourceEditDialog.cs:68 UI/Iptv/IptvSourceEditDialog.cs:159
+#: UI/Iptv/SourceEditDialog.cs:68 UI/Iptv/SourceEditDialog.cs:159
 msgid "Web address"
 msgstr ""
 
 #. Translators: Label of the box holding the username of an Xtream IPTV account.
-#: UI/Iptv/IptvSourceEditDialog.cs:76
+#: UI/Iptv/SourceEditDialog.cs:76
 msgid "Username"
 msgstr ""
 
 #. Translators: Label of the box holding the password of an Xtream IPTV account.
-#: UI/Iptv/IptvSourceEditDialog.cs:79
+#: UI/Iptv/SourceEditDialog.cs:79
 msgid "Password"
 msgstr ""
 
 #. Translators: Label of the box holding the MAC address a Stalker portal is bound to.
-#: UI/Iptv/IptvSourceEditDialog.cs:83
+#: UI/Iptv/SourceEditDialog.cs:83
 msgid "MAC address"
 msgstr ""
 
 #. Translators: Label of the box holding the optional device serial some Stalker portals check.
-#: UI/Iptv/IptvSourceEditDialog.cs:86
+#: UI/Iptv/SourceEditDialog.cs:86
 msgid "Serial (optional)"
 msgstr ""
 
 #. Translators: Label of the box holding an optional programme-guide address. "XMLTV" is a format name.
-#: UI/Iptv/IptvSourceEditDialog.cs:90
+#: UI/Iptv/SourceEditDialog.cs:90
 msgid "EPG address (optional)"
 msgstr ""
 
 #. Translators: Tick box that opens live channels as HLS rather than as a transport stream.
-#: UI/Iptv/IptvSourceEditDialog.cs:95
+#: UI/Iptv/SourceEditDialog.cs:95
 msgid "Open live channels as HLS"
 msgstr ""
 
 #. Translators: Label of the address box when the source is an M3U playlist file on this computer.
-#: UI/Iptv/IptvSourceEditDialog.cs:161
+#: UI/Iptv/SourceEditDialog.cs:161
 msgid "Playlist file"
 msgstr ""
 
 #. Translators: Label of the address box when the source is an Xtream Codes account (its server).
-#: UI/Iptv/IptvSourceEditDialog.cs:163
+#: UI/Iptv/SourceEditDialog.cs:163
 msgid "Server address"
 msgstr ""
 
 #. Translators: Label of the address box when the source is a Stalker portal (its portal address).
-#: UI/Iptv/IptvSourceEditDialog.cs:165
+#: UI/Iptv/SourceEditDialog.cs:165
 msgid "Portal address"
 msgstr ""
 
 #. Translators: Title of the message shown when an IPTV source cannot be saved as it was typed.
 #. Translators: Title of the window listing the IPTV sources the user has saved.
-#: UI/Iptv/IptvSourceEditDialog.cs:200 UI/Iptv/IptvSourcesDialog.cs:25
+#: UI/Iptv/SourceEditDialog.cs:200 UI/Iptv/SourcesDialog.cs:25
 msgid "IPTV sources"
 msgstr ""
 
 #. Translators: Heading of the IPTV sources list column holding the server or file each source points at.
-#: UI/Iptv/IptvSourcesDialog.cs:33
+#: UI/Iptv/SourcesDialog.cs:33
 msgid "Address"
+msgstr ""
+
+#. Translators: Button that opens the source chosen in the list and browses its channels.
+#. Translators: Playlist manager button opening the selected playlist for playback.
+#. Translators: Button that plays the saved link chosen in the list.
+#: UI/Iptv/SourcesDialog.cs:53 UI/Playlists/ManagerDialog.cs:28
+#: UI/YouTube/FavoritesDialog.cs:53
+msgid "Open"
+msgstr ""
+
+#. Translators: Button that saves a new IPTV source. The three dots mean it opens a window to type it in.
+#. Translators: Playlist editor button opening a menu to add files or a folder.
+#. Translators: Opens a box where one or more YouTube links can be added to the queue.
+#. Translators: Button that saves a new link. The three dots mean it opens a window to type it in.
+#: UI/Iptv/SourcesDialog.cs:55 UI/Playlists/EditorDialog.cs:46
+#: UI/YouTube/DownloadQueueDialog.cs:59 UI/YouTube/FavoritesDialog.cs:55
+msgid "Add..."
 msgstr ""
 
 #. Translators: Button that removes a saved IPTV source. The three dots mean it asks first.
 #. Translators: Button that removes the recording source chosen in the list. It asks first.
 #. Translators: Button that removes a saved link. The three dots mean it asks first.
-#: UI/Iptv/IptvSourcesDialog.cs:59 UI/Recording/RecordingDialog.cs:95
+#: UI/Iptv/SourcesDialog.cs:59 UI/Recording/MainDialog.cs:98
 #: UI/YouTube/FavoritesDialog.cs:59
 msgid "Remove..."
 msgstr ""
@@ -5465,44 +5015,9 @@ msgstr ""
 msgid "Next"
 msgstr ""
 
-#. Translators: Name of the File menu in the menu bar.
-#: UI/MenuBuilder.cs:68
-msgid "File"
-msgstr ""
-
-#. Translators: Name of the menu holding commands for marking and saving parts of a media file.
-#: UI/MenuBuilder.cs:73
-msgid "Selection"
-msgstr ""
-
-#. Translators: Name of the menu bar menu holding the things that can be done to the marked files at once.
-#: UI/MenuBuilder.cs:78
-msgid "Actions for marked files"
-msgstr ""
-
-#. Translators: Name of the Player menu in the menu bar, holding the playing, seeking and volume items.
-#: UI/MenuBuilder.cs:80
-msgid "Player"
-msgstr ""
-
-#. Translators: Name of the menu bar menu holding what can be done with the YouTube video being played.
-#: UI/MenuBuilder.cs:85
-msgid "Video options"
-msgstr ""
-
-#. Translators: Name of the Tools menu in the menu bar, holding the media converter.
-#: UI/MenuBuilder.cs:92
-msgid "Tools"
-msgstr ""
-
-#. Translators: Name of the Help menu in the menu bar.
-#: UI/MenuBuilder.cs:94
-msgid "Help"
-msgstr ""
-
 #. Translators: Recording menu item that starts a paused recording again.
 #. Translators: Button that starts a paused recording again.
-#: UI/MenuController.cs:302 UI/Recording/RecordingDialog.cs:623
+#: UI/MenuController.cs:302 UI/Recording/Transport.cs:114
 msgid "Resume"
 msgstr ""
 
@@ -5515,6 +5030,41 @@ msgstr ""
 #. Translators: Bookmarks submenu holding one item per numbered bookmark slot.
 #: UI/Menus/BookmarksMenu.cs:25
 msgid "Jump to bookmark"
+msgstr ""
+
+#. Translators: Name of the File menu in the menu bar.
+#: UI/Menus/Builder.cs:68
+msgid "File"
+msgstr ""
+
+#. Translators: Name of the menu holding commands for marking and saving parts of a media file.
+#: UI/Menus/Builder.cs:73
+msgid "Selection"
+msgstr ""
+
+#. Translators: Name of the menu bar menu holding the things that can be done to the marked files at once.
+#: UI/Menus/Builder.cs:78
+msgid "Actions for marked files"
+msgstr ""
+
+#. Translators: Name of the Player menu in the menu bar, holding the playing, seeking and volume items.
+#: UI/Menus/Builder.cs:80
+msgid "Player"
+msgstr ""
+
+#. Translators: Name of the menu bar menu holding what can be done with the YouTube video being played.
+#: UI/Menus/Builder.cs:85
+msgid "Video options"
+msgstr ""
+
+#. Translators: Name of the Tools menu in the menu bar, holding the media converter.
+#: UI/Menus/Builder.cs:92
+msgid "Tools"
+msgstr ""
+
+#. Translators: Name of the Help menu in the menu bar.
+#: UI/Menus/Builder.cs:94
+msgid "Help"
 msgstr ""
 
 #. Translators: Checkable Chapters menu command that treats chapters as separate playlist items.
@@ -5907,6 +5457,15 @@ msgstr ""
 msgid "Open the recording interface..."
 msgstr ""
 
+#. Translators: Recording menu item that ends a recording and closes the file.
+#. Translators: The timer action that stops playback.
+#. Translators: Button that ends a recording and closes the file.
+#. Translators: Stops the selected download and returns it to the queue.
+#: UI/Menus/RecordingMenu.cs:25 UI/Playback/SleepTimerDialog.cs:81
+#: UI/Recording/Transport.cs:110 UI/YouTube/DownloadQueueDialog.cs:56
+msgid "Stop"
+msgstr ""
+
 #. Translators: Recording menu item that opens the folder recordings are saved into.
 #: UI/Menus/RecordingMenu.cs:28
 msgid "Open recordings folder"
@@ -6042,26 +5601,189 @@ msgstr ""
 msgid "Open channel in browser"
 msgstr ""
 
-#. Translators: Title of the multiple-file picker adding playlist entries.
-#: UI/PlaylistDialogs.cs:21
-msgid "Add files"
+#. Translators: Label of the list choosing whether the sleep timer ends after a length of time or when
+#. the current track finishes.
+#: UI/Playback/SleepTimerDialog.cs:51
+msgid "End the timer"
 msgstr ""
 
-#. Translators: Title of the dialog choosing a playlist export filename and format.
-#: UI/PlaylistDialogs.cs:28
-msgid "Save Playlist As"
+#. Translators: The sleep-timer option that fires after a chosen length of time.
+#: UI/Playback/SleepTimerDialog.cs:54
+msgid "After a length of time"
 msgstr ""
 
-#. Translators: Save dialog file types. JSON, M3U and M3U8 and all wildcard patterns must remain unchanged.
-#: UI/PlaylistDialogs.cs:30
-msgid ""
-"M3U8 playlist (*.m3u8)|*.m3u8|M3U playlist (*.m3u)|*.m3u|JSON playlist (*."
-"json)|*.json"
+#. Translators: The sleep-timer option that fires when the current track finishes.
+#: UI/Playback/SleepTimerDialog.cs:56
+msgid "At the end of the current track"
 msgstr ""
 
-#. Translators: Confirmation before replacing an existing playlist after adjusting its filename extension.
-#: UI/PlaylistDialogs.cs:41
-msgid "Replace the existing playlist file?"
+#. Translators: Label of the list of ready-made timer lengths.
+#: UI/Playback/SleepTimerDialog.cs:60
+msgid "Length"
+msgstr ""
+
+#. Translators: One ready-made timer length. {minutes} is a number of minutes.
+#: UI/Playback/SleepTimerDialog.cs:64
+msgid "{minutes} minutes"
+msgstr ""
+
+#. Translators: Label of the box holding the hours part of a custom timer length.
+#. Translators: Label of the box holding the hours part of the point in the file to move to.
+#. Translators: Label of the hours box in a selection time dialog.
+#: UI/Playback/SleepTimerDialog.cs:69 UI/Playback/TimeDialog.cs:31
+#: UI/Selections/TimeDialog.cs:26
+msgid "Hours"
+msgstr ""
+
+#. Translators: Label of the box holding the minutes part of a custom timer length.
+#. Translators: Label of the box holding the minutes part of the point in the file to move to.
+#. Translators: Label of the minutes box in a selection time dialog.
+#: UI/Playback/SleepTimerDialog.cs:72 UI/Playback/TimeDialog.cs:34
+#: UI/Selections/TimeDialog.cs:29
+msgid "Minutes"
+msgstr ""
+
+#. Translators: Label of the list choosing what happens when the timer fires.
+#: UI/Playback/SleepTimerDialog.cs:76
+msgid "When the timer fires"
+msgstr ""
+
+#. Translators: Tick box that fades the volume down over the last seconds before the timer fires.
+#: UI/Playback/SleepTimerDialog.cs:86
+msgid "Fade the volume out before firing"
+msgstr ""
+
+#. Translators: Label of the box holding how many seconds the fade lasts.
+#: UI/Playback/SleepTimerDialog.cs:88
+msgid "Fade length (seconds)"
+msgstr ""
+
+#. Translators: Button in the sleep-timer window that turns off a timer already running.
+#: UI/Playback/SleepTimerDialog.cs:154
+msgid "Turn off timer"
+msgstr ""
+
+#. Translators: Shown when a timed sleep timer is set to a length of zero.
+#: UI/Playback/SleepTimerDialog.cs:231
+msgid "Choose a length of at least one minute."
+msgstr ""
+
+#. Translators: Label above the boxes where the user types the point in the file to move to.
+#: UI/Playback/TimeDialog.cs:29
+msgid "Choose time position:"
+msgstr ""
+
+#. Translators: Label of the box holding the seconds part of the point in the file to move to.
+#. Translators: Label of the seconds box in a selection time dialog.
+#: UI/Playback/TimeDialog.cs:37 UI/Selections/TimeDialog.cs:33
+msgid "Seconds"
+msgstr ""
+
+#. Translators: Shown when the point in the file the user typed lies past the end of the file.
+#. Translators: Shown when a manually entered selection marker lies beyond the file's end.
+#: UI/Playback/TimeDialog.cs:114 UI/Selections/TimeDialog.cs:92
+msgid "The selected time exceeds the file duration."
+msgstr ""
+
+#. Translators: Title of the dialog editing a playlist's name, description and entries.
+#: UI/Playlists/EditorDialog.cs:26
+msgid "Playlist editor"
+msgstr ""
+
+#. Translators: Label of the optional playlist description text field.
+#: UI/Playlists/EditorDialog.cs:33
+msgid "Description (optional)"
+msgstr ""
+
+#. Translators: Column heading for the complete file or folder location in the playlist editor.
+#: UI/Playlists/EditorDialog.cs:40
+msgid "Full Path"
+msgstr ""
+
+#. Translators: Playlist editor button moving selected entries earlier.
+#: UI/Playlists/EditorDialog.cs:50
+msgid "Move Up"
+msgstr ""
+
+#. Translators: Playlist editor button moving selected entries later.
+#: UI/Playlists/EditorDialog.cs:52
+msgid "Move Down"
+msgstr ""
+
+#. Translators: Question shown when closing a modified playlist editor.
+#: UI/Playlists/EditorDialog.cs:74
+msgid "Save changes to this playlist?"
+msgstr ""
+
+#. Translators: Playlist Add menu item selecting multiple files.
+#: UI/Playlists/EditorDialog.cs:116
+msgid "Files..."
+msgstr ""
+
+#. Translators: Playlist Add menu item selecting a folder reference.
+#: UI/Playlists/EditorDialog.cs:118
+msgid "Folder..."
+msgstr ""
+
+#. Translators: Spoken after adding entries to a playlist. {count} is the number added.
+#: UI/Playlists/EditorDialog.cs:138
+msgid "{count} entries added to playlist."
+msgstr ""
+
+#. Translators: Spoken after removing entries from a playlist only. {count} is the number removed.
+#: UI/Playlists/EditorDialog.cs:148
+msgid "{count} entries removed from playlist."
+msgstr ""
+
+#. Translators: Spoken after reordering the selected playlist entries.
+#: UI/Playlists/EditorDialog.cs:160
+msgid "Playlist entries moved."
+msgstr ""
+
+#. Translators: Validation warning for an empty playlist name in the editor.
+#: UI/Playlists/EditorDialog.cs:180
+msgid "A playlist name is required."
+msgstr ""
+
+#. Translators: Title of the saved playlist manager.
+#: UI/Playlists/ManagerDialog.cs:14
+msgid "My Playlists"
+msgstr ""
+
+#. Translators: Column heading for optional descriptions in the playlist manager.
+#. Translators: Label before the box that shows the text written under a video.
+#: UI/Playlists/ManagerDialog.cs:19 UI/YouTube/DescriptionDialog.cs:40
+msgid "Description"
+msgstr ""
+
+#. Translators: Playlist manager button creating a new playlist.
+#: UI/Playlists/ManagerDialog.cs:32
+msgid "New"
+msgstr ""
+
+#. Translators: Playlist manager button exporting the selected playlist to a file.
+#: UI/Playlists/ManagerDialog.cs:36
+msgid "Export"
+msgstr ""
+
+#. Translators: Title of the window listing the files currently loaded in the player.
+#: UI/Playlists/OpenedFilesDialog.cs:27
+msgid "Opened Files"
+msgstr ""
+
+#. Translators: Button that shows details of every file in the playlist.
+#: UI/Playlists/OpenedFilesDialog.cs:47
+msgid "Playlist info"
+msgstr ""
+
+#. Translators: Button that starts playing the file chosen in the list.
+#: UI/Playlists/OpenedFilesDialog.cs:49
+msgid "Jump to selected"
+msgstr ""
+
+#. Translators: Label above the list of loaded files, telling the user to pick the one to play.
+#: UI/Playlists/OpenedFilesDialog.cs:68
+msgid "Select file to jump to."
 msgstr ""
 
 #. Translators: Spoken description of the backup and restore settings page, read when the page is opened.
@@ -6523,6 +6245,73 @@ msgid ""
 "any media or change default-app choices managed separately by Windows."
 msgstr ""
 
+#. Translators: Name of the settings category holding the language, speech and file-opening settings.
+#. Translators: Name of the general settings page inside the Audio category.
+#. Translators: Name of the general settings page inside the YouTube category.
+#: UI/Preferences/MainDialog.cs:45 UI/Preferences/MainDialog.cs:51
+#: UI/Preferences/MainDialog.cs:59
+msgid "General"
+msgstr ""
+
+#. Translators: Name of the settings category for saving a copy of the settings and bookmarks and putting them back.
+#: UI/Preferences/MainDialog.cs:47
+msgid "Backup and restore"
+msgstr ""
+
+#. Translators: Name of the expandable settings category containing general and playback audio pages.
+#. Translators: One of the download types: save the sound alone as an audio file.
+#. Translators: One of the YouTube download types: save the sound alone as an audio file.
+#: UI/Preferences/MainDialog.cs:49 UI/YouTube/DownloadDialog.cs:65
+#: UI/YouTube/DownloadPreferences.cs:75
+msgid "Audio"
+msgstr ""
+
+#. Translators: Name of the playback settings page inside the Audio category.
+#: UI/Preferences/MainDialog.cs:53
+msgid "Playback"
+msgstr ""
+
+#. Translators: Name of the settings category for trimming the silent parts out of what is played.
+#: UI/Preferences/MainDialog.cs:55
+msgid "Silence removal"
+msgstr ""
+
+#. Translators: Name of the download settings page inside the YouTube category.
+#. Translators: Title of the window where a download's name, type, format and quality are chosen.
+#. Translators: The button that starts this download immediately.
+#. Translators: Button that saves the video chosen in the list of results to a folder on this computer.
+#: UI/Preferences/MainDialog.cs:61 UI/YouTube/DownloadDialog.cs:55
+#: UI/YouTube/DownloadDialog.cs:126 UI/YouTube/ResultsDialog.cs:202
+msgid "Download"
+msgstr ""
+
+#. Translators: Name of the settings category for the key combinations that work while the player is the program in front.
+#: UI/Preferences/MainDialog.cs:65
+msgid "Keyboard Shortcuts"
+msgstr ""
+
+#. Translators: Name of the Spotify credentials and audio-quality category in Preferences. Keep Spotify unchanged.
+#. Translators: Title of the Spotify home, search and library browser. Keep Spotify unchanged.
+#. Translators: Heading on the Spotify preferences page. Keep Spotify unchanged.
+#. Translators: Title of the dialog offering to configure Spotify credentials. Keep Spotify unchanged.
+#: UI/Preferences/MainDialog.cs:86 UI/Spotify/BrowserDialog.cs:59
+#: UI/Spotify/CredentialsPreferences.cs:21 UI/Spotify/CredentialsPrompt.cs:12
+msgid "Spotify"
+msgstr ""
+
+#. Translators: Help text for the settings tree down the left of the Preferences window.
+#: UI/Preferences/MainDialog.cs:209
+msgid ""
+"Use the Arrow keys to move through settings pages. Press the Right Arrow key "
+"on a category to show its pages and the Left Arrow key to hide them. The "
+"selected page's controls appear on the right side of the window."
+msgstr ""
+
+#. Translators: Spoken when the user asks for help on a control that has none.
+#: UI/Preferences/MainDialog.cs:216
+msgid "No detailed help is available for this control."
+msgstr ""
+
 #. Translators: Label of the list that chooses what a recording is saved as.
 #. Translators: Label of the list that chooses the file type a downloaded audio track is saved as.
 #. Translators: Label of the list that chooses the file type for downloaded YouTube audio.
@@ -6597,20 +6386,17 @@ msgid "Choose a folder for recordings."
 msgstr ""
 
 #. Translators: Title of the window that asks where recordings should be saved.
-#: UI/Preferences/RecordingPreferences.cs:255
-#: UI/Recording/RecordingDialog.cs:469
+#: UI/Preferences/RecordingPreferences.cs:255 UI/Recording/Options.cs:136
 msgid "Select the folder for recordings"
 msgstr ""
 
 #. Translators: A sample rate, as shown in a list. {value} is a number such as 44100.
-#: UI/Preferences/RecordingPreferences.cs:280
-#: UI/Recording/RecordingDialog.cs:713
+#: UI/Preferences/RecordingPreferences.cs:280 UI/Recording/Options.cs:193
 msgid "{value} Hz"
 msgstr ""
 
 #. Translators: A bitrate, as shown in a list. {value} is a number such as 192.
-#: UI/Preferences/RecordingPreferences.cs:283
-#: UI/Recording/RecordingDialog.cs:716
+#: UI/Preferences/RecordingPreferences.cs:283 UI/Recording/Options.cs:196
 msgid "{value} kbps"
 msgstr ""
 
@@ -7052,7 +6838,7 @@ msgstr ""
 
 #. Translators: Column heading for a radio stream's bitrate in kilobits per second.
 #. Translators: Label of the list that chooses how much room a second of compressed audio may take.
-#: UI/Radio/BrowserDialog.cs:116 UI/Recording/RecordingDialog.cs:142
+#: UI/Radio/BrowserDialog.cs:116 UI/Recording/MainDialog.cs:145
 msgid "Bitrate"
 msgstr ""
 
@@ -7068,7 +6854,7 @@ msgstr ""
 #. Translators: Radio category context-menu action reloading its contents.
 #. Translators: Button in the Spotify browser that reloads the account library.
 #: UI/Radio/BrowserDialog.cs:132 UI/Radio/BrowserDialog.cs:169
-#: UI/Spotify/BrowserDialog.cs:72
+#: UI/Spotify/BrowserDialog.cs:68
 msgid "Refresh"
 msgstr ""
 
@@ -7358,105 +7144,44 @@ msgstr ""
 
 #. Translators: Button that adds a recording source. It opens a menu of the kinds that can be added.
 #. Translators: Confirms adding the entered links to the download queue.
-#: UI/Recording/RecordingDialog.cs:91 UI/YouTube/DownloadQueueDialog.cs:376
+#: UI/Recording/MainDialog.cs:94 UI/YouTube/DownloadQueueDialog.cs:376
 msgid "Add"
 msgstr ""
 
 #. Translators: Label of the slider that sets how loud the chosen recording source is in the mix.
-#: UI/Recording/RecordingDialog.cs:108
+#: UI/Recording/MainDialog.cs:111
 msgid "Volume for selected source"
 msgstr ""
 
 #. Translators: Title of the group of the recording window holding how a recording is written.
-#: UI/Recording/RecordingDialog.cs:127
+#: UI/Recording/MainDialog.cs:130
 msgid "Recording settings"
+msgstr ""
+
+#. Translators: Label of the list that chooses what a recording is saved as.
+#. Translators: Label of the combo box choosing the media format for saved selections.
+#: UI/Recording/MainDialog.cs:132 UI/Selections/SaveDialog.cs:49
+msgid "Format"
+msgstr ""
+
+#. Translators: Label of the box holding the folder recordings are saved into.
+#. Translators: Label of the read-only folder box in the save-selection-points dialog.
+#: UI/Recording/MainDialog.cs:148 UI/Selections/SaveDialog.cs:39
+msgid "Folder"
 msgstr ""
 
 #. Translators: Button that begins recording, and ends it when pressed a second time.
 #. Translators: Button that begins recording.
 #. Translators: Starts every unfinished item in the download queue.
-#: UI/Recording/RecordingDialog.cs:167 UI/Recording/RecordingDialog.cs:617
+#: UI/Recording/MainDialog.cs:170 UI/Recording/Transport.cs:108
 #: UI/YouTube/DownloadQueueDialog.cs:62
 msgid "Start"
 msgstr ""
 
-#. Translators: Menu item on the recording window that adds a microphone or line-in as a source.
-#: UI/Recording/RecordingDialog.cs:277
-msgid "Input device..."
-msgstr ""
-
-#. Translators: Menu item on the recording window that adds everything a speaker plays as a source.
-#: UI/Recording/RecordingDialog.cs:279
-msgid "System output..."
-msgstr ""
-
-#. Translators: Menu item on the recording window that adds one program's sound as a source.
-#: UI/Recording/RecordingDialog.cs:281
-msgid "Program..."
-msgstr ""
-
-#. Translators: Shown when capturing one program's sound is asked for on a version of
-#. Windows that cannot do it. Capturing a device still works.
-#: UI/Recording/RecordingDialog.cs:301
-msgid ""
-"This version of Windows cannot capture a single program. Windows 10 version "
-"2004 or later is needed for that; recording from a device still works."
-msgstr ""
-
-#. Translators: Asks the user to confirm removing a recording source. {name} is what they called it.
-#: UI/Recording/RecordingDialog.cs:332
-msgid "Remove the source '{name}'?"
-msgstr ""
-
-#. Translators: Shown when recording was started with nothing set up to record from.
-#: UI/Recording/RecordingDialog.cs:516
-msgid "Add at least one source before recording."
-msgstr ""
-
-#. Translators: The name a newly added microphone source is given until the user changes it.
-#: UI/Recording/RecordingDialog.cs:685
-msgid "Microphone"
-msgstr ""
-
-#. Translators: The name a newly added speaker-output source is given until the user changes it.
-#: UI/Recording/RecordingDialog.cs:687
-msgid "System output"
-msgstr ""
-
-#. Translators: The name a newly added program source is given until the user changes it.
 #. Translators: Label of the list that chooses which program a recording source captures.
-#: UI/Recording/RecordingDialog.cs:689 UI/Recording/SourceDialog.cs:53
+#. Translators: The name a newly added program source is given until the user changes it.
+#: UI/Recording/SourceDialog.cs:53 UI/Recording/Sources.cs:144
 msgid "Program"
-msgstr ""
-
-#. Translators: Title of the window for adding a microphone or line-in as a recording source.
-#: UI/Recording/RecordingDialog.cs:695
-msgid "Add input device"
-msgstr ""
-
-#. Translators: Title of the window for adding a speaker's output as a recording source.
-#: UI/Recording/RecordingDialog.cs:697
-msgid "Add system output"
-msgstr ""
-
-#. Translators: Title of the window for adding one program's sound as a recording source.
-#: UI/Recording/RecordingDialog.cs:699
-msgid "Add program"
-msgstr ""
-
-#. Translators: Title of the window for changing a microphone or line-in recording source.
-#: UI/Recording/RecordingDialog.cs:705
-msgid "Edit input device"
-msgstr ""
-
-#. Translators: Title of the window for changing a speaker-output recording source.
-#: UI/Recording/RecordingDialog.cs:707
-msgid "Edit system output"
-msgstr ""
-
-#. Translators: Title of the window for changing a program recording source.
-#: UI/Recording/RecordingDialog.cs:709
-msgid "Edit program"
 msgstr ""
 
 #. Translators: Label of the list that chooses which device a recording source captures.
@@ -7499,65 +7224,295 @@ msgstr ""
 msgid "Recording source"
 msgstr ""
 
+#. Translators: Menu item on the recording window that adds a microphone or line-in as a source.
+#: UI/Recording/Sources.cs:73
+msgid "Input device..."
+msgstr ""
+
+#. Translators: Menu item on the recording window that adds everything a speaker plays as a source.
+#: UI/Recording/Sources.cs:75
+msgid "System output..."
+msgstr ""
+
+#. Translators: Menu item on the recording window that adds one program's sound as a source.
+#: UI/Recording/Sources.cs:77
+msgid "Program..."
+msgstr ""
+
+#. Translators: Shown when capturing one program's sound is asked for on a version of
+#. Windows that cannot do it. Capturing a device still works.
+#: UI/Recording/Sources.cs:97
+msgid ""
+"This version of Windows cannot capture a single program. Windows 10 version "
+"2004 or later is needed for that; recording from a device still works."
+msgstr ""
+
+#. Translators: Asks the user to confirm removing a recording source. {name} is what they called it.
+#: UI/Recording/Sources.cs:128
+msgid "Remove the source '{name}'?"
+msgstr ""
+
+#. Translators: The name a newly added microphone source is given until the user changes it.
+#: UI/Recording/Sources.cs:140
+msgid "Microphone"
+msgstr ""
+
+#. Translators: The name a newly added speaker-output source is given until the user changes it.
+#: UI/Recording/Sources.cs:142
+msgid "System output"
+msgstr ""
+
+#. Translators: Title of the window for adding a microphone or line-in as a recording source.
+#: UI/Recording/Sources.cs:150
+msgid "Add input device"
+msgstr ""
+
+#. Translators: Title of the window for adding a speaker's output as a recording source.
+#: UI/Recording/Sources.cs:152
+msgid "Add system output"
+msgstr ""
+
+#. Translators: Title of the window for adding one program's sound as a recording source.
+#: UI/Recording/Sources.cs:154
+msgid "Add program"
+msgstr ""
+
+#. Translators: Title of the window for changing a microphone or line-in recording source.
+#: UI/Recording/Sources.cs:160
+msgid "Edit input device"
+msgstr ""
+
+#. Translators: Title of the window for changing a speaker-output recording source.
+#: UI/Recording/Sources.cs:162
+msgid "Edit system output"
+msgstr ""
+
+#. Translators: Title of the window for changing a program recording source.
+#: UI/Recording/Sources.cs:164
+msgid "Edit program"
+msgstr ""
+
+#. Translators: Shown when recording was started with nothing set up to record from.
+#: UI/Recording/Transport.cs:32
+msgid "Add at least one source before recording."
+msgstr ""
+
+#. Translators: Label of the spin box choosing how many selections may be saved simultaneously.
+#: UI/Selections/SaveDialog.cs:64
+msgid "Maximum number of threads"
+msgstr ""
+
+#. Translators: Title of the folder picker opened while choosing where selection files are saved.
+#: UI/Selections/SaveDialog.cs:121
+msgid "Choose a folder for saved selections"
+msgstr ""
+
+#. Translators: Warning shown when the common name for saved selection files is empty.
+#: UI/Selections/SaveDialog.cs:134
+msgid "Enter a name for the selection files."
+msgstr ""
+
+#. Translators: Warning shown when the common name for saved selection files is too long.
+#: UI/Selections/SaveDialog.cs:140
+msgid "The name is too long."
+msgstr ""
+
+#. Translators: Warning shown when the common name contains characters Windows forbids in files.
+#: UI/Selections/SaveDialog.cs:146
+msgid "The name contains characters that cannot be used in a file name."
+msgstr ""
+
+#. Translators: Warning shown when no output folder was chosen for selection files.
+#: UI/Selections/SaveDialog.cs:153
+msgid "Choose a folder for the selection files."
+msgstr ""
+
+#. Translators: Warning when the selection folder cannot be created. {message} is the operating system's explanation.
+#: UI/Selections/SaveDialog.cs:164
+msgid ""
+"The folder could not be created.\n"
+"{message}"
+msgstr ""
+
+#. Translators: Label of the milliseconds box in a selection time dialog.
+#: UI/Selections/TimeDialog.cs:37
+msgid "Milliseconds"
+msgstr ""
+
+#. Translators: Title of the error for a selection time entered beyond the file's end.
+#: UI/Selections/TimeDialog.cs:94
+msgid "Selection time"
+msgstr ""
+
+#. Translators: Title of the window that picks a subtitle file to load, and its file-type filter.
+#: UI/Services/Dialogs/Playback.cs:20
+msgid "Load subtitle"
+msgstr ""
+
+#. Translators: File-type filter for supported subtitle files, followed by all files.
+#: UI/Services/Dialogs/Playback.cs:22
+msgid ""
+"Subtitle files (*.srt;*.ass;*.ssa;*.vtt;*.sub)|*.srt;*.ass;*.ssa;*.vtt;*.sub|"
+"All files (*.*)|*.*"
+msgstr ""
+
+#. Translators: Prompt asking for a subtitle file's web address.
+#: UI/Services/Dialogs/Playback.cs:30
+msgid "Enter the web address of a subtitle file:"
+msgstr ""
+
+#. Translators: Title of the box asking for a subtitle file's web address.
+#: UI/Services/Dialogs/Playback.cs:32
+msgid "Load subtitle from URL"
+msgstr ""
+
+#. Translators: Title of the multiple-file picker adding playlist entries.
+#: UI/Services/Dialogs/Playlists.cs:29
+msgid "Add files"
+msgstr ""
+
+#. Translators: Title of the dialog choosing a playlist export filename and format.
+#: UI/Services/Dialogs/Playlists.cs:36
+msgid "Save Playlist As"
+msgstr ""
+
+#. Translators: Save dialog file types. JSON, M3U and M3U8 and all wildcard patterns must remain unchanged.
+#: UI/Services/Dialogs/Playlists.cs:38
+msgid ""
+"M3U8 playlist (*.m3u8)|*.m3u8|M3U playlist (*.m3u)|*.m3u|JSON playlist (*."
+"json)|*.json"
+msgstr ""
+
+#. Translators: Confirmation before replacing an existing playlist after adjusting its filename extension.
+#: UI/Services/Dialogs/Playlists.cs:49
+msgid "Replace the existing playlist file?"
+msgstr ""
+
+#. Translators: Default base name for a selected part when the source has no usable file name.
+#. Translators: Default common name for numbered files created by Save Selection Points.
+#: UI/Services/Dialogs/Selections.cs:26 UI/Services/Dialogs/Selections.cs:65
+msgid "selection"
+msgstr ""
+
+#. Translators: Default file name for a saved selection. {name} is the source file's base name.
+#: UI/Services/Dialogs/Selections.cs:28
+msgid "{name} - selection"
+msgstr ""
+
+#. Translators: MP4 choice in the format list when saving selected parts of a video.
+#: UI/Services/Dialogs/Selections.cs:75
+msgid "MP4 video (*.mp4)"
+msgstr ""
+
+#. Translators: Matroska choice in the format list when saving selected parts of a video.
+#: UI/Services/Dialogs/Selections.cs:77
+msgid "Matroska video (*.mkv)"
+msgstr ""
+
+#. Translators: WebM choice in the format list when saving selected parts of a video.
+#: UI/Services/Dialogs/Selections.cs:79
+msgid "WebM video (*.webm)"
+msgstr ""
+
+#. Translators: QuickTime choice in the format list when saving selected parts of a video.
+#: UI/Services/Dialogs/Selections.cs:81
+msgid "QuickTime video (*.mov)"
+msgstr ""
+
+#. Translators: AVI choice in the format list when saving selected parts of a video.
+#: UI/Services/Dialogs/Selections.cs:83
+msgid "AVI video (*.avi)"
+msgstr ""
+
+#. Translators: MP3 choice in the format list when saving selected parts of an audio file.
+#: UI/Services/Dialogs/Selections.cs:88
+msgid "MP3 audio (*.mp3)"
+msgstr ""
+
+#. Translators: M4A choice in the format list when saving selected parts of an audio file.
+#: UI/Services/Dialogs/Selections.cs:90
+msgid "M4A audio (*.m4a)"
+msgstr ""
+
+#. Translators: FLAC choice in the format list when saving selected parts of an audio file.
+#: UI/Services/Dialogs/Selections.cs:92
+msgid "FLAC audio (*.flac)"
+msgstr ""
+
+#. Translators: WAV choice in the format list when saving selected parts of an audio file.
+#: UI/Services/Dialogs/Selections.cs:94
+msgid "WAV audio (*.wav)"
+msgstr ""
+
+#. Translators: Ogg Vorbis choice in the format list when saving selected parts of an audio file.
+#: UI/Services/Dialogs/Selections.cs:96
+msgid "Ogg Vorbis audio (*.ogg)"
+msgstr ""
+
+#. Translators: Opus choice in the format list when saving selected parts of an audio file.
+#: UI/Services/Dialogs/Selections.cs:98
+msgid "Opus audio (*.opus)"
+msgstr ""
+
 #. Translators: Button in the Spotify browser that opens account authorization. Keep Spotify unchanged.
-#: UI/Spotify/BrowserDialog.cs:66
+#: UI/Spotify/BrowserDialog.cs:62
 msgid "Sign in to Spotify"
 msgstr ""
 
 #. Translators: Button in the Spotify browser that disconnects the account.
-#: UI/Spotify/BrowserDialog.cs:69
+#: UI/Spotify/BrowserDialog.cs:65
 msgid "Sign out"
 msgstr ""
 
 #. Translators: Label for the collection list on the Spotify Home tab.
-#: UI/Spotify/BrowserDialog.cs:82
+#: UI/Spotify/BrowserDialog.cs:78
 msgid "Collections"
 msgstr ""
 
 #. Translators: Button in a Spotify list that opens the selected collection or search result.
-#: UI/Spotify/BrowserDialog.cs:86 UI/Spotify/BrowserDialog.cs:142
+#: UI/Spotify/BrowserDialog.cs:82 UI/Spotify/BrowserDialog.cs:138
 #: UI/Spotify/SearchResultsDialog.cs:52
 msgid "Open selection"
 msgstr ""
 
 #. Translators: Tab in the Spotify browser showing listening history and recommendations.
 #. Translators: A channel browser tab: the channel's front page.
-#: UI/Spotify/BrowserDialog.cs:94 YouTube/Client/Channels.cs:28
+#: UI/Spotify/BrowserDialog.cs:90 YouTube/Client/Channels.cs:28
 msgid "Home"
 msgstr ""
 
 #. Translators: Label for the search entry on the Spotify Search tab. Keep Spotify unchanged.
-#: UI/Spotify/BrowserDialog.cs:98
+#: UI/Spotify/BrowserDialog.cs:94
 msgid "Search Spotify for a song, artist or playlist"
 msgstr ""
 
 #. Translators: Label for the result type selector on the Spotify Search tab.
-#: UI/Spotify/BrowserDialog.cs:102
+#: UI/Spotify/BrowserDialog.cs:98
 msgid "Filter by"
 msgstr ""
 
 #. Translators: Option in the Spotify search filter to show tracks.
-#: UI/Spotify/BrowserDialog.cs:107
+#: UI/Spotify/BrowserDialog.cs:103
 msgid "Songs"
 msgstr ""
 
 #. Translators: Option in the Spotify search filter to show musicians and groups.
-#: UI/Spotify/BrowserDialog.cs:109
+#: UI/Spotify/BrowserDialog.cs:105
 msgid "Artists"
 msgstr ""
 
 #. Translators: Label above the search history on the Spotify Search tab.
-#: UI/Spotify/BrowserDialog.cs:120
+#: UI/Spotify/BrowserDialog.cs:116
 msgid "Recent searches"
 msgstr ""
 
 #. Translators: Label above the account collections on the Spotify Library tab. Liked Songs means saved favorite tracks.
-#: UI/Spotify/BrowserDialog.cs:138
+#: UI/Spotify/BrowserDialog.cs:134
 msgid "Your playlists and Liked Songs"
 msgstr ""
 
 #. Translators: Tab in the Spotify browser listing account playlists and saved songs.
-#: UI/Spotify/BrowserDialog.cs:150
+#: UI/Spotify/BrowserDialog.cs:146
 msgid "Library"
 msgstr ""
 
@@ -7770,6 +7725,32 @@ msgstr ""
 #. Translators: Spoken when reaching the end of a Spotify collection's track list requests another page.
 #: UI/Spotify/TracksDialog.cs:111
 msgid "Loading more tracks..."
+msgstr ""
+
+#. Translators: Title of the window offering a newer Luna Player release.
+#: UI/Updates/UpdateDialog.cs:15
+msgid "New version detected"
+msgstr ""
+
+#: UI/Updates/UpdateDialog.cs:21
+msgid ""
+"A new version of Luna is available. Your current version is {current}. "
+"Available version: {available}. Would you like to update?"
+msgstr ""
+
+#. Translators: Label above the list of changes in a new Luna Player release.
+#: UI/Updates/UpdateDialog.cs:26
+msgid "What's new"
+msgstr ""
+
+#. Translators: Button that downloads and installs the offered Luna Player release.
+#: UI/Updates/UpdateDialog.cs:34
+msgid "Update"
+msgstr ""
+
+#. Translators: Button that dismisses an available update without installing it.
+#: UI/Updates/UpdateDialog.cs:37
+msgid "Later"
 msgstr ""
 
 #. Translators: Title of the window offering to fetch the extra programs YouTube needs.

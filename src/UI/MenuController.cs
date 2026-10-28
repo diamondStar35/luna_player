@@ -30,11 +30,11 @@ internal sealed class MenuController
     private readonly Menu _subtitleMenu;
     private readonly MenuItem _subtitleMenuItem;
     private readonly MenuItem _subtitleRememberItem;
-    private readonly Dictionary<int, RecentCommand> _recentCommands = [];
+    private readonly Dictionary<int, LunaPlayer.UI.Playlists.RecentCommand> _recentCommands = [];
     private readonly Menu _recentFilesMenu;
     private readonly Menu _recentFoldersMenu;
     private readonly Menu _recentPlaylistsMenu;
-    private RecentMenuState _recents;
+    private LunaPlayer.UI.Playlists.RecentMenuState _recents;
     private readonly MenuBar _menuBar;
     private readonly int _bookmarksMenuIndex;
     private readonly int _selectionMenuIndex;
@@ -50,22 +50,22 @@ internal sealed class MenuController
     private readonly MenuItem _startRecordingItem;
     private readonly MenuItem _pauseRecordingItem;
     private readonly MenuItem _stopRecordingItem;
-    private readonly ChapterMenuComponents _chapters;
+    private readonly LunaPlayer.UI.Menus.ChapterMenuComponents _chapters;
     private readonly Dictionary<int, int> _chapterCommands = [];
     private readonly List<MenuItem> _chapterItems = [];
-    private IReadOnlyList<ChapterMenuEntry> _chapterEntries = [];
+    private IReadOnlyList<LunaPlayer.UI.Menus.ChapterMenuEntry> _chapterEntries = [];
     private ShortcutManager _shortcuts;
     internal MenuController(
         Frame frame,
         IReadOnlyList<ActionDefinition> actions,
         ShortcutManager shortcuts,
         IReadOnlyList<PresetEntry> presets,
-        RecentMenuState recents)
+        LunaPlayer.UI.Playlists.RecentMenuState recents)
     {
         _shortcuts = shortcuts;
         _recents = recents;
         BuildCommandIds(actions);
-        var menu = MainMenuBuilder.Build(_commandIds, shortcuts, presets, recents);
+        var menu = LunaPlayer.UI.Menus.Builder.Build(_commandIds, shortcuts, presets, recents);
         _menuBar = menu.MenuBar;
         _chapters = menu.Chapters;
         _selectionMenuIndex = menu.SelectionMenuIndex;
@@ -145,9 +145,9 @@ internal sealed class MenuController
     /// <summary>Resolves a menu-command id to the recents command it stands for.</summary>
     internal bool TryGetChapter(int commandId, out int index) => _chapterCommands.TryGetValue(commandId, out index);
 
-    internal bool TryGetRecent(int commandId, out RecentCommand recent) => _recentCommands.TryGetValue(commandId, out recent);
+    internal bool TryGetRecent(int commandId, out LunaPlayer.UI.Playlists.RecentCommand recent) => _recentCommands.TryGetValue(commandId, out recent);
 
-    internal void SetChapterState(IReadOnlyList<ChapterMenuEntry> entries, int? current, bool stop, bool audiobook)
+    internal void SetChapterState(IReadOnlyList<LunaPlayer.UI.Menus.ChapterMenuEntry> entries, int? current, bool stop, bool audiobook)
     {
         if (!_chapterEntries.SequenceEqual(entries))
         {
@@ -199,7 +199,7 @@ internal sealed class MenuController
 
     internal void SetEqualizerPreset(string? presetId)
     {
-        var key = presetId ?? MainMenuBuilder.EqualizerOffKey;
+        var key = presetId ?? LunaPlayer.UI.Menus.Builder.EqualizerOffKey;
         if (_equalizerItems.TryGetValue(key, out var item))
             item.Checked = true;
     }
@@ -212,12 +212,12 @@ internal sealed class MenuController
             _equalizerMenu.Delete(_equalizerMenu[0]);
         _equalizerCommands.Clear();
         _equalizerItems.Clear();
-        MainMenuBuilder.FillEqualizerMenu(
+        LunaPlayer.UI.Menus.Builder.FillEqualizerMenu(
             _equalizerMenu, presets, _commandIds, _shortcuts, _equalizerCommands, _equalizerItems);
         SetEqualizerPreset(selected);
     }
 
-    internal void RebuildSubtitleMenu(IReadOnlyList<SubtitleMenuEntry> entries, int? activeId)
+    internal void RebuildSubtitleMenu(IReadOnlyList<LunaPlayer.UI.Playback.SubtitleMenuEntry> entries, int? activeId)
     {
         // Only the dynamic radio region is rebuilt - the items above the first separator. The fixed commands
         // below it (load from file/URL, remember) keep their permanent action ids; deleting them would free
@@ -226,28 +226,28 @@ internal sealed class MenuController
             _subtitleMenu.Delete(_subtitleMenu[0]);
         _subtitleCommands.Clear();
         _subtitleItems.Clear();
-        MainMenuBuilder.FillSubtitleTracks(_subtitleMenu, entries, activeId, _subtitleCommands, _subtitleItems);
+        LunaPlayer.UI.Menus.Builder.FillSubtitleTracks(_subtitleMenu, entries, activeId, _subtitleCommands, _subtitleItems);
     }
 
     internal void SetSubtitleRemember(bool on) => _subtitleRememberItem.Checked = on;
 
     internal void SetSubtitleSelection(int? activeId)
     {
-        var key = activeId?.ToString(CultureInfo.InvariantCulture) ?? MainMenuBuilder.SubtitleOffKey;
+        var key = activeId?.ToString(CultureInfo.InvariantCulture) ?? LunaPlayer.UI.Menus.Builder.SubtitleOffKey;
         if (_subtitleItems.TryGetValue(key, out var item))
             item.Checked = true;
     }
 
     internal void SetSubtitleControlsEnabled(bool enabled) => _subtitleMenuItem.Enabled = enabled;
     internal void RebuildRecentsMenu(
-        IReadOnlyList<RecentMenuEntry> files,
-        IReadOnlyList<RecentMenuEntry> folders,
-        IReadOnlyList<RecentMenuEntry> playlists)
+        IReadOnlyList<LunaPlayer.UI.Playlists.RecentMenuEntry> files,
+        IReadOnlyList<LunaPlayer.UI.Playlists.RecentMenuEntry> folders,
+        IReadOnlyList<LunaPlayer.UI.Playlists.RecentMenuEntry> playlists)
     {
-        var recents = new RecentMenuState(files, folders, playlists);
+        var recents = new LunaPlayer.UI.Playlists.RecentMenuState(files, folders, playlists);
         // Rebuilding attached menus triggers native layout and accessibility updates for every deletion and
         // insertion. Keep existing rows and command ids, changing only the entries whose content changed.
-        MainMenuBuilder.UpdateRecentsMenus(
+        LunaPlayer.UI.Menus.Builder.UpdateRecentsMenus(
             _recentFilesMenu,
             _recentFoldersMenu,
             _recentPlaylistsMenu,

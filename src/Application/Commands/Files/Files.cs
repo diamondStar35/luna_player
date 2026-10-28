@@ -163,7 +163,7 @@ internal sealed partial class Files
     private void OpenFileFromDialog()
     {
         var selection = _view.Dialogs.ChooseFile(_settings.General.LastDirectory);
-        if (selection is not FileSelection file)
+        if (selection is not LunaPlayer.UI.Contracts.FileSelection file)
             return;
         _settings.General.LastDirectory = string.IsNullOrEmpty(file.Directory)
             ? Path.GetDirectoryName(file.Path) ?? string.Empty

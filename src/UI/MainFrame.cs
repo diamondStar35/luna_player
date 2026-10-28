@@ -13,7 +13,7 @@ internal sealed class MainFrame : IMainView
 {
     private readonly Frame _frame;
     private readonly List<Bitmap> _transportBitmaps = [];
-    private CustomBitmapButton? _playButton;
+    private LunaPlayer.UI.Controls.CustomBitmapButton? _playButton;
     private Bitmap? _playBitmap;
     private Bitmap? _pauseBitmap;
     private MenuController? _menus;
@@ -50,7 +50,7 @@ internal sealed class MainFrame : IMainView
         IApplicationDispatcher dispatcher,
         LunaPlayer.Recording.AudioCatalog catalog,
         IReadOnlyList<PresetEntry> presets,
-        RecentMenuState recents)
+        LunaPlayer.UI.Playlists.RecentMenuState recents)
     {
         if (_input is not null)
             return;
@@ -72,7 +72,7 @@ internal sealed class MainFrame : IMainView
         _input = input;
         // The transport buttons show the control icons rather than text. They sit directly on the frame, not
         // on a wxPanel: a panel with no keyboard-focusable children becomes the focus target when the window
-        // opens, and a screen reader announces "panel" on every launch. Each is a CustomBitmapButton, which
+        // opens, and a screen reader announces "panel" on every launch. Each is a LunaPlayer.UI.Controls.CustomBitmapButton, which
         // draws only its icon, keeps a spoken name through its label, and declines focus so the window's
         // controls are reached through the menus and shortcut keys rather than Tab. The grey a bare frame
         // would paint is handled by the themed background set above.
@@ -92,16 +92,16 @@ internal sealed class MainFrame : IMainView
             [previousBitmap, rewindBitmap, playBitmap, pauseBitmap, forwardBitmap, nextBitmap]);
 
         // Translators: Spoken name of the main-window button that plays the previous track. The button shows an icon, not this text.
-        var previousButton = new CustomBitmapButton(_frame, previousBitmap, Tr("Previous"));
+        var previousButton = new LunaPlayer.UI.Controls.CustomBitmapButton(_frame, previousBitmap, Tr("Previous"));
         // Translators: Spoken name of the main-window button that steps playback backward. The button shows an icon, not this text.
-        var rewindButton = new CustomBitmapButton(_frame, rewindBitmap, Tr("Rewind"));
+        var rewindButton = new LunaPlayer.UI.Controls.CustomBitmapButton(_frame, rewindBitmap, Tr("Rewind"));
         // Translators: Spoken name of the main-window button that starts playback. It becomes Pause while playing. The button shows an icon, not this text.
-        var playButton = new CustomBitmapButton(_frame, playBitmap, Tr("Play"));
+        var playButton = new LunaPlayer.UI.Controls.CustomBitmapButton(_frame, playBitmap, Tr("Play"));
         _playButton = playButton;
         // Translators: Spoken name of the main-window button that steps playback forward. The button shows an icon, not this text.
-        var forwardButton = new CustomBitmapButton(_frame, forwardBitmap, Tr("Forward"));
+        var forwardButton = new LunaPlayer.UI.Controls.CustomBitmapButton(_frame, forwardBitmap, Tr("Forward"));
         // Translators: Spoken name of the main-window button that plays the next track. The button shows an icon, not this text.
-        var nextButton = new CustomBitmapButton(_frame, nextBitmap, Tr("Next"));
+        var nextButton = new LunaPlayer.UI.Controls.CustomBitmapButton(_frame, nextBitmap, Tr("Next"));
 
         var buttonSizer = new BoxSizer(Orientation.Horizontal);
         buttonSizer.Insert(0, previousButton, flags: SizerFlags.All, border: 5);
@@ -143,10 +143,10 @@ internal sealed class MainFrame : IMainView
         add => Input.ChapterRequested += value;
         remove => Input.ChapterRequested -= value;
     }
-    public void SetChapterState(IReadOnlyList<ChapterMenuEntry> entries, int? current, bool stop, bool audiobook)
+    public void SetChapterState(IReadOnlyList<LunaPlayer.UI.Menus.ChapterMenuEntry> entries, int? current, bool stop, bool audiobook)
         => Menus.SetChapterState(entries, current, stop, audiobook);
 
-    public event Action<RecentCommand>? RecentRequested
+    public event Action<LunaPlayer.UI.Playlists.RecentCommand>? RecentRequested
     {
         add => Input.RecentRequested += value;
         remove => Input.RecentRequested -= value;
@@ -229,15 +229,15 @@ internal sealed class MainFrame : IMainView
     public void RebuildEqualizerMenu(IReadOnlyList<PresetEntry> presets, string? selected)
         => Menus.RebuildEqualizerMenu(presets, selected);
 
-    public void RebuildSubtitleMenu(IReadOnlyList<SubtitleMenuEntry> entries, int? activeId)
+    public void RebuildSubtitleMenu(IReadOnlyList<LunaPlayer.UI.Playback.SubtitleMenuEntry> entries, int? activeId)
         => Menus.RebuildSubtitleMenu(entries, activeId);
 
     public void SetSubtitleRemember(bool on) => Menus.SetSubtitleRemember(on);
 
     public void RebuildRecentsMenu(
-        IReadOnlyList<RecentMenuEntry> files,
-        IReadOnlyList<RecentMenuEntry> folders,
-        IReadOnlyList<RecentMenuEntry> playlists)
+        IReadOnlyList<LunaPlayer.UI.Playlists.RecentMenuEntry> files,
+        IReadOnlyList<LunaPlayer.UI.Playlists.RecentMenuEntry> folders,
+        IReadOnlyList<LunaPlayer.UI.Playlists.RecentMenuEntry> playlists)
         => Menus.RebuildRecentsMenu(files, folders, playlists);
 
     public void SetSubtitleSelection(int? activeId) => Menus.SetSubtitleSelection(activeId);
@@ -406,6 +406,6 @@ internal sealed class MainFrame : IMainView
     private MenuController Menus
         => _menus ?? throw new InvalidOperationException("The main window has not finished initializing.");
 
-    private CustomBitmapButton PlayButton
+    private LunaPlayer.UI.Controls.CustomBitmapButton PlayButton
         => _playButton ?? throw new InvalidOperationException("The main window has not finished initializing.");
 }

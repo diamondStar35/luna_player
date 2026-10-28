@@ -5,7 +5,7 @@ using WxSharp;
 
 namespace LunaPlayer.UI.Audio;
 
-internal sealed class GeneralPreferences : PreferencesPage
+internal sealed class GeneralPreferences : LunaPlayer.UI.Preferences.PreferencesPage
 {
     private readonly AudioSettings _settings;
     private readonly TextCtrl _customSeek;

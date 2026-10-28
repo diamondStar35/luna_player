@@ -4,7 +4,7 @@ using WxSharp;
 
 namespace LunaPlayer.UI.Audio;
 
-internal sealed class PlaybackPreferences : PreferencesPage
+internal sealed class PlaybackPreferences : LunaPlayer.UI.Preferences.PreferencesPage
 {
     private readonly AudioSettings _settings;
     private readonly CheckBox _normalize;

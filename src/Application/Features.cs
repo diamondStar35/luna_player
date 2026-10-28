@@ -80,7 +80,7 @@ internal sealed partial class Features : IDisposable
     {
         var speech = _speech;
         var player = _player;
-        var clipboard = new WxClipboardService();
+        var clipboard = new LunaPlayer.UI.Services.WxClipboardService();
         // Now that there is a toolkit, the crash window can offer to copy.
         CrashReport.SetClipboard(clipboard);
         _spotifyPlayback = new LunaPlayer.Spotify.Playback.Sessions(_settings.Spotify, player, _dispatcher);

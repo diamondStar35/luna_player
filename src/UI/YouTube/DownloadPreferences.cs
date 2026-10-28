@@ -4,7 +4,7 @@ using WxSharp;
 namespace LunaPlayer.UI.YouTube;
 
 /// <summary>The download page of the YouTube settings category.</summary>
-internal sealed class DownloadPreferences : UI.PreferencesPage
+internal sealed class DownloadPreferences : LunaPlayer.UI.Preferences.PreferencesPage
 {
     private readonly DownloadSettings _settings;
     private readonly TextCtrl _folder;

@@ -117,7 +117,7 @@ internal sealed class Equalizer
         // not in force would change the sound to something the user never asked to hear.
         var live = _settings.Equalizer.Enabled
             && string.Equals(id, _settings.Equalizer.Preset, StringComparison.Ordinal);
-        var context = new EqualizerEditContext(
+        var context = new LunaPlayer.UI.Equalizer.EqualizerEditContext(
             // Translators: Title of the window for changing an equalizer preset. {name} is the preset's name.
             TrFormat("Edit {name}", entry.Name),
             entry.Name,

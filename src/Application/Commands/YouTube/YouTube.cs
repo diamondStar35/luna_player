@@ -142,8 +142,8 @@ internal sealed partial class YouTube
             MixedLinkBehavior.Playlist => LinkKind.Playlist,
             _ => _view.Dialogs.ChooseYouTubeLinkKind() switch
             {
-                YouTubeLinkKind.Video => LinkKind.Video,
-                YouTubeLinkKind.Playlist => LinkKind.Playlist,
+                LunaPlayer.UI.YouTube.YouTubeLinkKind.Video => LinkKind.Video,
+                LunaPlayer.UI.YouTube.YouTubeLinkKind.Playlist => LinkKind.Playlist,
                 _ => null,
             },
         };
@@ -151,7 +151,7 @@ internal sealed partial class YouTube
 
     private void Search()
     {
-        var prompt = new YouTubeSearchPrompt(
+        var prompt = new LunaPlayer.UI.YouTube.YouTubeSearchPrompt(
             InitialQuery: string.Empty,
             SuggestionsEnabled: _settings.YouTube.SearchSuggestions,
             FetchSuggestions: _backend.Suggestions,

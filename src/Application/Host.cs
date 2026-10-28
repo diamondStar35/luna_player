@@ -23,7 +23,7 @@ internal sealed class ApplicationHost : IDisposable
         _singleInstance = singleInstance;
         // Begin settings before constructing even the shell, preserving overlap with native window creation.
         var settingsTask = Task.Run(Resources.LoadSettings);
-        _dispatcher = new WxDispatcher();
+        _dispatcher = new LunaPlayer.UI.Services.WxDispatcher();
         _view = new MainFrame();
         _startup = new Startup(_view, _dispatcher, initialPaths, CompleteStartup);
         // Register close handling before the first background service can be attached.

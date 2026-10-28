@@ -140,7 +140,7 @@ internal sealed class Updates : IDisposable
         }
 
         var update = outcome.Update;
-        if (_view.Dialogs.OfferAppUpdate(new AppUpdatePrompt(AppInfo.Version, update.Version, update.Changes)))
+        if (_view.Dialogs.OfferAppUpdate(new LunaPlayer.UI.Updates.AppUpdatePrompt(AppInfo.Version, update.Version, update.Changes)))
             Download(update);
     }
 

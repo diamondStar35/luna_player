@@ -2,11 +2,12 @@ using System.Globalization;
 
 namespace LunaPlayer.Playback;
 
-internal sealed partial class Engine
+internal sealed class TrackDiscovery(MpvSession session)
 {
+    private readonly MpvSession _session = session;
     public IReadOnlyList<AudioDevice> GetAudioDevices()
     {
-        if (ReadObject("audio-device-list") is not IEnumerable<object?> values)
+        if (_session.ReadObject("audio-device-list") is not IEnumerable<object?> values)
             return [];
         var devices = new List<AudioDevice>();
         foreach (var value in values)
@@ -23,7 +24,7 @@ internal sealed partial class Engine
         return devices;
     }
 
-    public string CurrentAudioDevice => ReadString("audio-device") ?? "auto";
+    public string CurrentAudioDevice => _session.ReadString("audio-device") ?? "auto";
 
     public bool SetAudioDevice(string name)
     {
@@ -31,12 +32,12 @@ internal sealed partial class Engine
         if (!string.Equals(target, "auto", StringComparison.Ordinal)
             && !GetAudioDevices().Any(device => string.Equals(device.Name, target, StringComparison.Ordinal)))
             target = "auto";
-        return TrySetProperty("audio-device", target);
+        return _session.TrySetProperty("audio-device", target);
     }
 
     public IReadOnlyList<AudioTrack> GetAudioTracks()
     {
-        if (ReadObject("track-list") is not IEnumerable<object?> values)
+        if (_session.ReadObject("track-list") is not IEnumerable<object?> values)
             return [];
         var tracks = new List<AudioTrack>();
         foreach (var value in values)
@@ -52,11 +53,11 @@ internal sealed partial class Engine
         return tracks;
     }
 
-    public bool SetAudioTrack(int id) => TrySetProperty("aid", id);
+    public bool SetAudioTrack(int id) => _session.TrySetProperty("aid", id);
 
     public IReadOnlyList<SubtitleTrack> GetSubtitleTracks()
     {
-        if (ReadObject("track-list") is not IEnumerable<object?> values)
+        if (_session.ReadObject("track-list") is not IEnumerable<object?> values)
             return [];
         var tracks = new List<SubtitleTrack>();
         foreach (var value in values)
@@ -68,9 +69,9 @@ internal sealed partial class Engine
         return tracks;
     }
 
-    public bool SetSubtitleTrack(int id) => TrySetProperty("sid", id);
+    public bool SetSubtitleTrack(int id) => _session.TrySetProperty("sid", id);
 
-    public bool DisableSubtitles() => TrySetProperty("sid", "no");
+    public bool DisableSubtitles() => _session.TrySetProperty("sid", "no");
 
     private static TrackData? ReadTrack(object? value, string expectedType)
     {
@@ -104,7 +105,7 @@ internal sealed partial class Engine
     {
         if (string.IsNullOrWhiteSpace(source))
             return false;
-        return TryDo(mpv =>
+        return _session.TryDo(mpv =>
         {
             if (!string.IsNullOrWhiteSpace(language))
                 mpv.Command("sub-add", source, "select", string.IsNullOrWhiteSpace(title) ? source : title, language);

@@ -1,6 +1,6 @@
 using WxSharp;
 
-namespace LunaPlayer.UI;
+namespace LunaPlayer.UI.Preferences;
 
 internal interface IPreferencesPage
 {

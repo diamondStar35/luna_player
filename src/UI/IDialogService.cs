@@ -15,7 +15,7 @@ namespace LunaPlayer.UI;
 internal interface IDialogService
 {
     LunaPlayer.Playlist.Document? EditPlaylist(LunaPlayer.Playlist.Document document, Action<string> speak, bool metadataOnly = false);
-    PlaylistRequest? ManagePlaylists(IReadOnlyList<LunaPlayer.Playlist.Document> documents);
+    LunaPlayer.UI.Playlists.PlaylistRequest? ManagePlaylists(IReadOnlyList<LunaPlayer.Playlist.Document> documents);
     string[] ChoosePlaylistFiles();
     string? ChoosePlaylistDestination();
     /// <summary>Browses a radio category and returns its loaded station order and selected station.</summary>
@@ -25,7 +25,7 @@ internal interface IDialogService
 
     /// <summary>Opens the band editor on one preset, giving back what was saved or null if it was not.
     /// </summary>
-    EqualizerEditResult? EditEqualizerPreset(EqualizerEditContext context);
+    LunaPlayer.UI.Equalizer.EqualizerEditResult? EditEqualizerPreset(LunaPlayer.UI.Equalizer.EqualizerEditContext context);
 
     /// <summary>Opens the window listing every preset, giving back whether anything changed in it.
     /// </summary>
@@ -37,7 +37,7 @@ internal interface IDialogService
     /// <summary>Asks for a subtitle's web address to load, or null when the user cancels or leaves it blank.</summary>
     string? PromptSubtitleUrl();
 
-    FileSelection? ChooseFile(string initialDirectory);
+    LunaPlayer.UI.Contracts.FileSelection? ChooseFile(string initialDirectory);
 
     /// <param name="message">What the window asks for. Empty leaves the system's own wording, which is
     /// what the callers that are choosing "a folder" and nothing more particular want.</param>
@@ -58,32 +58,32 @@ internal interface IDialogService
     void ShowAbout();
 
     /// <summary>Offers a newer Luna Player release and shows its change list. True means update now.</summary>
-    bool OfferAppUpdate(AppUpdatePrompt prompt);
+    bool OfferAppUpdate(LunaPlayer.UI.Updates.AppUpdatePrompt prompt);
     double? ChooseTime(double duration, double elapsed);
     double? ChooseSelectionTime(string title, string prompt, double duration, double elapsed);
     string? ChooseSelectionDestination(string source, bool video);
-    SelectionSaveOptions? ChooseSelectionBatch(string source, bool video);
+    LunaPlayer.UI.Selections.SelectionSaveOptions? ChooseSelectionBatch(string source, bool video);
 
     /// <summary>Opens the sleep-timer window, prefilled from the last-used choices and the current armed state.
     /// Null means the window was cancelled.</summary>
-    SleepTimerDialogResult? ChooseSleepTimer(SleepTimerRequest initial, bool armed, string? statusText);
+    LunaPlayer.UI.Playback.SleepTimerDialogResult? ChooseSleepTimer(LunaPlayer.UI.Playback.SleepTimerRequest initial, bool armed, string? statusText);
     int? ChooseAudioDevice(IReadOnlyList<string> descriptions, int selectedIndex);
 
     /// <summary>Shows the file's audio tracks to switch between, each already worded for the user. Null means
     /// the window was cancelled.</summary>
     int? ChooseAudioTrack(IReadOnlyList<string> labels, int selectedIndex);
-    BookmarkManagementRequest? ManageBookmarks(IReadOnlyList<BookmarkListItem> bookmarks);
+    LunaPlayer.UI.Bookmarks.BookmarkManagementRequest? ManageBookmarks(IReadOnlyList<LunaPlayer.UI.Bookmarks.BookmarkListItem> bookmarks);
 
     /// <summary>Shows the list of loaded files. The names are asked for a row at a time rather than handed
     /// over up front, so a playlist of any size opens at once.</summary>
     /// <param name="nameAt">The name to show for one row, called only as that row is drawn.</param>
-    OpenedFilesRequest? ChooseOpenedFile(int count, Func<int, string> nameAt, int selectedIndex);
+    LunaPlayer.UI.Playlists.OpenedFilesRequest? ChooseOpenedFile(int count, Func<int, string> nameAt, int selectedIndex);
 
     /// <param name="proportional">Whether the job can say how far through it is. A job that cannot gets a
     /// window with no bar on it, because a bar that never moves is worse than none.</param>
     /// <param name="detailed">Whether the job reports several lines at a time rather than one. A
     /// detailed window shows them in a read-only text area; the rest get a label.</param>
-    IProgressView BeginProgress(string title, string message, bool proportional, bool detailed);
+    LunaPlayer.UI.Contracts.IProgressView BeginProgress(string title, string message, bool proportional, bool detailed);
     void ShowTextInfo(string title, string text);
 
     /// <summary>Shows the text an uploader wrote under a video, in the purpose-built window that can open its
@@ -92,33 +92,33 @@ internal interface IDialogService
 
     /// <summary>Asks which half of a link naming a video and a playlist the user meant. Null when they
     /// backed out.</summary>
-    YouTubeLinkKind? ChooseYouTubeLinkKind();
+    LunaPlayer.UI.YouTube.YouTubeLinkKind? ChooseYouTubeLinkKind();
 
     /// <summary>Opens the search window and returns what the user asked to search for, or null when they
     /// closed it without searching.</summary>
-    YouTubeSearchRequest? SearchYouTube(YouTubeSearchPrompt prompt);
-    FavoriteRequest? ManageFavorites(IReadOnlyList<FavoriteListItem> favorites, string selectedId);
-    FavoriteDraft? EditFavorite(string caption, FavoriteDraft value);
+    LunaPlayer.UI.YouTube.YouTubeSearchRequest? SearchYouTube(LunaPlayer.UI.YouTube.YouTubeSearchPrompt prompt);
+    LunaPlayer.UI.YouTube.FavoriteRequest? ManageFavorites(IReadOnlyList<LunaPlayer.UI.YouTube.FavoriteListItem> favorites, string selectedId);
+    LunaPlayer.UI.YouTube.FavoriteDraft? EditFavorite(string caption, LunaPlayer.UI.YouTube.FavoriteDraft value);
 
     /// <summary>Opens the IPTV source manager and returns what the user asked to do with which source, or
     /// null when they closed it. The manager reopens after add, edit and remove, like the favourites one.
     /// </summary>
-    IptvSourceRequest? ManageIptvSources(IReadOnlyList<IptvSourceListItem> sources, string selectedId);
+    LunaPlayer.UI.Iptv.IptvSourceRequest? ManageIptvSources(IReadOnlyList<LunaPlayer.UI.Iptv.IptvSourceListItem> sources, string selectedId);
 
     /// <summary>Opens the add-or-edit form for an IPTV source, giving back what was typed or null if the
     /// user backed out. The form shows only the fields the chosen kind needs.</summary>
     IptvSourceDraft? EditIptvSource(string caption, IptvSourceDraft value);
 
     /// <summary>Opens the channel browser on a loaded source and returns the index into
-    /// <see cref="ChannelBrowserPrompt.Channels"/> of the channel the user chose to play, or null when they
+    /// <see cref="LunaPlayer.UI.Iptv.ChannelBrowserPrompt.Channels"/> of the channel the user chose to play, or null when they
     /// closed it without playing anything.</summary>
-    int? BrowseChannels(ChannelBrowserPrompt prompt);
+    int? BrowseChannels(LunaPlayer.UI.Iptv.ChannelBrowserPrompt prompt);
 
     /// <summary>Opens the list of results and returns the row the user chose to play and whether they asked
     /// for its picture or its sound alone, or null when they closed it without playing anything. Everything
-    /// else the window offers it does for itself, through <see cref="IYouTubeResultsFeed"/>, without closing.
+    /// else the window offers it does for itself, through <see cref="LunaPlayer.UI.YouTube.IYouTubeResultsFeed"/>, without closing.
     /// </summary>
-    ResultChoice? ShowYouTubeResults(YouTubeResultsPrompt prompt);
+    LunaPlayer.UI.YouTube.ResultChoice? ShowYouTubeResults(LunaPlayer.UI.YouTube.YouTubeResultsPrompt prompt);
 
     /// <summary>Offers to fetch the programs a YouTube download needs. True when the user accepted.</summary>
     bool OfferYouTubeComponents();
@@ -163,6 +163,6 @@ internal interface IDialogService
     LunaPlayer.UI.Spotify.DialogOutcome ShowSpotifyBrowser(
         LunaPlayer.Spotify.Catalog catalog, LunaPlayer.Spotify.Auth auth,
         SpotifySettings settings, Action<string> speak, LunaPlayer.UI.Spotify.DialogOutcome? playback = null);
-    Settings? EditPreferences(Settings settings, PrefsOps operations, Action<string> speakHelp,
+    Settings? EditPreferences(Settings settings, LunaPlayer.UI.Preferences.PrefsOps operations, Action<string> speakHelp,
         bool openSpotifyCredentials = false);
 }

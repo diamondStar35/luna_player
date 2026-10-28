@@ -75,7 +75,7 @@ internal sealed partial class Player
         SavePosition();
         if (!_playlist.ClearAll())
             return false;
-        _playlist.SavedEntries = null;
+        _playlist.ReplaceSaved(null);
         StopEngine();
         CurrentChanged?.Invoke();
         StateChanged?.Invoke();

@@ -50,7 +50,7 @@ internal static class Program
         // as it initializes. Only the theme is read here, with a light-weight peek - the full settings load
         // validates settings, which builds the translated action tables and so needs a running App, so it
         // stays in the background startup pipeline.
-        LunaPlayer.UI.ThemeService.Apply(SettingsStore.PeekTheme(Paths.SettingsFile));
+        LunaPlayer.UI.Services.ThemeService.Apply(SettingsStore.PeekTheme(Paths.SettingsFile));
 
         try
         {

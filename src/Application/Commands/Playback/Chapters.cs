@@ -130,7 +130,7 @@ internal sealed class Chapters : IDisposable
         {
             // Source titles are data, not menu accelerators. Escape ampersands and control characters.
             var title = Player.ChapterTitle(chapter).Replace("&", "&&").Replace('\t', ' ').Replace('\r', ' ').Replace('\n', ' ');
-            return new ChapterMenuEntry(chapter.Index,
+            return new LunaPlayer.UI.Menus.ChapterMenuEntry(chapter.Index,
                 // Translators: A chapter in Player > Chapters. {number} is its source order, {title} its name,
                 // and {duration} the full chapter length, not its start time or remaining playback time.
                 TrFormat("{number}. {title}: {duration}", chapter.Index + 1, title, PlaybackTimeFormatter.Format(chapter.Duration)));

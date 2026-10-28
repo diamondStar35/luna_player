@@ -1,6 +1,6 @@
 using WxSharp;
 
-namespace LunaPlayer.UI;
+namespace LunaPlayer.UI.Controls;
 
 /// <summary>The window shown while a long job runs: what it is doing, how far it has got, and a way out.
 /// </summary>
@@ -26,7 +26,7 @@ namespace LunaPlayer.UI;
 /// modal loop is what keeps the rule above true: nothing here blocks the event loop, so Cancel is still an
 /// ordinary button press answered the moment it is made.
 /// </remarks>
-internal sealed class ProgressView : IProgressView
+internal sealed class ProgressView : LunaPlayer.UI.Contracts.IProgressView
 {
     /// <summary>The bar's range: a percentage to one decimal place, so a
     /// long download does not sit on the same step for several seconds.</summary>

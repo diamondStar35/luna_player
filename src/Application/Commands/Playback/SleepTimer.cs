@@ -45,10 +45,10 @@ internal sealed class Sleep
     private void Open()
     {
         var saved = _settings.SleepTimer;
-        var initial = new SleepTimerRequest(
+        var initial = new LunaPlayer.UI.Playback.SleepTimerRequest(
             saved.Mode, saved.DurationMinutes, saved.Action, saved.Fade, saved.FadeSeconds);
         var result = _view.Dialogs.ChooseSleepTimer(initial, _timer.IsArmed, _timer.IsArmed ? StatusText() : null);
-        if (result is not SleepTimerDialogResult chosen)
+        if (result is not LunaPlayer.UI.Playback.SleepTimerDialogResult chosen)
             return;
         if (chosen.TurnOff)
         {
@@ -70,7 +70,7 @@ internal sealed class Sleep
         _timer.Arm(request);
     }
 
-    private void Persist(SleepTimerRequest request)
+    private void Persist(LunaPlayer.UI.Playback.SleepTimerRequest request)
     {
         var saved = _settings.SleepTimer;
         saved.Mode = request.Mode;

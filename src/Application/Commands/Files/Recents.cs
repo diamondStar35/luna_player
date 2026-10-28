@@ -12,9 +12,9 @@ namespace LunaPlayer.Application.Commands.Files;
 
 internal sealed partial class Files
 {
-    private void OnRecentRequested(RecentCommand command)
+    private void OnRecentRequested(LunaPlayer.UI.Playlists.RecentCommand command)
     {
-        if (command.Action == RecentAction.Clear)
+        if (command.Action == LunaPlayer.UI.Playlists.RecentAction.Clear)
         {
             _recents.Clear(command.Kind);
             RefreshRecents();
@@ -46,18 +46,18 @@ internal sealed partial class Files
 
     /// <summary>Builds the labels once so the initial menu can be populated before it is attached to the
     /// frame; later changes use the same path when rebuilding it.</summary>
-    internal static RecentMenuState BuildRecentMenu(RecentsStore recents)
+    internal static LunaPlayer.UI.Playlists.RecentMenuState BuildRecentMenu(RecentsStore recents)
         => new(
             BuildRecentEntries(recents, RecentKind.File),
             BuildRecentEntries(recents, RecentKind.Folder),
             BuildRecentEntries(recents, RecentKind.Playlist));
 
-    private static IReadOnlyList<RecentMenuEntry> BuildRecentEntries(RecentsStore recents, RecentKind kind)
+    private static IReadOnlyList<LunaPlayer.UI.Playlists.RecentMenuEntry> BuildRecentEntries(RecentsStore recents, RecentKind kind)
     {
         var paths = recents.Get(kind);
-        var entries = new List<RecentMenuEntry>(paths.Count);
+        var entries = new List<LunaPlayer.UI.Playlists.RecentMenuEntry>(paths.Count);
         for (var i = 0; i < paths.Count; i++)
-            entries.Add(new RecentMenuEntry(paths[i], RecentLabel(i + 1, paths[i])));
+            entries.Add(new LunaPlayer.UI.Playlists.RecentMenuEntry(paths[i], RecentLabel(i + 1, paths[i])));
         return entries;
     }
 

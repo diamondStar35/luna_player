@@ -222,7 +222,7 @@ internal sealed class Subtitles : IDisposable
             if (match >= 0 && _player.SetSubtitleTrack(tracks[match].Id))
                 tracks = _player.GetSubtitleTracks();
         }
-        var entries = tracks.Select((track, i) => new SubtitleMenuEntry(track.Id, Describe(track, i + 1))).ToArray();
+        var entries = tracks.Select((track, i) => new LunaPlayer.UI.Playback.SubtitleMenuEntry(track.Id, Describe(track, i + 1))).ToArray();
         int? activeId = null;
         foreach (var track in tracks)
             if (track.Selected) { activeId = track.Id; break; }

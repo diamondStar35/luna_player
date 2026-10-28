@@ -1,9 +1,9 @@
 using LunaPlayer.Actions;
 using WxSharp;
 
-namespace LunaPlayer.UI;
+namespace LunaPlayer.UI.Menus;
 
-internal static partial class MainMenuBuilder
+internal static partial class Builder
 {
     private sealed record VideoMenuParts(Menu Menu, IReadOnlyList<MenuItem> Items);
 
