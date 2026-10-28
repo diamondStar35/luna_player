@@ -155,6 +155,29 @@ the [librespot implementation](https://github.com/librespot-org/librespot); see
 
 See [CONTRIBUTING.md](CONTRIBUTING.md) for full build instructions and known issues.
 
+## Running tests
+
+On Windows, install the [build prerequisites](CONTRIBUTING.md#requirements), initialize the
+submodules, and install the documentation packages before running the MSTest suite:
+
+```powershell
+python -m pip install --requirement docs/requirements.txt
+dotnet test --project tests/LunaPlayer.Tests.csproj -c Release --report-trx --results-directory tests/TestResults/current
+```
+
+This runs the current-code tests, including playback tests using the bundled libmpv with audio
+and video output disabled. Test reports are written under `tests/TestResults/`.
+
+To also verify playback in a Native AOT build, publish and run the native test runner:
+
+```powershell
+dotnet publish tests/LunaPlayer.Tests.csproj -c Release -m:1 -p:PublishAot=true -o tests/TestResults/native
+./tests/TestResults/native/LunaPlayer.Tests.exe --filter "TestCategory=Integration" --report-trx --results-directory tests/TestResults/native-results
+```
+
+All tests must pass before submitting a pull request. Automated tests complement manual playback
+and screen-reader testing; see [Testing changes](CONTRIBUTING.md#testing-changes).
+
 ## Credits
 
 Luna Player is an independent C# application inspired by
