@@ -86,7 +86,15 @@ must be installed even when documentation is not the focus of the change.
 
 ## Testing changes
 
-Test your changes before submitting:
+Every pull request must pass the full automated test suite before it is submitted or merged.
+When introducing a new feature, add automated tests for its behavior, including relevant error
+cases. Update existing tests when intended behavior changes, and add regression coverage for
+bug fixes where practical. Organize tests under `tests/` by feature folder and namespace.
+
+Run the tests using the commands in [README.md](README.md#running-tests). Include the native
+playback checks when changing playback or native integration.
+
+Also test your changes manually before submitting:
 
 - Run the application and exercise the affected functionality, including error cases: no file loaded,
   a missing or deleted file, an empty input field, an empty playlist.
@@ -160,6 +168,7 @@ compiled binary translation files such as `.mo` files; they are generated build 
 Before submitting a new pull request:
 
 - Follow the code, comment, naming, accessibility and translation rules in this guide.
+- Add automated tests for new features and confirm that the full test suite passes.
 - Keep comments clear and update nearby comments when their assumptions or behaviour change.
 - Do not commit generated files, build output or compiled translation files.
 - Avoid committing binary files directly. If a binary change is necessary and cannot be generated
