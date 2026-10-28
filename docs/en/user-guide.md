@@ -74,7 +74,7 @@ If a keyboard, headset, or another program sends media commands to the wrong app
 To play a local file:
 
 1. Press <kbd>Ctrl</kbd>+<kbd>O</kbd>.
-2. Choose a media file or an M3U/M3U8 playlist.
+2. Choose a media file, an M3U/M3U8 playlist, or a Luna JSON playlist.
 3. Press <kbd>Space</kbd> to pause or resume.
 4. Press <kbd>Left</kbd> or <kbd>Right</kbd> to seek.
 5. Press <kbd>Up</kbd> or <kbd>Down</kbd> to change the volume.
@@ -87,7 +87,7 @@ To play a YouTube video, press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Y</kbd> and
 
 ### Opening a file
 
-Choose **File > Open File...** or press <kbd>Ctrl</kbd>+<kbd>O</kbd>. The dialog accepts supported audio, video, M3U, and M3U8 files.
+Choose **File > Open File...** or press <kbd>Ctrl</kbd>+<kbd>O</kbd>. The dialog accepts supported audio, video, M3U, M3U8, and Luna JSON playlist files.
 
 The **What would you like to open with files?** setting controls what happens when one media file is opened from Windows or from the file dialog:
 
@@ -116,6 +116,39 @@ Use this command for direct media streams and remote M3U or M3U8 playlists. Use 
 Luna supports local and remote M3U and M3U8 playlists. Relative entries in a local playlist are resolved from the playlist's folder; relative entries in a network playlist are resolved from its address.
 
 An HLS M3U8 manifest is treated as one stream and passed to the playback engine. It is not expanded into a list of media segments. Other playlists become an opened-files list containing their playable local paths and web links.
+
+### Adding to the current list
+
+Choose **File > Playlists > Add Files...** or press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F</kbd> to select one or more files. Choose **Add Folder...** or press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>D</kbd> to append a folder. These commands keep the current track playing and append to the opened-files list. Folders include supported files directly inside them; subfolders are not scanned. Leave an online browsing session before adding entries or saving its contents.
+
+### Saved playlists
+
+Use **File > Playlists** to keep named collections such as favorite albums or songs for a particular mood.
+
+- **My Playlists...** opens the playlist manager. Its list shows **Name** and **Description** columns. Choose **Open** to replace the current list and play the first available track, **Edit** to change a saved playlist, **Remove** to delete its saved document, or **Export** to save a copy elsewhere. Editing does not interrupt playback, and removing a saved playlist keeps all media files.
+- **Create Playlist...** opens an empty playlist editor.
+- **Save Current Playlist...** starts with the current entries and asks for a name and optional description. Saving adds it to My Playlists.
+- **Save Playlist As...** exports the current list through a save dialog. Choose a file name and M3U8, M3U, or JSON format. JSON then asks for the playlist name and description. Cancelling either dialog writes nothing.
+
+External exports do not automatically appear in My Playlists. Reopen a Luna JSON export through **Open File...**, choosing the JSON playlists filter. If a saved playlist has no playable entries, Luna keeps current playback and reports the problem.
+
+### Editing a playlist
+
+Enter a name and optional description. Use **Add > Files...** to select multiple individual files, or **Add > Folder...** to add a folder reference. The list shows **Name** and **Full Path** columns. Empty playlists are allowed.
+
+With the entry list focused:
+
+| Key | Action |
+| --- | --- |
+| <kbd>Delete</kbd> | Remove selected entries from the playlist only |
+| <kbd>Shift</kbd>+<kbd>Up</kbd> / <kbd>Shift</kbd>+<kbd>Down</kbd> | Move selected entries up / down, preserving their relative order |
+| <kbd>Ctrl</kbd>+<kbd>A</kbd> | Select all entries |
+
+The **Remove** button also removes selected entries. <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F</kbd> adds files and <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>D</kbd> adds a folder. **Save** accepts the changes. Closing a changed editor, including with **Cancel** or <kbd>Escape</kbd>, offers Save, Discard (No), or Cancel.
+
+Folder references remain single entries in JSON playlists. Opening the playlist loads supported files directly inside those folders, sorted by filename, without scanning subfolders. Folder changes take effect the next time the playlist is opened or exported. Missing files and empty or inaccessible folders are reported, and their references remain in the saved playlist.
+
+JSON retains the name, description, and folder references. M3U and M3U8 exports use UTF-8 and contain individual media locations and titles, expanding folders when exported. Duplicate entries keep their order.
 
 ### Opening media from the clipboard
 
@@ -881,6 +914,7 @@ Luna stores user data under `%APPDATA%\Luna Player`:
 | `favorites.json` | Favorite YouTube and stream links |
 | `iptv-sources.json` | Saved IPTV sources, with account fields protected for the current Windows user |
 | `recents.json` | Recently opened files, folders, and playlists |
+| `Playlists/` | Named JSON playlists, including descriptions and folder references |
 
 Use **Preferences > Backup and restore > Open user settings folder** to open the exact folder rather than typing the path.
 
@@ -897,6 +931,8 @@ These are the factory defaults. Your current bindings may differ after customiza
 | Action | Primary shortcut | Secondary shortcut |
 | --- | --- | --- |
 | Open files | <kbd>Ctrl</kbd>+<kbd>O</kbd> | — |
+| Add files to the current list | <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F</kbd> | — |
+| Add a folder to the current list | <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>D</kbd> | — |
 | Open a network stream link | <kbd>Ctrl</kbd>+<kbd>L</kbd> | — |
 | Open all files in a folder | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd> | — |
 | Show current file in File Explorer | <kbd>Ctrl</kbd>+<kbd>F</kbd> | — |
@@ -1100,7 +1136,7 @@ Luna filters file and folder selection using the following extensions. Playback 
 
 **Video:** 3G2, 3GP, AVI, FLV, IVF, M2TS, M4V, MJ2, MKV, MOV, MP4, MPEG, MPG, MXF, OGV, RMVB, TS, WebM, WMV, and Y4M.
 
-**Playlists:** M3U and M3U8, including HLS streams.
+**Playlists:** M3U and M3U8, including HLS streams, and local Luna JSON playlists with descriptions and folder references.
 
 ## 23. Troubleshooting
 
