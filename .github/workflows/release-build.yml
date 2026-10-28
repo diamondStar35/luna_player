@@ -14,7 +14,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  tests:
+    uses: ./.github/workflows/tests.yml
+    permissions:
+      contents: read
+
   release:
+    needs: tests
     name: Release
     runs-on: windows-latest
 

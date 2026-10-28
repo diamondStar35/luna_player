@@ -1,0 +1,44 @@
+name: Tests
+on:
+  pull_request:
+  workflow_call:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 20
+    env:
+      TESTINGPLATFORM_TELEMETRY_OPTOUT: '1'
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          submodules: recursive
+      - uses: actions/setup-dotnet@v6
+        with:
+          dotnet-version: 10.0.x
+      - uses: actions/setup-python@v6
+        with:
+          python-version: 3.x
+      - name: Install build prerequisites
+        shell: pwsh
+        run: |
+          python -m pip install --requirement docs/requirements.txt
+          choco install gettext --yes --no-progress
+          $installerPath = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio/Installer'
+          $installerPath | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+      - name: Run current-code tests
+        run: dotnet test --project tests/LunaPlayer.Tests.csproj -c Release --report-trx --results-directory tests/TestResults/current
+      - name: Publish native test runner
+        run: dotnet publish tests/LunaPlayer.Tests.csproj -c Release -m:1 -p:PublishAot=true -o tests/TestResults/native
+      - name: Run native playback tests
+        shell: pwsh
+        run: ./tests/TestResults/native/LunaPlayer.Tests.exe --filter "TestCategory=Integration" --report-trx --results-directory tests/TestResults/native-results
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: |
+            tests/TestResults/**/*.trx
+            tests/TestResults/**/*.log
