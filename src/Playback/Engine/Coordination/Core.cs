@@ -84,9 +84,9 @@ internal sealed partial class PlaybackCoordinator : IEngine
     private string? _lastSubText;
     private bool _disposed;
 
-    internal PlaybackCoordinator(nint windowHandle)
+    internal PlaybackCoordinator(nint windowHandle, IReadOnlyDictionary<string, object?>? options = null)
     {
-        _session = new MpvSession(windowHandle, _loadSync);
+        _session = new MpvSession(windowHandle, _loadSync, options);
         _audio = new AudioProcessor(_session);
         _tracks = new TrackDiscovery(_session);
         _metadata = new MetadataDiscovery(_session, HandleMetadataChange);

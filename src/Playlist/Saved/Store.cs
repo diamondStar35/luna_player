@@ -12,7 +12,9 @@ internal partial class DocumentJsonContext : JsonSerializerContext;
 
 internal sealed class DocumentStore
 {
-    internal string DirectoryPath { get; } = Path.Combine(Paths.RootDirectory, "Playlists");
+    internal string DirectoryPath { get; }
+    internal DocumentStore(string? directory = null)
+        => DirectoryPath = directory ?? Path.Combine(Paths.RootDirectory, "Playlists");
     private string FilePath(Guid id) => Path.Combine(DirectoryPath, $"{id:N}.json");
     internal static Document Read(string path)
     {

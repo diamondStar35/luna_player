@@ -152,7 +152,7 @@
 
   <Target Name="PublishNativeAotAfterBuild"
           AfterTargets="Build"
-          Condition="'$(DesignTimeBuild)' != 'true' and '$(_IsPublishing)' != 'true' and '$(NativeAotBuildInvocation)' != 'true'">
+          Condition="'$(DesignTimeBuild)' != 'true' and '$(_IsPublishing)' != 'true' and '$(NativeAotBuildInvocation)' != 'true' and '$(TestBuild)' != 'true'">
     <MSBuild Projects="$(MSBuildProjectFullPath)"
              Targets="Publish"
              Properties="Configuration=$(Configuration);NativeAotBuildInvocation=true" />

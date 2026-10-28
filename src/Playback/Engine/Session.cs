@@ -11,7 +11,7 @@ internal sealed class MpvSession : IDisposable
     private bool _disposed;
     private readonly List<IDisposable> _subscriptions = [];
     internal MPV Native => _mpv;
-    internal MpvSession(nint windowHandle, Lock gate)
+    internal MpvSession(nint windowHandle, Lock gate, IReadOnlyDictionary<string, object?>? overrides = null)
     {
         _gate = gate;
         var options = new Dictionary<string, object?>
@@ -32,6 +32,9 @@ internal sealed class MpvSession : IDisposable
         };
         if (windowHandle != 0)
             options["wid"] = windowHandle.ToString(CultureInfo.InvariantCulture);
+
+        if (overrides is not null)
+            foreach (var (key, value) in overrides) options[key] = value;
 
         _mpv = new MPV(options: options, optionalOptions: new Dictionary<string, object?>
         {

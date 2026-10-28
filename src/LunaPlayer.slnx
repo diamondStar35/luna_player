@@ -2,4 +2,5 @@
   <Project Path="LunaPlayer.csproj" />
   <Project Path="Speech/PrismSharp.csproj" />
   <Project Path="../updater/Updater.csproj" />
+  <Project Path="../tests/LunaPlayer.Tests.csproj" />
 </Solution>

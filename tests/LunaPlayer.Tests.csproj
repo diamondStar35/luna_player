@@ -1,0 +1,19 @@
+<Project Sdk="MSTest.Sdk/4.5.2">
+  <PropertyGroup>
+    <TargetFramework>net10.0-windows10.0.19041.0</TargetFramework>
+    <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+    <SelfContained>true</SelfContained>
+    <BuildInParallel>false</BuildInParallel>
+    <!-- Match the application suppression: mpv retains optional DynamicObject proxies;
+         tests use its typed API, which is exercised by the published native runner. -->
+    <NoWarn>$(NoWarn);IL3050</NoWarn>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <EnableMSTestSourceGeneration>true</EnableMSTestSourceGeneration>
+    <TestingExtensionsProfile>Default</TestingExtensionsProfile>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../src/LunaPlayer.csproj" AdditionalProperties="TestBuild=true;NativeAotBuildInvocation=true;BuildInParallel=false" />
+  </ItemGroup>
+</Project>

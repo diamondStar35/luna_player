@@ -6,8 +6,8 @@ namespace LunaPlayer.Playback;
 internal sealed class Engine : IEngine
 {
     private readonly PlaybackCoordinator _coordinator;
-    internal Engine(nint windowHandle)
-        => _coordinator = new PlaybackCoordinator(windowHandle);
+    internal Engine(nint windowHandle, IReadOnlyDictionary<string, object?>? options = null)
+        => _coordinator = new PlaybackCoordinator(windowHandle, options);
     public void Dispose() => _coordinator.Dispose();
     public event Action<EndReason>? Ended { add => _coordinator.Ended += value; remove => _coordinator.Ended -= value; }
     public event Action<double>? SelectionEnded { add => _coordinator.SelectionEnded += value; remove => _coordinator.SelectionEnded -= value; }
