@@ -18,7 +18,7 @@ namespace LunaPlayer.UI;
 /// that window, or closing it hands activation back to a disabled window and the player looks hung. Falls
 /// back to the main frame when nothing is active (startup, or when Luna is not foreground).
 /// </remarks>
-internal sealed class DialogService : IDialogService, IDisposable
+internal sealed partial class DialogService : IDialogService, IDisposable
 {
     private readonly Frame _frame;
     private readonly IApplicationDispatcher _dispatcher;
@@ -76,7 +76,9 @@ internal sealed class DialogService : IDialogService, IDisposable
 
     public FileSelection? ChooseFile(string initialDirectory)
     {
-        using var dialog = new FileDialog(DialogParent, message: "", directory: initialDirectory, wildcard: MediaLibrary.DialogWildcard, style: FileDialogStyle.DefaultOpen);
+        // Translators: Extra Open File filter for Luna playlist documents; keep JSON and the wildcard unchanged.
+        var jsonFilter = Tr("JSON playlists (*.json)|*.json");
+        using var dialog = new FileDialog(DialogParent, message: "", directory: initialDirectory, wildcard: MediaLibrary.DialogWildcard + "|" + jsonFilter, style: FileDialogStyle.DefaultOpen);
         return dialog.ShowModal() == StandardId.Ok ? new(dialog.Path, dialog.Directory) : null;
     }
 

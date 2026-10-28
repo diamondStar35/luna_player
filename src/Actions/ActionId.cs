@@ -41,5 +41,6 @@ internal enum ActionId
     OpenSleepTimer, CancelSleepTimer, AnnounceSleepTimerRemaining,
     OpenSpotifyBrowser, OpenSpotifyCredentials,
     PreviousChapter, NextChapter, AnnounceChapter, ToggleChapterStop, ToggleAudiobookMode,
+    MyPlaylists, CreatePlaylist, SaveCurrentPlaylist, ExportPlaylist, AddPlaylistFiles, AddPlaylistFolder,
     Donate,
 }

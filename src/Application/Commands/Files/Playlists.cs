@@ -14,6 +14,27 @@ internal sealed partial class Files
 {
     private bool OpenLocalPlaylist(string path)
     {
+        if (Path.GetExtension(path).Equals(".json", StringComparison.OrdinalIgnoreCase))
+        {
+            try
+            {
+                var document = LunaPlayer.Playlist.DocumentStore.Read(path);
+                var resolved = LunaPlayer.Playlist.DocumentResolver.Resolve(document.Entries);
+                if (resolved.Unavailable.Count > 0)
+                    // Translators: Warning listing missing or empty entries while opening a JSON playlist. {paths} lists the locations.
+                    _view.Dialogs.ShowWarning(TrFormat("Unavailable or empty playlist entries:\n{paths}", string.Join('\n', resolved.Unavailable)), document.Name);
+                if (resolved.Files.Count == 0) return false;
+                _player.OpenSaved(document.Entries, resolved.Files);
+                RecordRecent(RecentKind.Playlist, path);
+                return true;
+            }
+            catch (Exception exception) when (exception is InvalidDataException or IOException or UnauthorizedAccessException or System.Text.Json.JsonException)
+            {
+                // Translators: Error opening a JSON playlist. {error} is the storage or format failure.
+                _view.Dialogs.ShowError(TrFormat("Could not open the playlist: {error}", exception.Message), AppInfo.Name);
+                return false;
+            }
+        }
         _settings.General.LastDirectory = Path.GetDirectoryName(path) ?? string.Empty;
         if (!UsePlaylistResult(path, PlaylistReader.ReadLocal(path), network: false))
             return false;

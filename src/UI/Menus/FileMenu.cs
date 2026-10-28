@@ -21,6 +21,11 @@ internal static partial class MainMenuBuilder
         RecentMenuState recents)
     {
         var fileMenu = new Menu();
+        var playlists = new Menu();
+        foreach (var action in PlaylistActions.All)
+            playlists.Append(commandIds[action.Id], Label(action.Label, action.Id, shortcuts));
+        // Translators: File menu submenu for saved playlists and adding files or folders.
+        fileMenu.AppendSubMenu(playlists, Tr("Playlists"));
         // Translators: File menu item that opens one or more media files. The three dots mean it opens a window to choose them.
         fileMenu.Append(commandIds[ActionId.OpenFile], Label(Tr("Open File..."), ActionId.OpenFile, shortcuts));
         // Translators: File menu item that asks for a link to a network stream and plays it.

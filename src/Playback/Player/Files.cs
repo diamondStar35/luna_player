@@ -20,6 +20,7 @@ internal sealed partial class Player
             LoadCurrent(elapsed, paused: false);
             return false;
         }
+        RenameSavedPath(oldPath, newPath);
         _playlist.ReplaceCurrent(newPath);
         return LoadCurrent(elapsed, paused: false);
     }
@@ -40,6 +41,7 @@ internal sealed partial class Player
             LoadCurrent(elapsed, paused: false);
             return false;
         }
+        ForgetSavedPath(path);
         _playlist.RemoveCurrent();
         if (CurrentPath is null)
         {
@@ -57,6 +59,7 @@ internal sealed partial class Player
             return false;
         SavePosition();
         StopEngine();
+        ForgetSavedPath(path);
         _playlist.RemoveCurrent();
         if (CurrentPath is null)
         {
@@ -72,6 +75,7 @@ internal sealed partial class Player
         SavePosition();
         if (!_playlist.ClearAll())
             return false;
+        _playlist.SavedEntries = null;
         StopEngine();
         CurrentChanged?.Invoke();
         StateChanged?.Invoke();
@@ -84,6 +88,7 @@ internal sealed partial class Player
         var currentRemoved = CurrentPath is string current && remove.Any(path => Paths.AreSame(path, current));
         if (currentRemoved)
             StopEngine();
+        foreach (var path in remove) ForgetSavedPath(path);
         var result = _playlist.RemovePaths(remove);
         if (!result.Changed)
             return false;

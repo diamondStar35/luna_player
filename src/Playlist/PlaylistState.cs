@@ -7,6 +7,8 @@ namespace LunaPlayer.Playlist;
 internal sealed partial class PlaylistState
 {
     private readonly List<PlaylistItem> _items = [];
+    internal List<SavedEntry>? SavedEntries { get; set; }
+    internal IReadOnlyList<PlaylistItem> Sources => _sources.AsReadOnly();
     private readonly List<PlaylistItem> _sources = [];
     private readonly Dictionary<string, IReadOnlyList<Chapter>> _chapters = new(StringComparer.OrdinalIgnoreCase);
     private bool _audiobookMode;
@@ -48,6 +50,7 @@ internal sealed partial class PlaylistState
         if (selectedIndex < 0)
             selectedIndex = 0;
 
+        SavedEntries = null;
         _items.Clear();
         _sources.Clear();
         _sources.AddRange(files.Select(path => new PlaylistItem(Guid.NewGuid(), path)));
@@ -70,6 +73,7 @@ internal sealed partial class PlaylistState
     {
         if (string.IsNullOrWhiteSpace(path))
             return false;
+        SavedEntries?.Add(SavedEntry.FromPath(path));
         var addedIndex = _items.Count;
         var source = new PlaylistItem(Guid.NewGuid(), path);
         _sources.Add(source);
@@ -301,6 +305,7 @@ internal sealed partial class PlaylistState
 
     internal bool ClearAll()
     {
+        SavedEntries = null;
         if (_items.Count == 0) return false;
         _items.Clear();
         _sources.Clear();

@@ -82,7 +82,7 @@ internal sealed partial class Files
             return;
         }
 
-        if (File.Exists(first) && MediaLibrary.IsPlaylist(first))
+        if (File.Exists(first) && (MediaLibrary.IsPlaylist(first) || Path.GetExtension(first).Equals(".json", StringComparison.OrdinalIgnoreCase)))
         {
             OpenLocalPlaylist(first);
             return;
@@ -146,7 +146,7 @@ internal sealed partial class Files
         if (!File.Exists(path))
             return false;
         _settings.General.LastDirectory = Path.GetDirectoryName(path) ?? string.Empty;
-        if (MediaLibrary.IsPlaylist(path))
+        if (MediaLibrary.IsPlaylist(path) || Path.GetExtension(path).Equals(".json", StringComparison.OrdinalIgnoreCase))
             return OpenLocalPlaylist(path);
         OpenFileWithConfiguredMode(path);
         return true;
@@ -168,7 +168,7 @@ internal sealed partial class Files
         _settings.General.LastDirectory = string.IsNullOrEmpty(file.Directory)
             ? Path.GetDirectoryName(file.Path) ?? string.Empty
             : file.Directory;
-        if (MediaLibrary.IsPlaylist(file.Path))
+        if (MediaLibrary.IsPlaylist(file.Path) || Path.GetExtension(file.Path).Equals(".json", StringComparison.OrdinalIgnoreCase))
         {
             OpenLocalPlaylist(file.Path);
             return;

@@ -54,7 +54,7 @@ internal static class ToolsActions
 internal static class ActionRegistry
 {
     internal static IReadOnlyList<ActionDefinition> All { get; } =
-    [.. MediaActions.All, .. PlaybackActions.All, .. YouTubeActions.All,
+    [.. PlaylistActions.All, .. MediaActions.All, .. PlaybackActions.All, .. YouTubeActions.All,
         .. HelpActions.All, .. UpdateActions.All,
         .. RecordingActions.All, .. ToolsActions.All, .. IptvActions.All,
         .. SleepTimerActions.All];

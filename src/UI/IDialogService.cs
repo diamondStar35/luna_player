@@ -14,6 +14,10 @@ namespace LunaPlayer.UI;
 /// <see cref="DialogService"/>, which is the only part of the UI coupled to the concrete dialog classes.</summary>
 internal interface IDialogService
 {
+    LunaPlayer.Playlist.Document? EditPlaylist(LunaPlayer.Playlist.Document document, Action<string> speak, bool metadataOnly = false);
+    PlaylistRequest? ManagePlaylists(IReadOnlyList<LunaPlayer.Playlist.Document> documents);
+    string[] ChoosePlaylistFiles();
+    string? ChoosePlaylistDestination();
     /// <summary>Browses a radio category and returns its loaded station order and selected station.</summary>
     LunaPlayer.Radio.StationView? ShowRadioBrowser(LunaPlayer.Radio.Browsing state,
         LunaPlayer.Radio.Catalog catalog, LunaPlayer.Radio.Library library, Action<string> speak,
