@@ -19,7 +19,7 @@ internal static class PresenceMediaReader
         var kind = track is not null ? SourceKind.Spotify : player.InRadioSession ? SourceKind.Radio
             : PublicLinks.Catalog(source)?.VideoId is not null ? SourceKind.YouTube
             : LinkValidator.IsHttpUrl(player.CurrentPath) ? SourceKind.Stream
-            : player.AudiobookMode && !video ? SourceKind.Book : SourceKind.Local;
+            : player.AudiobookMode && !video && player.CurrentChapters.Count > 0 ? SourceKind.Book : SourceKind.Local;
         var media = new PresenceMedia(track?.Uri ?? player.CurrentItemId ?? string.Empty,
             string.Empty, string.Empty, null,
             spotify.IsActive ? spotify.IsPlaying : player.IsPlaying, video,

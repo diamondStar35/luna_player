@@ -41,6 +41,8 @@ public sealed class PresentationTests
             Assert.AreEqual("Artist name", activity.GetProperty("assets").GetProperty("large_text").GetString());
             Assert.AreEqual(1, activity.GetRawText().Split("Media title", StringSplitOptions.None).Length - 1);
             Assert.AreEqual("Download Luna Player", activity.GetProperty("buttons")[0].GetProperty("label").GetString());
+            Assert.AreEqual("https://github.com/diamondStar35/luna_player/releases/latest",
+                activity.GetProperty("buttons")[0].GetProperty("url").GetString());
         }
     }
 
@@ -54,6 +56,8 @@ public sealed class PresentationTests
         Assert.AreEqual("Luna Player", idle.RootElement.GetProperty("name").GetString());
         Assert.AreEqual("Idle", idle.RootElement.GetProperty("details").GetString());
         Assert.IsFalse(idle.RootElement.TryGetProperty("state", out _));
+        Assert.AreEqual("https://github.com/diamondStar35/luna_player/releases/latest",
+            idle.RootElement.GetProperty("buttons")[0].GetProperty("url").GetString());
         var media = Media(video ? SourceKind.YouTube : SourceKind.Local, video) with { Artist = "" };
         using var playing = Build(media);
         Assert.AreEqual("Media title", playing.RootElement.GetProperty("state").GetString());
@@ -151,6 +155,7 @@ public sealed class PresentationTests
         Assert.AreEqual(label, buttons[0].GetProperty("label").GetString());
         Assert.AreEqual("https://www.youtube.com/watch?v=dQw4w9WgXcQ", buttons[0].GetProperty("url").GetString());
         Assert.AreEqual("Download Luna Player", buttons[1].GetProperty("label").GetString());
+        Assert.AreEqual("https://github.com/diamondStar35/luna_player/releases/latest", buttons[1].GetProperty("url").GetString());
     }
 
     [TestMethod]

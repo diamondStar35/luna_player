@@ -79,7 +79,7 @@ internal sealed class ActivityBuilder
                 if (link is not null) Button(json, link.VideoId is not null
                     ? media!.Video ? text.WatchYouTube : text.ListenYouTube : text.OpenSpotify, link.Url);
                 else if (radioLink is not null) Button(json, text.Watch, radioLink);
-                Button(json, text.Download, AppInfo.RepositoryUrl + "/releases");
+                Button(json, text.Download, AppInfo.RepositoryUrl + "/releases/latest");
                 json.WriteEndArray();
             }
             json.WriteEndObject();

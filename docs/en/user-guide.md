@@ -893,7 +893,8 @@ artist credit when that information is available. Local music uses the title sto
 no title, Luna uses the filename without its extension. Radio shows the station name and the current
 broadcast artist, when the station supplies one.
 
-In audiobook mode, the activity line is **Listening to an audiobook on Luna**. The title line shows
+With audiobook mode enabled, files containing chapters appear as **Listening to an audiobook on Luna**.
+Files without chapters use the normal music activity. The title line for an audiobook shows
 the book title and the line below shows the current chapter instead of an artist credit. The book title comes from its album or title metadata,
 with the filename used when neither is available.
 

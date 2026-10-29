@@ -1,5 +1,6 @@
 using LunaPlayer.Application;
 using LunaPlayer.Application.Presentation;
+using LunaPlayer.Discord;
 using LunaPlayer.Playback;
 using LunaPlayer.Tests.Infrastructure;
 
@@ -21,10 +22,13 @@ public sealed class NativePlaybackTests
         using var engine = NativeHost.Create();
         using var player = new Player(engine);
         using var spotify = new LunaPlayer.Spotify.Playback.Sessions(new(), player, new Dispatcher());
+        player.SetAudiobookMode(true);
         Assert.IsTrue(player.OpenFile(NativeHost.Wave(workspace, "My music.wav")));
         await NativeHost.Until(() => !engine.IsLoading && engine.Duration is > 0);
         var media = PresenceMediaReader.Read(player, new(), spotify, "Untitled media", true)!;
         Assert.AreEqual("My music", media.Title);
         Assert.AreEqual(string.Empty, media.Artist);
+        Assert.AreEqual(SourceKind.Local, media.Kind);
+        Assert.IsNull(media.Chapter);
     }
 }

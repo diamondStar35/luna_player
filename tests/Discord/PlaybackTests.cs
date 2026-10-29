@@ -1,3 +1,4 @@
+using System.Text.Json;
 using LunaPlayer.Application;
 using LunaPlayer.Application.Presentation;
 using LunaPlayer.Configuration.Models;
@@ -105,6 +106,11 @@ public sealed class PlaybackTests
         Assert.AreEqual("Song title", local.Title);
         Assert.AreEqual("Performer", local.Artist);
         player.SetAudiobookMode(true);
+        var chapterless = PresenceMediaReader.Read(player, cache, spotify, "Untitled media", true)!;
+        Assert.AreEqual(SourceKind.Local, chapterless.Kind);
+        Assert.AreEqual("Song title", chapterless.Title);
+        Assert.AreEqual("Performer", chapterless.Artist);
+        Assert.IsNull(chapterless.Chapter);
         player.SetChapters(player.CurrentPath!, [new Chapter(0, "Opening chapter", 0, 10)]);
         var book = PresenceMediaReader.Read(player, cache, spotify, "Untitled media", true)!;
         Assert.AreEqual(SourceKind.Book, book.Kind);
@@ -115,6 +121,41 @@ public sealed class PlaybackTests
         var hidden = PresenceMediaReader.Read(player, cache, spotify, "Untitled media", false)!;
         Assert.AreEqual(string.Empty, hidden.Title);
         Assert.IsNull(hidden.Chapter);
+        player.SetChapters(player.CurrentPath!, []);
+        var cleared = PresenceMediaReader.Read(player, cache, spotify, "Untitled media", true)!;
+        Assert.AreEqual(SourceKind.Local, cleared.Kind);
+        Assert.AreEqual("Song title", cleared.Title);
+        Assert.AreEqual("Performer", cleared.Artist);
+        Assert.IsNull(cleared.Chapter);
+        Assert.IsTrue(player.AudiobookMode);
+    }
+
+    [TestMethod]
+    public void SwitchingFromAChapteredBookToMusicRestoresMusicPresence()
+    {
+        using var engine = new FakeEngine
+        { CurrentMetadata = new Metadata(new("Book title", "Author", "Book album"), new Dictionary<string, string>()) };
+        using var player = new Player(engine);
+        using var spotify = new LunaPlayer.Spotify.Playback.Sessions(new(), player, new Dispatcher());
+        var cache = new MediaTagsCache();
+        player.SetAudiobookMode(true);
+        player.OpenFile(@"C:\private\book.m4b");
+        player.SetChapters(player.CurrentPath!, [new Chapter(0, "Opening chapter", 0, 10)]);
+        Assert.AreEqual(SourceKind.Book, PresenceMediaReader.Read(player, cache, spotify, "Untitled media", true)!.Kind);
+
+        engine.CurrentMetadata = new(new("Song title", "Performer", "Music album"), new Dictionary<string, string>());
+        player.OpenFile(@"C:\private\song.mp3");
+        var media = PresenceMediaReader.Read(player, cache, spotify, "Untitled media", true)!;
+        Assert.IsTrue(player.AudiobookMode);
+        Assert.AreEqual(SourceKind.Local, media.Kind);
+        Assert.AreEqual("Song title", media.Title);
+        Assert.AreEqual("Performer", media.Artist);
+        Assert.IsNull(media.Chapter);
+        using var activity = JsonDocument.Parse(new ActivityBuilder(DateTimeOffset.UtcNow).Build(
+            new DiscordSettings { Enabled = true }, media, Examples.English, DateTimeOffset.UtcNow)!);
+        Assert.AreEqual("music on Luna", activity.RootElement.GetProperty("name").GetString());
+        Assert.AreEqual("Song title", activity.RootElement.GetProperty("state").GetString());
+        Assert.AreEqual("Performer", activity.RootElement.GetProperty("assets").GetProperty("large_text").GetString());
     }
 
     [TestMethod]
