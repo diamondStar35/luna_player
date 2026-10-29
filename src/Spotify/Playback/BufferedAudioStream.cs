@@ -5,7 +5,8 @@ namespace LunaPlayer.Spotify.Playback;
 
 /// <summary>Fetches requested encrypted audio blocks with bounded, memory-only read-ahead.</summary>
 /// <remarks>Demand reads use their own request, cancelling speculative work before a miss or seek.
-/// The worker stops four MiB ahead of the reader; it never downloads the remainder of a track.</remarks>
+/// The worker reads at most four MiB ahead and retains at most twenty MiB per stream.
+/// Short tracks can fit entirely in that memory buffer.</remarks>
 internal sealed class BufferedAudioStream : Stream
 {
     private const int BlockSize = 64 * 1024;
@@ -73,34 +74,44 @@ internal sealed class BufferedAudioStream : Stream
         Exception? failure = null;
         foreach (var url in urls)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-            timeout.CancelAfter(TimeSpan.FromSeconds(10));
-            try
+            for (var attempt = 0; attempt < 2; attempt++)
             {
-                using var request = new HttpRequestMessage(HttpMethod.Get, url);
-                request.Headers.Range = new RangeHeaderValue(start, end);
-                using var response = await http.SendAsync(request,
-                    HttpCompletionOption.ResponseHeadersRead, timeout.Token).ConfigureAwait(false);
-                if (response.StatusCode != HttpStatusCode.PartialContent
-                    || response.Content.Headers.ContentRange is not { From: { } from, To: { } to,
-                        Length: { } total } || from != start || total <= 0
-                    || to != Math.Min(end, total - 1))
-                    throw new InvalidDataException("Invalid audio range response.");
-                // Read only the validated range, even if a server sends an unbounded response body.
-                var data = new byte[checked((int)(to - from + 1))];
-                using var body = await response.Content.ReadAsStreamAsync(timeout.Token).ConfigureAwait(false);
-                await body.ReadExactlyAsync(data, timeout.Token).ConfigureAwait(false);
-                var extra = new byte[1];
-                if (await body.ReadAsync(extra, timeout.Token).ConfigureAwait(false) != 0)
-                    throw new InvalidDataException("Audio range response is too long.");
-                return (data, total);
-            }
-            catch (Exception error) when (error is HttpRequestException or IOException or InvalidDataException or ObjectDisposedException
-                || error is OperationCanceledException && !cancellationToken.IsCancellationRequested)
-            {
-                // CDN addresses are alternatives. Retain the cause if none serves this range.
-                failure = error;
+                cancellationToken.ThrowIfCancellationRequested();
+                using var timeout = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+                timeout.CancelAfter(TimeSpan.FromSeconds(10));
+                try
+                {
+                    using var request = new HttpRequestMessage(HttpMethod.Get, url);
+                    request.Headers.Range = new RangeHeaderValue(start, end);
+                    using var response = await http.SendAsync(request,
+                        HttpCompletionOption.ResponseHeadersRead, timeout.Token).ConfigureAwait(false);
+                    response.EnsureSuccessStatusCode();
+                    if (response.StatusCode != HttpStatusCode.PartialContent
+                        || response.Content.Headers.ContentRange is not { From: { } from, To: { } to,
+                            Length: { } total } || from != start || total <= 0
+                        || to != Math.Min(end, total - 1))
+                        throw new InvalidDataException("Invalid audio range response.");
+                    // Read only the validated range, even if a server sends an unbounded response body.
+                    var data = new byte[checked((int)(to - from + 1))];
+                    using var body = await response.Content.ReadAsStreamAsync(timeout.Token).ConfigureAwait(false);
+                    await body.ReadExactlyAsync(data, timeout.Token).ConfigureAwait(false);
+                    var extra = new byte[1];
+                    if (await body.ReadAsync(extra, timeout.Token).ConfigureAwait(false) != 0)
+                        throw new InvalidDataException("Audio range response is too long.");
+                    return (data, total);
+                }
+                catch (Exception error) when (error is HttpRequestException or IOException or InvalidDataException or ObjectDisposedException
+                    || error is OperationCanceledException && !cancellationToken.IsCancellationRequested)
+                {
+                    // CDN addresses are alternatives. Retain the cause if none serves this range.
+                    failure = error;
+                    if (attempt != 0 || error is InvalidDataException
+                        || error is HttpRequestException { StatusCode: { } status }
+                            && status is not (HttpStatusCode.RequestTimeout or HttpStatusCode.InternalServerError
+                                or HttpStatusCode.BadGateway or HttpStatusCode.ServiceUnavailable or HttpStatusCode.GatewayTimeout))
+                        break;
+                    await Task.Delay(100, cancellationToken).ConfigureAwait(false);
+                }
             }
         }
         cancellationToken.ThrowIfCancellationRequested();
@@ -191,7 +202,7 @@ internal sealed class BufferedAudioStream : Stream
         }
         catch (OperationCanceledException) when (_token.IsCancellationRequested)
         {
-            // Track changes and mpv cancellation terminate the worker and its current HTTP request.
+            // Releasing the audio source stops the worker and its current HTTP request.
         }
     }
 
@@ -211,8 +222,11 @@ internal sealed class BufferedAudioStream : Stream
         return Read(buffer.AsSpan(offset, count));
     }
 
-    public override int Read(Span<byte> buffer)
+    public override int Read(Span<byte> buffer) => Read(buffer, CancellationToken.None);
+
+    internal int Read(Span<byte> buffer, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         long position;
         long block;
         lock (_gate)
@@ -232,8 +246,9 @@ internal sealed class BufferedAudioStream : Stream
         try
         {
             // This request is independent of the speculative worker, so a slow read-ahead cannot queue it.
+            using var reading = CancellationTokenSource.CreateLinkedTokenSource(_token, cancellationToken);
             var (data, total) = FetchAsync(_http, _urls, block * BlockSize,
-                Math.Min(_length - 1, (block + 1) * BlockSize - 1), _token).GetAwaiter().GetResult();
+                Math.Min(_length - 1, (block + 1) * BlockSize - 1), reading.Token).GetAwaiter().GetResult();
             if (total != _length) throw new InvalidDataException("Audio length changed.");
             lock (_gate)
             {

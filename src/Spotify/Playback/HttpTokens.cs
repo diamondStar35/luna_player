@@ -84,6 +84,17 @@ internal sealed class HttpTokens(HttpClient http, string clientId, string device
         finally { _accessGate.Release(); }
     }
 
+    internal async Task InvalidateAccessTokenAsync(string rejected, CancellationToken cancellationToken)
+    {
+        await _accessGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            // A late rejection must not invalidate a token another request already refreshed.
+            if (string.Equals(_accessToken, rejected, StringComparison.Ordinal)) _accessToken = null;
+        }
+        finally { _accessGate.Release(); }
+    }
+
     private async Task<string> LoadAccessTokenAsync(Login.Credentials credentials,
         CancellationToken cancellationToken)
     {

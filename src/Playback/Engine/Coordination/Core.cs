@@ -143,9 +143,7 @@ internal sealed partial class PlaybackCoordinator : IEngine
         Interlocked.Increment(ref _queueGeneration);
         if (_probe is Probe probe)
             _ = Task.Run(probe.Dispose);
-        if (_spotifyAudio is { } streams)
-            foreach (var pending in streams)
-                if (streams.TryRemove(pending.Key, out var unused)) unused.Dispose();
+        ReleasePendingSpotifyAudio();
         _session.Dispose();
     }
 

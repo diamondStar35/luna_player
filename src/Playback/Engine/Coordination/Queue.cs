@@ -10,6 +10,10 @@ internal sealed partial class PlaybackCoordinator
 
     private bool LoadWithCrossfade(LoadRequest request, bool paused, bool fadeTransition, long generation)
     {
+        // Spotify's private protocol exists only on the playback mpv instance. Its adapter
+        // supplies decrypted audio, so a second metadata player must never consume it.
+        if (request.Path.StartsWith("luna-spotify://", StringComparison.Ordinal))
+            return CompleteManualLoad(request, paused, fadeTransition, overlap: true);
         var probe = _probe!;
         if (probe.CachedResult(request.Path) is Probe.Result cached)
             return CompleteManualLoad(request, paused, fadeTransition, cached.AudioOnly);
@@ -58,6 +62,13 @@ internal sealed partial class PlaybackCoordinator
         }
         var generation = ++_queueGeneration;
         var load = _loadGeneration;
+        // Spotify's private protocol exists only on the playback mpv instance. Its adapter
+        // supplies decrypted audio, so a second metadata player must never consume it.
+        if (request.Path.StartsWith("luna-spotify://", StringComparison.Ordinal))
+        {
+            AppendAudioSuccessor(request, audioOnly: true);
+            return;
+        }
         var probe = _probe!;
         if (probe.CachedResult(request.Path) is Probe.Result cached)
         {

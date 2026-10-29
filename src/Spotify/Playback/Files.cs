@@ -1,3 +1,4 @@
+using System.Net;
 using System.Net.Http.Headers;
 using System.Text;
 using LunaPlayer.Spotify.Playback.AccessPoint;
@@ -13,7 +14,9 @@ internal sealed class Files(HttpClient http, Resolver resolver,
     private readonly HttpTokens _tokens = tokens;
     private readonly Login.Credentials _credentials = credentials;
 
-    internal async Task<(TrackId KeyTrack, byte[] FileId, int Format)> GetTrackFileAsync(string uri, int bitrate,
+    internal readonly record struct AudioFile(TrackId KeyTrack, byte[] FileId, int Format);
+
+    internal async Task<AudioFile[]> GetTrackFilesAsync(string uri, int bitrate,
         CancellationToken cancellationToken)
     {
         if (!TrackId.TryParse(uri, out var trackId)) throw new ArgumentException(null, nameof(uri));
@@ -37,23 +40,28 @@ internal sealed class Files(HttpClient http, Resolver resolver,
             <= 160 => new[] { 1, 5, 0, 6, 3, 2, 4 },
             _ => new[] { 2, 4, 3, 1, 5, 0, 6 },
         };
-        if (ChooseFile(track, order) is { } selected)
-            return (trackId, selected.FileId, selected.Format);
+        var files = new List<AudioFile>();
+        AddFiles(track, ReadTrackId(track) ?? trackId, order, files);
         var alternatives = new ProtoReader(track);
         while (alternatives.TryRead(out var field, out _, out var alternative))
         {
             if (field != 13) continue;
-            var alternativeTrack = new ProtoReader(alternative);
-            TrackId? alternateId = null;
-            while (alternativeTrack.TryRead(out var item, out _, out var value))
-                if (item == 1 && value.Length == 16) alternateId = TrackId.ReadRaw(value);
-            if (alternateId is { } id && ChooseFile(alternative, order) is { } file)
-                return (id, file.FileId, file.Format);
+            if (ReadTrackId(alternative) is { } id) AddFiles(alternative, id, order, files);
         }
-        throw new InvalidDataException();
+        Diagnostics.Write("metadata.files", uri, "candidates=" + files.Count);
+        if (files.Count == 0) throw new TrackUnavailableException();
+        return files.DistinctBy(file => (file.KeyTrack, Convert.ToHexString(file.FileId))).ToArray();
     }
 
-    private static (byte[] FileId, int Format)? ChooseFile(ReadOnlySpan<byte> track, int[] order)
+    private static TrackId? ReadTrackId(ReadOnlySpan<byte> track)
+    {
+        var reader = new ProtoReader(track);
+        while (reader.TryRead(out var field, out _, out var value))
+            if (field == 1 && value.Length == 16) return TrackId.ReadRaw(value);
+        return null;
+    }
+
+    private static void AddFiles(ReadOnlySpan<byte> track, TrackId id, int[] order, List<AudioFile> result)
     {
         var reader = new ProtoReader(track);
         var files = new Dictionary<int, byte[]>();
@@ -61,18 +69,17 @@ internal sealed class Files(HttpClient http, Resolver resolver,
         {
             if (field != 12) continue;
             var file = new ProtoReader(bytes);
-            byte[]? id = null;
+            byte[]? fileId = null;
             var format = -1;
             while (file.TryRead(out var item, out var number, out var value))
             {
-                if (item == 1) id = value.ToArray();
+                if (item == 1) fileId = value.ToArray();
                 if (item == 2) format = checked((int)number);
             }
-            if (id?.Length == 20) files[format] = id;
+            if (fileId?.Length == 20) files[format] = fileId;
         }
         foreach (var format in order)
-            if (files.TryGetValue(format, out var fileId)) return (fileId, format);
-        return null;
+            if (files.TryGetValue(format, out var selected)) result.Add(new AudioFile(id, selected, format));
     }
 
     internal async Task<string[]> GetCdnUrlsAsync(ReadOnlyMemory<byte> fileId,
@@ -90,7 +97,8 @@ internal sealed class Files(HttpClient http, Resolver resolver,
             if (field == 1) result = (int)number;
             if (field == 2) urls.Add(Encoding.UTF8.GetString(bytes));
         }
-        return result == 0 && urls.Count > 0 ? urls.ToArray() : throw new InvalidDataException();
+        Diagnostics.Write("storage.result", detail: "result=" + result + " locations=" + urls.Count);
+        return result == 0 && urls.Count > 0 ? urls.ToArray() : throw new TrackUnavailableException();
     }
 
     internal async Task<BufferedAudioStream> OpenAudioAsync(ReadOnlyMemory<byte> fileId,
@@ -104,18 +112,44 @@ internal sealed class Files(HttpClient http, Resolver resolver,
     private async Task<byte[]> RequestAsync(HttpMethod method, string path, byte[]? body,
         CancellationToken cancellationToken)
     {
+        for (var attempt = 0; ; attempt++)
+        {
+            try { return await RequestOnceAsync(method, path, body, cancellationToken).ConfigureAwait(false); }
+            catch (HttpRequestException error) when (attempt == 0 && error.StatusCode == HttpStatusCode.Unauthorized)
+            {
+                // RequestOnce invalidated only the rejected token; retry with a fresh token.
+            }
+            catch (HttpRequestException error) when (attempt == 0 && error.StatusCode is
+                null or HttpStatusCode.RequestTimeout or HttpStatusCode.InternalServerError
+                or HttpStatusCode.BadGateway or HttpStatusCode.ServiceUnavailable
+                or HttpStatusCode.GatewayTimeout)
+            {
+                await Task.Delay(150, cancellationToken).ConfigureAwait(false);
+            }
+            catch (OperationCanceledException) when (attempt == 0 && !cancellationToken.IsCancellationRequested)
+            {
+                // An HTTP timeout can recover; explicit navigation cancellation never retries.
+            }
+        }
+    }
+
+    private async Task<byte[]> RequestOnceAsync(HttpMethod method, string path, byte[]? body,
+        CancellationToken cancellationToken)
+    {
         var (host, port) = await _resolver.ResolveAsync("spclient", cancellationToken)
             .ConfigureAwait(false);
         var salt = Random.Shared.NextInt64(0, uint.MaxValue + 1L);
         var url = $"https://{host}:{port}{path}?product=0&salt={salt}";
         using var request = new HttpRequestMessage(method, url);
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer",
-            await _tokens.AccessTokenAsync(_credentials, cancellationToken).ConfigureAwait(false));
+        var accessToken = await _tokens.AccessTokenAsync(_credentials, cancellationToken).ConfigureAwait(false);
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         request.Headers.TryAddWithoutValidation("client-token",
             await _tokens.ClientTokenAsync(cancellationToken).ConfigureAwait(false));
         request.Headers.UserAgent.ParseAdd("Spotify/124200290 Win32/0 (librespot)");
         if (body is not null) request.Content = new ByteArrayContent(body);
         using var response = await _http.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        if (response.StatusCode == HttpStatusCode.Unauthorized)
+            await _tokens.InvalidateAccessTokenAsync(accessToken, cancellationToken).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
         return await response.Content.ReadAsByteArrayAsync(cancellationToken).ConfigureAwait(false);
     }

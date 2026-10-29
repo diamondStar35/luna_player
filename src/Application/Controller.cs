@@ -261,14 +261,14 @@ internal sealed class ApplicationController : IDisposable
         var playbackRevision = _player.PlaybackRevision;
         _dispatcher.Post(() =>
         {
+            if (reason != EndReason.QueuedAdvance
+                && (itemId != _player.CurrentItemId || playbackRevision != _player.PlaybackRevision)) return;
             if (spotifyEnd)
             {
                 _spotify.HandleEnded(reason, generation);
                 SyncViewState();
                 return;
             }
-            if (reason != EndReason.QueuedAdvance
-                && (itemId != _player.CurrentItemId || playbackRevision != _player.PlaybackRevision)) return;
             HandlePlaybackEnded(reason);
         });
     }

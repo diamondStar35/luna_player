@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-10-29 20:41+0300\n"
+"POT-Creation-Date: 2026-10-29 21:16+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -787,7 +788,9 @@ msgstr ""
 
 #. Translators: Name of the command that opens the channel of the video being played inside the player.
 #. Translators: Item in the Video options menu that opens the channel of the video being played inside the player.
+#. Translators: Context menu item in the results list that opens the channel that published the video inside the player.
 #: Actions/YouTubeActions.cs:45 UI/Menus/VideoMenu.cs:30
+#: UI/YouTube/ResultsDialog.cs:392
 msgid "Go to channel"
 msgstr ""
 
@@ -1302,8 +1305,7 @@ msgstr ""
 
 #. Translators: Title of the information dialog for the current Spotify queue.
 #. Translators: Title of the window listing details of every file in the playlist.
-#: Application/Commands/Files/Info.cs:73
-#: Application/Commands/Files/Info.cs:127
+#: Application/Commands/Files/Info.cs:73 Application/Commands/Files/Info.cs:127
 msgid "Playlist Info"
 msgstr ""
 
@@ -1314,8 +1316,7 @@ msgstr ""
 
 #. Translators: Line in the Spotify queue information dialog. {value} is the formatted combined playing time.
 #. Translators: The playlist summary. {value} is a duration as hours:minutes:seconds.
-#: Application/Commands/Files/Info.cs:77
-#: Application/Commands/Files/Info.cs:140
+#: Application/Commands/Files/Info.cs:77 Application/Commands/Files/Info.cs:140
 msgid "Total duration: {value}"
 msgstr ""
 
@@ -2428,8 +2429,7 @@ msgstr ""
 #. Translators: How far the file being converted right now has got. {percent} is a whole number.
 #. Translators: How far the download has got. {percent} is a whole number.
 #: Application/Commands/Playback/SelectionSaving.cs:77
-#: UI/Conversion/ProgressDialog.cs:156
-#: UI/YouTube/DownloadProgressDialog.cs:159
+#: UI/Conversion/ProgressDialog.cs:156 UI/YouTube/DownloadProgressDialog.cs:159
 msgid "Percentage: {percent}%"
 msgstr ""
 
@@ -2597,8 +2597,7 @@ msgstr ""
 
 #. Translators: Shown when recording started but some sources would not open. {names} is a
 #. list of what the user called them, separated by commas.
-#: Application/Commands/Recording/Recording.cs:116
-#: UI/Recording/Transport.cs:61
+#: Application/Commands/Recording/Recording.cs:116 UI/Recording/Transport.cs:61
 msgid "Recording started, but these sources could not be opened: {names}"
 msgstr ""
 
@@ -3505,7 +3504,7 @@ msgid "{name} - {kind} - {volume}%"
 msgstr ""
 
 #. Translators: Confirmation displayed in the browser after returning from Spotify authorization.
-#: Spotify/Auth.cs:31 Spotify/Playback/Sessions.cs:61
+#: Spotify/Auth.cs:31 Spotify/Playback/Sessions.cs:72
 msgid "You can return to Luna Player now."
 msgstr ""
 
@@ -3706,25 +3705,45 @@ msgstr ""
 msgid "Spotify refused the playback sign in. Sign in again."
 msgstr ""
 
-#. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
+#. Translators: Spotify temporarily refused audio-key requests after bounded automatic backoff.
 #: Spotify/Catalog.cs:456
+msgid ""
+"Spotify is temporarily refusing playback requests. Please wait a moment and "
+"try again."
+msgstr ""
+
+#. Translators: Spotify did not return a playable audio version after fallback and recovery attempts.
+#: Spotify/Catalog.cs:458
+msgid ""
+"Spotify did not provide playable audio for this request. Please try again."
+msgstr ""
+
+#. Translators: Spotify audio still cannot be decoded after an automatic recovery attempt.
+#: Spotify/Catalog.cs:460
+msgid ""
+"Spotify audio playback failed after retrying. Check your connection or try "
+"another track."
+msgstr ""
+
+#. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
+#: Spotify/Catalog.cs:462
 msgid "Spotify could not load this track."
 msgstr ""
 
 #. Translators: Error when Spotify audio/network data or protected account files cannot be read or saved.
-#: Spotify/Catalog.cs:458
+#: Spotify/Catalog.cs:464
 msgid ""
 "Spotify could not read or save required data. Check your connection and "
 "available storage, then try again."
 msgstr ""
 
 #. Translators: Error when an operation outlives its disconnected Spotify session.
-#: Spotify/Catalog.cs:460
+#: Spotify/Catalog.cs:466
 msgid "Spotify was disconnected. Sign in again to continue."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails. {reason} is the failure reason returned by the service.
-#: Spotify/Catalog.cs:462
+#: Spotify/Catalog.cs:468
 msgid "Spotify request failed: {reason}"
 msgstr ""
 
@@ -4018,7 +4037,8 @@ msgstr ""
 #. Translators: Context help for the cross-fading checkbox on Audio > Playback.
 #: UI/Audio/PlaybackPreferences.cs:122
 msgid ""
-"Overlaps the end of one audio file with the beginning of the next. Files "
+"Overlaps the end of one audio file with the beginning of the next, including "
+"Spotify tracks. These settings apply to both local files and Spotify. Files "
 "containing video are excluded. Cross-fading takes precedence over ordinary "
 "file-transition fading and works independently of the gapless setting."
 msgstr ""
@@ -4366,8 +4386,7 @@ msgstr ""
 #. Translators: A guess at the time left. {time} is a clock such as 3:20, or the word for a guess
 #. not yet worth making.
 #. Translators: Estimated time left for all unfinished queue items.
-#: UI/Conversion/ProgressDialog.cs:161
-#: UI/YouTube/DownloadProgressDialog.cs:164
+#: UI/Conversion/ProgressDialog.cs:161 UI/YouTube/DownloadProgressDialog.cs:164
 #: UI/YouTube/DownloadQueueDialog.cs:305
 msgid "Estimated time left: {time}"
 msgstr ""
@@ -4377,8 +4396,7 @@ msgstr ""
 #. Translators: Shown for estimated time left before enough data exists to calculate it.
 #. Translators: Shown for queue speed before enough data exists to measure it.
 #. Translators: Shown for queue time remaining before enough data exists to calculate it.
-#: UI/Conversion/ProgressDialog.cs:165
-#: UI/YouTube/DownloadProgressDialog.cs:148
+#: UI/Conversion/ProgressDialog.cs:165 UI/YouTube/DownloadProgressDialog.cs:148
 #: UI/YouTube/DownloadProgressDialog.cs:152
 #: UI/YouTube/DownloadQueueDialog.cs:289 UI/YouTube/DownloadQueueDialog.cs:293
 msgid "calculating…"
@@ -4581,11 +4599,12 @@ msgstr ""
 #: UI/Help/AboutDialog.cs:31
 msgid ""
 "Luna includes mpv, copyright © the mpv developers and contributors to "
-"MPlayer and mplayer2, and a C# translation of python-mpv, copyright © 2017-"
-"2024 Sebastian Götte. These components are licensed under the GNU Lesser "
-"General Public License, version 2.1 or later. FFmpeg is licensed under the "
-"GNU Lesser General Public License, version 3 or later. See NOTICE.txt and "
-"the licenses folder for complete third-party notices and terms."
+"MPlayer and mplayer2, and a C# translation of python-mpv, copyright © "
+"2017-2024 Sebastian Götte. These components are licensed under the GNU "
+"Lesser General Public License, version 2.1 or later. FFmpeg is licensed "
+"under the GNU Lesser General Public License, version 3 or later. See "
+"NOTICE.txt and the licenses folder for complete third-party notices and "
+"terms."
 msgstr ""
 
 #. Translators: Final two lines in the About window. {publisher} is the developer's name and
@@ -5434,17 +5453,20 @@ msgid "Sleep timer"
 msgstr ""
 
 #. Translators: Item in the Video options menu that opens the download window to choose how the video being played is saved.
-#: UI/Menus/VideoMenu.cs:16
+#. Translators: Context menu item in the results list that opens the download window to choose how the chosen video is saved.
+#: UI/Menus/VideoMenu.cs:16 UI/YouTube/ResultsDialog.cs:400
 msgid "Download..."
 msgstr ""
 
 #. Translators: Item in the Video options menu that saves the video being played straight to disk with the saved download settings.
-#: UI/Menus/VideoMenu.cs:18
+#. Translators: Context menu item in the results list that saves the chosen video straight to disk with the saved download settings.
+#: UI/Menus/VideoMenu.cs:18 UI/YouTube/ResultsDialog.cs:402
 msgid "Direct download"
 msgstr ""
 
 #. Translators: Item in the Video options menu that adds the video being played to the download queue.
-#: UI/Menus/VideoMenu.cs:20
+#. Translators: Context menu item that adds the selected video to the download queue.
+#: UI/Menus/VideoMenu.cs:20 UI/YouTube/ResultsDialog.cs:404
 msgid "Add to download queue"
 msgstr ""
 
@@ -5464,7 +5486,8 @@ msgid "Open video in browser"
 msgstr ""
 
 #. Translators: Item in the Video options menu that opens the channel of the video being played in the web browser.
-#: UI/Menus/VideoMenu.cs:28
+#. Translators: Context menu item in the results list that opens the channel that published the video in the web browser.
+#: UI/Menus/VideoMenu.cs:28 UI/YouTube/ResultsDialog.cs:390
 msgid "Open channel in browser"
 msgstr ""
 
@@ -6668,13 +6691,16 @@ msgid "Removed from favorites."
 msgstr ""
 
 #. Translators: Radio station context-menu action removing a saved station.
-#: UI/Radio/Actions.cs:89
+#. Translators: Context menu item in the results list that takes the chosen video back out of the favourites.
+#: UI/Radio/Actions.cs:89 UI/YouTube/ResultsDialog.cs:416
 msgid "Remove from favorites"
 msgstr ""
 
 #. Translators: Radio station context-menu action saving a station.
 #. Translators: Radio station context-menu action saving the selected station locally.
+#. Translators: Context menu item in the results list that saves the chosen video to the favourites.
 #: UI/Radio/Actions.cs:91 UI/Radio/BrowserDialog.cs:154
+#: UI/YouTube/ResultsDialog.cs:397 UI/YouTube/ResultsDialog.cs:418
 msgid "Add to favorites"
 msgstr ""
 
@@ -7264,8 +7290,8 @@ msgstr ""
 #. Translators: Save dialog file types. JSON, M3U and M3U8 and all wildcard patterns must remain unchanged.
 #: UI/Services/Dialogs/Playlists.cs:82
 msgid ""
-"M3U8 playlist (*.m3u8)|*.m3u8|M3U playlist (*.m3u)|*.m3u|JSON playlist (*."
-"json)|*.json"
+"M3U8 playlist (*.m3u8)|*.m3u8|M3U playlist (*.m3u)|*.m3u|JSON playlist "
+"(*.json)|*.json"
 msgstr ""
 
 #. Translators: Confirmation before replacing an existing playlist after adjusting its filename extension.
@@ -8222,8 +8248,8 @@ msgstr ""
 #. Translators: Help text for the list that chooses the sound quality a video's audio is played at.
 #: UI/YouTube/GeneralPreferences.cs:152
 msgid ""
-"Sets the bitrate Luna asks for when you play a video's sound alone with Ctrl"
-"+Enter. Luna falls back to the closest the video offers."
+"Sets the bitrate Luna asks for when you play a video's sound alone with "
+"Ctrl+Enter. Luna falls back to the closest the video offers."
 msgstr ""
 
 #. Translators: Help text for the box holding how many videos a search should look for. The two numbers are
@@ -8408,6 +8434,16 @@ msgstr ""
 #. Translators: Heading above a YouTube channel's browser when the channel's name is not known.
 #: UI/YouTube/ResultsDialog.cs:354 YouTube/Playback/Session.cs:93
 msgid "Channel"
+msgstr ""
+
+#. Translators: Context menu item in the results list that copies the address of the chosen video.
+#: UI/YouTube/ResultsDialog.cs:386
+msgid "Copy link"
+msgstr ""
+
+#. Translators: Context menu item in the results list that shows the chosen video in the web browser.
+#: UI/YouTube/ResultsDialog.cs:388
+msgid "Open in browser"
 msgstr ""
 
 #. Translators: Label of the box where the user types what to search YouTube for.

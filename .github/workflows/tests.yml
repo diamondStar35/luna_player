@@ -30,6 +30,8 @@ jobs:
           $installerPath | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
       - name: Run current-code tests
         run: dotnet test --project tests/LunaPlayer.Tests.csproj -c Release --report-trx --results-directory tests/TestResults/current
+      - name: Run Spotify crossfade checks
+        run: dotnet run --project tests/SpotifyCrossfade -c Release -p:NativeAotBuildInvocation=true -p:PublishAot=false
       - name: Publish native test runner
         run: dotnet publish tests/LunaPlayer.Tests.csproj -c Release -m:1 -p:PublishAot=true -o tests/TestResults/native
       - name: Run native playback tests
