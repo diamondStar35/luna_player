@@ -867,6 +867,59 @@ See [Silence removal and audio processing](#8-silence-removal-and-audio-processi
 | Check for yt-dlp updates on startup | Performs a quiet component check after launch. |
 | Download YouTube components | Installs or refreshes yt-dlp and supporting tools. |
 
+### Discord Rich Presence
+
+Discord Rich Presence is a native, optional integration with the **Discord desktop app** on Windows.
+It does not require Python, a Discord bot, an account token, or a client secret. It works independently
+of Windows system media controls and is **off by default**.
+
+#### Enable Discord sharing
+
+1. Run Discord's desktop app signed in to your account. In Discord's **Activity Privacy** settings,
+   allow your activity to be shared. The browser version of Discord cannot receive local Rich Presence.
+2. In Luna, open **Preferences > Discord**, select **Enable Discord Rich Presence**, and choose **OK**.
+
+The repository owner configures Luna's public application ID once in the source before releasing the
+player. You do not need a Discord developer account, application ID, API key, bot token, or client secret.
+There is no per-user application ID field, and importing settings cannot override Luna's identity.
+
+If the enable control is unavailable and the page says the publisher has not configured the application ID,
+Rich Presence will not work in that build. Ask the publisher for a configured build; do not enter credentials
+in the settings file. Other playback features continue to work normally.
+
+#### Sharing controls
+
+| Setting | Purpose |
+| --- | --- |
+| Enable Discord Rich Presence | Opts in to sharing. Turning it off clears Luna's activity without stopping playback. |
+| Share media titles, artists and artwork | Publishes available titles and artists, including local file names. Turning it off also removes media thumbnails and media links. |
+| Show link buttons | Adds a Luna download button and, when details are shared, a recognized public YouTube or Spotify track link. |
+| Show activity when idle | Shows generic Luna activity when nothing is loaded or playback is stopped. Turn it off to clear presence while idle. Pausing does not count as idle. |
+
+Local files, YouTube, Spotify, radio, IPTV and other streams use the same playback integration. Media
+metadata availability depends on the source. Audio uses listening activity and video uses watching
+activity. Pausing removes the running clock; resuming, seeking, changing speed, looping, and moving to
+another item update the timing. Live streams have no countdown unless they supply a finite duration.
+
+Only recognized public YouTube and Spotify pages become media buttons, with tracking parameters removed.
+Local file paths, raw stream addresses, signed playback URLs, and IPTV credential URLs are never used as
+buttons. Hiding details leaves generic playback status and timing, plus the Luna download button if enabled.
+
+Updates are coalesced to avoid flooding Discord and can take several seconds to appear. Luna retries
+when Discord starts late or restarts, and clears its presence on exit. An unavailable Discord does not
+interrupt playback or display repeated error dialogs.
+
+#### If activity is missing
+
+- Check that Luna's presence option and Discord's activity sharing are enabled. If the build reports a
+  missing application ID, the publisher must configure and rebuild it; no user API key is needed.
+- Use the Discord desktop app, not its website, in the same Windows user session as Luna.
+- Wait about 15 seconds after starting or restarting Discord.
+- Check your activity from another account if buttons do not appear on your own profile; Discord may not
+  show your own Rich Presence buttons to you.
+- If text appears but the Luna image does not, ask the publisher to check the `luna` asset key and allow
+  time for Discord to process newly uploaded assets. Public YouTube videos use their thumbnail.
+
 ### Recording
 
 This page sets the defaults used by direct recording shortcuts and seeds the recording interface at the beginning of each Luna session. It contains audio format, sample rate, channels, audio quality for compressed formats, and the recordings folder.

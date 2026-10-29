@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-10-29 04:23+0300\n"
+"POT-Creation-Date: 2026-10-29 12:42+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -787,7 +788,9 @@ msgstr ""
 
 #. Translators: Name of the command that opens the channel of the video being played inside the player.
 #. Translators: Item in the Video options menu that opens the channel of the video being played inside the player.
+#. Translators: Context menu item in the results list that opens the channel that published the video inside the player.
 #: Actions/YouTubeActions.cs:45 UI/Menus/VideoMenu.cs:30
+#: UI/YouTube/ResultsDialog.cs:392
 msgid "Go to channel"
 msgstr ""
 
@@ -1302,8 +1305,7 @@ msgstr ""
 
 #. Translators: Title of the information dialog for the current Spotify queue.
 #. Translators: Title of the window listing details of every file in the playlist.
-#: Application/Commands/Files/Info.cs:73
-#: Application/Commands/Files/Info.cs:127
+#: Application/Commands/Files/Info.cs:73 Application/Commands/Files/Info.cs:127
 msgid "Playlist Info"
 msgstr ""
 
@@ -1314,8 +1316,7 @@ msgstr ""
 
 #. Translators: Line in the Spotify queue information dialog. {value} is the formatted combined playing time.
 #. Translators: The playlist summary. {value} is a duration as hours:minutes:seconds.
-#: Application/Commands/Files/Info.cs:77
-#: Application/Commands/Files/Info.cs:140
+#: Application/Commands/Files/Info.cs:77 Application/Commands/Files/Info.cs:140
 msgid "Total duration: {value}"
 msgstr ""
 
@@ -2428,8 +2429,7 @@ msgstr ""
 #. Translators: How far the file being converted right now has got. {percent} is a whole number.
 #. Translators: How far the download has got. {percent} is a whole number.
 #: Application/Commands/Playback/SelectionSaving.cs:77
-#: UI/Conversion/ProgressDialog.cs:156
-#: UI/YouTube/DownloadProgressDialog.cs:159
+#: UI/Conversion/ProgressDialog.cs:156 UI/YouTube/DownloadProgressDialog.cs:159
 msgid "Percentage: {percent}%"
 msgstr ""
 
@@ -2597,8 +2597,7 @@ msgstr ""
 
 #. Translators: Shown when recording started but some sources would not open. {names} is a
 #. list of what the user called them, separated by commas.
-#: Application/Commands/Recording/Recording.cs:116
-#: UI/Recording/Transport.cs:61
+#: Application/Commands/Recording/Recording.cs:116 UI/Recording/Transport.cs:61
 msgid "Recording started, but these sources could not be opened: {names}"
 msgstr ""
 
@@ -2677,14 +2676,14 @@ msgstr ""
 #. Translators: Spoken when the playing video does not say which channel published it.
 #. Translators: Spoken when the chosen video does not say which channel published it.
 #: Application/Commands/YouTube/CurrentVideo.cs:87 YouTube/Playback/Feed.cs:55
-#: YouTube/Playback/Sessions.cs:288
+#: YouTube/Playback/Sessions.cs:305
 msgid "Channel link is not available."
 msgstr ""
 
 #. Translators: The short wording spoken when the playing video does not name its channel.
 #. Translators: The short wording spoken when the chosen video does not name its channel.
 #: Application/Commands/YouTube/CurrentVideo.cs:89 YouTube/Playback/Feed.cs:57
-#: YouTube/Playback/Sessions.cs:290
+#: YouTube/Playback/Sessions.cs:307
 msgid "No channel link."
 msgstr ""
 
@@ -2872,12 +2871,12 @@ msgid "No YouTube video."
 msgstr ""
 
 #. Translators: Spoken when the one-time chapter-end stop pauses playback.
-#: Application/Controller.cs:269
+#: Application/Controller.cs:277
 msgid "Playback paused at the end of the chapter."
 msgstr ""
 
 #. Translators: Brief announcement after pausing at a chapter boundary.
-#: Application/Controller.cs:271
+#: Application/Controller.cs:279
 msgid "Chapter ended. Paused."
 msgstr ""
 
@@ -2982,6 +2981,46 @@ msgstr ""
 #. Translators: Short announcement when no sleep timer is set.
 #: Application/Infrastructure/SleepTimer.cs:283
 msgid "No sleep timer"
+msgstr ""
+
+#. Translators: Discord activity when Luna has no media loaded.
+#: Application/Presentation/DiscordPresencePresenter.cs:36
+msgid "Idle"
+msgstr ""
+
+#. Translators: Discord activity state while playback is running.
+#: Application/Presentation/DiscordPresencePresenter.cs:38
+msgid "Playing"
+msgstr ""
+
+#. Translators: Discord activity state while playback is paused.
+#: Application/Presentation/DiscordPresencePresenter.cs:40
+msgid "Paused"
+msgstr ""
+
+#. Translators: Discord activity when media details are hidden.
+#: Application/Presentation/DiscordPresencePresenter.cs:42
+msgid "Using Luna Player"
+msgstr ""
+
+#. Translators: Discord fallback when the current media has no safe display title.
+#: Application/Presentation/DiscordPresencePresenter.cs:44
+msgid "Untitled media"
+msgstr ""
+
+#. Translators: Discord button opening the public page of the current video.
+#: Application/Presentation/DiscordPresencePresenter.cs:46
+msgid "Watch online"
+msgstr ""
+
+#. Translators: Discord button opening the public page of the current audio.
+#: Application/Presentation/DiscordPresencePresenter.cs:48
+msgid "Listen online"
+msgstr ""
+
+#. Translators: Discord button opening Luna Player's releases page.
+#: Application/Presentation/DiscordPresencePresenter.cs:50
+msgid "Download Luna Player"
 msgstr ""
 
 #. Translators: Main window title during Spotify playback. {title} is the artist and track; {app} is the program name.
@@ -4286,8 +4325,7 @@ msgstr ""
 #. Translators: A guess at the time left. {time} is a clock such as 3:20, or the word for a guess
 #. not yet worth making.
 #. Translators: Estimated time left for all unfinished queue items.
-#: UI/Conversion/ProgressDialog.cs:161
-#: UI/YouTube/DownloadProgressDialog.cs:164
+#: UI/Conversion/ProgressDialog.cs:161 UI/YouTube/DownloadProgressDialog.cs:164
 #: UI/YouTube/DownloadQueueDialog.cs:305
 msgid "Estimated time left: {time}"
 msgstr ""
@@ -4297,8 +4335,7 @@ msgstr ""
 #. Translators: Shown for estimated time left before enough data exists to calculate it.
 #. Translators: Shown for queue speed before enough data exists to measure it.
 #. Translators: Shown for queue time remaining before enough data exists to calculate it.
-#: UI/Conversion/ProgressDialog.cs:165
-#: UI/YouTube/DownloadProgressDialog.cs:148
+#: UI/Conversion/ProgressDialog.cs:165 UI/YouTube/DownloadProgressDialog.cs:148
 #: UI/YouTube/DownloadProgressDialog.cs:152
 #: UI/YouTube/DownloadQueueDialog.cs:289 UI/YouTube/DownloadQueueDialog.cs:293
 msgid "calculating…"
@@ -4501,11 +4538,12 @@ msgstr ""
 #: UI/Help/AboutDialog.cs:31
 msgid ""
 "Luna includes mpv, copyright © the mpv developers and contributors to "
-"MPlayer and mplayer2, and a C# translation of python-mpv, copyright © 2017-"
-"2024 Sebastian Götte. These components are licensed under the GNU Lesser "
-"General Public License, version 2.1 or later. FFmpeg is licensed under the "
-"GNU Lesser General Public License, version 3 or later. See NOTICE.txt and "
-"the licenses folder for complete third-party notices and terms."
+"MPlayer and mplayer2, and a C# translation of python-mpv, copyright © "
+"2017-2024 Sebastian Götte. These components are licensed under the GNU "
+"Lesser General Public License, version 2.1 or later. FFmpeg is licensed "
+"under the GNU Lesser General Public License, version 3 or later. See "
+"NOTICE.txt and the licenses folder for complete third-party notices and "
+"terms."
 msgstr ""
 
 #. Translators: Final two lines in the About window. {publisher} is the developer's name and
@@ -5354,17 +5392,20 @@ msgid "Sleep timer"
 msgstr ""
 
 #. Translators: Item in the Video options menu that opens the download window to choose how the video being played is saved.
-#: UI/Menus/VideoMenu.cs:16
+#. Translators: Context menu item in the results list that opens the download window to choose how the chosen video is saved.
+#: UI/Menus/VideoMenu.cs:16 UI/YouTube/ResultsDialog.cs:400
 msgid "Download..."
 msgstr ""
 
 #. Translators: Item in the Video options menu that saves the video being played straight to disk with the saved download settings.
-#: UI/Menus/VideoMenu.cs:18
+#. Translators: Context menu item in the results list that saves the chosen video straight to disk with the saved download settings.
+#: UI/Menus/VideoMenu.cs:18 UI/YouTube/ResultsDialog.cs:402
 msgid "Direct download"
 msgstr ""
 
 #. Translators: Item in the Video options menu that adds the video being played to the download queue.
-#: UI/Menus/VideoMenu.cs:20
+#. Translators: Context menu item that adds the selected video to the download queue.
+#: UI/Menus/VideoMenu.cs:20 UI/YouTube/ResultsDialog.cs:404
 msgid "Add to download queue"
 msgstr ""
 
@@ -5384,7 +5425,8 @@ msgid "Open video in browser"
 msgstr ""
 
 #. Translators: Item in the Video options menu that opens the channel of the video being played in the web browser.
-#: UI/Menus/VideoMenu.cs:28
+#. Translators: Context menu item in the results list that opens the channel that published the video in the web browser.
+#: UI/Menus/VideoMenu.cs:28 UI/YouTube/ResultsDialog.cs:390
 msgid "Open channel in browser"
 msgstr ""
 
@@ -5736,6 +5778,114 @@ msgstr ""
 msgid "JSON files (*.json)|*.json|All files (*.*)|*.*"
 msgstr ""
 
+#. Translators: F1 help for the Discord settings page.
+#: UI/Preferences/Discord.cs:18
+msgid ""
+"Share your Luna Player activity with Discord. Move with Tab or Shift+Tab and "
+"press F1 for help. Changes take effect when you accept Preferences."
+msgstr ""
+
+#. Translators: Opt-in checkbox for publishing playback activity to Discord.
+#: UI/Preferences/Discord.cs:23
+msgid "Enable Discord Rich Presence"
+msgstr ""
+
+#. Translators: Privacy control for titles, artists, thumbnails and public media links in Discord.
+#: UI/Preferences/Discord.cs:25
+msgid "Share media titles, artists and artwork"
+msgstr ""
+
+#. Translators: Whether the Discord activity includes public media and Luna download buttons.
+#: UI/Preferences/Discord.cs:27
+msgid "Show link buttons"
+msgstr ""
+
+#. Translators: Whether Discord shows Luna while no media is loaded.
+#: UI/Preferences/Discord.cs:29
+msgid "Show activity when idle"
+msgstr ""
+
+#. Translators: Accessible name for the read-only Discord setup instructions.
+#: UI/Preferences/Discord.cs:31
+msgid "Discord setup and privacy"
+msgstr ""
+
+#. Translators: Explain why enabling Discord is unavailable in this build; users do not enter credentials.
+#: UI/Preferences/Discord.cs:37
+msgid ""
+"Discord Rich Presence is unavailable in this build because the publisher has "
+"not configured Luna's application ID. No user API key or token is required."
+msgstr ""
+
+#. Translators: Explain that Discord developer configuration belongs to the publisher, not the user.
+#: UI/Preferences/Discord.cs:39
+msgid ""
+"Luna's publisher has configured the Discord application. You do not need a "
+"developer account, application ID, API key or token."
+msgstr ""
+
+#. Translators: Instructions to make Rich Presence visible in the Discord desktop client.
+#: UI/Preferences/Discord.cs:41
+msgid ""
+"Run the Discord desktop app and allow activity sharing in Discord's Activity "
+"Privacy settings. Enable Rich Presence above and choose OK."
+msgstr ""
+
+#. Translators: Privacy explanation for Discord presence settings.
+#: UI/Preferences/Discord.cs:43
+msgid ""
+"Sharing is off by default. Media details can include local file names. "
+"Hiding details also hides media artwork and media links. Only recognized "
+"YouTube and Spotify public pages are linked; local paths and raw stream "
+"addresses are never linked."
+msgstr ""
+
+#. Translators: Troubleshooting information for Discord presence.
+#: UI/Preferences/Discord.cs:45
+msgid ""
+"Discord reconnects automatically. The browser version is not supported. "
+"Changes may take a few seconds to appear."
+msgstr ""
+
+#. Translators: F1 help for enabling Discord Rich Presence.
+#: UI/Preferences/Discord.cs:57
+msgid ""
+"Publishes your activity to the local Discord desktop app. Disabled by "
+"default. Turning this off clears Luna's Discord activity without stopping "
+"playback."
+msgstr ""
+
+#. Translators: F1 help for sharing media details with Discord.
+#: UI/Preferences/Discord.cs:59
+msgid ""
+"Shares the title and artist of the current media, including local file "
+"names, and YouTube artwork when available. Clear this to show only generic "
+"playback activity and hide media links and artwork."
+msgstr ""
+
+#. Translators: F1 help for Discord link buttons.
+#: UI/Preferences/Discord.cs:61
+msgid ""
+"Adds a Luna Player download button and, when media details are shared, a "
+"public YouTube or Spotify link. Raw stream URLs and local file paths are "
+"never shared as buttons."
+msgstr ""
+
+#. Translators: F1 help for idle Discord presence.
+#: UI/Preferences/Discord.cs:63
+msgid ""
+"Keeps a generic Luna Player activity visible when playback is stopped or "
+"nothing is loaded. Clear this to remove the activity when idle. Paused media "
+"still counts as loaded."
+msgstr ""
+
+#. Translators: F1 help for the read-only Discord setup guide.
+#: UI/Preferences/Discord.cs:65
+msgid ""
+"Use the Arrow keys to read or select these instructions. No Discord login "
+"credentials are stored by Luna."
+msgstr ""
+
 #. Translators: Label of the list for choosing the language the player speaks and shows its windows in.
 #. Translators: Column heading for the languages spoken by a radio station.
 #. Translators: Label for the language spoken by radio stations in Radio filters.
@@ -6047,8 +6197,13 @@ msgstr ""
 msgid "Spotify"
 msgstr ""
 
+#. Translators: Name of the Discord Rich Presence category in Preferences.
+#: UI/Preferences/MainDialog.cs:90
+msgid "Discord"
+msgstr ""
+
 #. Translators: Help text for the settings tree down the left of the Preferences window.
-#: UI/Preferences/MainDialog.cs:210
+#: UI/Preferences/MainDialog.cs:213
 msgid ""
 "Use the Arrow keys to move through settings pages. Press the Right Arrow key "
 "on a category to show its pages and the Left Arrow key to hide them. The "
@@ -6056,7 +6211,7 @@ msgid ""
 msgstr ""
 
 #. Translators: Spoken when the user asks for help on a control that has none.
-#: UI/Preferences/MainDialog.cs:217
+#: UI/Preferences/MainDialog.cs:220
 msgid "No detailed help is available for this control."
 msgstr ""
 
@@ -6506,13 +6661,16 @@ msgid "Removed from favorites."
 msgstr ""
 
 #. Translators: Radio station context-menu action removing a saved station.
-#: UI/Radio/Actions.cs:89
+#. Translators: Context menu item in the results list that takes the chosen video back out of the favourites.
+#: UI/Radio/Actions.cs:89 UI/YouTube/ResultsDialog.cs:416
 msgid "Remove from favorites"
 msgstr ""
 
 #. Translators: Radio station context-menu action saving a station.
 #. Translators: Radio station context-menu action saving the selected station locally.
+#. Translators: Context menu item in the results list that saves the chosen video to the favourites.
 #: UI/Radio/Actions.cs:91 UI/Radio/BrowserDialog.cs:154
+#: UI/YouTube/ResultsDialog.cs:397 UI/YouTube/ResultsDialog.cs:418
 msgid "Add to favorites"
 msgstr ""
 
@@ -7102,8 +7260,8 @@ msgstr ""
 #. Translators: Save dialog file types. JSON, M3U and M3U8 and all wildcard patterns must remain unchanged.
 #: UI/Services/Dialogs/Playlists.cs:46
 msgid ""
-"M3U8 playlist (*.m3u8)|*.m3u8|M3U playlist (*.m3u)|*.m3u|JSON playlist (*."
-"json)|*.json"
+"M3U8 playlist (*.m3u8)|*.m3u8|M3U playlist (*.m3u)|*.m3u|JSON playlist "
+"(*.json)|*.json"
 msgstr ""
 
 #. Translators: Confirmation before replacing an existing playlist after adjusting its filename extension.
@@ -8060,8 +8218,8 @@ msgstr ""
 #. Translators: Help text for the list that chooses the sound quality a video's audio is played at.
 #: UI/YouTube/GeneralPreferences.cs:152
 msgid ""
-"Sets the bitrate Luna asks for when you play a video's sound alone with Ctrl"
-"+Enter. Luna falls back to the closest the video offers."
+"Sets the bitrate Luna asks for when you play a video's sound alone with "
+"Ctrl+Enter. Luna falls back to the closest the video offers."
 msgstr ""
 
 #. Translators: Help text for the box holding how many videos a search should look for. The two numbers are
@@ -8248,6 +8406,16 @@ msgstr ""
 msgid "Channel"
 msgstr ""
 
+#. Translators: Context menu item in the results list that copies the address of the chosen video.
+#: UI/YouTube/ResultsDialog.cs:386
+msgid "Copy link"
+msgstr ""
+
+#. Translators: Context menu item in the results list that shows the chosen video in the web browser.
+#: UI/YouTube/ResultsDialog.cs:388
+msgid "Open in browser"
+msgstr ""
+
 #. Translators: Label of the box where the user types what to search YouTube for.
 #: UI/YouTube/SearchDialog.cs:53
 msgid "Search for"
@@ -8280,7 +8448,7 @@ msgstr ""
 
 #. Translators: A channel browser tab: the channel's ordinary videos.
 #. Translators: Title of the window listing the videos a search or a playlist turned up.
-#: YouTube/Client/Channels.cs:30 YouTube/Playback/Sessions.cs:259
+#: YouTube/Client/Channels.cs:30 YouTube/Playback/Sessions.cs:276
 msgid "Videos"
 msgstr ""
 
@@ -8476,39 +8644,39 @@ msgid "Loading more videos..."
 msgstr ""
 
 #. Translators: Shown when a video was found but the player could not start playing it.
-#: YouTube/Playback/Playing.cs:75
+#: YouTube/Playback/Playing.cs:77
 msgid "Could not open YouTube stream."
 msgstr ""
 
 #. Translators: Spoken when the video before this one is being fetched before it can be played.
 #. Translators: The short wording spoken while the video before this one is being fetched.
-#: YouTube/Playback/Playing.cs:96 YouTube/Playback/Playing.cs:101
+#: YouTube/Playback/Playing.cs:98 YouTube/Playback/Playing.cs:103
 msgid "Loading previous video..."
 msgstr ""
 
 #. Translators: Spoken when the video after this one is being fetched before it can be played.
 #. Translators: The short wording spoken while the video after this one is being fetched.
-#: YouTube/Playback/Playing.cs:98 YouTube/Playback/Playing.cs:103
+#: YouTube/Playback/Playing.cs:100 YouTube/Playback/Playing.cs:105
 msgid "Loading next video..."
 msgstr ""
 
 #. Translators: Spoken when the video before this one could not be fetched.
-#: YouTube/Playback/Playing.cs:143
+#: YouTube/Playback/Playing.cs:145
 msgid "Could not load the previous video."
 msgstr ""
 
 #. Translators: Spoken when the video after this one could not be fetched, so playback stops.
-#: YouTube/Playback/Playing.cs:145
+#: YouTube/Playback/Playing.cs:147
 msgid "Could not load the next video."
 msgstr ""
 
 #. Translators: The short wording spoken when the previous video could not be fetched.
-#: YouTube/Playback/Playing.cs:148
+#: YouTube/Playback/Playing.cs:150
 msgid "Previous video failed."
 msgstr ""
 
 #. Translators: The short wording spoken when the next video could not be fetched.
-#: YouTube/Playback/Playing.cs:150
+#: YouTube/Playback/Playing.cs:152
 msgid "Next video failed."
 msgstr ""
 
@@ -8518,17 +8686,17 @@ msgid "Playlist videos"
 msgstr ""
 
 #. Translators: Shown when an address looked like a YouTube link but names no video.
-#: YouTube/Playback/Sessions.cs:140
+#: YouTube/Playback/Sessions.cs:155
 msgid "This link does not include a YouTube video."
 msgstr ""
 
 #. Translators: Title of the window shown while the address of a video is being looked up.
-#: YouTube/Playback/Sessions.cs:349
+#: YouTube/Playback/Sessions.cs:366
 msgid "Loading YouTube stream"
 msgstr ""
 
 #. Translators: First message shown while the address of a video is being looked up.
-#: YouTube/Playback/Sessions.cs:351
+#: YouTube/Playback/Sessions.cs:368
 msgid "Fetching stream URL..."
 msgstr ""
 

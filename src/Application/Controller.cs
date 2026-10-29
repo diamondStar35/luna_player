@@ -32,6 +32,7 @@ internal sealed class ApplicationController : IDisposable
     private readonly ViewStatePresenter _viewState;
     private readonly WindowTitlePresenter _title;
     private readonly MediaOverlayPresenter _overlay;
+    private readonly DiscordPresencePresenter _discord;
     private readonly LunaPlayer.Spotify.Playback.Sessions _spotify;
     private string? _selectionPath;
     private int _selectionPlaylistIndex = -1;
@@ -83,6 +84,8 @@ internal sealed class ApplicationController : IDisposable
             () => sessions.CanMoveNext,
             () => sessions.CanMovePrevious,
             HandleAction);
+        _discord = new DiscordPresencePresenter(player, settings, dispatcher, _tags, spotify,
+            () => sessions.CurrentYouTubeItem);
         _view.ActionRequested += HandleAction;
         _view.CloseRequested += ShutdownAsync;
         _view.EscapePressed += _sessions.HandleEscape;
@@ -99,6 +102,7 @@ internal sealed class ApplicationController : IDisposable
         _overlay.Sync();
         _title.Update();
         _overlay.UpdateClock();
+        _discord.Sync();
     }
 
     internal void OpenPaths(IEnumerable<string> paths)
@@ -115,6 +119,7 @@ internal sealed class ApplicationController : IDisposable
         // Nothing after this wants the overlay published again, and the clock would keep firing until the
         // controller is disposed.
         _overlay.StopClock();
+        var discordTask = _discord.ShutdownAsync();
         // Before the volume is read into settings: a timer fading out has lowered the player's volume, and
         // disposing it puts the user's own volume back so that is what gets saved. Quiet, unlike Cancel: the
         // screen reader is moving to the next application and an announcement here would talk over it.
@@ -142,7 +147,7 @@ internal sealed class ApplicationController : IDisposable
         var saveTask = _settingsStore.SaveSessionAsync(_settings);
         var playerTask = Task.Run(_player.Dispose);
         // The frame remains hidden but alive until shutdown finishes, preserving the window handle mpv uses.
-        return _shutdownTask = Task.WhenAll(saveTask, playerTask, radioTask);
+        return _shutdownTask = Task.WhenAll(saveTask, playerTask, radioTask, discordTask);
     }
 
     public void Dispose()
@@ -199,6 +204,7 @@ internal sealed class ApplicationController : IDisposable
         _overlay.Sync();
         _title.Update();
         _overlay.UpdateClock();
+        _discord.Sync();
     }
 
     /// <summary>Refreshes the window when Spotify navigation selects a track before mpv loads its audio.</summary>
@@ -231,7 +237,9 @@ internal sealed class ApplicationController : IDisposable
 
     private void OnMetadataChanged() => _dispatcher.Post(() =>
     {
-        if (_shutDown || !_player.InRadioSession) return;
+        if (_shutDown) return;
+        _discord.Sync();
+        if (!_player.InRadioSession) return;
         _overlay.Sync();
         _title.Update();
     });

@@ -64,6 +64,7 @@
     <Compile Include="Application\**\*.cs" />
     <Compile Include="Bookmarks\**\*.cs" />
     <Compile Include="Configuration\**\*.cs" />
+    <Compile Include="Discord\**\*.cs" />
     <Compile Include="Equalizer\**\*.cs" />
     <Compile Include="Favorites\**\*.cs" />
     <Compile Include="Iptv\**\*.cs" />

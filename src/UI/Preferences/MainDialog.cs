@@ -86,6 +86,9 @@ internal sealed class MainDialog : IDisposable
         // Translators: Name of the Spotify credentials and audio-quality category in Preferences. Keep Spotify unchanged.
         var spotifyLabel = Tr("Spotify");
         var spotifyItem = AddPage(root, spotifyLabel, () => new Spotify.CredentialsPreferences(_book, settings.Spotify));
+        // Translators: Name of the Discord Rich Presence category in Preferences.
+        var discordLabel = Tr("Discord");
+        AddPage(root, discordLabel, () => new DiscordPreferences(_book, settings.Discord));
         AddPage(root, recordingLabel,
             () => new RecordingPreferences(_book, settings.Recording, dispatcher, catalog));
         AddPage(root, shortcutsLabel,
@@ -99,7 +102,7 @@ internal sealed class MainDialog : IDisposable
         _tree.Expand(youTubeItem, expand: false);
         SizeTreeToLabels([
             generalLabel, backupLabel, audioLabel, audioGeneralLabel, audioPlaybackLabel, silenceLabel, youTubeLabel,
-            youTubeGeneralLabel, youTubeDownloadLabel, recordingLabel, shortcutsLabel, globalsLabel]);
+            youTubeGeneralLabel, youTubeDownloadLabel, spotifyLabel, discordLabel, recordingLabel, shortcutsLabel, globalsLabel]);
 
         _tree.SelectionChanged += OnTreeChanged;
         _dialog.Bind(WxEvents.CharHook, OnCharHook);

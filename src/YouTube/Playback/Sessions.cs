@@ -115,6 +115,21 @@ internal sealed partial class Sessions : IDisposable
         }
     }
 
+    private YouTubeResult? _activeVideo;
+
+    /// <summary>Catalog metadata for the video actually playing, not a row currently being browsed.
+    /// A queued advance can change CurrentWatchUrl before the session selection is updated.</summary>
+    internal YouTubeResult? CurrentVideo
+    {
+        get
+        {
+            if (CurrentWatchUrl is not string url) return null;
+            if (_session is Session session && session.IndexOf(url) is var index && index >= 0)
+                return session.Items[index];
+            return _activeVideo is { } video && video.Url == url ? video : null;
+        }
+    }
+
     private string _activeChannelUrl = string.Empty;
 
     /// <summary>The channel address of the YouTube video playing now, or empty when it is not known - a
@@ -205,6 +220,7 @@ internal sealed partial class Sessions : IDisposable
         // video is selected again, while an ordinary browser command leaves the playing list alone.
         _session = null;
         _activeChannelUrl = string.Empty;
+        _activeVideo = null;
         // The whole stage goes, list and all, and the playlist the user opened comes back exactly as it
         // was - paused where it was paused. There is nothing to unpick, because nothing was mixed in.
         _player.LeaveSession();
@@ -217,6 +233,7 @@ internal sealed partial class Sessions : IDisposable
     {
         _pending = null;
         _activeChannelUrl = string.Empty;
+        _activeVideo = null;
         var session = _session;
         var browsing = _browsingSession;
         _session = null;

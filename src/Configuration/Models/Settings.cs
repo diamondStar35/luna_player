@@ -19,6 +19,7 @@ internal sealed class Settings
     public EqualizerSettings Equalizer { get; set; } = new();
     public ShortcutSettings Shortcuts { get; set; } = new();
     public YouTubeSettings YouTube { get; set; } = new();
+    public DiscordSettings Discord { get; set; } = new();
     public SpotifySettings Spotify { get; set; } = new();
     public RecordingSettings Recording { get; set; } = new();
     public SleepTimerSettings SleepTimer { get; set; } = new();
@@ -34,6 +35,7 @@ internal sealed class Settings
         Shortcuts = Shortcuts.Copy(),
         YouTube = YouTube.Copy(),
         Spotify = Spotify.Copy(),
+        Discord = Discord.Copy(),
         Recording = Recording.Copy(),
         SleepTimer = SleepTimer.Copy(),
     };
@@ -49,6 +51,7 @@ internal sealed class Settings
         Shortcuts.Apply(source.Shortcuts);
         YouTube.Apply(source.YouTube);
         Spotify.Apply(source.Spotify);
+        Discord.Apply(source.Discord);
         Recording.Apply(source.Recording);
         SleepTimer.Apply(source.SleepTimer);
         Validate();
@@ -59,7 +62,7 @@ internal sealed class Settings
     {
         if (General is null || Audio is null || Playback is null || Silence is null
             || Shortcuts is null || YouTube is null || Spotify is null || Recording is null || Equalizer is null
-            || SleepTimer is null)
+            || SleepTimer is null || Discord is null)
             throw new JsonException("The settings file is missing a required section.");
 
         Require(Version >= 1, "version");
