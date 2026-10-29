@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using LunaPlayer.Application;
 using LunaPlayer.Recording;
 using WxSharp;
@@ -201,7 +202,7 @@ internal sealed class SourceDialog : IDisposable
         if (!RecordingSources.Validate(_source, out var error))
         {
             // Kept open, so nothing typed is lost to a missing name.
-            Wx.MessageBox(error, Title, MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
+            Messages.Show(error, MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
             return;
         }
         _dialog.EndModal(StandardId.Ok);

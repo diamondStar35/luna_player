@@ -157,7 +157,7 @@ internal static partial class CrashReport
 
     private static void ShowWithoutToolkit(Exception failure)
         => _ = MessageBox(0, Describe(failure, "caught") + Environment.NewLine + Path,
-            AppInfo.Name, 0x10);
+            "Error", 0x10);
 
     [LibraryImport("user32.dll", EntryPoint = "MessageBoxW", StringMarshalling = StringMarshalling.Utf16)]
     private static partial int MessageBox(nint owner, string text, string caption, uint flags);

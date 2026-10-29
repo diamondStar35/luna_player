@@ -357,6 +357,6 @@ internal sealed partial class Sessions : IDisposable
 
     private void ShowError(string message) =>
         // Translators: Title of an error shown while resolving or playing a YouTube video.
-        _view.Dialogs.ShowError(message, Tr("YouTube"));
+        _view.Dialogs.ShowError(message);
 
 }

@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using System.Diagnostics;
 using LunaPlayer.Radio;
 using WxSharp;
@@ -100,8 +101,7 @@ internal sealed partial class BrowserDialog
         try { Process.Start(new ProcessStartInfo(url) { UseShellExecute = true }); }
         catch (Exception error) when (error is System.ComponentModel.Win32Exception or InvalidOperationException)
         {
-            // Translators: Title of a failure to open a radio station's website in the user's browser.
-            Wx.MessageBox(Catalog.DescribeError(error), Tr("Radio error"), MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
+            Messages.Show(Catalog.DescribeError(error), MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
         }
     }
 
@@ -135,11 +135,9 @@ internal sealed partial class BrowserDialog
 
     private void ClearHistory()
     {
-        if (Wx.MessageBox(
+        if (Messages.Show(
             // Translators: Confirmation before deleting this user's local radio playback history.
-            Tr("Clear all recently played radio stations?"),
-            // Translators: Title of the radio listening-history deletion confirmation.
-            Tr("Clear history"), MessageBoxStyle.YesNo | MessageBoxStyle.IconWarning, _dialog) != MessageBoxStyle.Yes) return;
+            Tr("Clear all recently played radio stations?"), MessageBoxStyle.YesNo | MessageBoxStyle.IconWarning, _dialog) != MessageBoxStyle.Yes) return;
         Run(async _ => { await _library.ClearHistoryAsync().ConfigureAwait(false); return true; }, _ =>
         {
             _state.Invalidate(CategoryKind.Recent);

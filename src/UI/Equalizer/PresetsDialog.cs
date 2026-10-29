@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using LunaPlayer.Equalizer;
 using LunaPlayer.Playback;
 using WxSharp;
@@ -165,11 +166,9 @@ internal sealed class PresetsDialog : IDisposable
     {
         if (Selected() is not PresetEntry entry || entry.IsSystem)
             return;
-        var answer = Wx.MessageBox(
+        var answer = Messages.Show(
             // Translators: Asks the user to confirm removing an equalizer preset. {name} is the preset's name.
             TrFormat("Delete the preset {name}? This cannot be undone.", entry.Name),
-            // Translators: Title of the window asking the user to confirm removing an equalizer preset.
-            Tr("Delete preset"),
             MessageBoxStyle.YesNo | MessageBoxStyle.IconWarning | MessageBoxStyle.NoDefault, _dialog);
         if (answer != MessageBoxStyle.Yes)
             return;
@@ -184,13 +183,11 @@ internal sealed class PresetsDialog : IDisposable
     }
 
     private void Report(string error)
-        => Wx.MessageBox(
+        => Messages.Show(
             error.Length > 0
                 ? error
                 // Translators: Shown when an equalizer preset could not be saved and there is no more detail to give.
                 : Tr("The preset could not be saved."),
-            // Translators: Title of the window shown when an equalizer preset could not be saved.
-            Tr("Equalizer"),
             MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
 
     private int IndexOf(string id)

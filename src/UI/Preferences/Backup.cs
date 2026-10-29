@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
 using WxSharp;
@@ -60,12 +61,8 @@ internal sealed class BackupPreferences : PreferencesPage
         ShowResult(_operations.ExportSettings(path),
             // Translators: Message shown once the settings have been saved to the chosen file.
             Tr("Settings exported successfully."),
-            // Translators: Title of the message shown after settings are exported.
-            Tr("Export settings"),
             // Translators: Message shown when the settings could not be saved to the chosen file.
-            Tr("Could not export settings."),
-            // Translators: Title of the message shown when the settings could not be saved to the chosen file.
-            Tr("Export error"));
+            Tr("Could not export settings."));
     }
 
     private void ImportSettings(object? sender, CommandEventArgs args)
@@ -75,21 +72,15 @@ internal sealed class BackupPreferences : PreferencesPage
         if (path is null) return;
         var settings = _operations.ImportSettings(path);
         if (settings is null)
-            ShowResult(false, "", "",
+            ShowResult(false, "",
                 // Translators: Message shown when the chosen file does not hold settings the player can read.
-                Tr("The selected settings file is invalid or could not be imported."),
-                // Translators: Title of the message shown when settings could not be loaded from the chosen file.
-                Tr("Import error"));
+                Tr("The selected settings file is invalid or could not be imported."));
         else
         {
             _replaceSettings(settings);
             ShowResult(true,
                 // Translators: Message shown once settings have been loaded from the chosen file.
-                Tr("Settings imported successfully."),
-                // Translators: Title of the message shown after settings are imported.
-                Tr("Import settings"), "",
-                // Translators: Title of an error shown when settings cannot be imported.
-                Tr("Import error"));
+                Tr("Settings imported successfully."), "");
         }
     }
 
@@ -101,12 +92,8 @@ internal sealed class BackupPreferences : PreferencesPage
         ShowResult(_operations.ExportBookmarks(path),
             // Translators: Message shown once the bookmarks have been saved to the chosen file.
             Tr("Bookmarks exported successfully."),
-            // Translators: Title of the message shown after bookmarks are exported.
-            Tr("Export bookmarks"),
             // Translators: Message shown when the bookmarks could not be saved to the chosen file.
-            Tr("Could not export bookmarks."),
-            // Translators: Title of an error shown when bookmarks cannot be exported.
-            Tr("Export error"));
+            Tr("Could not export bookmarks."));
     }
 
     private void ImportBookmarks(object? sender, CommandEventArgs args)
@@ -117,46 +104,32 @@ internal sealed class BackupPreferences : PreferencesPage
         ShowResult(_operations.ImportBookmarks(path),
             // Translators: Message shown once bookmarks have been loaded from the chosen file.
             Tr("Bookmarks imported successfully."),
-            // Translators: Title of the message shown after bookmarks are imported.
-            Tr("Import bookmarks"),
             // Translators: Message shown when the chosen file does not hold bookmarks the player can read.
-            Tr("The selected bookmarks file is invalid or could not be imported."),
-            // Translators: Title of an error shown when bookmarks cannot be imported.
-            Tr("Import error"));
+            Tr("The selected bookmarks file is invalid or could not be imported."));
     }
 
     private void ResetSettings(object? sender, CommandEventArgs args)
     {
         // Translators: Question asked before every setting is put back the way it started.
-        if (Wx.MessageBox(Tr("Are you sure you want to reset all settings to defaults?\nThis action cannot be undone."),
-            // Translators: Title of the confirmation shown before resetting every setting.
-            Tr("Reset settings"), MessageBoxStyle.YesNo | MessageBoxStyle.NoDefault | MessageBoxStyle.IconWarning, Window) != MessageBoxStyle.Yes) return;
+        if (Messages.Show(Tr("Are you sure you want to reset all settings to defaults?\nThis action cannot be undone."), MessageBoxStyle.YesNo | MessageBoxStyle.NoDefault | MessageBoxStyle.IconWarning, Window) != MessageBoxStyle.Yes) return;
         var settings = _operations.ResetSettings();
         if (settings is null)
-            ShowResult(false, "", "",
+            ShowResult(false, "",
                 // Translators: Message shown when the settings could not be put back the way they started.
-                Tr("Could not reset settings."),
-                // Translators: Title of the message shown when the settings could not be put back the way they started.
-                Tr("Reset error"));
+                Tr("Could not reset settings."));
         else
         {
             _replaceSettings(settings);
             ShowResult(true,
                 // Translators: Message shown once every setting has been put back the way it started.
-                Tr("Settings were reset to defaults."),
-                // Translators: Title of the message shown after resetting every setting.
-                Tr("Reset settings"), "",
-                // Translators: Title of an error shown when settings cannot be reset.
-                Tr("Reset error"));
+                Tr("Settings were reset to defaults."), "");
         }
     }
 
     private void OpenFolder(object? sender, CommandEventArgs args)
-        => ShowResult(_operations.OpenSettingsFolder(), "", "",
+        => ShowResult(_operations.OpenSettingsFolder(), "",
             // Translators: Message shown when the folder holding the player's settings could not be opened.
-            Tr("Could not open the settings folder."),
-            // Translators: Title of the message shown when the folder holding the player's settings could not be opened.
-            Tr("Open folder error"));
+            Tr("Could not open the settings folder."));
 
     private string? SavePath(string title, string source)
     {
@@ -175,8 +148,7 @@ internal sealed class BackupPreferences : PreferencesPage
         return dialog.ShowModal() == StandardId.Ok ? dialog.Path : null;
     }
 
-    private void ShowResult(bool success, string successMessage, string successCaption,
-        string failureMessage, string failureCaption)
+    private void ShowResult(bool success, string successMessage, string failureMessage)
     {
         if (success && successMessage.Length == 0) return;
         // A failure carries the reason the store gave, so the message says what actually went wrong rather
@@ -185,7 +157,7 @@ internal sealed class BackupPreferences : PreferencesPage
         var text = success
             ? successMessage
             : reason.Length > 0 ? $"{failureMessage}{Environment.NewLine}{reason}" : failureMessage;
-        Wx.MessageBox(text, success ? successCaption : failureCaption,
+        Messages.Show(text,
             MessageBoxStyle.Ok | (success ? MessageBoxStyle.IconInformation : MessageBoxStyle.IconError), Window);
     }
 

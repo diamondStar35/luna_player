@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using System.Collections.Concurrent;
 using System.Runtime.ExceptionServices;
 using LunaPlayer.Application;
@@ -173,11 +174,9 @@ internal sealed class ProgressDialog : IDisposable
         if (_finished || _confirming)
             return;
         _confirming = true;
-        var stop = Wx.MessageBox(
+        var stop = Messages.Show(
             // Translators: Asks the user to confirm stopping a conversion that is still running.
-            Tr("The conversion is still running. Would you like to stop it?"),
-            // Translators: Title of the prompt shown when the user tries to stop a running conversion.
-            Tr("Warning"), MessageBoxStyle.YesNo | MessageBoxStyle.IconWarning, _dialog) == MessageBoxStyle.Yes;
+            Tr("The conversion is still running. Would you like to stop it?"), MessageBoxStyle.YesNo | MessageBoxStyle.IconWarning, _dialog) == MessageBoxStyle.Yes;
         _confirming = false;
         // The batch may have finished while the question was up. If so, leave it to the next tick to close
         // the window with the result rather than cancelling a run that is already done.

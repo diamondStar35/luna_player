@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using LunaPlayer.Application;
 using LunaPlayer.Recording;
 using WxSharp;
@@ -27,10 +28,9 @@ internal sealed partial class MainDialog
         }
         if (_sources.Count == 0)
         {
-            Wx.MessageBox(
+            Messages.Show(
                 // Translators: Shown when recording was started with nothing set up to record from.
-                Tr("Add at least one source before recording."),
-                Title, MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
+                Tr("Add at least one source before recording."), MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
             return;
         }
         // Kept, so the settings are still here the next time the window is opened in this session.
@@ -49,18 +49,17 @@ internal sealed partial class MainDialog
         SyncButtons();
         if (!outcome.Success)
         {
-            Wx.MessageBox(RecordingSources.Describe(outcome.Failure, outcome.Detail), Title,
+            Messages.Show(RecordingSources.Describe(outcome.Failure, outcome.Detail),
                 MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
             return;
         }
         if (failures.Count > 0)
         {
-            Wx.MessageBox(
+            Messages.Show(
                 // Translators: Shown when recording started but some sources would not open. {names} is a
                 // list of what the user called them, separated by commas.
                 TrFormat("Recording started, but these sources could not be opened: {names}",
-                    string.Join(", ", failures)),
-                Title, MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
+                    string.Join(", ", failures)), MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
         }
     }
 
@@ -86,7 +85,7 @@ internal sealed partial class MainDialog
             return;
         SyncButtons();
         if (!outcome.Success)
-            Wx.MessageBox(RecordingSources.Describe(outcome.Failure, outcome.Detail), Title,
+            Messages.Show(RecordingSources.Describe(outcome.Failure, outcome.Detail),
                 MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
     }
 

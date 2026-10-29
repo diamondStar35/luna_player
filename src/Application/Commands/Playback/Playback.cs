@@ -218,9 +218,7 @@ internal sealed partial class Playback
             {
                 _view.Dialogs.ShowWarning(
                     // Translators: Warning when the Spotify track duration is not yet available for seeking.
-                    Tr("Time is not available for the current file."),
-                    // Translators: Title of the seek dialog warning during Spotify playback.
-                    Tr("Go to time"));
+                    Tr("Time is not available for the current file."));
                 return;
             }
             var chosen = _view.Dialogs.ChooseTime(spotifyDuration, Math.Clamp(_spotify.Elapsed ?? 0, 0, spotifyDuration));
@@ -231,9 +229,7 @@ internal sealed partial class Playback
         {
             _view.Dialogs.ShowWarning(
                 // Translators: Shown when the player cannot determine the current file's duration.
-                Tr("Time is not available for the current file."),
-                // Translators: Title of the window that asks the user which point in the file to move to.
-                Tr("Go to time"));
+                Tr("Time is not available for the current file."));
             return;
         }
         var position = _view.Dialogs.ChooseTime(duration, Math.Clamp(_player.Elapsed ?? 0, 0, duration));

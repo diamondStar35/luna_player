@@ -161,7 +161,5 @@ internal sealed class Equalizer
             error.Length > 0
                 ? error
                 // Translators: Shown when an equalizer preset could not be saved and there is no more detail to give.
-                : Tr("The preset could not be saved."),
-            // Translators: Title of the window shown when an equalizer preset could not be saved.
-            Tr("Equalizer"));
+                : Tr("The preset could not be saved."));
 }

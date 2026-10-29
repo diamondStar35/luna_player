@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using WxSharp;
 
 namespace LunaPlayer.UI.Selections;
@@ -87,11 +88,9 @@ internal sealed class TimeDialog : IDisposable
     {
         if (SelectedMilliseconds() > _durationMilliseconds)
         {
-            Wx.MessageBox(
+            Messages.Show(
                 // Translators: Shown when a manually entered selection marker lies beyond the file's end.
                 Tr("The selected time exceeds the file duration."),
-                // Translators: Title of the error for a selection time entered beyond the file's end.
-                Tr("Selection time"),
                 MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
             return;
         }

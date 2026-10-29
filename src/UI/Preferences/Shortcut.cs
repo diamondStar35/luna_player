@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using System.Runtime.InteropServices;
 using LunaPlayer.Actions;
 using LunaPlayer.Configuration;
@@ -140,11 +141,9 @@ internal sealed class ShortcutPreferences : PreferencesPage
         if (shortcut is null) return;
         if (HasConflict(action.Id, slot, shortcut.Value))
         {
-            Wx.MessageBox(
+            Messages.Show(
                 // Translators: Shown when the combination the user pressed is already used by another command.
                 Tr("That shortcut is already assigned to another action."),
-                // Translators: Title of the message shown when the combination pressed is already used by another command.
-                Tr("Shortcut Conflict"),
                 MessageBoxStyle.Ok | MessageBoxStyle.IconError, Window);
             return;
         }
@@ -179,11 +178,9 @@ internal sealed class ShortcutPreferences : PreferencesPage
     private void Reset()
     {
         if (!HasChangesFromDefaults()) return;
-        if (Wx.MessageBox(
+        if (Messages.Show(
             // Translators: Asks the user to confirm putting every shortcut on this page back to the combination the player came with.
             Tr("Reset all shortcuts to defaults?"),
-            // Translators: Title of the window that asks the user to confirm putting every shortcut back as it was.
-            Tr("Confirm Reset"),
             MessageBoxStyle.YesNo | MessageBoxStyle.IconQuestion, Window) != MessageBoxStyle.Yes) return;
         // Only the working copy is cleared; the stored overrides are rewritten from it in Apply.
         _primary.Clear();

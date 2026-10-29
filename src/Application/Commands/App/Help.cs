@@ -31,17 +31,13 @@ internal sealed class Help
             Open(
                 path,
                 // Translators: Shown when Windows cannot open the installed HTML user guide.
-                Tr("The user guide could not be opened."),
-                // Translators: Title of an error about opening the user guide.
-                Tr("User guide"));
+                Tr("The user guide could not be opened."));
             return;
         }
 
         _view.Dialogs.ShowError(
             // Translators: Shown when no local user-guide HTML file was included with the application.
-            Tr("The user guide is not installed."),
-            // Translators: Title of an error about the user guide.
-            Tr("User guide"));
+            Tr("The user guide is not installed."));
     }
 
     private void OpenReleaseNotes()
@@ -50,9 +46,7 @@ internal sealed class Help
         Open(
             $"{AppInfo.RepositoryUrl}/releases/tag/v{version}",
             // Translators: Shown when Windows cannot open the release page in a web browser.
-            Tr("The release notes could not be opened."),
-            // Translators: Title of an error about opening the release notes.
-            Tr("Release notes"));
+            Tr("The release notes could not be opened."));
     }
 
     private void OpenDonate()
@@ -60,12 +54,10 @@ internal sealed class Help
         Open(
             "https://paypal.me/diamondStar35",
             // Translators: Shown when Windows cannot open the PayPal donation page in a web browser.
-            Tr("The donation page could not be opened."),
-            // Translators: Title of an error about opening the donation page.
-            Tr("Donate"));
+            Tr("The donation page could not be opened."));
     }
 
-    private void Open(string target, string failureMessage, string caption)
+    private void Open(string target, string failureMessage)
     {
         try
         {
@@ -76,7 +68,7 @@ internal sealed class Help
         }
         catch (Exception failure)
         {
-            _view.Dialogs.ShowError($"{failureMessage}\n\n{failure.Message}", caption);
+            _view.Dialogs.ShowError($"{failureMessage}\n\n{failure.Message}");
         }
     }
 

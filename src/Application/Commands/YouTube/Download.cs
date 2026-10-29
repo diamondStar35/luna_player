@@ -106,9 +106,7 @@ internal sealed partial class YouTube
         if (result.Success)
             _view.Dialogs.ShowMainInfo(
                 // Translators: Shown when a download finished.
-                Tr("The download finished. The file was saved to your downloads folder."),
-                // Translators: Title of the message shown when a download has finished.
-                Tr("Success"));
+                Tr("The download finished. The file was saved to your downloads folder."));
         else
             _view.Dialogs.ShowMainError(
                 result.Error.Length > 0
@@ -116,9 +114,7 @@ internal sealed partial class YouTube
                     // which is not translated.
                     ? TrFormat("The download could not be completed.\n\nDetails: {details}", result.Error)
                     // Translators: Shown when a download failed and no reason was given.
-                    : Tr("The download could not be completed. Check your internet connection and try again."),
-                // Translators: Title of the message shown when a download could not finish.
-                Tr("Error"));
+                    : Tr("The download could not be completed. Check your internet connection and try again."));
     }
 
     /// <summary>Whether the yt-dlp programs are present; offers to fetch them and retries if not.</summary>

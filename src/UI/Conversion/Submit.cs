@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using LunaPlayer.Media;
 using WxSharp;
 
@@ -46,10 +47,8 @@ internal sealed partial class MainDialog
         _dialog.EndModal(StandardId.Ok);
     }
 
-    private void Warn(string message) => Wx.MessageBox(
+    private void Warn(string message) => Messages.Show(
         message,
-        // Translators: Title of the messages the media converter shows.
-        Tr("Media converter"),
         MessageBoxStyle.Ok | MessageBoxStyle.IconWarning,
         _dialog);
 

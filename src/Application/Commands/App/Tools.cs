@@ -52,7 +52,7 @@ internal sealed class Tools
         if (outcome.Failures.Count == 0)
         {
             // Translators: Title of the message shown when every file in a batch was converted.
-            _view.Dialogs.ShowInfo(summary, Tr("Success"));
+            _view.Dialogs.ShowInfo(summary);
             return;
         }
         // One block per failed file: the file on its own line, the reason below it, a blank line between blocks.

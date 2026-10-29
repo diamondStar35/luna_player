@@ -46,7 +46,7 @@ internal sealed class PlaylistsDialogs(DialogContext context)
         {
             path = Path.ChangeExtension(path, extension);
             // Translators: Confirmation before replacing an existing playlist after adjusting its filename extension.
-            if (File.Exists(path) && !_context.Dialogs.Confirm(Tr("Replace the existing playlist file?"), title)) return null;
+            if (File.Exists(path) && !_context.Dialogs.Confirm(Tr("Replace the existing playlist file?"))) return null;
         }
         return path;
     }}

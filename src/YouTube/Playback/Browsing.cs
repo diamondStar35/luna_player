@@ -247,7 +247,7 @@ internal sealed class Browsing
 
     private void ShowError(string message) =>
         // Translators: Title of the messages the player shows about YouTube.
-        _view.Dialogs.ShowError(message, Tr("YouTube"));
+        _view.Dialogs.ShowError(message);
 
     private readonly record struct SearchResults(
         IReadOnlyList<YouTubeResult> Items, Metadata.Page? Page, ResolveFailure Failure, string Detail);

@@ -31,19 +31,14 @@ internal sealed class SavedPlaylists
         catch (Exception exception) when (exception is InvalidDataException or IOException or UnauthorizedAccessException or System.Text.Json.JsonException or ArgumentException)
         {
             // Translators: Playlist operation failure. {error} contains the reason from the file or storage operation.
-            _view.Dialogs.ShowError(TrFormat("Could not complete the playlist operation: {error}", exception.Message), Caption());
+            _view.Dialogs.ShowError(TrFormat("Could not complete the playlist operation: {error}", exception.Message));
         }
-    }
-    private static string Caption()
-    {
-        // Translators: Caption of playlist information and error messages.
-        return Tr("Playlists");
     }
     private void Report(Resolution resolution)
     {
         if (resolution.Unavailable.Count == 0) return;
         // Translators: Warning listing missing files and inaccessible or empty playlist folders. {paths} is a newline-separated list.
-        _view.Dialogs.ShowWarning(TrFormat("Unavailable or empty playlist entries:\n{paths}", string.Join('\n', resolution.Unavailable)), Caption());
+        _view.Dialogs.ShowWarning(TrFormat("Unavailable or empty playlist entries:\n{paths}", string.Join('\n', resolution.Unavailable)));
     }
     private void Append(IReadOnlyList<SavedEntry> entries)
     {
@@ -70,7 +65,7 @@ internal sealed class SavedPlaylists
             catch (Exception exception) when (exception is InvalidDataException or IOException or UnauthorizedAccessException)
             {
                 // Translators: Validation error for a playlist name. {error} is the reason.
-                _view.Dialogs.ShowWarning(TrFormat("Could not save the playlist: {error}", exception.Message), Caption());
+                _view.Dialogs.ShowWarning(TrFormat("Could not save the playlist: {error}", exception.Message));
                 document = edited;
             }
         }
@@ -116,14 +111,14 @@ internal sealed class SavedPlaylists
                 case "export": Export(document); break;
                 case "remove":
                     // Translators: Confirmation removing a saved playlist, leaving all media files untouched.
-                    if (_view.Dialogs.Confirm(Tr("Remove this saved playlist? Media files will be kept."), Caption())) _store.Remove(document.Id);
+                    if (_view.Dialogs.Confirm(Tr("Remove this saved playlist? Media files will be kept."))) _store.Remove(document.Id);
                     break;
                 case "open":
                     var resolved = DocumentResolver.Resolve(document.Entries);
                     Report(resolved);
                     if (resolved.Files.Count > 0) { _player.OpenSaved(document.Entries, resolved.Files); return; }
                     // Translators: Warning when opening a saved playlist yields no playable tracks.
-                    _view.Dialogs.ShowWarning(Tr("The playlist contains no playable entries."), Caption());
+                    _view.Dialogs.ShowWarning(Tr("The playlist contains no playable entries."));
                     break;
             }
         }

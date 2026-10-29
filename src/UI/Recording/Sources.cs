@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using LunaPlayer.Application;
 using LunaPlayer.Recording;
 using WxSharp;
@@ -91,11 +92,10 @@ internal sealed partial class MainDialog
     {
         if (kind is RecordingSourceKind.Process && !AudioCatalog.SupportsProcessCapture)
         {
-            Wx.MessageBox(
+            Messages.Show(
                 // Translators: Shown when capturing one program's sound is asked for on a version of
                 // Windows that cannot do it. Capturing a device still works.
-                Tr("This version of Windows cannot capture a single program. Windows 10 version 2004 or later is needed for that; recording from a device still works."),
-                Title, MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
+                Tr("This version of Windows cannot capture a single program. Windows 10 version 2004 or later is needed for that; recording from a device still works."), MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
             return;
         }
         var source = new RecordingSource { Kind = kind, Name = DefaultName(kind) };
@@ -123,11 +123,9 @@ internal sealed partial class MainDialog
     {
         if (Selected() is not RecordingSource source)
             return;
-        if (Wx.MessageBox(
+        if (Messages.Show(
             // Translators: Asks the user to confirm removing a recording source. {name} is what they called it.
             TrFormat("Remove the source '{name}'?", source.Name),
-            // Translators: Title of the window that asks the user to confirm removing a recording source.
-            Tr("Confirm remove"),
             MessageBoxStyle.YesNo | MessageBoxStyle.IconQuestion, _dialog) != MessageBoxStyle.Yes)
             return;
         _sources.Remove(source.Id);

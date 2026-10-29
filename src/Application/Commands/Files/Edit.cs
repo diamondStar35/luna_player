@@ -52,9 +52,7 @@ internal sealed class Edit
         {
             _view.Dialogs.ShowWarning(
                 // Translators: Spoken and shown when the user confirms a new file name without typing anything.
-                Tr("File name cannot be empty."),
-                // Translators: Title of the warning shown when a new file name is empty.
-                Tr("Rename File"));
+                Tr("File name cannot be empty."));
             return;
         }
         if (string.IsNullOrEmpty(Path.GetExtension(value)))
@@ -64,9 +62,7 @@ internal sealed class Edit
         {
             _view.Dialogs.ShowWarning(
                 // Translators: Spoken and shown when a new file name is already used in the same folder.
-                Tr("A file with that name already exists."),
-                // Translators: Title of the warning shown when a new file name is already in use.
-                Tr("Rename File"));
+                Tr("A file with that name already exists."));
             return;
         }
         if (_player.RenameCurrent(newPath))
@@ -91,9 +87,7 @@ internal sealed class Edit
         var name = Path.GetFileName(path);
         if (!_view.Dialogs.Confirm(
             // Translators: Asks the user to confirm deleting a file. {name} is the file name.
-            TrFormat("Delete '{name}'?", name),
-            // Translators: Title of the window that asks the user to confirm deleting a file.
-            Tr("Confirm Delete")))
+            TrFormat("Delete '{name}'?", name)))
             return;
         if (_player.DeleteCurrent())
             _speech.Speak(

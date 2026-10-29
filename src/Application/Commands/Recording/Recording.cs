@@ -105,7 +105,7 @@ internal sealed class Recording
     {
         if (!outcome.Success)
         {
-            _view.Dialogs.ShowError(RecordingSources.Describe(outcome.Failure, outcome.Detail), Title);
+            _view.Dialogs.ShowError(RecordingSources.Describe(outcome.Failure, outcome.Detail));
             return;
         }
         if (failures.Count > 0)
@@ -114,8 +114,7 @@ internal sealed class Recording
                 // Translators: Shown when recording started but some sources would not open. {names} is a
                 // list of what the user called them, separated by commas.
                 TrFormat("Recording started, but these sources could not be opened: {names}",
-                    string.Join(", ", failures)),
-                Title);
+                    string.Join(", ", failures)));
             return;
         }
     }
@@ -170,7 +169,7 @@ internal sealed class Recording
     {
         // The falling tone the engine plays is the confirmation, so nothing is spoken on success either.
         if (!outcome.Success)
-            _view.Dialogs.ShowError(RecordingSources.Describe(outcome.Failure, outcome.Detail), Title);
+            _view.Dialogs.ShowError(RecordingSources.Describe(outcome.Failure, outcome.Detail));
     }
 
     private void OpenFolder()
@@ -190,8 +189,7 @@ internal sealed class Recording
             var message = Tr("Could not open the recordings folder.");
             _view.Dialogs.ShowError(
                 // Translators: Combines a recording-folder error with {reason}, the system's explanation.
-                TrFormat("{message}\n{reason}", message, failure.Message),
-                Title);
+                TrFormat("{message}\n{reason}", message, failure.Message));
         }
     }
 
@@ -216,7 +214,4 @@ internal sealed class Recording
         Name = Tr("Default input device"),
     };
 
-    private static string Title =>
-        // Translators: Title of the messages the player shows about recording.
-        Tr("Recording");
 }

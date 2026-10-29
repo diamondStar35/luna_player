@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using WxSharp;
 
 namespace LunaPlayer.UI.Playback;
@@ -109,11 +110,9 @@ internal sealed class TimeDialog : IDisposable
         var target = SelectedSeconds();
         if (target < 0 || target > _duration)
         {
-            Wx.MessageBox(
+            Messages.Show(
                 // Translators: Shown when the point in the file the user typed lies past the end of the file.
                 Tr("The selected time exceeds the file duration."),
-                // Translators: Title of an error about a time entered in the Go to time window.
-                Tr("Go to time"),
                 MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
             return;
         }

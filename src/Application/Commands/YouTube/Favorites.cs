@@ -87,9 +87,7 @@ internal sealed class Favorites
                 return true;
             _view.Dialogs.ShowError(
                 // Translators: Shown when the address saved as a plain stream could not be played.
-                Tr("Could not open stream link."),
-                // Translators: Title of the messages shown about the window of saved links.
-                Tr("Favorite videos"));
+                Tr("Could not open stream link."));
             return false;
         }
         // Opening reports for itself, in its own words and its own progress window, so there is nothing
@@ -145,9 +143,7 @@ internal sealed class Favorites
         if (!_view.Dialogs.Confirm(
             // Translators: Asks the user to confirm removing one saved link. {name} is what it is called and
             // {kind} is what sort of thing it points at.
-            TrFormat("Remove favorite '{name}' ({kind})?", favorite.Name, FavoriteStore.Describe(favorite.Kind)),
-            // Translators: Title of the window that asks the user to confirm removing a saved link.
-            Tr("Confirm remove")))
+            TrFormat("Remove favorite '{name}' ({kind})?", favorite.Name, FavoriteStore.Describe(favorite.Kind))))
             return false;
         if (_store.Delete(id))
             return true;
@@ -161,9 +157,7 @@ internal sealed class Favorites
         if (_store.LastError.Length == 0)
             return false;
         _view.Dialogs.ShowError(
-            _store.LastError,
-            // Translators: Title of an error about the saved favorite-video list.
-            Tr("Favorite videos"));
+            _store.LastError);
         return true;
     }
 }

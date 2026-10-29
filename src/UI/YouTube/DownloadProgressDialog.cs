@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using LunaPlayer.Application;
 using WxSharp;
 using Downloads = LunaPlayer.YouTube.Download;
@@ -202,11 +203,9 @@ internal sealed class DownloadProgressDialog : IDisposable
             return;
         }
         _confirming = true;
-        var stop = Wx.MessageBox(
+        var stop = Messages.Show(
             // Translators: Asks the user to confirm stopping a download that is still running.
-            Tr("The download is still running. Would you like to stop it?"),
-            // Translators: Title of the prompt shown when the user tries to stop a running download.
-            Tr("Warning"), MessageBoxStyle.YesNo | MessageBoxStyle.IconWarning, _dialog) == MessageBoxStyle.Yes;
+            Tr("The download is still running. Would you like to stop it?"), MessageBoxStyle.YesNo | MessageBoxStyle.IconWarning, _dialog) == MessageBoxStyle.Yes;
         _confirming = false;
         if (!stop)
             return;

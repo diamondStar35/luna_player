@@ -21,11 +21,6 @@ internal static partial class Builder
         LunaPlayer.UI.Playlists.RecentMenuState recents)
     {
         var fileMenu = new Menu();
-        var playlists = new Menu();
-        foreach (var action in PlaylistActions.All)
-            playlists.Append(commandIds[action.Id], Label(action.Label, action.Id, shortcuts));
-        // Translators: File menu submenu for saved playlists and adding files or folders.
-        fileMenu.AppendSubMenu(playlists, Tr("Playlists"));
         // Translators: File menu item that opens one or more media files. The three dots mean it opens a window to choose them.
         fileMenu.Append(commandIds[ActionId.OpenFile], Label(Tr("Open File..."), ActionId.OpenFile, shortcuts));
         // Translators: File menu item that asks for a link to a network stream and plays it.
@@ -34,6 +29,8 @@ internal static partial class Builder
         fileMenu.Append(commandIds[ActionId.OpenFolder], Label(Tr("Open Folder..."), ActionId.OpenFolder, shortcuts));
         // Translators: File menu item that asks for a YouTube address and plays the video or playlist it names.
         fileMenu.Append(commandIds[ActionId.OpenYouTubeLink], Label(Tr("Open YouTube Link..."), ActionId.OpenYouTubeLink, shortcuts));
+        foreach (var action in PlaylistActions.All.Where(action => action.Id is ActionId.AddPlaylistFiles or ActionId.AddPlaylistFolder))
+            fileMenu.Append(commandIds[action.Id], Label(action.Label, action.Id, shortcuts));
         // Translators: File menu item that asks what to look for on YouTube and lists what it finds.
         fileMenu.Append(commandIds[ActionId.SearchYouTube], Label(Tr("Search YouTube..."), ActionId.SearchYouTube, shortcuts));
         // Translators: File menu item that lists the YouTube links and streams the user has saved.
@@ -56,6 +53,11 @@ internal static partial class Builder
         recentMenu.AppendSubMenu(recentPlaylistsMenu, Tr("Recent playlists"));
         // Translators: File menu submenu holding the recently opened files, folders and playlists.
         fileMenu.AppendSubMenu(recentMenu, Tr("Recents"));
+        var playlists = new Menu();
+        foreach (var action in PlaylistActions.All.Where(action => action.Id is not (ActionId.AddPlaylistFiles or ActionId.AddPlaylistFolder)))
+            playlists.Append(commandIds[action.Id], Label(action.Label, action.Id, shortcuts));
+        // Translators: File menu submenu for creating, managing and saving named playlists.
+        fileMenu.AppendSubMenu(playlists, Tr("Playlists"));
         FillRecentsMenus(
             recentFilesMenu, recentFoldersMenu, recentPlaylistsMenu, recents, recentCommands);
         var localFileItems = new List<MenuItem>();

@@ -138,18 +138,14 @@ internal sealed class Iptv
                 result.Error ??
                 // Translators: Shown when an IPTV source is of a kind Luna Player cannot open yet (Xtream or
                 // Stalker, before those are supported).
-                Tr("This kind of IPTV source is not supported yet."),
-                // Translators: Title of the messages shown about IPTV.
-                Tr("IPTV"));
+                Tr("This kind of IPTV source is not supported yet."));
             return;
         }
         if (catalog.Channels.Count == 0)
         {
             _view.Dialogs.ShowError(
                 // Translators: Shown when an IPTV source loaded but holds no channels to play.
-                Tr("This source holds no channels."),
-                // Translators: Title of an error about an IPTV source.
-                Tr("IPTV"));
+                Tr("This source holds no channels."));
             return;
         }
         var chosen = _view.Dialogs.BrowseChannels(new LunaPlayer.UI.Iptv.ChannelBrowserPrompt(
@@ -183,9 +179,7 @@ internal sealed class Iptv
         }
         _view.Dialogs.ShowError(
             // Translators: Shown when a chosen channel carries no address and none could be worked out.
-            Tr("This channel cannot be played."),
-            // Translators: Title of an error about an IPTV channel.
-            Tr("IPTV"));
+            Tr("This channel cannot be played."));
     }
 
     /// <summary>Resolves a Stalker channel's short-lived address behind a progress window, then plays it.</summary>
@@ -210,9 +204,7 @@ internal sealed class Iptv
                 else
                     _view.Dialogs.ShowError(
                         // Translators: Shown when a Stalker channel's play address could not be worked out.
-                        Tr("Could not open the channel."),
-                        // Translators: Title of an error about opening an IPTV channel.
-                        Tr("IPTV"));
+                        Tr("Could not open the channel."));
             });
     }
 
@@ -221,9 +213,7 @@ internal sealed class Iptv
         if (!_player.OpenStream(url, title: name))
             _view.Dialogs.ShowError(
                 // Translators: Shown when a chosen IPTV channel could not be played.
-                Tr("Could not open the channel."),
-                // Translators: Title of an error about opening an IPTV channel.
-                Tr("IPTV"));
+                Tr("Could not open the channel."));
     }
 
     /// <summary>The id of what was saved, or null when nothing was.</summary>
@@ -263,9 +253,7 @@ internal sealed class Iptv
         if (!_view.Dialogs.Confirm(
             // Translators: Asks the user to confirm removing one saved IPTV source. {name} is what it is
             // called and {kind} is what sort of source it is.
-            TrFormat("Remove IPTV source '{name}' ({kind})?", source.Name, IptvSourceStore.Describe(source.Kind)),
-            // Translators: Title of the window that asks the user to confirm removing a saved IPTV source.
-            Tr("Confirm remove")))
+            TrFormat("Remove IPTV source '{name}' ({kind})?", source.Name, IptvSourceStore.Describe(source.Kind))))
             return false;
         if (_store.Delete(id))
             return true;
@@ -281,9 +269,7 @@ internal sealed class Iptv
         if (_store.LastError.Length == 0)
             return false;
         _view.Dialogs.ShowError(
-            _store.LastError,
-            // Translators: Title of an error about saved IPTV sources.
-            Tr("IPTV"));
+            _store.LastError);
         return true;
     }
 }

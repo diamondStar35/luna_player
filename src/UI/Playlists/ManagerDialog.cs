@@ -7,11 +7,14 @@ internal sealed class ManagerDialog : IDisposable
 {
     private readonly Dialog _dialog;
     private readonly ListCtrl _list;
+    private readonly List<Button> _selectionButtons = [];
     private PlaylistRequest? _request;
     internal ManagerDialog(Window parent, IReadOnlyList<Document> documents)
     {
         // Translators: Title of the saved playlist manager.
         _dialog = new Dialog(parent, title: Tr("My Playlists"), style: DialogStyle.Default | DialogStyle.ResizeBorder);
+        // Translators: Label above the list of saved playlists in My Playlists.
+        var itemsLabel = new StaticText(_dialog, label: Tr("Items"));
         _list = new ListCtrl(_dialog, style: ListCtrlStyle.Report | ListCtrlStyle.SingleSelection);
         // Translators: Column heading for saved playlist names in the manager.
         _list.InsertColumn(0, Tr("Name"), 240);
@@ -37,6 +40,7 @@ internal sealed class ManagerDialog : IDisposable
         // Translators: Button closing the playlist manager.
         buttons.Add(new Button(_dialog, StandardId.Cancel, Tr("Close")));
         var layout = new BoxSizer(Orientation.Vertical);
+        layout.Add(itemsLabel, flags: SizerFlags.BorderLeft | SizerFlags.BorderTop | SizerFlags.BorderRight, border: 8);
         layout.Add(_list, proportion: 1, flags: SizerFlags.All | SizerFlags.Expand, border: 8);
         layout.Add(buttons, flags: SizerFlags.All, border: 8);
         _dialog.SetSizer(layout);
@@ -44,14 +48,24 @@ internal sealed class ManagerDialog : IDisposable
         _dialog.MinSize = new Size(720, 380);
         _dialog.Center(onParent: true);
         _list.ItemActivated += (_, _) => Select("open");
+        _list.ItemSelected += (_, _) => UpdateButtons();
+        _list.ItemDeselected += (_, _) => UpdateButtons();
         if (documents.Count > 0) _list.SelectedIndex = 0;
+        UpdateButtons();
         _list.Focus();
     }
     private void Add(BoxSizer buttons, string label, string action)
     {
         var button = new Button(_dialog, label: label);
         button.Click += (_, _) => Select(action);
+        if (action != "new") _selectionButtons.Add(button);
         buttons.Add(button, flags: SizerFlags.BorderRight, border: 6);
+    }
+    private void UpdateButtons()
+    {
+        var selected = _list.SelectedIndex >= 0;
+        foreach (var button in _selectionButtons) button.Show(selected);
+        _dialog.Layout();
     }
     private void Select(string action)
     {

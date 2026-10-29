@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using LunaPlayer.Playlist;
 using WxSharp;
 
@@ -9,6 +10,9 @@ internal sealed class EditorDialog : IDisposable
     private readonly ListCtrl _list;
     private readonly TextCtrl _name;
     private readonly TextCtrl _description;
+    private readonly Button? _remove;
+    private readonly Button? _moveUp;
+    private readonly Button? _moveDown;
     private readonly Document _draft;
     private readonly IDialogService _dialogs;
     private readonly Action<string> _speak;
@@ -33,6 +37,8 @@ internal sealed class EditorDialog : IDisposable
         layout.Add(new StaticText(_dialog, label: Tr("Description (optional)")), flags: SizerFlags.All, border: 8);
         _description = new TextCtrl(_dialog, value: _draft.Description);
         layout.Add(_description, flags: SizerFlags.Expand | SizerFlags.All, border: 8);
+        // Translators: Label above the list of files and folders in the playlist editor.
+        var itemsLabel = new StaticText(_dialog, label: Tr("Items"));
         _list = new ListCtrl(_dialog, style: ListCtrlStyle.Report);
         // Translators: Column heading for the file or folder name in the playlist editor.
         _list.InsertColumn(0, Tr("Name"), 230);
@@ -40,24 +46,33 @@ internal sealed class EditorDialog : IDisposable
         _list.InsertColumn(1, Tr("Full Path"), 450);
         if (!metadataOnly)
         {
+            layout.Add(itemsLabel, flags: SizerFlags.BorderLeft | SizerFlags.BorderTop | SizerFlags.BorderRight, border: 8);
             layout.Add(_list, proportion: 1, flags: SizerFlags.Expand | SizerFlags.All, border: 8);
             var editing = new BoxSizer(Orientation.Horizontal);
             // Translators: Playlist editor button opening a menu to add files or a folder.
             AddButton(editing, Tr("Add..."), Add);
             // Translators: Playlist editor button removing selected entries without deleting media files.
-            AddButton(editing, Tr("Remove"), Remove);
+            _remove = AddButton(editing, Tr("Remove"), Remove);
             // Translators: Playlist editor button moving selected entries earlier.
-            AddButton(editing, Tr("Move Up"), () => Move(-1));
+            _moveUp = AddButton(editing, Tr("Move Up"), () => Move(-1));
             // Translators: Playlist editor button moving selected entries later.
-            AddButton(editing, Tr("Move Down"), () => Move(1));
+            _moveDown = AddButton(editing, Tr("Move Down"), () => Move(1));
             layout.Add(editing, flags: SizerFlags.All, border: 8);
         }
-        else _list.Hide();
+        else
+        {
+            itemsLabel.Hide();
+            _list.Hide();
+        }
         var buttons = new BoxSizer(Orientation.Horizontal);
         // Translators: Playlist editor button accepting the draft and saving it.
-        AddButton(buttons, Tr("Save"), Accept);
+        var save = new Button(_dialog, StandardId.Ok, Tr("Save"));
+        save.SetDefault();
+        save.Click += (_, _) => Accept();
+        buttons.Add(save, flags: SizerFlags.BorderRight, border: 6);
         // Translators: Playlist editor button discarding changes.
-        var cancel = new Button(_dialog, label: Tr("Cancel"));
+        var cancel = new Button(_dialog, StandardId.Cancel, Tr("Cancel"));
+        _dialog.SetEscapeId(StandardId.Cancel);
         buttons.Add(cancel);
         layout.Add(buttons, flags: SizerFlags.All, border: 8);
         _dialog.SetSizer(layout);
@@ -71,11 +86,22 @@ internal sealed class EditorDialog : IDisposable
             if (_dirty && !_accepted && args.CanVeto)
             {
                 // Translators: Question shown when closing a modified playlist editor.
-                var result = Wx.MessageBox(Tr("Save changes to this playlist?"), _dialog.Title,
+                var result = Messages.Show(Tr("Save changes to this playlist?"),
                     MessageBoxStyle.YesNo | MessageBoxStyle.Cancel | MessageBoxStyle.IconWarning, _dialog);
-                if (result == MessageBoxStyle.Yes) { args.Veto(); Accept(); }
-                else if (result == MessageBoxStyle.Cancel) args.Veto();
+                if (result == MessageBoxStyle.Yes)
+                {
+                    Accept();
+                    if (!_accepted) args.Veto();
+                    return;
+                }
+                if (result == MessageBoxStyle.Cancel)
+                {
+                    args.Veto();
+                    return;
+                }
             }
+            // Handling Closing replaces the native default handler, so finish the modal loop explicitly.
+            _dialog.EndModal(StandardId.Cancel);
         };
         cancel.Click += (_, _) => _dialog.Close();
         _dialog.Bind(WxEvents.CharHook, (_, args) =>
@@ -97,15 +123,28 @@ internal sealed class EditorDialog : IDisposable
                 for (var i = 0; i < _draft.Entries.Count; i++) _list.SetSelected(i);
             else args.Skip();
         });
+        _list.ItemSelected += (_, _) => UpdateButtons();
+        _list.ItemDeselected += (_, _) => UpdateButtons();
         Refresh([]);
         _name.Focus();
     }
 
-    private void AddButton(BoxSizer sizer, string label, Action action)
+    private Button AddButton(BoxSizer sizer, string label, Action action)
     {
         var button = new Button(_dialog, label: label);
         button.Click += (_, _) => action();
         sizer.Add(button, flags: SizerFlags.BorderRight, border: 6);
+        return button;
+    }
+    private void UpdateButtons()
+    {
+        if (_metadataOnly) return;
+        var selected = _list.GetSelectedIndices().ToArray();
+        var hasSelection = selected.Length > 0;
+        _remove?.Show(hasSelection);
+        _moveUp?.Show(hasSelection && selected[0] > 0);
+        _moveDown?.Show(hasSelection && selected[^1] < _draft.Entries.Count - 1);
+        _dialog.Layout();
     }
     private void Add()
     {
@@ -171,13 +210,14 @@ internal sealed class EditorDialog : IDisposable
         foreach (var index in selected) _list.SetSelected(index);
         if (selected.Length > 0) { _list.SetFocused(selected[0]); _list.EnsureVisible(selected[0]); }
         if (!_metadataOnly && selected.Length > 0) _list.Focus();
+        UpdateButtons();
     }
     private void Accept()
     {
         if (string.IsNullOrWhiteSpace(_name.Value))
         {
             // Translators: Validation warning for an empty playlist name in the editor.
-            _dialogs.ShowWarning(Tr("A playlist name is required."), _dialog.Title);
+            _dialogs.ShowWarning(Tr("A playlist name is required."));
             _name.Focus();
             return;
         }

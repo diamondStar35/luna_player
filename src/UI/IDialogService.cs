@@ -43,16 +43,16 @@ internal interface IDialogService
     /// what the callers that are choosing "a folder" and nothing more particular want.</param>
     string? ChooseFolder(string initialDirectory, string message = "");
     string? PromptText(string message, string caption, string value = "");
-    bool Confirm(string message, string caption);
+    bool Confirm(string message);
     /// <summary>Warns that closing will cancel unfinished queue jobs.</summary>
     bool ConfirmCloseWithDownloads();
-    void ShowInfo(string message, string caption);
+    void ShowInfo(string message);
     /// <summary>Shows an information box owned by the main window, even if another modeless window is active.</summary>
-    void ShowMainInfo(string message, string caption);
-    void ShowWarning(string message, string caption);
-    void ShowError(string message, string caption);
+    void ShowMainInfo(string message);
+    void ShowWarning(string message);
+    void ShowError(string message);
     /// <summary>Shows an error box owned by the main window, even if another modeless window is active.</summary>
-    void ShowMainError(string message, string caption);
+    void ShowMainError(string message);
     /// <summary>Shows a non-modal operating-system notification associated with the main window.</summary>
     void ShowNotification(string title, string message);
     void ShowAbout();

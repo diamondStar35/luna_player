@@ -326,7 +326,7 @@ internal static partial class Program
     }
 
     private static void ShowError(string message)
-        => _ = MessageBox(0, message, "Luna Player Updater", ErrorIcon);
+        => _ = MessageBox(0, message, "Error", ErrorIcon);
 
     private readonly record struct UpdateRequest(string AssetPath, string InstallDirectory, uint ProcessId);
     private readonly record struct FinalizationRequest(string InstallDirectory, uint ProcessId, string Error);

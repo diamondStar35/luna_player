@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using LunaPlayer.Configuration.Models;
 using WxSharp;
 using Downloads = LunaPlayer.YouTube.Download;
@@ -164,11 +165,9 @@ internal sealed class DownloadDialog : IDisposable
         var folder = _folder.Value.Trim();
         if (folder.Length == 0)
         {
-            Wx.MessageBox(
+            Messages.Show(
                 // Translators: Shown when OK is pressed in the download window with no folder chosen.
-                Tr("Choose a folder to download into."),
-                // Translators: Title of the warning shown when the download window has no folder chosen.
-                Tr("Warning"), MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
+                Tr("Choose a folder to download into."), MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
             _folder.Focus();
             return;
         }

@@ -107,9 +107,7 @@ internal sealed class Updates : IDisposable
                 _view.Dialogs.ShowError(
                     // Translators: Shown when a manual application update check fails. {reason} is the
                     // network or data error reported by the system.
-                    TrFormat("Could not check for updates.\n\n{reason}", outcome.Error),
-                    // Translators: Title of an error raised while checking for an application update.
-                    Tr("Application update"));
+                    TrFormat("Could not check for updates.\n\n{reason}", outcome.Error));
             }
             return;
         }
@@ -121,7 +119,7 @@ internal sealed class Updates : IDisposable
                 var message = Tr("You are using the latest version.");
                 // Translators: Title of the message shown when no newer application release exists.
                 var title = Tr("No update");
-                _view.Dialogs.ShowInfo(message, title);
+                _view.Dialogs.ShowInfo(message);
             }
             return;
         }
@@ -132,9 +130,7 @@ internal sealed class Updates : IDisposable
                 _view.Dialogs.ShowInfo(
                     // Translators: Shown when info.json announces a newer application release before its
                     // installer, portable archive, or checksum file has finished being published.
-                    Tr("A new version has been announced, but its download is not available yet. Please try again later."),
-                    // Translators: Title of a message about an unavailable application update package.
-                    Tr("Application update"));
+                    Tr("A new version has been announced, but its download is not available yet. Please try again later."));
             }
             return;
         }
@@ -212,18 +208,14 @@ internal sealed class Updates : IDisposable
                 _view.Dialogs.ShowError(
                     // Translators: Shown when an application's downloaded update does not match the
                     // SHA-256 checksum published with the release, or that checksum cannot be obtained.
-                    Tr("The downloaded update failed its integrity check. This may indicate malicious activity on the network or an internet problem. The updater was not started. Please try downloading the update again."),
-                    // Translators: Title of an application update integrity error.
-                    Tr("Application update"));
+                    Tr("The downloaded update failed its integrity check. This may indicate malicious activity on the network or an internet problem. The updater was not started. Please try downloading the update again."));
             }
             else
             {
                 _view.Dialogs.ShowError(
                     // Translators: Shown when the application update package cannot be downloaded. {reason}
                     // is the network or file error reported by the system.
-                    TrFormat("Could not download update.\n\n{reason}", outcome.Error),
-                    // Translators: Title of an error raised while downloading an application update.
-                    Tr("Application update"));
+                    TrFormat("Could not download update.\n\n{reason}", outcome.Error));
             }
             return;
         }
@@ -236,9 +228,7 @@ internal sealed class Updates : IDisposable
             _view.Dialogs.ShowError(
                 // Translators: Shown when the downloaded update cannot be handed to Updater.exe. {reason}
                 // is the error reported by the system.
-                TrFormat("Could not start the updater.\n\n{reason}", failure.Message),
-                // Translators: Title of an error raised while starting the application updater.
-                Tr("Application update"));
+                TrFormat("Could not start the updater.\n\n{reason}", failure.Message));
             return;
         }
         _view.Close();

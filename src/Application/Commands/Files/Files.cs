@@ -192,9 +192,7 @@ internal sealed partial class Files
             _view.Dialogs.ShowError(
                 // Translators: Shown when the address typed into Open Link is not a web address.
                 // "http" and "https" are the names of the two web protocols and are not translated.
-                Tr("The link must start with http or https."),
-                // Translators: Title of the message shown when the address typed into Open Link is not a web address.
-                Tr("Invalid link"));
+                Tr("The link must start with http or https."));
             return;
         }
         if (MediaLibrary.IsPlaylist(url))
@@ -205,9 +203,7 @@ internal sealed partial class Files
         if (!_player.OpenStream(url))
             _view.Dialogs.ShowError(
                 // Translators: Shown when the stream at the address typed into Open Link could not be played.
-                Tr("Could not open the link."),
-                // Translators: Title of an error shown when a web link cannot be opened.
-                Tr("Error"));
+                Tr("Could not open the link."));
     }
 
     private void OpenFolderFromDialog()

@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using System.Text.Json;
 using LunaPlayer.Radio;
 using WxSharp;
@@ -92,8 +93,7 @@ internal sealed partial class BrowserDialog
             if (result.Warning is { } warning && !_libraryWarningShown)
             {
                 _libraryWarningShown = true;
-                // Translators: Title of a warning that locally saved radio stations could not be read.
-                Wx.MessageBox(Catalog.DescribeError(warning), Tr("Radio library"), MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
+                Messages.Show(Catalog.DescribeError(warning), MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
             }
         }, token, () => source.Loading = false);
     }
@@ -186,8 +186,7 @@ internal sealed partial class BrowserDialog
     {
         if (_disposed) return;
         if (!_visible) { _pendingError = error; return; }
-        // Translators: Title of an error reporting a radio browser operation failure.
-        Wx.MessageBox(Catalog.DescribeError(error), Tr("Radio error"), MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
+        Messages.Show(Catalog.DescribeError(error), MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
     }
 
     private void RestoreStation()

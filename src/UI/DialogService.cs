@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using LunaPlayer.UI.Services.Dialogs;
 using LunaPlayer.Playlist;
 using LunaPlayer.Application;
@@ -76,12 +77,12 @@ internal sealed class DialogService : IDialogService, IDisposable
     }
     public string? PromptText(string message, string caption, string value = "")
     { using var dialog = new TextEntryDialog(DialogParent, message, caption, value); return dialog.ShowModal() == StandardId.Ok ? dialog.Value : null; }
-    public bool Confirm(string message, string caption) => Wx.MessageBox(message, caption, MessageBoxStyle.YesNo | MessageBoxStyle.IconWarning, DialogParent) == MessageBoxStyle.Yes;
-    public void ShowInfo(string message, string caption) => Wx.MessageBox(message, caption, MessageBoxStyle.Ok | MessageBoxStyle.IconInformation, DialogParent);
-    public void ShowMainInfo(string message, string caption) => Wx.MessageBox(message, caption, MessageBoxStyle.Ok | MessageBoxStyle.IconInformation, _frame);
-    public void ShowWarning(string message, string caption) => Wx.MessageBox(message, caption, MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, DialogParent);
-    public void ShowError(string message, string caption) => Wx.MessageBox(message, caption, MessageBoxStyle.Ok | MessageBoxStyle.IconError, DialogParent);
-    public void ShowMainError(string message, string caption) => Wx.MessageBox(message, caption, MessageBoxStyle.Ok | MessageBoxStyle.IconError, _frame);
+    public bool Confirm(string message) => Messages.Show(message, MessageBoxStyle.YesNo | MessageBoxStyle.IconWarning, DialogParent) == MessageBoxStyle.Yes;
+    public void ShowInfo(string message) => Messages.Show(message, MessageBoxStyle.Ok | MessageBoxStyle.IconInformation, DialogParent);
+    public void ShowMainInfo(string message) => Messages.Show(message, MessageBoxStyle.Ok | MessageBoxStyle.IconInformation, _frame);
+    public void ShowWarning(string message) => Messages.Show(message, MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, DialogParent);
+    public void ShowError(string message) => Messages.Show(message, MessageBoxStyle.Ok | MessageBoxStyle.IconError, DialogParent);
+    public void ShowMainError(string message) => Messages.Show(message, MessageBoxStyle.Ok | MessageBoxStyle.IconError, _frame);
     public void ShowNotification(string title, string message)
     {
         // wxWidgets falls back to a notification-area icon for balloon messages. Luna never owns a tray
@@ -92,7 +93,7 @@ internal sealed class DialogService : IDialogService, IDisposable
             AppInfo.AppUserModelId);
         if (!_toastNotificationsAvailable.Value
             || !new NotificationMessage(title, message).Show())
-            ShowInfo(message, title);
+            ShowInfo(message);
     }
     public LunaPlayer.UI.Contracts.IProgressView BeginProgress(string title, string message, bool proportional, bool detailed) => new LunaPlayer.UI.Controls.ProgressView(DialogParent, title, message, proportional, detailed);
 

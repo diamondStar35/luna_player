@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using LunaPlayer.Configuration;
 using WxSharp;
 
@@ -172,10 +173,8 @@ internal sealed class SaveDialog : IDisposable
         _dialog.EndModal(StandardId.Ok);
     }
 
-    private void Warn(string message) => Wx.MessageBox(
+    private void Warn(string message) => Messages.Show(
         message,
-        // Translators: Title of validation warnings in the save-selection-points dialog.
-        Tr("Save selection points"),
         MessageBoxStyle.Ok | MessageBoxStyle.IconWarning,
         _dialog);
 }

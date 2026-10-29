@@ -99,9 +99,7 @@ internal sealed class Chapters : IDisposable
         _settings.Audio.AudiobookMode = !_player.AudiobookMode;
         _player.SetAudiobookMode(_settings.Audio.AudiobookMode);
         if (!_store.SaveExplicit(_settings))
-            _view.Dialogs.ShowError(_store.LastError,
-                // Translators: Title of an error when the audiobook-mode setting could not be saved.
-                Tr("Settings error"));
+            _view.Dialogs.ShowError(_store.LastError);
         _speech.SpeakText(_player.AudiobookMode
             // Translators: Spoken after enabling playback of chapters as individual playlist items.
             ? Tr("Audiobook mode on.")

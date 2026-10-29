@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
 using WxSharp;
@@ -88,21 +89,13 @@ internal sealed class GeneralPreferences : PreferencesPage
         // Translators: Button on the General settings page that undoes telling Windows this player can open media files.
         var unregister = new Button(panel, label: Tr("Unregister file extensions"));
         register.Click += (_, _) => ShowAssociationResult(panel, operations.RegisterFiles(),
-            // Translators: Title of the message shown once Windows has been told this player can open media files.
-            Tr("Registration"),
             // Translators: Message shown once Windows has been told this player can open media files.
             Tr("File extensions registered successfully."),
-            // Translators: Title of the message shown when Windows could not be told this player can open media files.
-            Tr("Registration Error"),
             // Translators: Message shown when Windows could not be told this player can open media files.
             Tr("Could not register file extensions."));
         unregister.Click += (_, _) => ShowAssociationResult(panel, operations.UnregisterFiles(),
-            // Translators: Title of the message shown once this player has stopped being offered for media files.
-            Tr("Unregister"),
             // Translators: Message shown once this player has stopped being offered for media files.
             Tr("File extensions unregistered successfully."),
-            // Translators: Title of the message shown when this player could not stop being offered for media files.
-            Tr("Unregister Error"),
             // Translators: Message shown when this player could not stop being offered for media files.
             Tr("Could not unregister file extensions."));
 
@@ -225,12 +218,12 @@ internal sealed class GeneralPreferences : PreferencesPage
     }
 
     private static void ShowAssociationResult(Window parent, LunaPlayer.UI.Contracts.UiOperation result,
-        string successCaption, string successMessage, string errorCaption, string errorMessage)
+        string successMessage, string errorMessage)
     {
         if (result.Success)
-            Wx.MessageBox(successMessage, successCaption, MessageBoxStyle.Ok | MessageBoxStyle.IconInformation, parent);
+            Messages.Show(successMessage, MessageBoxStyle.Ok | MessageBoxStyle.IconInformation, parent);
         else
-            Wx.MessageBox($"{errorMessage}\n{result.Error}", errorCaption, MessageBoxStyle.Ok | MessageBoxStyle.IconError, parent);
+            Messages.Show($"{errorMessage}\n{result.Error}", MessageBoxStyle.Ok | MessageBoxStyle.IconError, parent);
     }
 
     private static void AddChoice(BoxSizer parent, StaticText label, Choice choice)

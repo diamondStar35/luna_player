@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using LunaPlayer.Favorites;
 using WxSharp;
 
@@ -68,9 +69,7 @@ internal sealed class FavoriteEditDialog : IDisposable
         var draft = Current();
         if (!FavoriteStore.Validate(draft.Name, draft.Kind, draft.Link, out var error))
         {
-            Wx.MessageBox(error,
-                // Translators: Title of the message shown when a saved link cannot be saved as it was typed.
-                Tr("Favorite videos"),
+            Messages.Show(error,
                 MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
             return;
         }

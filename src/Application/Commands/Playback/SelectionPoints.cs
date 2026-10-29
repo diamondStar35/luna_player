@@ -203,7 +203,7 @@ internal sealed partial class Playback
         {
             _view.Dialogs.ShowWarning(
                 // Translators: Shown when the player cannot offer exact time fields for the current item.
-                Tr("Time is not available for the current file."), title);
+                Tr("Time is not available for the current file."));
             return false;
         }
         path = chosenPath;

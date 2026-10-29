@@ -89,27 +89,21 @@ internal sealed partial class YouTube
         {
             ShowError(
                 // Translators: Shown when a typed YouTube address does not begin with a supported web protocol.
-                Tr("The link must start with http or https."),
-                // Translators: Title of the message shown when what was typed is not a web address.
-                Tr("Invalid link"));
+                Tr("The link must start with http or https."));
             return;
         }
         if (!info.IsYouTube)
         {
             ShowError(
                 // Translators: Shown when the address typed into Open YouTube Link is a web address but not a YouTube one.
-                Tr("This is not a valid YouTube link."),
-                // Translators: Title of the message shown when a YouTube address was expected and something else was given.
-                Tr("Invalid YouTube link"));
+                Tr("This is not a valid YouTube link."));
             return;
         }
         if (info.Kind == LinkKind.Channel)
         {
             ShowError(
                 // Translators: Shown when the address names a whole YouTube channel, which this window cannot open.
-                Tr("Channel links are not supported here."),
-                // Translators: Title of a message shown for an unsupported YouTube channel link.
-                Tr("Invalid YouTube link"));
+                Tr("Channel links are not supported here."));
             return;
         }
 
@@ -208,5 +202,5 @@ internal sealed partial class YouTube
         return false;
     }
 
-    private void ShowError(string message, string caption) => _view.Dialogs.ShowError(message, caption);
+    private void ShowError(string message) => _view.Dialogs.ShowError(message);
 }

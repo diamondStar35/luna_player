@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using LunaPlayer.Application;
 using LunaPlayer.Configuration;
 using LunaPlayer.Spotify;
@@ -247,11 +248,9 @@ internal sealed partial class BrowserDialog
         }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException)
         {
-            Wx.MessageBox(
+            Messages.Show(
                 // Translators: Warning message box when saving recent searches from the Spotify browser fails.
                 Tr("Could not save recent searches on this computer."),
-                // Translators: Title of the warning about saving Spotify search history.
-                Tr("Warning"),
                 MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
         }
     }
@@ -274,8 +273,7 @@ internal sealed partial class BrowserDialog
         var message = Catalog.DescribeError(error);
         UpdateAccount();
         _status.Label = message;
-        // Translators: Title of a message box reporting a Spotify or playback failure.
-        if (_visible) Wx.MessageBox(message, Tr("Error"), MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
+        if (_visible) Messages.Show(message, MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
     }
 
     private void Run<T>(Func<Task<T>> work, Action<T> success, Action<Exception> failure)

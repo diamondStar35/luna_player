@@ -53,9 +53,7 @@ internal sealed class Bookmarks
         {
             _view.Dialogs.ShowWarning(
                 // Translators: Shown when the user confirms a bookmark name without typing anything.
-                Tr("Bookmark name cannot be empty."),
-                // Translators: Title of a warning about an invalid bookmark name.
-                Tr("Bookmarks"));
+                Tr("Bookmark name cannot be empty."));
             return;
         }
         if (_store.Add(path, name, position) is null)
@@ -66,9 +64,7 @@ internal sealed class Bookmarks
         _view.Dialogs.ShowInfo(
             // Translators: Shown once a bookmark has been made. {name} is what it is called and {time} the point in the
             // file it was made at, such as 00:01:20.
-            TrFormat("Bookmark '{name}' added at {time}.", name, PlaybackTimeFormatter.Format(position)),
-            // Translators: Title of the message shown once a bookmark has been made.
-            Tr("Success"));
+            TrFormat("Bookmark '{name}' added at {time}.", name, PlaybackTimeFormatter.Format(position)));
     }
 
     private void Manage()
@@ -85,9 +81,7 @@ internal sealed class Bookmarks
             {
                 _view.Dialogs.ShowInfo(
                     // Translators: Shown when the user opens the bookmark list but the current file has none.
-                    Tr("No bookmarks found for the current file."),
-                    // Translators: Title of a message about bookmarks for the current file.
-                    Tr("Bookmarks"));
+                    Tr("No bookmarks found for the current file."));
                 return;
             }
             var request = _view.Dialogs.ManageBookmarks(bookmarks.Select(ToListItem).ToArray());
@@ -107,9 +101,7 @@ internal sealed class Bookmarks
                 case LunaPlayer.UI.Bookmarks.BookmarkManagementAction.Delete:
                     if (_view.Dialogs.Confirm(
                         // Translators: Asks the user to confirm removing one bookmark. {name} is what the bookmark is called.
-                        TrFormat("Delete bookmark '{name}'?", bookmark.Name),
-                        // Translators: Title of the window that asks the user to confirm removing a bookmark.
-                        Tr("Confirm delete")))
+                        TrFormat("Delete bookmark '{name}'?", bookmark.Name)))
                     {
                         if (!_store.Delete(path, bookmark.Id))
                         {
@@ -124,9 +116,7 @@ internal sealed class Bookmarks
                         {
                             _view.Dialogs.ShowInfo(
                                 // Translators: Shown once the last bookmark of the current file has been removed.
-                                Tr("All bookmarks for this file were removed."),
-                                // Translators: Title of a message about bookmarks for the current file.
-                                Tr("Bookmarks"));
+                                Tr("All bookmarks for this file were removed."));
                             return;
                         }
                     }
@@ -149,9 +139,7 @@ internal sealed class Bookmarks
         {
             _view.Dialogs.ShowWarning(
                 // Translators: Shown when the user confirms a bookmark name without typing anything.
-                Tr("Bookmark name cannot be empty."),
-                // Translators: Title of a message telling the user that something went wrong.
-                Tr("Error"));
+                Tr("Bookmark name cannot be empty."));
             return;
         }
         if (!_store.Rename(path, bookmark.Id, name))
@@ -216,9 +204,7 @@ internal sealed class Bookmarks
         if (_store.LastError.Length == 0)
             return false;
         _view.Dialogs.ShowError(
-            _store.LastError,
-            // Translators: Title of an error message about reading or writing the bookmarks file.
-            Tr("Bookmarks"));
+            _store.LastError);
         return true;
     }
 }

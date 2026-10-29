@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using LunaPlayer.Iptv;
 using WxSharp;
 
@@ -195,9 +196,7 @@ internal sealed class SourceEditDialog : IDisposable
     {
         if (!IptvSourceStore.Validate(Current(), out var error))
         {
-            Wx.MessageBox(error,
-                // Translators: Title of the message shown when an IPTV source cannot be saved as it was typed.
-                Tr("IPTV sources"),
+            Messages.Show(error,
                 MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
             return;
         }

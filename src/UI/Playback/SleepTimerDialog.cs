@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
 using WxSharp;
@@ -226,11 +227,9 @@ internal sealed class SleepTimerDialog : IDisposable
         _turnOff = false;
         if (_mode.SelectedIndex != 1 && _hours.Value * 60 + _minutes.Value < 1)
         {
-            Wx.MessageBox(
+            Messages.Show(
                 // Translators: Shown when a timed sleep timer is set to a length of zero.
                 Tr("Choose a length of at least one minute."),
-                // Translators: Title of a warning about an invalid sleep-timer length.
-                Tr("Sleep timer"),
                 MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
             return;
         }

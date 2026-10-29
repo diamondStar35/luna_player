@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using LunaPlayer.Radio;
 using WxSharp;
 
@@ -132,11 +133,9 @@ internal sealed class FiltersDialog : IDisposable
         if (filters.CountryCode.Length is not (0 or 2) || !filters.CountryCode.All(char.IsAsciiLetter)
             || filters.MaximumBitrate > 0 && filters.MinimumBitrate > filters.MaximumBitrate)
         {
-            Wx.MessageBox(
+            Messages.Show(
                 // Translators: Validation error in Radio filters, where country codes have two letters and bitrate limits define a range.
-                Tr("Enter a two-letter country code and a minimum bitrate no greater than the maximum."),
-                // Translators: Title of a validation error in Radio filters.
-                Tr("Invalid filters"), MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
+                Tr("Enter a two-letter country code and a minimum bitrate no greater than the maximum."), MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
             return;
         }
         _choice = new FilterChoice(filters, _editingGlobal);

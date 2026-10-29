@@ -81,9 +81,7 @@ internal sealed class MarkedFiles
         if (marked.Count == 0) return;
         if (!_view.Dialogs.Confirm(
             // Translators: Asks the user to confirm deleting the marked files. {count} is how many are marked.
-            TrPluralFormat("Delete {count} marked file?", "Delete {count} marked files?", marked.Count, marked.Count),
-            // Translators: Title of the dialog that confirms deletion of marked files.
-            Tr("Confirm Delete"))) return;
+            TrPluralFormat("Delete {count} marked file?", "Delete {count} marked files?", marked.Count, marked.Count))) return;
         var current = _player.CurrentPath;
         _player.Stop();
         var result = _files.Delete(marked);
@@ -94,9 +92,7 @@ internal sealed class MarkedFiles
         {
             _view.Dialogs.ShowInfo(
                 // Translators: Shown once the marked files have been deleted. {count} is how many were deleted.
-                TrPluralFormat("Deleted {count} marked file.", "Deleted {count} marked files.", result.Succeeded.Count, result.Succeeded.Count),
-                // Translators: Title of the message shown once deleting the marked files has finished.
-                Tr("Delete Complete"));
+                TrPluralFormat("Deleted {count} marked file.", "Deleted {count} marked files.", result.Succeeded.Count, result.Succeeded.Count));
             _speech.Speak(
                 // Translators: Spoken once the marked files have been deleted.
                 Tr("Marked files deleted."),
@@ -108,9 +104,7 @@ internal sealed class MarkedFiles
             _view.Dialogs.ShowWarning(
                 // Translators: Shown when only some of the marked files could be deleted.
                 // {deleted} is how many were deleted and {failed} how many could not be.
-                TrFormat("Deleted {deleted} files. Failed to delete {failed} files.", result.Succeeded.Count, result.Failed.Count),
-                // Translators: Title of the result shown after deleting marked files.
-                Tr("Delete Complete"));
+                TrFormat("Deleted {deleted} files. Failed to delete {failed} files.", result.Succeeded.Count, result.Failed.Count));
             _speech.Speak(
                 // Translators: Spoken when only some of the marked files could be deleted.
                 Tr("Some files were deleted."),
@@ -152,9 +146,7 @@ internal sealed class MarkedFiles
         {
             _view.Dialogs.ShowInfo(
                 // Translators: Shown once every marked file has been copied or moved. {count} is how many were dealt with.
-                TrPluralFormat("{count} file processed successfully.", "{count} files processed successfully.", result.Succeeded.Count, result.Succeeded.Count),
-                // Translators: Title of the message shown once copying or moving the marked files has finished.
-                Tr("Operation Complete"));
+                TrPluralFormat("{count} file processed successfully.", "{count} files processed successfully.", result.Succeeded.Count, result.Succeeded.Count));
             _speech.Speak(
                 move
                     // Translators: Spoken once the marked files have been moved into the chosen folder.
@@ -172,9 +164,7 @@ internal sealed class MarkedFiles
             _view.Dialogs.ShowWarning(
                 // Translators: Shown when only some of the marked files could be copied or moved.
                 // {processed} is how many were dealt with and {failed} how many could not be.
-                TrFormat("Processed {processed} files. Failed for {failed} files.", result.Succeeded.Count, result.Failed.Count),
-                // Translators: Title of a partial-success result for copying or moving marked files.
-                Tr("Operation Complete"));
+                TrFormat("Processed {processed} files. Failed for {failed} files.", result.Succeeded.Count, result.Failed.Count));
             _speech.Speak(
                 // Translators: Spoken when copying or moving the marked files worked for some of them but not all.
                 Tr("Operation completed with errors."),

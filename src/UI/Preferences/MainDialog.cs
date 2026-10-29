@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
 using WxSharp;
@@ -226,10 +227,8 @@ internal sealed class MainDialog : IDisposable
         {
             var error = page.Validate();
             if (string.IsNullOrEmpty(error)) continue;
-            Wx.MessageBox(
-                error,
-                // Translators: Title of an error caused by an invalid preference value.
-                Tr("Preferences"), MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
+            Messages.Show(
+                error, MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
             return;
         }
         foreach (var page in _pages.Values) page.Apply();

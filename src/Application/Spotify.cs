@@ -140,7 +140,7 @@ internal sealed partial class Features
                     if (_disposed || token.IsCancellationRequested) return;
                     _spotifyPlayback.Stop();
                     // Translators: Title of a message box reporting a Spotify or playback failure.
-                    _view.Dialogs.ShowError(LunaPlayer.Spotify.Catalog.DescribeError(error), Tr("Error"));
+                    _view.Dialogs.ShowError(LunaPlayer.Spotify.Catalog.DescribeError(error));
                 });
             }
         }, token);
@@ -194,7 +194,7 @@ internal sealed partial class Features
             _spotifyPlayback.Stop();
             _controller?.RefreshView();
             // Translators: Title of a message box reporting a Spotify or playback failure.
-            _view.Dialogs.ShowError(LunaPlayer.Spotify.Catalog.DescribeError(error), Tr("Error"));
+            _view.Dialogs.ShowError(LunaPlayer.Spotify.Catalog.DescribeError(error));
         });
     }
 

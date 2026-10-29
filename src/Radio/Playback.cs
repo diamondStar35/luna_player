@@ -216,9 +216,7 @@ internal sealed class Playback : IDisposable
             session.Index = previous;
             session.View.Selected = session.View.Stations[previous].StationUuid;
             // Translators: Error shown when MPV could not accept the selected radio station.
-            _view.Dialogs.ShowError(Tr("Could not open the radio station."),
-                // Translators: Title of a radio playback error.
-                Tr("Radio error"));
+            _view.Dialogs.ShowError(Tr("Could not open the radio station."));
             return false;
         }
         session.Entries[station.StationUuid] = entry;
@@ -301,7 +299,7 @@ internal sealed class Playback : IDisposable
         {
             if (!Current(session, generation, token)) return;
             // Translators: Title of a message reporting a radio station navigation or preparation failure.
-            _view.Dialogs.ShowError(Catalog.DescribeError(error), Tr("Radio error"));
+            _view.Dialogs.ShowError(Catalog.DescribeError(error));
         });
 
     private void TrackWrite(Task work)
@@ -319,7 +317,7 @@ internal sealed class Playback : IDisposable
             {
                 if (_disposed || _shuttingDown) return;
                 // Translators: Title of a warning when local radio favorites or history could not be saved.
-                _view.Dialogs.ShowWarning(Catalog.DescribeError(error), Tr("Radio library"));
+                _view.Dialogs.ShowWarning(Catalog.DescribeError(error));
             });
         }
     }

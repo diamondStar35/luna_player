@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using LunaPlayer.Application;
 using WxSharp;
 using Downloads = LunaPlayer.YouTube.Download;
@@ -227,11 +228,9 @@ internal sealed class DownloadQueueDialog : IDisposable
     {
         if (SelectedId() is not Guid id)
             return;
-        var remove = Wx.MessageBox(
+        var remove = Messages.Show(
             // Translators: Confirmation shown before an item is removed from the download queue.
             Tr("Remove the selected video from the download queue?"),
-            // Translators: Title of the prompt confirming removal from the download queue.
-            Tr("Remove download"),
             MessageBoxStyle.YesNo | MessageBoxStyle.IconWarning,
             _dialog) == MessageBoxStyle.Yes;
         if (!remove)
@@ -414,11 +413,9 @@ internal sealed class DownloadQueueLinksDialog : IDisposable
             .ToArray();
         if (links.Length == 0)
         {
-            Wx.MessageBox(
+            Messages.Show(
                 // Translators: Shown when Add is pressed without entering any links.
                 Tr("Enter at least one YouTube video link."),
-                // Translators: Title of a warning shown in the queue link-entry window.
-                Tr("Add links to download queue"),
                 MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
             _links.Focus();
             return;
@@ -426,10 +423,8 @@ internal sealed class DownloadQueueLinksDialog : IDisposable
         var error = _addLinks(links);
         if (!string.IsNullOrEmpty(error))
         {
-            Wx.MessageBox(
+            Messages.Show(
                 error,
-                // Translators: Title of a warning shown for an invalid YouTube link.
-                Tr("Invalid YouTube link"),
                 MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
             _links.Focus();
             return;

@@ -26,8 +26,7 @@ internal sealed partial class Playback
             _view.Dialogs.ShowInfo(
                 // Translators: Shown when one selection is requested but the file contains several and the
                 // user is in the free slot rather than one of them.
-                Tr("There are multiple selection points in the current file. Save all selection points to separate files, or move to the selection point you want to save."),
-                title);
+                Tr("There are multiple selection points in the current file. Save all selection points to separate files, or move to the selection point you want to save."));
             return;
         }
         range = new SelectionRange(_player.ToSourceTime(range.Start), _player.ToSourceTime(range.End));
@@ -97,8 +96,7 @@ internal sealed partial class Playback
             return true;
         _view.Dialogs.ShowWarning(
             // Translators: Shown when saving one or more selections is attempted from a web stream.
-            Tr("Only selections from files on this computer can be saved."),
-            title);
+            Tr("Only selections from files on this computer can be saved."));
         return false;
     }
 
@@ -108,18 +106,14 @@ internal sealed partial class Playback
         {
             _view.Dialogs.ShowInfo(
                 // Translators: Shown after a selected part has been saved. {file} is the output file name.
-                TrFormat("The selection was saved as {file}.", Path.GetFileName(destination)),
-                // Translators: Title of the message shown after a selected part was saved.
-                Tr("Selection saved"));
+                TrFormat("The selection was saved as {file}.", Path.GetFileName(destination)));
             return;
         }
         // Translators: Fallback reason when FFmpeg did not say why a selected part could not be saved.
         var error = outcome.Error ?? Tr("Unknown error.");
         _view.Dialogs.ShowError(
             // Translators: Shown when a selected part could not be saved. {error} is FFmpeg's reason.
-            TrFormat("The selection could not be saved.\n\n{error}", error),
-            // Translators: Title of the error shown after one selection could not be saved.
-            Tr("Save selection"));
+            TrFormat("The selection could not be saved.\n\n{error}", error));
     }
 
     private void ReportSelectionBatch(SelectionExportBatchOutcome outcome)
@@ -136,9 +130,7 @@ internal sealed partial class Playback
         if (outcome.Failures.Count == 0)
         {
             _view.Dialogs.ShowInfo(
-                summary,
-                // Translators: Title of the confirmation after all selection points were saved.
-                Tr("Selections saved"));
+                summary);
             return;
         }
         var details = string.Join(

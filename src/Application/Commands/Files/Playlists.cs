@@ -22,7 +22,7 @@ internal sealed partial class Files
                 var resolved = LunaPlayer.Playlist.DocumentResolver.Resolve(document.Entries);
                 if (resolved.Unavailable.Count > 0)
                     // Translators: Warning listing missing or empty entries while opening a JSON playlist. {paths} lists the locations.
-                    _view.Dialogs.ShowWarning(TrFormat("Unavailable or empty playlist entries:\n{paths}", string.Join('\n', resolved.Unavailable)), document.Name);
+                    _view.Dialogs.ShowWarning(TrFormat("Unavailable or empty playlist entries:\n{paths}", string.Join('\n', resolved.Unavailable)));
                 if (resolved.Files.Count == 0) return false;
                 _player.OpenSaved(document.Entries, resolved.Files);
                 RecordRecent(RecentKind.Playlist, path);
@@ -31,7 +31,7 @@ internal sealed partial class Files
             catch (Exception exception) when (exception is InvalidDataException or IOException or UnauthorizedAccessException or System.Text.Json.JsonException)
             {
                 // Translators: Error opening a JSON playlist. {error} is the storage or format failure.
-                _view.Dialogs.ShowError(TrFormat("Could not open the playlist: {error}", exception.Message), AppInfo.Name);
+                _view.Dialogs.ShowError(TrFormat("Could not open the playlist: {error}", exception.Message));
                 return false;
             }
         }
@@ -65,9 +65,7 @@ internal sealed partial class Files
         {
             _view.Dialogs.ShowError(
                 // Translators: Shown when an M3U or M3U8 playlist could not be read. {error} is the reason.
-                TrFormat("Could not open the playlist: {error}", error),
-                // Translators: Title of an error shown when a playlist cannot be opened.
-                Tr("Error"));
+                TrFormat("Could not open the playlist: {error}", error));
             return false;
         }
         // An HLS manifest is itself one stream. Its non-comment lines are media chunks and variant
@@ -78,18 +76,14 @@ internal sealed partial class Files
         {
             _view.Dialogs.ShowError(
                 // Translators: Shown when an M3U or M3U8 file contains no usable local files or web links.
-                Tr("The playlist contains no playable entries."),
-                // Translators: Title of an error shown for an empty or unusable playlist.
-                Tr("Error"));
+                Tr("The playlist contains no playable entries."));
             return false;
         }
         if (_player.OpenPlaylist(result.Entries))
             return true;
         _view.Dialogs.ShowError(
             // Translators: Shown when the entries in an M3U or M3U8 playlist could not be loaded.
-            Tr("Could not load the playlist entries."),
-            // Translators: Title of an error shown when playlist entries cannot be loaded.
-            Tr("Error"));
+            Tr("Could not load the playlist entries."));
         return false;
     }
 }

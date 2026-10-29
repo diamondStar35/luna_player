@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using LunaPlayer.Configuration;
 using LunaPlayer.Spotify;
 using WxSharp;
@@ -146,8 +147,7 @@ internal sealed class TracksDialog : IDisposable
                     if (_disposed) return;
                     _loading = false;
                     var message = Catalog.DescribeError(error);
-                    // Translators: Title of a message box reporting a Spotify or playback failure.
-                    if (_visible) Wx.MessageBox(message, Tr("Error"), MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
+                    if (_visible) Messages.Show(message, MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
                 });
             }
         });

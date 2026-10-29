@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using System.Globalization;
 using LunaPlayer.Equalizer;
 using LunaPlayer.Playback;
@@ -35,7 +36,6 @@ internal sealed class EditDialog : IDisposable
     private readonly Func<string, Band[]> _slotsOf;
     private readonly Func<string, Band[]> _defaultsOf;
     private readonly Action<IReadOnlyList<Band>>? _preview;
-    private readonly string _title;
     private bool _loading;
 
     /// <param name="canRename">False for a preset the player ships. Its name is translated and belongs to
@@ -54,7 +54,6 @@ internal sealed class EditDialog : IDisposable
         Func<string, Band[]> defaultsOf,
         Action<IReadOnlyList<Band>>? preview)
     {
-        _title = title;
         _presets = presets;
         _slotsOf = slotsOf;
         _defaultsOf = defaultsOf;
@@ -230,7 +229,7 @@ internal sealed class EditDialog : IDisposable
 
     private void Complain(string message, Window? focus)
     {
-        Wx.MessageBox(message, _title, MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
+        Messages.Show(message, MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
         focus?.Focus();
     }
 

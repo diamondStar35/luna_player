@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Services;
 using LunaPlayer.Application;
 using WxSharp;
 
@@ -73,12 +74,10 @@ internal sealed class CrashDialog : IDisposable
     {
         if (_clipboard?.SetText(_details) == true)
             return;
-        Wx.MessageBox(
+        Messages.Show(
             // Translators: Shown when the crash details could not be put on the clipboard. The file named
             // on the window still has them.
             Tr("The details could not be copied. They are in the file named above."),
-            // Translators: Title of the window shown when the player has hit an error it cannot carry on from.
-            Tr("Something went wrong"),
             MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
     }
 

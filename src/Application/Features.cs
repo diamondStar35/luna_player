@@ -192,9 +192,7 @@ internal sealed partial class Features : IDisposable
         {
             _dispatcher.Post(() => _view.Dialogs.ShowError(
                 // Translators: Shown when settings could not be read. {error} is the underlying file or data error.
-                TrFormat("The settings file could not be loaded. Default settings will be used, and the existing file will not be overwritten. Import a valid settings file or reset the settings to replace it.\n\n{error}", _settingsError),
-                // Translators: Title of the message shown when settings could not be read.
-                Tr("Settings error")));
+                TrFormat("The settings file could not be loaded. Default settings will be used, and the existing file will not be overwritten. Import a valid settings file or reset the settings to replace it.\n\n{error}", _settingsError)));
         }
         // Posted rather than run here so a refusal is reported over a window the user can already see.
         _dispatcher.Post(() => GlobalShortcutBinder.Apply(_view, _globalShortcuts, _settings, _speech));
