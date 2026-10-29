@@ -36,7 +36,7 @@ internal sealed class DiscordPreferences : PreferencesPage
                     // Translators: Explain why enabling Discord is unavailable in this build; users do not enter credentials.
                     ? Tr("Discord Rich Presence is unavailable in this build because the publisher has not configured Luna's application ID. No user API key or token is required.")
                     // Translators: Explain that Discord developer configuration belongs to the publisher, not the user.
-                    : Tr("Luna's publisher has configured the Discord application. You do not need a developer account, application ID, API key or token."),
+                    : Tr("how to enable ritch presence?."),
                 // Translators: Instructions to make Rich Presence visible in the Discord desktop client.
                 Tr("Run the Discord desktop app and allow activity sharing in Discord's Activity Privacy settings. Enable Rich Presence above and choose OK."),
                 // Translators: Privacy explanation for Discord presence settings.
