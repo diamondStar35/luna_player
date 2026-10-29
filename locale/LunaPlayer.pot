@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-10-29 04:23+0300\n"
+"POT-Creation-Date: 2026-10-29 04:30+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3997,8 +3997,8 @@ msgstr ""
 #. Translators: Heading of the favourites list column holding what each saved link is called.
 #: UI/Bookmarks/ManagerDialog.cs:20 UI/Equalizer/EditDialog.cs:72
 #: UI/Iptv/ChannelBrowserDialog.cs:79 UI/Iptv/SourceEditDialog.cs:57
-#: UI/Iptv/SourcesDialog.cs:29 UI/Playlists/EditorDialog.cs:33
-#: UI/Playlists/EditorDialog.cs:44 UI/Playlists/ManagerDialog.cs:23
+#: UI/Iptv/SourcesDialog.cs:29 UI/Playlists/EditorDialog.cs:37
+#: UI/Playlists/EditorDialog.cs:48 UI/Playlists/ManagerDialog.cs:27
 #: UI/Radio/BrowserDialog.cs:108 UI/Recording/SourceDialog.cs:50
 #: UI/Selections/SaveDialog.cs:36 UI/YouTube/FavoriteEditDialog.cs:27
 #: UI/YouTube/FavoritesDialog.cs:29
@@ -4019,7 +4019,7 @@ msgstr ""
 #. Translators: Name of the Edit menu in the menu bar.
 #. Translators: Playlist manager button editing the selected saved playlist.
 #: UI/Bookmarks/ManagerDialog.cs:38 UI/Menus/Builder.cs:70
-#: UI/Playlists/ManagerDialog.cs:30
+#: UI/Playlists/ManagerDialog.cs:34
 msgid "Edit"
 msgstr ""
 
@@ -4050,7 +4050,7 @@ msgstr ""
 #: UI/Conversion/ReportDialog.cs:24 UI/Diagnostics/CrashDialog.cs:49
 #: UI/Equalizer/PresetsDialog.cs:57 UI/Help/TextDialog.cs:19
 #: UI/Iptv/ChannelBrowserDialog.cs:121 UI/Iptv/SourcesDialog.cs:62
-#: UI/Playlists/ManagerDialog.cs:38 UI/Radio/BrowserDialog.cs:134
+#: UI/Playlists/ManagerDialog.cs:42 UI/Radio/BrowserDialog.cs:134
 #: UI/Radio/DetailsDialog.cs:55 UI/Recording/MainDialog.cs:174
 #: UI/Spotify/BrowserDialog.cs:149 UI/YouTube/DescriptionDialog.cs:53
 #: UI/YouTube/DownloadQueueDialog.cs:69 UI/YouTube/FavoritesDialog.cs:62
@@ -4074,7 +4074,7 @@ msgstr ""
 #. Translators: The button that closes a window and leaves everything as it was.
 #: UI/Controls/ProgressView.cs:66 UI/Conversion/ProgressDialog.cs:85
 #: UI/Equalizer/EditDialog.cs:101 UI/Playback/SleepTimerDialog.cs:166
-#: UI/Playback/TimeDialog.cs:73 UI/Playlists/EditorDialog.cs:74
+#: UI/Playback/TimeDialog.cs:73 UI/Playlists/EditorDialog.cs:78
 #: UI/Playlists/OpenedFilesDialog.cs:51 UI/Radio/FiltersDialog.cs:79
 #: UI/Selections/SaveDialog.cs:82 UI/Selections/TimeDialog.cs:62
 #: UI/Spotify/CredentialsPrompt.cs:19 UI/YouTube/DownloadDialog.cs:134
@@ -4107,8 +4107,8 @@ msgstr ""
 #. Translators: Button on the media converter that takes the selected files back out of the list.
 #. Translators: Playlist editor button removing selected entries without deleting media files.
 #. Translators: Playlist manager button removing the selected saved playlist.
-#: UI/Conversion/MainDialog.cs:112 UI/Playlists/EditorDialog.cs:55
-#: UI/Playlists/ManagerDialog.cs:34
+#: UI/Conversion/MainDialog.cs:112 UI/Playlists/EditorDialog.cs:59
+#: UI/Playlists/ManagerDialog.cs:38
 msgid "Remove"
 msgstr ""
 
@@ -4395,7 +4395,7 @@ msgstr ""
 #. Translators: Button in the equalizer editor that keeps the changes.
 #. Translators: Playlist editor button accepting the draft and saving it.
 #. Translators: Button that starts saving all selection points with the chosen settings.
-#: UI/Equalizer/EditDialog.cs:96 UI/Playlists/EditorDialog.cs:69
+#: UI/Equalizer/EditDialog.cs:96 UI/Playlists/EditorDialog.cs:73
 #: UI/Selections/SaveDialog.cs:80
 msgid "Save"
 msgstr ""
@@ -4724,7 +4724,7 @@ msgstr ""
 #. Translators: Button that opens the source chosen in the list and browses its channels.
 #. Translators: Playlist manager button opening the selected playlist for playback.
 #. Translators: Button that plays the saved link chosen in the list.
-#: UI/Iptv/SourcesDialog.cs:53 UI/Playlists/ManagerDialog.cs:28
+#: UI/Iptv/SourcesDialog.cs:53 UI/Playlists/ManagerDialog.cs:32
 #: UI/YouTube/FavoritesDialog.cs:53
 msgid "Open"
 msgstr ""
@@ -4733,7 +4733,7 @@ msgstr ""
 #. Translators: Playlist editor button opening a menu to add files or a folder.
 #. Translators: Opens a box where one or more YouTube links can be added to the queue.
 #. Translators: Button that saves a new link. The three dots mean it opens a window to type it in.
-#: UI/Iptv/SourcesDialog.cs:55 UI/Playlists/EditorDialog.cs:53
+#: UI/Iptv/SourcesDialog.cs:55 UI/Playlists/EditorDialog.cs:57
 #: UI/YouTube/DownloadQueueDialog.cs:60 UI/YouTube/FavoritesDialog.cs:55
 msgid "Add..."
 msgstr ""
@@ -5478,89 +5478,89 @@ msgid "The selected time exceeds the file duration."
 msgstr ""
 
 #. Translators: Title of the dialog editing a playlist's name, description and entries.
-#: UI/Playlists/EditorDialog.cs:30
+#: UI/Playlists/EditorDialog.cs:33
 msgid "Playlist editor"
 msgstr ""
 
 #. Translators: Label of the optional playlist description text field.
-#: UI/Playlists/EditorDialog.cs:37
+#: UI/Playlists/EditorDialog.cs:41
 msgid "Description (optional)"
 msgstr ""
 
 #. Translators: Label above the list of files and folders in the playlist editor.
 #. Translators: Label above the list of saved playlists in My Playlists.
-#: UI/Playlists/EditorDialog.cs:41 UI/Playlists/ManagerDialog.cs:20
+#: UI/Playlists/EditorDialog.cs:45 UI/Playlists/ManagerDialog.cs:24
 msgid "Items"
 msgstr ""
 
 #. Translators: Column heading for the complete file or folder location in the playlist editor.
-#: UI/Playlists/EditorDialog.cs:46
+#: UI/Playlists/EditorDialog.cs:50
 msgid "Full Path"
 msgstr ""
 
 #. Translators: Playlist editor button moving selected entries earlier.
-#: UI/Playlists/EditorDialog.cs:57
+#: UI/Playlists/EditorDialog.cs:61
 msgid "Move Up"
 msgstr ""
 
 #. Translators: Playlist editor button moving selected entries later.
-#: UI/Playlists/EditorDialog.cs:59
+#: UI/Playlists/EditorDialog.cs:63
 msgid "Move Down"
 msgstr ""
 
 #. Translators: Question shown when closing a modified playlist editor.
-#: UI/Playlists/EditorDialog.cs:89
+#: UI/Playlists/EditorDialog.cs:93
 msgid "Save changes to this playlist?"
 msgstr ""
 
 #. Translators: Playlist Add menu item selecting multiple files.
-#: UI/Playlists/EditorDialog.cs:155
+#: UI/Playlists/EditorDialog.cs:159
 msgid "Files..."
 msgstr ""
 
 #. Translators: Playlist Add menu item selecting a folder reference.
-#: UI/Playlists/EditorDialog.cs:157
+#: UI/Playlists/EditorDialog.cs:161
 msgid "Folder..."
 msgstr ""
 
 #. Translators: Spoken after adding entries to a playlist. {count} is the number added.
-#: UI/Playlists/EditorDialog.cs:177
+#: UI/Playlists/EditorDialog.cs:181
 msgid "{count} entries added to playlist."
 msgstr ""
 
 #. Translators: Spoken after removing entries from a playlist only. {count} is the number removed.
-#: UI/Playlists/EditorDialog.cs:187
+#: UI/Playlists/EditorDialog.cs:191
 msgid "{count} entries removed from playlist."
 msgstr ""
 
 #. Translators: Spoken after reordering the selected playlist entries.
-#: UI/Playlists/EditorDialog.cs:199
+#: UI/Playlists/EditorDialog.cs:203
 msgid "Playlist entries moved."
 msgstr ""
 
 #. Translators: Validation warning for an empty playlist name in the editor.
-#: UI/Playlists/EditorDialog.cs:220
+#: UI/Playlists/EditorDialog.cs:224
 msgid "A playlist name is required."
 msgstr ""
 
 #. Translators: Title of the saved playlist manager.
-#: UI/Playlists/ManagerDialog.cs:18
+#: UI/Playlists/ManagerDialog.cs:21
 msgid "My Playlists"
 msgstr ""
 
 #. Translators: Column heading for optional descriptions in the playlist manager.
 #. Translators: Label before the box that shows the text written under a video.
-#: UI/Playlists/ManagerDialog.cs:25 UI/YouTube/DescriptionDialog.cs:40
+#: UI/Playlists/ManagerDialog.cs:29 UI/YouTube/DescriptionDialog.cs:40
 msgid "Description"
 msgstr ""
 
 #. Translators: Playlist manager button creating a new playlist.
-#: UI/Playlists/ManagerDialog.cs:32
+#: UI/Playlists/ManagerDialog.cs:36
 msgid "New"
 msgstr ""
 
 #. Translators: Playlist manager button exporting the selected playlist to a file.
-#: UI/Playlists/ManagerDialog.cs:36
+#: UI/Playlists/ManagerDialog.cs:40
 msgid "Export"
 msgstr ""
 

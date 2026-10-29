@@ -16,13 +16,13 @@ internal sealed class PlaylistsDialogs(DialogContext context) : IDisposable
     private LunaPlayer.UI.Playlists.ManagerDialog? _manager;
     public Document? EditPlaylist(Document document, Action<string> speak, bool metadataOnly = false)
     {
-        using var dialog = new LunaPlayer.UI.Playlists.EditorDialog(_context.Parent, document, _context.Dialogs, speak, metadataOnly);
+        using var dialog = new LunaPlayer.UI.Playlists.EditorDialog(document, _context.Dialogs, speak, metadataOnly);
         return dialog.Show();
     }
     public void ManagePlaylists(IReadOnlyList<Document> documents, Action<LunaPlayer.UI.Playlists.PlaylistRequest> request)
     {
         if (_manager is null)
-            _manager = new LunaPlayer.UI.Playlists.ManagerDialog(_context.Frame, documents, request);
+            _manager = new LunaPlayer.UI.Playlists.ManagerDialog(documents, request);
         else
             _manager.Refresh(documents);
         _manager.Show();

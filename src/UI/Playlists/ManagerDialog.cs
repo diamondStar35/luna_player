@@ -11,11 +11,15 @@ internal sealed class ManagerDialog : IDisposable
     private readonly List<Button> _actionButtons = [];
     private readonly Action<PlaylistRequest> _handleRequest;
     private bool _busy;
-    internal ManagerDialog(Window parent, IReadOnlyList<Document> documents, Action<PlaylistRequest> handleRequest)
+    internal ManagerDialog(IReadOnlyList<Document> documents, Action<PlaylistRequest> handleRequest)
     {
         _handleRequest = handleRequest;
-        // Translators: Title of the saved playlist manager.
-        _dialog = new Dialog(parent, title: Tr("My Playlists"), style: DialogStyle.Default | DialogStyle.ResizeBorder);
+        // A null parent alone lets wxWidgets choose the main window as the native owner.
+        _dialog = new Dialog(
+            parent: null,
+            // Translators: Title of the saved playlist manager.
+            title: Tr("My Playlists"),
+            style: DialogStyle.Default | DialogStyle.ResizeBorder | DialogStyle.NoParent);
         // Translators: Label above the list of saved playlists in My Playlists.
         var itemsLabel = new StaticText(_dialog, label: Tr("Items"));
         _list = new ListCtrl(_dialog, style: ListCtrlStyle.Report | ListCtrlStyle.SingleSelection);
@@ -46,7 +50,7 @@ internal sealed class ManagerDialog : IDisposable
         _dialog.SetSizer(layout);
         _dialog.Fit();
         _dialog.MinSize = new Size(720, 380);
-        _dialog.Center(onParent: true);
+        _dialog.Center(onParent: false);
         _list.ItemActivated += (_, _) => Select("open");
         _list.ItemSelected += (_, _) => UpdateButtons();
         _list.ItemDeselected += (_, _) => UpdateButtons();
