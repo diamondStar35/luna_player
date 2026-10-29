@@ -10,19 +10,27 @@ using Downloads = LunaPlayer.YouTube.Download;
 
 namespace LunaPlayer.UI.Services.Dialogs;
 
-internal sealed class PlaylistsDialogs(DialogContext context)
+internal sealed class PlaylistsDialogs(DialogContext context) : IDisposable
 {
     private readonly DialogContext _context = context;
+    private LunaPlayer.UI.Playlists.ManagerDialog? _manager;
     public Document? EditPlaylist(Document document, Action<string> speak, bool metadataOnly = false)
     {
         using var dialog = new LunaPlayer.UI.Playlists.EditorDialog(_context.Parent, document, _context.Dialogs, speak, metadataOnly);
         return dialog.Show();
     }
-    public LunaPlayer.UI.Playlists.PlaylistRequest? ManagePlaylists(IReadOnlyList<Document> documents)
+    public void ManagePlaylists(IReadOnlyList<Document> documents, Action<LunaPlayer.UI.Playlists.PlaylistRequest> request)
     {
-        using var dialog = new LunaPlayer.UI.Playlists.ManagerDialog(_context.Parent, documents);
-        return dialog.Show();
+        if (_manager is null)
+            _manager = new LunaPlayer.UI.Playlists.ManagerDialog(_context.Frame, documents, request);
+        else
+            _manager.Refresh(documents);
+        _manager.Show();
     }
+    public void RefreshPlaylists(IReadOnlyList<Document> documents, Guid? selectedId = null)
+        => _manager?.Refresh(documents, selectedId);
+
+    public void Dispose() { _manager?.Dispose(); _manager = null; }
     public string[] ChoosePlaylistFiles()
     {
         // Translators: Title of the multiple-file picker adding playlist entries.
@@ -49,4 +57,5 @@ internal sealed class PlaylistsDialogs(DialogContext context)
             if (File.Exists(path) && !_context.Dialogs.Confirm(Tr("Replace the existing playlist file?"))) return null;
         }
         return path;
-    }}
+    }
+}

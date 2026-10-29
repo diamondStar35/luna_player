@@ -15,7 +15,10 @@ namespace LunaPlayer.UI;
 internal interface IDialogService
 {
     LunaPlayer.Playlist.Document? EditPlaylist(LunaPlayer.Playlist.Document document, Action<string> speak, bool metadataOnly = false);
-    LunaPlayer.UI.Playlists.PlaylistRequest? ManagePlaylists(IReadOnlyList<LunaPlayer.Playlist.Document> documents);
+    /// <summary>Shows or activates the modeless playlist manager. Requests arrive after this method returns.</summary>
+    void ManagePlaylists(IReadOnlyList<LunaPlayer.Playlist.Document> documents, Action<LunaPlayer.UI.Playlists.PlaylistRequest> request);
+    /// <summary>Updates an existing manager without opening it or changing the active window.</summary>
+    void RefreshPlaylists(IReadOnlyList<LunaPlayer.Playlist.Document> documents, Guid? selectedId = null);
     string[] ChoosePlaylistFiles();
     string? ChoosePlaylistDestination();
     /// <summary>Browses a radio category and returns its loaded station order and selected station.</summary>
@@ -49,6 +52,8 @@ internal interface IDialogService
     void ShowInfo(string message);
     /// <summary>Shows an information box owned by the main window, even if another modeless window is active.</summary>
     void ShowMainInfo(string message);
+    /// <summary>Shows a success confirmation owned by the main window.</summary>
+    void ShowMainSuccess(string message);
     void ShowWarning(string message);
     void ShowError(string message);
     /// <summary>Shows an error box owned by the main window, even if another modeless window is active.</summary>

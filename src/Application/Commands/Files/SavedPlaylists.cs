@@ -58,16 +58,17 @@ internal sealed class SavedPlaylists
             try
             {
                 _store.Save(edited);
-                // Translators: Spoken confirmation after saving a named playlist.
-                _speech.SpeakText(Tr("Playlist saved."));
-                return;
             }
             catch (Exception exception) when (exception is InvalidDataException or IOException or UnauthorizedAccessException)
             {
                 // Translators: Validation error for a playlist name. {error} is the reason.
                 _view.Dialogs.ShowWarning(TrFormat("Could not save the playlist: {error}", exception.Message));
                 document = edited;
+                continue;
             }
+            RefreshManager(edited.Id);
+            Saved();
+            return;
         }
     }
     private void SaveCurrent(bool export)
@@ -86,8 +87,8 @@ internal sealed class SavedPlaylists
             var copy = document.Copy();
             copy.Id = Guid.NewGuid();
             if (copy.Name.Length == 0) copy.Name = Path.GetFileNameWithoutExtension(path);
-            if (_view.Dialogs.EditPlaylist(copy, text => _speech.SpeakText(text), metadataOnly: true) is Document named)
-                DocumentStore.Write(named, path);
+            if (_view.Dialogs.EditPlaylist(copy, text => _speech.SpeakText(text), metadataOnly: true) is not Document named) return;
+            DocumentStore.Write(named, path);
         }
         else
         {
@@ -95,32 +96,49 @@ internal sealed class SavedPlaylists
             Report(resolved);
             DocumentWriter.Export(document, path, resolved);
         }
+        Saved();
     }
-    private void Manage()
+    private void Saved()
     {
-        while (true)
+        // Translators: Success confirmation shown on the main window after a playlist is saved or exported.
+        _view.Dialogs.ShowMainSuccess(Tr("Playlist saved."));
+    }
+    private void RefreshManager(Guid? selectedId = null)
+        => _view.Dialogs.RefreshPlaylists(_store.List(), selectedId);
+
+    private void Manage()
+        => _view.Dialogs.ManagePlaylists(_store.List(), request => Guard(() => Handle(request)));
+
+    private void Handle(LunaPlayer.UI.Playlists.PlaylistRequest request)
+    {
+        if (request.Action == "new") { Edit(new()); return; }
+        var documents = _store.List();
+        var document = documents.FirstOrDefault(item => item.Id == request.Id);
+        if (document is null)
         {
-            var documents = _store.List();
-            var request = _view.Dialogs.ManagePlaylists(documents);
-            if (request is null) return;
-            if (request.Action == "new") { Edit(new()); continue; }
-            var document = documents.First(item => item.Id == request.Id);
-            switch (request.Action)
-            {
-                case "edit": Edit(document); break;
-                case "export": Export(document); break;
-                case "remove":
-                    // Translators: Confirmation removing a saved playlist, leaving all media files untouched.
-                    if (_view.Dialogs.Confirm(Tr("Remove this saved playlist? Media files will be kept."))) _store.Remove(document.Id);
-                    break;
-                case "open":
-                    var resolved = DocumentResolver.Resolve(document.Entries);
-                    Report(resolved);
-                    if (resolved.Files.Count > 0) { _player.OpenSaved(document.Entries, resolved.Files); return; }
-                    // Translators: Warning when opening a saved playlist yields no playable tracks.
-                    _view.Dialogs.ShowWarning(Tr("The playlist contains no playable entries."));
-                    break;
-            }
+            _view.Dialogs.RefreshPlaylists(documents);
+            // Translators: Error shown when a playlist selected in the manager has since been removed from storage.
+            throw new InvalidDataException(Tr("This playlist is no longer available."));
+        }
+        switch (request.Action)
+        {
+            case "edit": Edit(document); break;
+            case "export": Export(document); break;
+            case "remove":
+                // Translators: Confirmation before removing a saved playlist from My Playlists.
+                if (!_view.Dialogs.Confirm(Tr("Would you like to remove this playlist?"))) return;
+                _store.Remove(document.Id);
+                RefreshManager();
+                // Translators: Success confirmation shown on the main window after a saved playlist is removed.
+                _view.Dialogs.ShowMainSuccess(Tr("Playlist removed."));
+                break;
+            case "open":
+                var resolved = DocumentResolver.Resolve(document.Entries);
+                Report(resolved);
+                if (resolved.Files.Count > 0) { _player.OpenSaved(document.Entries, resolved.Files); return; }
+                // Translators: Warning when opening a saved playlist yields no playable tracks.
+                _view.Dialogs.ShowWarning(Tr("The playlist contains no playable entries."));
+                break;
         }
     }
 }

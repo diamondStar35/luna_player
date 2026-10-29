@@ -4,6 +4,13 @@ namespace LunaPlayer.UI.Services;
 
 internal static class Messages
 {
+    internal static void Success(string message, Window? parent)
+    {
+        // Translators: Title of a message box confirming that an operation completed successfully.
+        var caption = Tr("Success");
+        Wx.MessageBox(message, caption, MessageBoxStyle.Ok | MessageBoxStyle.IconInformation, parent);
+    }
+
     internal static MessageBoxStyle Show(string message, MessageBoxStyle style, Window? parent)
     {
         string caption;

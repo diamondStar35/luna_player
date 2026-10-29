@@ -80,6 +80,7 @@ internal sealed class DialogService : IDialogService, IDisposable
     public bool Confirm(string message) => Messages.Show(message, MessageBoxStyle.YesNo | MessageBoxStyle.IconWarning, DialogParent) == MessageBoxStyle.Yes;
     public void ShowInfo(string message) => Messages.Show(message, MessageBoxStyle.Ok | MessageBoxStyle.IconInformation, DialogParent);
     public void ShowMainInfo(string message) => Messages.Show(message, MessageBoxStyle.Ok | MessageBoxStyle.IconInformation, _frame);
+    public void ShowMainSuccess(string message) => Messages.Success(message, _frame);
     public void ShowWarning(string message) => Messages.Show(message, MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, DialogParent);
     public void ShowError(string message) => Messages.Show(message, MessageBoxStyle.Ok | MessageBoxStyle.IconError, DialogParent);
     public void ShowMainError(string message) => Messages.Show(message, MessageBoxStyle.Ok | MessageBoxStyle.IconError, _frame);
@@ -97,11 +98,11 @@ internal sealed class DialogService : IDialogService, IDisposable
     }
     public LunaPlayer.UI.Contracts.IProgressView BeginProgress(string title, string message, bool proportional, bool detailed) => new LunaPlayer.UI.Controls.ProgressView(DialogParent, title, message, proportional, detailed);
 
-    /// <summary>Tears down the reused results window. Called before the frame is destroyed, since that window
-    /// is a child of it.</summary>
-    public void Dispose() { _spotify.Dispose(); _radio.Dispose(); _youtube.Dispose(); }
+    /// <summary>Tears down retained dialogs before the main frame that owns them is destroyed.</summary>
+    public void Dispose() { _playlists.Dispose(); _spotify.Dispose(); _radio.Dispose(); _youtube.Dispose(); }
     public Document? EditPlaylist(Document document, Action<string> speak, bool metadataOnly = false) => _playlists.EditPlaylist(document, speak, metadataOnly);
-    public LunaPlayer.UI.Playlists.PlaylistRequest? ManagePlaylists(IReadOnlyList<Document> documents) => _playlists.ManagePlaylists(documents);
+    public void ManagePlaylists(IReadOnlyList<Document> documents, Action<LunaPlayer.UI.Playlists.PlaylistRequest> request) => _playlists.ManagePlaylists(documents, request);
+    public void RefreshPlaylists(IReadOnlyList<Document> documents, Guid? selectedId = null) => _playlists.RefreshPlaylists(documents, selectedId);
     public string[] ChoosePlaylistFiles() => _playlists.ChoosePlaylistFiles();
     public string? ChoosePlaylistDestination() => _playlists.ChoosePlaylistDestination();
     public Spotify.DialogOutcome ShowSpotifyBrowser(LunaPlayer.Spotify.Catalog catalog,

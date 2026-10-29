@@ -129,12 +129,16 @@ Adding files and saving the current list are unavailable while you are in an onl
 
 Use **File > Playlists** to keep collections you can open again without choosing their files each time. Each saved playlist has a name and an optional description. You can create an empty playlist, build one by selecting files and folders, or save the list you already have open.
 
+You can leave My Playlists open while using the main player window. Choosing **My Playlists...** again brings the existing window forward. The list updates when you create, save, or remove a playlist, and opening a playlist leaves the manager open so you can choose another one later.
+
 - **My Playlists...** opens your saved playlists. The **Items** list shows their names and descriptions. Select a playlist to make its Open, Edit, Remove, and Export commands available.
 - **Create Playlist...** opens the playlist editor with an empty list. Enter a name, add the files or folders you want, and choose **Save**. The playlist then appears in My Playlists.
 - **Save Current Playlist...** uses the current opened-files list as the starting point. Enter a name and, if you want, a description, then choose **Save** to add it to My Playlists. You do not need to create an empty playlist and add the same files again. To change its contents later, select it in My Playlists and choose **Edit**.
 - **Save Playlist As...** saves the current list to a file outside My Playlists. Choose a file name, destination, and M3U8, M3U, or JSON format. If you choose JSON, Luna also asks for the playlist's name and optional description. Cancelling either dialog leaves the destination unchanged.
 
-In My Playlists, **Open** replaces the opened-files list and plays the first available track. **Edit** lets you change the saved playlist's name, description, contents, and order without interrupting playback. These changes take effect in playback the next time you open that playlist. **Remove** asks for confirmation and deletes the saved playlist only; its media files and folders remain on disk. **Export** saves a copy of the selected playlist in one of the supported playlist formats.
+In My Playlists, **Open** replaces the opened-files list and plays the first available track. **Edit** lets you change the saved playlist's name, description, contents, and order without interrupting playback. These changes take effect in playback the next time you open that playlist. **Remove** asks “Would you like to remove this playlist?” before deleting the saved playlist; its media files and folders remain on disk. **Export** saves a copy of the selected playlist in one of the supported playlist formats.
+
+After a playlist is saved or exported, Luna shows a **Success** message on the main window saying “Playlist saved.” Removing a saved playlist shows “Playlist removed.” in a Success message. Choose **OK** to dismiss the confirmation. These messages confirm completed changes; cancelling an editor or save dialog does not show a success message.
 
 If some files or folders are unavailable, Luna reports them when opening the playlist. If no playable files remain, Luna keeps the current list and playback state. The unavailable entries remain in the saved playlist so you can make them available again or remove them in the editor.
 
