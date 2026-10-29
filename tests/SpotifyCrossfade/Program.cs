@@ -554,7 +554,7 @@ internal static class Program
         {
             using var engine = NewEngine(); var errors = 0;
             engine.Ended += reason => { if (reason == EndReason.Error) errors++; };
-            void Set(string name, object value) => typeof(Engine).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(engine, value);
+            void Set(string name, object value) => typeof(PlaybackCoordinator).GetField(name, BindingFlags.Instance | BindingFlags.NonPublic)!.SetValue(Field(engine, "_coordinator"), value);
             Set("_awaitingLoadRestart", true); Set("_loadingEntryId", 42L); Set("_loadingSourceEntryId", 1L);
             void Error(long entry) => typeof(PlaybackCoordinator).GetMethod("HandleEndFile", BindingFlags.Instance | BindingFlags.NonPublic)!.Invoke(Field(engine, "_coordinator"),
                 [new MpvEvent { EventId = MpvEventId.EndFile, Data = new MpvEndFileEvent { Reason = MpvEndFileReason.Error, PlaylistEntryId = entry } }]);
