@@ -59,11 +59,14 @@ internal sealed class AudioDecryptStream : Stream
         return Read(buffer.AsSpan(offset, count));
     }
 
-    public override int Read(Span<byte> buffer)
+    public override int Read(Span<byte> buffer) => Read(buffer, CancellationToken.None);
+
+    internal int Read(Span<byte> buffer, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         ObjectDisposedException.ThrowIf(_disposed, this);
         var position = _source.Position;
-        var read = _source.Read(buffer);
+        var read = _source is BufferedAudioStream range ? range.Read(buffer, cancellationToken) : _source.Read(buffer);
         if (read == 0) return 0;
 
         Span<byte> counter = stackalloc byte[16];

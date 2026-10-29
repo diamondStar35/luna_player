@@ -52,6 +52,7 @@ internal sealed partial class PlaybackCoordinator
         // being inspected. A replaced request may never advance the old queue in the meantime.
         if (overlap)
             _session.TryDo(static mpv => mpv.CommandAsync(0, "playlist-clear"));
+        ReleasePendingSpotifyAudio(path);
         var loaded = overlap ? LoadWithCrossfade(request, paused, fadeTransition, generation) : LoadCore(request, paused);
         _selectionRangeActive = false;
         _selectionRangeRepeats = false;
@@ -251,6 +252,7 @@ internal sealed partial class PlaybackCoordinator
         _releasedSelectionWasCompleted = false;
         _releasedSelectionPassed = false;
         _session.TryDo(static mpv => mpv.Command("stop"));
+        ReleasePendingSpotifyAudio();
     }
 
 }

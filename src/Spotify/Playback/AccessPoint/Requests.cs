@@ -35,6 +35,8 @@ internal sealed class Requests : IDisposable
         {
             var sequence = _keySequence++;
             var request = CreateKeyRequest(track, fileId.Span, sequence);
+            Diagnostics.Write("key.request", detail: "sequence=" + sequence + " track=" + Convert.ToHexString(request.AsSpan(20, 16))
+                + " file=" + Convert.ToHexString(request.AsSpan(0, 20)));
             var response = new TaskCompletionSource<byte[]>(TaskCreationOptions.RunContinuationsAsynchronously);
             lock (_stateLock)
             {
@@ -73,6 +75,7 @@ internal sealed class Requests : IDisposable
                 var (kind, packet) = await _connection.ReceiveAsync(_stopToken).ConfigureAwait(false);
                 if (kind == 0x04)
                 {
+                    Diagnostics.Write("ap.ping");
                     await _connection.SendAsync(0x49, new byte[4], _stopToken).ConfigureAwait(false);
                     continue;
                 }
@@ -81,8 +84,19 @@ internal sealed class Requests : IDisposable
                 lock (_stateLock)
                     pending = BinaryPrimitives.ReadUInt32BigEndian(packet) == _pendingSequence
                         ? _pending : null;
-                if (pending is null) continue;
-                if (kind == 0x0e || packet.Length != 20)
+                if (pending is null)
+                {
+                    Diagnostics.Write("key.late_response", detail: "sequence=" + BinaryPrimitives.ReadUInt32BigEndian(packet));
+                    continue;
+                }
+                if (kind == 0x0e)
+                {
+                    Diagnostics.Write("key.denied", detail: "code=" + (packet.Length >= 6
+                        ? BinaryPrimitives.ReadUInt16BigEndian(packet.AsSpan(4, 2)).ToString() : "missing"));
+                    pending.TrySetException(new AudioKeyUnavailableException(packet.Length >= 6
+                        ? BinaryPrimitives.ReadUInt16BigEndian(packet.AsSpan(4, 2)) : null));
+                }
+                else if (packet.Length != 20)
                     pending.TrySetException(new InvalidDataException());
                 else pending.TrySetResult(packet.AsSpan(4, 16).ToArray());
             }

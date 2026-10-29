@@ -15,7 +15,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- Old nested test-project build outputs must not become test source files. -->
-    <Compile Remove="**/bin/**/*.cs;**/obj/**/*.cs" />
+    <Compile Remove="**/bin/**/*.cs;**/obj/**/*.cs;SpotifyCrossfade/**/*.cs" />
     <ProjectReference Include="../src/LunaPlayer.csproj" AdditionalProperties="TestBuild=true;NativeAotBuildInvocation=true;BuildInParallel=false" />
   </ItemGroup>
 </Project>

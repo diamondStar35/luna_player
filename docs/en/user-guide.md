@@ -844,6 +844,18 @@ Select **Enable cross-fading during manual navigation** to use overlaps when mov
 
 Cross-fading works independently of the gapless setting and takes precedence over ordinary file-start and file-end fades during an overlap. Active selections, A-B loops, repeat-file mode and end-of-track sleep timers prevent automatic transitions. Online audio uses an overlap only when the next stream is ready; short files or late streams may shorten it. Longer durations require more decoded audio buffering.
 
+### Spotify cross-fading
+
+Spotify uses the same **Audio > Playback** cross-fading controls as local audio files: enable cross-fading there, choose a duration and curve, and optionally enable it during manual navigation. There are no separate Spotify cross-fading settings.
+
+A prepared next track starts immediately when selected; other manual track changes use a short 75-millisecond delay to combine rapid key presses. Navigation while paused loads the destination paused. Slow connections can still cause a gap. Repeat, stop-at-end, and sleep-timer holds prevent automatic advancement.
+
+Spotify playback fetches encrypted, compressed audio in 64-KiB blocks into RAM. Read-ahead reaches up to 4 MiB beyond the current read position, with at most 20 MiB retained per stream. The decoder may request other parts of a file for its headers, duration, or seeking. A short song can fit completely in the buffer; audio is not saved as a song file on disk. Preparing the next track uses the same streaming buffer.
+
+During the configured overlap, the player mixes decoded audio from the outgoing and incoming tracks, lowering one while raising the other using the selected curve. Playback uses the requested Spotify quality where available and can try another supported quality or equivalent track version if that file is unavailable. Temporary network failures and a failed decoder get bounded recovery attempts; genuinely unavailable tracks still report a failure.
+
+After rapid skipping, Spotify may temporarily refuse new playback requests. Luna prioritizes selected tracks over background preparation, cancels queued work for abandoned selections, and retries a temporary refusal once after a short delay. A waiting retry does not block other ready requests, and cached keys remain immediately reusable. Persistent refusals show a temporary playback error.
+
 ### Silence removal
 
 See [Silence removal and audio processing](#8-silence-removal-and-audio-processing) for the basic and advanced controls.

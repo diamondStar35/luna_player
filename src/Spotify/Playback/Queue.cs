@@ -21,6 +21,7 @@ internal sealed partial class Sessions
         internal CancellationTokenSource? PageCancellation { get; set; }
         internal bool FetchingMore { get; set; }
         internal bool PageFetchAfterEnded { get; set; }
+        internal bool PageNavigationRequested { get; set; }
         internal bool DeduplicateArtist { get; set; }
         internal CancellationTokenSource? NavigationDelay { get; set; }
         internal HashSet<string> PageCursors { get; } = new(StringComparer.Ordinal);
@@ -41,6 +42,8 @@ internal sealed partial class Sessions
         lock (_navigationLock)
         {
             if (!_active) return false;
+            AcceptSpotifyAdvance(prepareNext: false);
+            if (!_active || !ReferenceEquals(_session, session)) return false;
             var current = _current;
             session.Shuffle = !session.Shuffle;
             session.Tracks = [.. session.Source];
@@ -56,6 +59,7 @@ internal sealed partial class Sessions
             }
             session.Index = session.Tracks.FindIndex(track => ReferenceEquals(track, current));
             if (session.Index < 0) session.Index = 0;
+            RefreshSuccessor();
             return session.Shuffle;
         }
     }
@@ -143,6 +147,7 @@ internal sealed partial class Sessions
         session.PageCancellation = null;
         session.FetchingMore = false;
         session.PageFetchAfterEnded = false;
+        session.PageNavigationRequested = false;
     }
     internal bool GoToIndex(int index)
     {
@@ -156,6 +161,8 @@ internal sealed partial class Sessions
         if (_session is not { } session) return false;
         lock (_navigationLock)
         {
+            AcceptSpotifyAdvance(prepareNext: false);
+            if (!_active || !ReferenceEquals(_session, session)) return false;
             if (delta > 0 && session.Index == session.Tracks.Count - 1 && session.NextPage is not null)
             {
                 _playRequested = true;
@@ -165,16 +172,28 @@ internal sealed partial class Sessions
             if (!TryTarget(session.Index, delta, out var target)) return false;
             CancelPageRead();
             if (savePosition) SavePosition();
+            var keepPlaying = _manualTransition ? _playRequested : _player.IsPlaying;
+            var overlap = _audioSettings is { Crossfade: true, CrossfadeManualNavigation: true } && _player.IsLoaded;
             session.Index = target;
             var track = session.Tracks[target];
-            // Explicit navigation starts the selected file, matching ordinary local playback.
+            // Preserve a ready successor across selection invalidation. Its registered audio can
+            // be reopened even when mpv already opened it for speculative decoding.
+            var preparedUrl = ReferenceEquals(track, _successor) ? _successorUrl : null;
+            if (preparedUrl is not null)
+            {
+                _successorUrl = null;
+                _successor = null;
+            }
+            // Select immediately; a manual overlap keeps the outgoing stream until audio is ready.
             SetCurrent(track, playing: false);
+            _manualTransition = overlap;
+            if (overlap) _playRequested = keepPlaying;
             Navigated?.Invoke(track);
-            // Each key changes Luna's selection immediately. Only the final selection
-            // after a short burst starts fetching audio, avoiding wasted key requests.
+            if (preparedUrl is not null && OpenPreparedTrack(track, preparedUrl)) return true;
+            // Keep uncached key bursts inexpensive without delaying an already prepared track.
             if (delay)
             {
-                if (!session.NavigationStopped) { _player.Stop(); session.NavigationStopped = true; }
+                if (!overlap && !session.NavigationStopped) { _player.Stop(); session.NavigationStopped = true; }
                 session.NavigationDelay = new CancellationTokenSource();
                 _ = LoadAfterNavigationAsync(track, CurrentLoadGeneration, session.NavigationDelay.Token);
             }
@@ -183,19 +202,23 @@ internal sealed partial class Sessions
         }
     }
 
-    private void FetchMore(bool afterTrackEnded = false)
+    private void FetchMore(bool afterTrackEnded = false, bool prepareOnly = false)
     {
         if (_session is not { } session) return;
         if (session.FetchingMore)
         {
             if (afterTrackEnded) session.PageFetchAfterEnded = true;
+            if (!prepareOnly) session.PageNavigationRequested = true;
             return;
         }
         if (session.PageLoader is not { } loader || session.NextPage is not { } cursor) return;
         session.FetchingMore = true;
+        session.PageNavigationRequested = !prepareOnly;
         session.PageCancellation = new CancellationTokenSource();
         var cancellation = session.PageCancellation;
         var generation = Volatile.Read(ref _loadGeneration);
+        var attempt = _loadAttempt;
+        var revision = _player.PlaybackRevision;
         var current = _current;
         var token = cancellation.Token;
         var visited = new HashSet<string>(session.PageCursors, StringComparer.Ordinal) { cursor };
@@ -236,12 +259,17 @@ internal sealed partial class Sessions
                         session.PageFetchAfterEnded = false;
                         session.PageCancellation = null;
                         cancellation.Dispose();
+                        if (prepareOnly && !session.PageNavigationRequested && !ended)
+                        {
+                            RefreshSuccessor();
+                            return;
+                        }
                         if (session.Index + 1 < session.Tracks.Count)
                         {
                             Step(1, savePosition: !ended, delay: !ended);
                         }
                         else if (session.NextPage is not null)
-                            FetchMore(ended);
+                            FetchMore(ended, prepareOnly);
                         else if (session.Tracks.Count == 0)
                             QueueEmpty?.Invoke();
                         else if (ended)
@@ -269,7 +297,8 @@ internal sealed partial class Sessions
                         session.PageCancellation = null;
                         cancellation.Dispose();
                         if (ended) FinishCurrent();
-                        CommandFailed?.Invoke(error);
+                        if ((!prepareOnly || session.PageNavigationRequested || ended)
+                            && attempt == _loadAttempt && revision == _player.PlaybackRevision) ReportFailure(error);
                     }
                 });
             }
@@ -299,7 +328,7 @@ internal sealed partial class Sessions
     {
         try
         {
-            await Task.Delay(250, token).ConfigureAwait(false);
+            await Task.Delay(75, token).ConfigureAwait(false);
             OnPlayerThread(() =>
             {
                 lock (_navigationLock)
