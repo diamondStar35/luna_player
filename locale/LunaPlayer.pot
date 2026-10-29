@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-10-29 04:30+0300\n"
+"POT-Creation-Date: 2026-10-29 12:56+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3998,7 +3998,7 @@ msgstr ""
 #: UI/Bookmarks/ManagerDialog.cs:20 UI/Equalizer/EditDialog.cs:72
 #: UI/Iptv/ChannelBrowserDialog.cs:79 UI/Iptv/SourceEditDialog.cs:57
 #: UI/Iptv/SourcesDialog.cs:29 UI/Playlists/EditorDialog.cs:37
-#: UI/Playlists/EditorDialog.cs:48 UI/Playlists/ManagerDialog.cs:27
+#: UI/Playlists/EditorDialog.cs:48 UI/Playlists/ManagerDialog.cs:28
 #: UI/Radio/BrowserDialog.cs:108 UI/Recording/SourceDialog.cs:50
 #: UI/Selections/SaveDialog.cs:36 UI/YouTube/FavoriteEditDialog.cs:27
 #: UI/YouTube/FavoritesDialog.cs:29
@@ -4019,7 +4019,7 @@ msgstr ""
 #. Translators: Name of the Edit menu in the menu bar.
 #. Translators: Playlist manager button editing the selected saved playlist.
 #: UI/Bookmarks/ManagerDialog.cs:38 UI/Menus/Builder.cs:70
-#: UI/Playlists/ManagerDialog.cs:34
+#: UI/Playlists/ManagerDialog.cs:35
 msgid "Edit"
 msgstr ""
 
@@ -4050,7 +4050,7 @@ msgstr ""
 #: UI/Conversion/ReportDialog.cs:24 UI/Diagnostics/CrashDialog.cs:49
 #: UI/Equalizer/PresetsDialog.cs:57 UI/Help/TextDialog.cs:19
 #: UI/Iptv/ChannelBrowserDialog.cs:121 UI/Iptv/SourcesDialog.cs:62
-#: UI/Playlists/ManagerDialog.cs:42 UI/Radio/BrowserDialog.cs:134
+#: UI/Playlists/ManagerDialog.cs:43 UI/Radio/BrowserDialog.cs:134
 #: UI/Radio/DetailsDialog.cs:55 UI/Recording/MainDialog.cs:174
 #: UI/Spotify/BrowserDialog.cs:149 UI/YouTube/DescriptionDialog.cs:53
 #: UI/YouTube/DownloadQueueDialog.cs:69 UI/YouTube/FavoritesDialog.cs:62
@@ -4108,7 +4108,7 @@ msgstr ""
 #. Translators: Playlist editor button removing selected entries without deleting media files.
 #. Translators: Playlist manager button removing the selected saved playlist.
 #: UI/Conversion/MainDialog.cs:112 UI/Playlists/EditorDialog.cs:59
-#: UI/Playlists/ManagerDialog.cs:38
+#: UI/Playlists/ManagerDialog.cs:39
 msgid "Remove"
 msgstr ""
 
@@ -4724,7 +4724,7 @@ msgstr ""
 #. Translators: Button that opens the source chosen in the list and browses its channels.
 #. Translators: Playlist manager button opening the selected playlist for playback.
 #. Translators: Button that plays the saved link chosen in the list.
-#: UI/Iptv/SourcesDialog.cs:53 UI/Playlists/ManagerDialog.cs:32
+#: UI/Iptv/SourcesDialog.cs:53 UI/Playlists/ManagerDialog.cs:33
 #: UI/YouTube/FavoritesDialog.cs:53
 msgid "Open"
 msgstr ""
@@ -5489,7 +5489,7 @@ msgstr ""
 
 #. Translators: Label above the list of files and folders in the playlist editor.
 #. Translators: Label above the list of saved playlists in My Playlists.
-#: UI/Playlists/EditorDialog.cs:45 UI/Playlists/ManagerDialog.cs:24
+#: UI/Playlists/EditorDialog.cs:45 UI/Playlists/ManagerDialog.cs:25
 msgid "Items"
 msgstr ""
 
@@ -5544,23 +5544,23 @@ msgid "A playlist name is required."
 msgstr ""
 
 #. Translators: Title of the saved playlist manager.
-#: UI/Playlists/ManagerDialog.cs:21
+#: UI/Playlists/ManagerDialog.cs:22
 msgid "My Playlists"
 msgstr ""
 
 #. Translators: Column heading for optional descriptions in the playlist manager.
 #. Translators: Label before the box that shows the text written under a video.
-#: UI/Playlists/ManagerDialog.cs:29 UI/YouTube/DescriptionDialog.cs:40
+#: UI/Playlists/ManagerDialog.cs:30 UI/YouTube/DescriptionDialog.cs:40
 msgid "Description"
 msgstr ""
 
 #. Translators: Playlist manager button creating a new playlist.
-#: UI/Playlists/ManagerDialog.cs:36
+#: UI/Playlists/ManagerDialog.cs:37
 msgid "New"
 msgstr ""
 
 #. Translators: Playlist manager button exporting the selected playlist to a file.
-#: UI/Playlists/ManagerDialog.cs:40
+#: UI/Playlists/ManagerDialog.cs:41
 msgid "Export"
 msgstr ""
 
@@ -7090,24 +7090,24 @@ msgid "Load subtitle from URL"
 msgstr ""
 
 #. Translators: Title of the multiple-file picker adding playlist entries.
-#: UI/Services/Dialogs/Playlists.cs:37
+#: UI/Services/Dialogs/Playlists.cs:38
 msgid "Add files"
 msgstr ""
 
 #. Translators: Title of the dialog choosing a playlist export filename and format.
-#: UI/Services/Dialogs/Playlists.cs:44
+#: UI/Services/Dialogs/Playlists.cs:45
 msgid "Save Playlist As"
 msgstr ""
 
 #. Translators: Save dialog file types. JSON, M3U and M3U8 and all wildcard patterns must remain unchanged.
-#: UI/Services/Dialogs/Playlists.cs:46
+#: UI/Services/Dialogs/Playlists.cs:47
 msgid ""
 "M3U8 playlist (*.m3u8)|*.m3u8|M3U playlist (*.m3u)|*.m3u|JSON playlist (*."
 "json)|*.json"
 msgstr ""
 
 #. Translators: Confirmation before replacing an existing playlist after adjusting its filename extension.
-#: UI/Services/Dialogs/Playlists.cs:57
+#: UI/Services/Dialogs/Playlists.cs:58
 msgid "Replace the existing playlist file?"
 msgstr ""
 

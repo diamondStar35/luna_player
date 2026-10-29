@@ -20,18 +20,18 @@ internal sealed class EditorDialog : IDisposable
     private bool _accepted;
     private bool _dirty;
 
-    internal EditorDialog(Document document, IDialogService dialogs, Action<string> speak, bool metadataOnly = false)
+    internal EditorDialog(Document document, IDialogService dialogs, Action<string> speak, bool metadataOnly = false, Window? parent = null)
     {
         _draft = document.Copy();
         _dialogs = dialogs;
         _speak = speak;
         _metadataOnly = metadataOnly;
-        // A null parent alone lets wxWidgets choose the main window as the native owner.
+        // Editors opened by My Playlists belong to that window; standalone editors must suppress wx's default owner.
         _dialog = new Dialog(
-            parent: null,
+            parent: parent,
             // Translators: Title of the dialog editing a playlist's name, description and entries.
             title: Tr("Playlist editor"),
-            style: DialogStyle.Default | DialogStyle.ResizeBorder | DialogStyle.NoParent);
+            style: DialogStyle.Default | DialogStyle.ResizeBorder | (parent is null ? DialogStyle.NoParent : DialogStyle.None));
         var layout = new BoxSizer(Orientation.Vertical);
         // Translators: Label of the playlist name text field in the editor.
         layout.Add(new StaticText(_dialog, label: Tr("Name")), flags: SizerFlags.All, border: 8);
@@ -82,7 +82,7 @@ internal sealed class EditorDialog : IDisposable
         _dialog.SetSizer(layout);
         _dialog.Fit();
         _dialog.MinSize = metadataOnly ? new Size(450, 260) : new Size(760, 480);
-        _dialog.Center(onParent: false);
+        _dialog.Center(onParent: parent is not null);
         _name.TextChanged += (_, _) => _dirty = true;
         _description.TextChanged += (_, _) => _dirty = true;
         _dialog.Closing += (_, args) =>

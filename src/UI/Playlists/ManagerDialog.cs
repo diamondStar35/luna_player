@@ -11,6 +11,7 @@ internal sealed class ManagerDialog : IDisposable
     private readonly List<Button> _actionButtons = [];
     private readonly Action<PlaylistRequest> _handleRequest;
     private bool _busy;
+    internal Window Window => _dialog;
     internal ManagerDialog(IReadOnlyList<Document> documents, Action<PlaylistRequest> handleRequest)
     {
         _handleRequest = handleRequest;

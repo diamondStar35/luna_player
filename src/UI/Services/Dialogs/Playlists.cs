@@ -16,7 +16,8 @@ internal sealed class PlaylistsDialogs(DialogContext context) : IDisposable
     private LunaPlayer.UI.Playlists.ManagerDialog? _manager;
     public Document? EditPlaylist(Document document, Action<string> speak, bool metadataOnly = false)
     {
-        using var dialog = new LunaPlayer.UI.Playlists.EditorDialog(document, _context.Dialogs, speak, metadataOnly);
+        var parent = _manager is not null && ReferenceEquals(_context.Parent, _manager.Window) ? _manager.Window : null;
+        using var dialog = new LunaPlayer.UI.Playlists.EditorDialog(document, _context.Dialogs, speak, metadataOnly, parent);
         return dialog.Show();
     }
     public void ManagePlaylists(IReadOnlyList<Document> documents, Action<LunaPlayer.UI.Playlists.PlaylistRequest> request)

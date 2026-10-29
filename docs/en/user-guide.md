@@ -131,6 +131,8 @@ Use **File > Playlists** to keep collections you can open again without choosing
 
 You can leave My Playlists open while using the main player window. Choosing **My Playlists...** again brings the existing window forward. The list updates when you create, save, or remove a playlist, and opening a playlist leaves the manager open so you can choose another one later.
 
+Choosing **New** or **Edit** opens an editor belonging to My Playlists. Finish or cancel editing before using the manager again. Closing the editor returns control to My Playlists, and playback continues while you work.
+
 - **My Playlists...** opens your saved playlists. The **Items** list shows their names and descriptions. Select a playlist to make its Open, Edit, Remove, and Export commands available.
 - **Create Playlist...** opens the playlist editor with an empty list. Enter a name, add the files or folders you want, and choose **Save**. The playlist then appears in My Playlists.
 - **Save Current Playlist...** uses the current opened-files list as the starting point. Enter a name and, if you want, a description, then choose **Save** to add it to My Playlists. You do not need to create an empty playlist and add the same files again. To change its contents later, select it in My Playlists and choose **Edit**.
