@@ -119,24 +119,34 @@ An HLS M3U8 manifest is treated as one stream and passed to the playback engine.
 
 ### Adding to the current list
 
-Choose **File > Playlists > Add Files...** or press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F</kbd> to select one or more files. Choose **Add Folder...** or press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>D</kbd> to append a folder. These commands keep the current track playing and append to the opened-files list. Folders include supported files directly inside them; subfolders are not scanned. Leave an online browsing session before adding entries or saving its contents.
+Choose **File > Add Files...** or press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F</kbd> to select one or more files. Luna adds the selected files to the end of the opened-files list. The current track keeps playing, and the files already in the list keep their order.
+
+To add a folder, choose **File > Add Folder...** or press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>D</kbd>. Luna adds the supported media files directly inside that folder. It does not scan subfolders, regardless of the file-opening mode selected in Preferences. If you save the list as a named playlist or a JSON file, Luna remembers the folder itself, so changes to its contents are picked up when you open the playlist again.
+
+Adding files and saving the current list are unavailable while you are in an online browsing session. Leave that session before using these commands.
 
 ### Saved playlists
 
-Use **File > Playlists** to keep named collections such as favorite albums or songs for a particular mood.
+Use **File > Playlists** to keep collections you can open again without choosing their files each time. Each saved playlist has a name and an optional description. You can create an empty playlist, build one by selecting files and folders, or save the list you already have open.
 
-- **My Playlists...** opens the playlist manager. Its list shows **Name** and **Description** columns. Choose **Open** to replace the current list and play the first available track, **Edit** to change a saved playlist, **Remove** to delete its saved document, or **Export** to save a copy elsewhere. Editing does not interrupt playback, and removing a saved playlist keeps all media files.
-- **Create Playlist...** opens an empty playlist editor.
-- **Save Current Playlist...** starts with the current entries and asks for a name and optional description. Saving adds it to My Playlists.
-- **Save Playlist As...** exports the current list through a save dialog. Choose a file name and M3U8, M3U, or JSON format. JSON then asks for the playlist name and description. Cancelling either dialog writes nothing.
+- **My Playlists...** opens your saved playlists. The **Items** list shows their names and descriptions. Select a playlist to make its Open, Edit, Remove, and Export commands available.
+- **Create Playlist...** opens the playlist editor with an empty list. Enter a name, add the files or folders you want, and choose **Save**. The playlist then appears in My Playlists.
+- **Save Current Playlist...** uses the current opened-files list as the starting point. Enter a name and, if you want, a description, then choose **Save** to add it to My Playlists. You do not need to create an empty playlist and add the same files again. To change its contents later, select it in My Playlists and choose **Edit**.
+- **Save Playlist As...** saves the current list to a file outside My Playlists. Choose a file name, destination, and M3U8, M3U, or JSON format. If you choose JSON, Luna also asks for the playlist's name and optional description. Cancelling either dialog leaves the destination unchanged.
 
-External exports do not automatically appear in My Playlists. Reopen a Luna JSON export through **Open File...**, choosing the JSON playlists filter. If a saved playlist has no playable entries, Luna keeps current playback and reports the problem.
+In My Playlists, **Open** replaces the opened-files list and plays the first available track. **Edit** lets you change the saved playlist's name, description, contents, and order without interrupting playback. These changes take effect in playback the next time you open that playlist. **Remove** asks for confirmation and deletes the saved playlist only; its media files and folders remain on disk. **Export** saves a copy of the selected playlist in one of the supported playlist formats.
+
+If some files or folders are unavailable, Luna reports them when opening the playlist. If no playable files remain, Luna keeps the current list and playback state. The unavailable entries remain in the saved playlist so you can make them available again or remove them in the editor.
+
+Files saved with Save Playlist As or Export do not automatically appear in My Playlists. To open a Luna JSON playlist file, choose **File > Open File...** and select the JSON playlists filter. My Playlists stores its own JSON files in the `Playlists` folder under Luna's user settings folder; see **Settings and user data** for its location.
 
 ### Editing a playlist
 
-Enter a name and optional description. Use **Add > Files...** to select multiple individual files, or **Add > Folder...** to add a folder reference. The list shows **Name** and **Full Path** columns. Empty playlists are allowed.
+Enter a playlist name and an optional description. The name is required when you save, and playlists in My Playlists must have different names. The description is a place to explain what the playlist contains or when you use it. You can save a playlist before adding any files and return to it later through My Playlists.
 
-With the entry list focused:
+Choose **Add > Files...** to select one or more individual files in the file dialog. Choose **Add > Folder...** to include a folder. The **Items** list shows each file or folder in **Name** and **Full Path** columns, so you can distinguish files with the same name in different locations. You can also press <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F</kbd> to add files or <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>D</kbd> to add a folder.
+
+Select the entries you want to change. With the entry list focused, the following keys are available:
 
 | Key | Action |
 | --- | --- |
@@ -144,11 +154,17 @@ With the entry list focused:
 | <kbd>Shift</kbd>+<kbd>Up</kbd> / <kbd>Shift</kbd>+<kbd>Down</kbd> | Move selected entries up / down, preserving their relative order |
 | <kbd>Ctrl</kbd>+<kbd>A</kbd> | Select all entries |
 
-The **Remove** button also removes selected entries. <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F</kbd> adds files and <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>D</kbd> adds a folder. **Save** accepts the changes. Closing a changed editor, including with **Cancel** or <kbd>Escape</kbd>, offers Save, Discard (No), or Cancel.
+The **Remove**, **Move Up**, and **Move Down** buttons perform the same operations. Remove is available when at least one entry is selected. Move Up is available when the selection can move without passing the first entry; Move Down is available when it can move without passing the last entry. Removing an entry changes the playlist only and does not delete the file or folder from disk.
 
-Folder references remain single entries in JSON playlists. Opening the playlist loads supported files directly inside those folders, sorted by filename, without scanning subfolders. Folder changes take effect the next time the playlist is opened or exported. Missing files and empty or inaccessible folders are reported, and their references remain in the saved playlist.
+Choose **Save** to keep the name, description, and entry changes. If you close the editor after making changes, including with **Cancel**, <kbd>Escape</kbd>, or <kbd>Alt</kbd>+<kbd>F4</kbd>, Luna asks whether to save them. Choose **Yes** to save, **No** to discard the changes, or **Cancel** to keep editing. Closing without saving leaves the previously saved playlist unchanged.
 
-JSON retains the name, description, and folder references. M3U and M3U8 exports use UTF-8 and contain individual media locations and titles, expanding folders when exported. Duplicate entries keep their order.
+### Playlist folders and file formats
+
+A folder remains one entry when you save a playlist in My Playlists or as a JSON file. Each time you open that playlist, Luna reads the supported files directly inside the folder and sorts them by name. Adding or removing files in the folder therefore changes what Luna loads the next time you open it. Subfolders are not included. Missing files and empty or inaccessible folders are reported, and their entries stay in the saved playlist.
+
+Choose **JSON** when you want to keep the playlist's name, description, and folder entries. Choose **M3U** or **M3U8** when you want a list of individual media paths and titles that you can open in another player. Both M3U formats use UTF-8. When you export a folder to one of these formats, Luna writes the supported files currently inside it rather than the folder itself. Later changes to the folder are not reflected in that exported file; export the playlist again to include them.
+
+The order of the playlist is preserved when it is saved or exported, including any repeated entries. Files from a folder appear together at that folder's position in the list. Saving or exporting a playlist never moves, copies, or deletes the media files it contains.
 
 ### Opening media from the clipboard
 
