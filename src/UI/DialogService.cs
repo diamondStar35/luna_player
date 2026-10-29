@@ -100,7 +100,9 @@ internal sealed class DialogService : IDialogService, IDisposable
 
     /// <summary>Tears down retained dialogs before the main frame that owns them is destroyed.</summary>
     public void Dispose() { _playlists.Dispose(); _spotify.Dispose(); _radio.Dispose(); _youtube.Dispose(); }
-    public Document? EditPlaylist(Document document, Action<string> speak, bool metadataOnly = false) => _playlists.EditPlaylist(document, speak, metadataOnly);
+    public void EditPlaylist(Document document, Action<string> speak, Func<Document, bool> save, Action saved, bool metadataOnly = false)
+        => _playlists.EditPlaylist(document, speak, save, saved, metadataOnly);
+    internal bool TryClosePlaylistEditors() => _playlists.TryCloseEditors();
     public void ManagePlaylists(IReadOnlyList<Document> documents, Action<LunaPlayer.UI.Playlists.PlaylistRequest> request) => _playlists.ManagePlaylists(documents, request);
     public void RefreshPlaylists(IReadOnlyList<Document> documents, Guid? selectedId = null) => _playlists.RefreshPlaylists(documents, selectedId);
     public string[] ChoosePlaylistFiles() => _playlists.ChoosePlaylistFiles();

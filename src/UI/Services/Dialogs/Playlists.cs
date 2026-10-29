@@ -14,15 +14,37 @@ internal sealed class PlaylistsDialogs(DialogContext context) : IDisposable
 {
     private readonly DialogContext _context = context;
     private LunaPlayer.UI.Playlists.ManagerDialog? _manager;
-    public Document? EditPlaylist(Document document, Action<string> speak, bool metadataOnly = false)
+    private readonly HashSet<LunaPlayer.UI.Playlists.EditorDialog> _editors = [];
+    private LunaPlayer.UI.Playlists.EditorDialog? _managerEditor;
+    public void EditPlaylist(Document document, Action<string> speak, Func<Document, bool> save, Action saved, bool metadataOnly = false)
     {
-        using var dialog = new LunaPlayer.UI.Playlists.EditorDialog(_context.Parent, document, _context.Dialogs, speak, metadataOnly);
-        return dialog.Show();
+        var parent = _manager is not null && ReferenceEquals(_context.Parent, _manager.Window) ? _manager.Window : null;
+        if (parent is not null && _managerEditor is not null)
+        {
+            _managerEditor.Activate();
+            return;
+        }
+        var dialog = new LunaPlayer.UI.Playlists.EditorDialog(document, _context.Dialogs, speak, save, metadataOnly, parent);
+        dialog.Closed += (closed, accepted) =>
+        {
+            _editors.Remove(closed);
+            if (ReferenceEquals(_managerEditor, closed)) _managerEditor = null;
+            closed.Dispose();
+            if (accepted) saved();
+        };
+        _editors.Add(dialog);
+        if (parent is not null) _managerEditor = dialog;
+        dialog.Show();
     }
     public void ManagePlaylists(IReadOnlyList<Document> documents, Action<LunaPlayer.UI.Playlists.PlaylistRequest> request)
     {
+        if (_managerEditor is not null)
+        {
+            _managerEditor.Activate();
+            return;
+        }
         if (_manager is null)
-            _manager = new LunaPlayer.UI.Playlists.ManagerDialog(_context.Frame, documents, request);
+            _manager = new LunaPlayer.UI.Playlists.ManagerDialog(documents, request);
         else
             _manager.Refresh(documents);
         _manager.Show();
@@ -30,7 +52,21 @@ internal sealed class PlaylistsDialogs(DialogContext context) : IDisposable
     public void RefreshPlaylists(IReadOnlyList<Document> documents, Guid? selectedId = null)
         => _manager?.Refresh(documents, selectedId);
 
-    public void Dispose() { _manager?.Dispose(); _manager = null; }
+    internal bool TryCloseEditors()
+    {
+        foreach (var editor in _editors.ToArray())
+            if (!editor.TryClose()) return false;
+        return _editors.Count == 0;
+    }
+
+    public void Dispose()
+    {
+        foreach (var editor in _editors.ToArray()) editor.Dispose();
+        _editors.Clear();
+        _managerEditor = null;
+        _manager?.Dispose();
+        _manager = null;
+    }
     public string[] ChoosePlaylistFiles()
     {
         // Translators: Title of the multiple-file picker adding playlist entries.

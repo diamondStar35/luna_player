@@ -17,17 +17,31 @@ internal sealed class EditorDialog : IDisposable
     private readonly IDialogService _dialogs;
     private readonly Action<string> _speak;
     private readonly bool _metadataOnly;
+    private readonly Func<Document, bool> _save;
+    private readonly Window? _owner;
+    private bool _ownerWasEnabled;
+    private bool _ownerDisabled;
+    private bool _finished;
+    private bool _saving;
+    private bool _disposed;
     private bool _accepted;
     private bool _dirty;
 
-    internal EditorDialog(Window parent, Document document, IDialogService dialogs, Action<string> speak, bool metadataOnly = false)
+    internal EditorDialog(Document document, IDialogService dialogs, Action<string> speak,
+        Func<Document, bool> save, bool metadataOnly = false, Window? parent = null)
     {
         _draft = document.Copy();
         _dialogs = dialogs;
         _speak = speak;
         _metadataOnly = metadataOnly;
-        // Translators: Title of the dialog editing a playlist's name, description and entries.
-        _dialog = new Dialog(parent, title: Tr("Playlist editor"), style: DialogStyle.Default | DialogStyle.ResizeBorder);
+        _save = save;
+        _owner = parent;
+        // Editors opened by My Playlists belong to that window; standalone editors must suppress wx's default owner.
+        _dialog = new Dialog(
+            parent: parent,
+            // Translators: Title of the dialog editing a playlist's name, description and entries.
+            title: Tr("Playlist editor"),
+            style: DialogStyle.Default | DialogStyle.ResizeBorder | (parent is null ? DialogStyle.NoParent : DialogStyle.None));
         var layout = new BoxSizer(Orientation.Vertical);
         // Translators: Label of the playlist name text field in the editor.
         layout.Add(new StaticText(_dialog, label: Tr("Name")), flags: SizerFlags.All, border: 8);
@@ -66,10 +80,10 @@ internal sealed class EditorDialog : IDisposable
         }
         var buttons = new BoxSizer(Orientation.Horizontal);
         // Translators: Playlist editor button accepting the draft and saving it.
-        var save = new Button(_dialog, StandardId.Ok, Tr("Save"));
-        save.SetDefault();
-        save.Click += (_, _) => Accept();
-        buttons.Add(save, flags: SizerFlags.BorderRight, border: 6);
+        var saveButton = new Button(_dialog, StandardId.Ok, Tr("Save"));
+        saveButton.SetDefault();
+        saveButton.Click += (_, _) => Accept();
+        buttons.Add(saveButton, flags: SizerFlags.BorderRight, border: 6);
         // Translators: Playlist editor button discarding changes.
         var cancel = new Button(_dialog, StandardId.Cancel, Tr("Cancel"));
         _dialog.SetEscapeId(StandardId.Cancel);
@@ -78,11 +92,12 @@ internal sealed class EditorDialog : IDisposable
         _dialog.SetSizer(layout);
         _dialog.Fit();
         _dialog.MinSize = metadataOnly ? new Size(450, 260) : new Size(760, 480);
-        _dialog.Center(onParent: true);
+        _dialog.Center(onParent: parent is not null);
         _name.TextChanged += (_, _) => _dirty = true;
         _description.TextChanged += (_, _) => _dirty = true;
         _dialog.Closing += (_, args) =>
         {
+            if (_saving && args.CanVeto) { args.Veto(); return; }
             if (_dirty && !_accepted && args.CanVeto)
             {
                 // Translators: Question shown when closing a modified playlist editor.
@@ -100,8 +115,7 @@ internal sealed class EditorDialog : IDisposable
                     return;
                 }
             }
-            // Handling Closing replaces the native default handler, so finish the modal loop explicitly.
-            _dialog.EndModal(StandardId.Cancel);
+            Complete(false);
         };
         cancel.Click += (_, _) => _dialog.Close();
         _dialog.Bind(WxEvents.CharHook, (_, args) =>
@@ -214,6 +228,7 @@ internal sealed class EditorDialog : IDisposable
     }
     private void Accept()
     {
+        if (_finished || _saving) return;
         if (string.IsNullOrWhiteSpace(_name.Value))
         {
             // Translators: Validation warning for an empty playlist name in the editor.
@@ -223,9 +238,65 @@ internal sealed class EditorDialog : IDisposable
         }
         _draft.Name = _name.Value.Trim();
         _draft.Description = _description.Value.Trim();
-        _accepted = true;
-        _dialog.EndModal(StandardId.Ok);
+        _saving = true;
+        try
+        {
+            if (!_save(_draft.Copy())) return;
+        }
+        finally { _saving = false; }
+        Complete(true);
     }
-    internal Document? Show() { _dialog.ShowModal(); return _accepted ? _draft : null; }
-    public void Dispose() => _dialog.Dispose();
+    internal event Action<EditorDialog, bool>? Closed;
+
+    internal void Show()
+    {
+        // ShowModal disables every top-level window on Windows. Keep the normal event loop running
+        // and disable only this editor's owner until the editor is dismissed.
+        _dialog.Show();
+        if (_owner is not null)
+        {
+            _ownerWasEnabled = _owner.Enabled;
+            _owner.Enabled = false;
+            _ownerDisabled = true;
+        }
+        Activate();
+    }
+
+    internal void Activate() { _dialog.Raise(); _name.Focus(); }
+
+    internal bool TryClose()
+    {
+        if (_finished) return true;
+        if (_saving) return false;
+        Activate();
+        _dialog.Close();
+        return _finished;
+    }
+
+    private void RestoreOwner()
+    {
+        if (!_ownerDisabled) return;
+        _ownerDisabled = false;
+        _owner!.Enabled = _ownerWasEnabled;
+    }
+
+    private void Complete(bool accepted)
+    {
+        if (_finished) return;
+        _accepted = accepted;
+        _finished = true;
+        RestoreOwner();
+        _dialog.Hide();
+        _owner?.Raise();
+        Closed?.Invoke(this, accepted);
+    }
+
+    public void Dispose()
+    {
+        if (_disposed) return;
+        _disposed = true;
+        _finished = true;
+        RestoreOwner();
+        _dialog.Dispose();
+    }
 }

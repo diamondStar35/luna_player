@@ -53,22 +53,22 @@ internal sealed class SavedPlaylists
     }
     private void Edit(Document document, bool metadataOnly = false)
     {
-        while (_view.Dialogs.EditPlaylist(document, text => _speech.SpeakText(text), metadataOnly) is Document edited)
+        _view.Dialogs.EditPlaylist(document, text => _speech.SpeakText(text),
+            edited => TryWrite(() => _store.Save(edited)),
+            () => Guard(() => { RefreshManager(document.Id); Saved(); }), metadataOnly);
+    }
+    private bool TryWrite(Action write)
+    {
+        try
         {
-            try
-            {
-                _store.Save(edited);
-            }
-            catch (Exception exception) when (exception is InvalidDataException or IOException or UnauthorizedAccessException)
-            {
-                // Translators: Validation error for a playlist name. {error} is the reason.
-                _view.Dialogs.ShowWarning(TrFormat("Could not save the playlist: {error}", exception.Message));
-                document = edited;
-                continue;
-            }
-            RefreshManager(edited.Id);
-            Saved();
-            return;
+            write();
+            return true;
+        }
+        catch (Exception exception) when (exception is InvalidDataException or IOException or UnauthorizedAccessException or System.Text.Json.JsonException or ArgumentException)
+        {
+            // Translators: Validation or file error saving a playlist. {error} is the reason; the editor remains open.
+            _view.Dialogs.ShowWarning(TrFormat("Could not save the playlist: {error}", exception.Message));
+            return false;
         }
     }
     private void SaveCurrent(bool export)
@@ -87,8 +87,9 @@ internal sealed class SavedPlaylists
             var copy = document.Copy();
             copy.Id = Guid.NewGuid();
             if (copy.Name.Length == 0) copy.Name = Path.GetFileNameWithoutExtension(path);
-            if (_view.Dialogs.EditPlaylist(copy, text => _speech.SpeakText(text), metadataOnly: true) is not Document named) return;
-            DocumentStore.Write(named, path);
+            _view.Dialogs.EditPlaylist(copy, text => _speech.SpeakText(text),
+                named => TryWrite(() => DocumentStore.Write(named, path)), () => Guard(Saved), metadataOnly: true);
+            return;
         }
         else
         {

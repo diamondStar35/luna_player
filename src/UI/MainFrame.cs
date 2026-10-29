@@ -392,12 +392,11 @@ internal sealed class MainFrame : IMainView
 
     private bool CanClose()
     {
-        if (CloseConfirmationRequested is null)
-            return true;
-        foreach (Func<bool> confirm in CloseConfirmationRequested.GetInvocationList())
-            if (!confirm())
-                return false;
-        return true;
+        if (CloseConfirmationRequested is not null)
+            foreach (Func<bool> confirm in CloseConfirmationRequested.GetInvocationList())
+                if (!confirm())
+                    return false;
+        return _dialogs?.TryClosePlaylistEditors() ?? true;
     }
 
     private WindowInput Input

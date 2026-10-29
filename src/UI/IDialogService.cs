@@ -14,7 +14,10 @@ namespace LunaPlayer.UI;
 /// <see cref="DialogService"/>, which is the only part of the UI coupled to the concrete dialog classes.</summary>
 internal interface IDialogService
 {
-    LunaPlayer.Playlist.Document? EditPlaylist(LunaPlayer.Playlist.Document document, Action<string> speak, bool metadataOnly = false);
+    /// <summary>Opens an editor without blocking other windows. A failed save keeps the draft open;
+    /// saved runs after the editor closes following a successful save.</summary>
+    void EditPlaylist(LunaPlayer.Playlist.Document document, Action<string> speak,
+        Func<LunaPlayer.Playlist.Document, bool> save, Action saved, bool metadataOnly = false);
     /// <summary>Shows or activates the modeless playlist manager. Requests arrive after this method returns.</summary>
     void ManagePlaylists(IReadOnlyList<LunaPlayer.Playlist.Document> documents, Action<LunaPlayer.UI.Playlists.PlaylistRequest> request);
     /// <summary>Updates an existing manager without opening it or changing the active window.</summary>
