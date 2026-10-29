@@ -42,6 +42,13 @@
     <SkipTranslationCompilation Condition="'$(SkipTranslationCompilation)' == ''">false</SkipTranslationCompilation>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'">
+    <DebugType>none</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+    <CopyOutputSymbolsToPublishDirectory>false</CopyOutputSymbolsToPublishDirectory>
+    <PublishReferencesDocumentationFiles>false</PublishReferencesDocumentationFiles>
+  </PropertyGroup>
+
   <ItemDefinitionGroup>
     <ProjectReference>
       <SetConfiguration>Configuration=Release</SetConfiguration>
@@ -147,6 +154,16 @@
              Value="$(AssemblyVersion)" />
     <ItemGroup>
       <FileWrites Include="$(ApplicationManifest)" />
+    </ItemGroup>
+  </Target>
+
+  <Target Name="ExcludeReleaseSymbols"
+          AfterTargets="ComputeResolvedFilesToPublishList"
+          Condition="'$(Configuration)' == 'Release'">
+    <!-- Referenced projects can contribute their PDBs independently of the application's symbol setting. -->
+    <ItemGroup>
+      <ResolvedFileToPublish Remove="@(ResolvedFileToPublish)"
+                             Condition="'%(ResolvedFileToPublish.Extension)' == '.pdb'" />
     </ItemGroup>
   </Target>
 
