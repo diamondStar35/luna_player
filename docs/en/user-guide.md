@@ -131,7 +131,7 @@ Use **File > Playlists** to keep collections you can open again without choosing
 
 You can leave My Playlists open while using the main player window. Choosing **My Playlists...** again brings the existing window forward. The list updates when you create, save, or remove a playlist, and opening a playlist leaves the manager open so you can choose another one later.
 
-Choosing **New** or **Edit** opens an editor belonging to My Playlists. Finish or cancel editing before using the manager again. Closing the editor returns control to My Playlists, and playback continues while you work.
+Choosing **New** or **Edit** opens an editor belonging to My Playlists. The editor temporarily disables My Playlists, while the main player window remains usable and playback continues. Finish or cancel editing to return control to My Playlists.
 
 - **My Playlists...** opens your saved playlists. The **Items** list shows their names and descriptions. Select a playlist to make its Open, Edit, Remove, and Export commands available.
 - **Create Playlist...** opens the playlist editor with an empty list. Enter a name, add the files or folders you want, and choose **Save**. The playlist then appears in My Playlists.
@@ -163,6 +163,8 @@ Select the entries you want to change. With the entry list focused, the followin
 The **Remove**, **Move Up**, and **Move Down** buttons perform the same operations. Remove is available when at least one entry is selected. Move Up is available when the selection can move without passing the first entry; Move Down is available when it can move without passing the last entry. Removing an entry changes the playlist only and does not delete the file or folder from disk.
 
 Choose **Save** to keep the name, description, and entry changes. If you close the editor after making changes, including with **Cancel**, <kbd>Escape</kbd>, or <kbd>Alt</kbd>+<kbd>F4</kbd>, Luna asks whether to save them. Choose **Yes** to save, **No** to discard the changes, or **Cancel** to keep editing. Closing without saving leaves the previously saved playlist unchanged.
+
+If saving fails, the editor stays open with your changes so you can correct the problem or try again. When you quit Luna with playlist editors still open, Luna checks their unsaved changes before exiting. Choosing **Cancel** keeps Luna and the editor open.
 
 ### Playlist folders and file formats
 
