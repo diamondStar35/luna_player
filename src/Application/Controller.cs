@@ -33,6 +33,7 @@ internal sealed class ApplicationController : IDisposable
     private readonly WindowTitlePresenter _title;
     private readonly MediaOverlayPresenter _overlay;
     private readonly DiscordPresencePresenter _discord;
+    private readonly Clock _presentationClock;
     private readonly LunaPlayer.Spotify.Playback.Sessions _spotify;
     private string? _selectionPath;
     private int _selectionPlaylistIndex = -1;
@@ -84,8 +85,9 @@ internal sealed class ApplicationController : IDisposable
             () => sessions.CanMoveNext,
             () => sessions.CanMovePrevious,
             HandleAction);
-        _discord = new DiscordPresencePresenter(player, settings, dispatcher, _tags, spotify,
-            () => sessions.CurrentYouTubeItem);
+        _discord = new DiscordPresencePresenter(player, settings, _tags, spotify,
+            () => sessions.CurrentYouTubeItem, () => sessions.Radio.CurrentStation);
+        _presentationClock = new(dispatcher, OnPresentationTick);
         _view.ActionRequested += HandleAction;
         _view.CloseRequested += ShutdownAsync;
         _view.EscapePressed += _sessions.HandleEscape;
@@ -101,8 +103,8 @@ internal sealed class ApplicationController : IDisposable
         _overlay.ApplySetting();
         _overlay.Sync();
         _title.Update();
-        _overlay.UpdateClock();
         _discord.Sync();
+        _presentationClock.Update(_overlay.RequiresTick || _settings.Discord.Enabled);
     }
 
     internal void OpenPaths(IEnumerable<string> paths)
@@ -116,9 +118,8 @@ internal sealed class ApplicationController : IDisposable
         if (_shutdownTask is not null)
             return _shutdownTask;
         _shutDown = true;
-        // Nothing after this wants the overlay published again, and the clock would keep firing until the
-        // controller is disposed.
-        _overlay.StopClock();
+        // Stop presentation sampling before any playback or worker state is torn down.
+        _presentationClock.Dispose();
         var discordTask = _discord.ShutdownAsync();
         // Before the volume is read into settings: a timer fading out has lowered the player's volume, and
         // disposing it puts the user's own volume back so that is what gets saved. Quiet, unlike Cancel: the
@@ -203,8 +204,16 @@ internal sealed class ApplicationController : IDisposable
         _overlay.ApplySetting();
         _overlay.Sync();
         _title.Update();
-        _overlay.UpdateClock();
         _discord.Sync();
+        _presentationClock.Update(_overlay.RequiresTick || _settings.Discord.Enabled);
+    }
+
+    private void OnPresentationTick()
+    {
+        if (_shutDown) return;
+        if (_overlay.RequiresTick) _overlay.Sync();
+        _discord.Sync();
+        _presentationClock.Update(_overlay.RequiresTick || _settings.Discord.Enabled);
     }
 
     /// <summary>Refreshes the window when Spotify navigation selects a track before mpv loads its audio.</summary>

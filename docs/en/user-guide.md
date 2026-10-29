@@ -873,56 +873,72 @@ See [Silence removal and audio processing](#8-silence-removal-and-audio-processi
 
 ### Discord Rich Presence
 
-Discord Rich Presence is a native, optional integration with the **Discord desktop app** on Windows.
-It does not require Python, a Discord bot, an account token, or a client secret. It works independently
-of Windows system media controls and is **off by default**.
+Rich Presence lets people viewing your Discord profile see what you are playing in Luna.
+Sharing is off by default. You choose whether to include media details, artwork and links.
 
-#### Enable Discord sharing
+#### Enable activity sharing
 
-1. Run Discord's desktop app signed in to your account. In Discord's **Activity Privacy** settings,
-   allow your activity to be shared. The browser version of Discord cannot receive local Rich Presence.
+1. Open **Discord Desktop** and sign in. Go to **User Settings > Activity Privacy** and turn on
+   **Share your detected activities with others**.
 2. In Luna, open **Preferences > Discord**, select **Enable Discord Rich Presence**, and choose **OK**.
 
-The repository owner configures Luna's public application ID once in the source before releasing the
-player. You do not need a Discord developer account, application ID, API key, bot token, or client secret.
-There is no per-user application ID field, and importing settings cannot override Luna's identity.
+Discord must be running on the same computer. Its browser version cannot receive Luna's activity.
+Turning the option off clears the activity without interrupting playback.
 
-If the enable control is unavailable and the page says the publisher has not configured the application ID,
-Rich Presence will not work in that build. Ask the publisher for a configured build; do not enter credentials
-in the settings file. Other playback features continue to work normally.
+#### What appears on your profile
+
+The activity line identifies the source, such as **Listening to music on Luna**, **Listening to YouTube on Luna**, **Listening to radio on Luna**, or **Listening to Spotify
+on Luna**. Listening cards use **Luna Player** as their heading. Below it, Luna shows the media title and a separate
+artist credit when that information is available. Local music uses the title stored in the file; if it has
+no title, Luna uses the filename without its extension. Radio shows the station name and the current
+broadcast artist, when the station supplies one.
+
+In audiobook mode, the activity line is **Listening to an audiobook on Luna**. The title line shows
+the book title and the line below shows the current chapter instead of an artist credit. The book title comes from its album or title metadata,
+with the filename used when neither is available.
+
+Pausing changes the heading to **[Paused]: Luna Player**. The title and artist or chapter remain in
+their own lines, without another paused label after them. The source phrase stays the same while
+paused.
+
+YouTube uses the video's thumbnail. Spotify uses album artwork, and radio uses the station's image,
+when available. Local files and books use Luna's application icon. Artwork labels contain the artist
+or channel name without an added "By" prefix or application version. Listening cards show that name
+below the title. YouTube video uses **Watching YouTube on Luna**, while audio-only playback uses
+**Listening to YouTube on Luna**. Video playback keeps its thumbnail and **Watch on YouTube** button.
+YouTube's Watching card uses **Luna Player** as its heading, changing to **[Paused]: Luna Player** when
+paused. The video title appears below the heading. The artwork label contains the plain artist or
+channel name when known. Discord may shorten long titles.
+
+For media with a known duration, Luna supplies both progress timestamps using the same elapsed
+and total media time as the player, without dividing either by playback speed. Discord's Listening card
+shows elapsed and total time, including when audiobook mode is enabled. Paused media remains visible with a **Paused**
+label and no running timer. Resuming, seeking, changing speed or moving to another chapter updates
+the timer. Live streams show elapsed time when there is no known duration.
 
 #### Sharing controls
 
 | Setting | Purpose |
 | --- | --- |
-| Enable Discord Rich Presence | Opts in to sharing. Turning it off clears Luna's activity without stopping playback. |
-| Share media titles, artists and artwork | Publishes available titles and artists, including local file names. Turning it off also removes media thumbnails and media links. |
-| Show link buttons | Adds a Luna download button and, when details are shared, a recognized public YouTube or Spotify track link. |
-| Show activity when idle | Shows generic Luna activity when nothing is loaded or playback is stopped. Turn it off to clear presence while idle. Pausing does not count as idle. |
+| Enable Discord Rich Presence | Turns sharing on or off. |
+| Share media titles, artists and artwork | Includes titles, artist credits, book chapters and online artwork. Clear this to show generic playback status and hide source links. |
+| Show link buttons | Adds **Download Luna Player** and, when media details are shared, a source button for YouTube, Spotify or a public radio stream. |
+| Show activity when idle | Shows **Idle** when playback is stopped or no media is loaded. Clear this to remove the activity while idle. Pausing does not count as idle. |
 
-Local files, YouTube, Spotify, radio, IPTV and other streams use the same playback integration. Media
-metadata availability depends on the source. Audio uses listening activity and video uses watching
-activity. Pausing removes the running clock; resuming, seeking, changing speed, looping, and moving to
-another item update the timing. Live streams have no countdown unless they supply a finite duration.
-
-Only recognized public YouTube and Spotify pages become media buttons, with tracking parameters removed.
-Local file paths, raw stream addresses, signed playback URLs, and IPTV credential URLs are never used as
-buttons. Hiding details leaves generic playback status and timing, plus the Luna download button if enabled.
-
-Updates are coalesced to avoid flooding Discord and can take several seconds to appear. Luna retries
-when Discord starts late or restarts, and clears its presence on exit. An unavailable Discord does not
-interrupt playback or display repeated error dialogs.
+For radio, **Watch online** opens the stream itself in the viewer's browser. Some browsers may download
+or reject a stream they cannot play. Luna omits private addresses, links containing credentials and
+links with unrecognized query parameters. Local file paths are never used as buttons. Clearing
+**Show link buttons** removes both buttons without hiding the artwork.
 
 #### If activity is missing
 
-- Check that Luna's presence option and Discord's activity sharing are enabled. If the build reports a
-  missing application ID, the publisher must configure and rebuild it; no user API key is needed.
-- Use the Discord desktop app, not its website, in the same Windows user session as Luna.
-- Wait about 15 seconds after starting or restarting Discord.
-- Check your activity from another account if buttons do not appear on your own profile; Discord may not
-  show your own Rich Presence buttons to you.
-- If text appears but the Luna image does not, ask the publisher to check the `luna` asset key and allow
-  time for Discord to process newly uploaded assets. Public YouTube videos use their thumbnail.
+Check that both Discord's activity sharing and Luna's Rich Presence option are enabled. Luna samples
+playback once per second and sends state changes without a fixed four-second delay. Rapid changes
+are combined when Discord's send limit is reached. Luna reconnects when Discord starts or restarts; allow
+about 15 seconds. If Discord is unavailable, playback continues normally.
+
+Discord may hide your own activity buttons when you view your profile. Another person viewing the
+profile can see the buttons.
 
 ### Recording
 

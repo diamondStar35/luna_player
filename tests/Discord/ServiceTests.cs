@@ -1,6 +1,8 @@
 using System.Collections.Concurrent;
+using System.Text.Json;
 using LunaPlayer.Configuration.Models;
 using LunaPlayer.Discord;
+using LunaPlayer.Discord.Publishing;
 using LunaPlayer.Tests.Infrastructure;
 
 namespace LunaPlayer.Tests.Discord;
@@ -8,144 +10,114 @@ namespace LunaPlayer.Tests.Discord;
 [TestClass, TestCategory("Unit")]
 public sealed class ServiceTests
 {
-    private static readonly PresenceTiming Timing = new(TimeSpan.FromMilliseconds(10), TimeSpan.FromMilliseconds(80),
-        TimeSpan.FromSeconds(10), TimeSpan.FromMilliseconds(40));
-    private const string TestApplicationId = "123456789012345678";
-    private static DiscordSettings Options() => new() { Enabled = true };
+    private static readonly Timing Timing = new(TimeSpan.FromMilliseconds(10), TimeSpan.FromMilliseconds(30), TimeSpan.FromMilliseconds(100));
+    private const string Icon = "https://cdn.discordapp.com/app-icons/1565330415529762956/930f1667326a41fa0865bd709fa45f0c.png?size=256";
 
     private sealed class Client : IRpcClient
     {
         internal readonly ConcurrentQueue<string?> Activities = new();
-        internal readonly ConcurrentQueue<string> Ids = new();
-        internal bool Available = true;
-        internal int Connections;
-        internal int Disposals;
         internal TaskCompletionSource? HoldConnect;
-        internal TaskCompletionSource? HoldSend;
-        public bool IsConnected { get; set; }
+        internal readonly TaskCompletionSource Connecting = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        public bool IsConnected { get; private set; }
         public async Task<bool> ConnectAsync(string id, CancellationToken token)
         {
-            Ids.Enqueue(id); Interlocked.Increment(ref Connections);
+            Connecting.TrySetResult();
             if (HoldConnect is not null) await HoldConnect.Task.WaitAsync(token);
-            return IsConnected = Available;
+            return IsConnected = true;
         }
-        public async Task<bool> SetActivityAsync(string? activity, CancellationToken token)
+        public Task<bool> SetActivityAsync(string? activity, CancellationToken token)
         {
             Activities.Enqueue(activity);
-            if (activity is not null && HoldSend is not null) await HoldSend.Task.WaitAsync(token);
-            return true;
+            return Task.FromResult(true);
         }
-        public ValueTask DisposeAsync() { IsConnected = false; Interlocked.Increment(ref Disposals); return ValueTask.CompletedTask; }
+        public ValueTask DisposeAsync() { IsConnected = false; return ValueTask.CompletedTask; }
+    }
+
+    private sealed class Artwork : IApplicationArtwork
+    {
+        internal TaskCompletionSource<string?>? Hold;
+        internal int Calls;
+        public async Task<string?> ReadAsync(string id, CancellationToken token)
+        {
+            Interlocked.Increment(ref Calls);
+            return Hold is null ? null : await Hold.Task.WaitAsync(token);
+        }
+    }
+
+    private static PresenceMedia Media(bool playing = true)
+        => new("song", "Song title", "Artist", null, playing, false, 30, 180, 1);
+
+    private static string? Heading(string? json)
+    {
+        if (json is null) return null;
+        using var document = JsonDocument.Parse(json);
+        return document.RootElement.GetProperty("details").GetString();
     }
 
     [TestMethod]
-    public async Task DisabledDoesNotConnectAndEnablingPublishes()
+    public async Task PauseAndResumeWakeTheWorkerWithoutWaitingForItsPeriodicTick()
     {
         var client = new Client();
-        await using var service = new PresenceService(() => client, Timing, TestApplicationId);
-        service.Update(new(), "private");
-        await Task.Delay(50);
-        Assert.AreEqual(0, client.Connections);
-        service.Update(Options(), "playing");
-        await NativeHost.Until(() => client.Activities.Contains("playing"));
-        service.Update(new(), null);
-        await NativeHost.Until(() => client.Disposals > 0);
-        Assert.IsNull(client.Activities.Last());
+        var options = new DiscordSettings { Enabled = true };
+        // A long maintenance interval makes missing event-driven wakes observable.
+        var timing = Timing with { Tick = TimeSpan.FromHours(1) };
+        await using var service = new PresenceService(Examples.English, () => client, timing, new Artwork());
+        service.Update(options, Media());
+        await NativeHost.Until(() => client.Activities.Any(json => Heading(json) == "Luna Player"));
+        service.Update(options, Media(playing: false));
+        await NativeHost.Until(() => client.Activities.Any(json => Heading(json) == "[Paused]: Luna Player"));
+        service.Update(options, Media());
+        await NativeHost.Until(() => client.Activities.Count(json => Heading(json) == "Luna Player") == 2);
     }
 
     [TestMethod]
-    public async Task AbsentDiscordAndBrokenConnectionsRetryLatestActivity()
-    {
-        var client = new Client { Available = false };
-        await using var service = new PresenceService(() => client, Timing, TestApplicationId);
-        service.Update(Options(), "first");
-        await NativeHost.Until(() => client.Connections > 0);
-        service.Update(Options(), "latest");
-        client.Available = true;
-        await NativeHost.Until(() => client.Activities.Contains("latest"));
-        Assert.IsFalse(client.Activities.Contains("first"));
-        client.IsConnected = false;
-        await NativeHost.Until(() => client.Activities.Count(a => a == "latest") == 2);
-    }
-
-    [TestMethod]
-    public async Task SamePublisherIdentityIsUsedAfterSettingsChangesAndReconnects()
-    {
-        var client = new Client();
-        await using var service = new PresenceService(() => client, Timing, TestApplicationId);
-        service.Update(Options(), "first");
-        await NativeHost.Until(() => client.Activities.Contains("first"));
-        service.Update(new() { Enabled = true, ShowDetails = false }, "generic");
-        await NativeHost.Until(() => client.Activities.Contains("generic"));
-        client.IsConnected = false;
-        await NativeHost.Until(() => client.Connections > 1);
-        Assert.IsTrue(client.Ids.All(id => id == TestApplicationId));
-    }
-
-    [TestMethod]
-    [DataRow("")]
-    [DataRow("not-an-application-id")]
-    public async Task MissingPublisherConfigurationNeverConnectsEvenWhenUserEnablesSharing(string id)
-    {
-        var client = new Client();
-        await using var service = new PresenceService(() => client, Timing, id);
-        service.Update(Options(), "private");
-        await Task.Delay(100);
-        Assert.AreEqual(0, client.Connections);
-        Assert.IsTrue(client.Activities.IsEmpty);
-    }
-
-    [TestMethod]
-    public async Task ChangesDuringHandshakeCannotPublishOldPrivateSnapshot()
+    public async Task MutableSettingsAreCapturedBeforeTheHandshakeCompletes()
     {
         var client = new Client { HoldConnect = new(TaskCreationOptions.RunContinuationsAsynchronously) };
-        await using var service = new PresenceService(() => client, Timing, TestApplicationId);
-        service.Update(Options(), "private");
-        await NativeHost.Until(() => client.Connections > 0);
-        service.Update(new(), null);
+        var settings = new DiscordSettings { Enabled = true };
+        await using var service = new PresenceService(Examples.English, () => client, Timing, new Artwork());
+        service.Update(settings, Media());
+        await client.Connecting.Task.WaitAsync(TimeSpan.FromSeconds(2));
+        settings.ShowDetails = false;
+        settings.Enabled = false;
         client.HoldConnect.SetResult();
-        await NativeHost.Until(() => client.Disposals > 0);
-        Assert.IsFalse(client.Activities.Contains("private"));
+        await NativeHost.Until(() => client.Activities.Any(json => json?.Contains("Song title", StringComparison.Ordinal) == true));
+        service.Update(settings, null);
+        await NativeHost.Until(() => client.Activities.Any(json => json is null));
     }
 
     [TestMethod]
-    public async Task ChangesDuringSendAreNotLostAndIdenticalSnapshotsAreCoalesced()
+    public async Task SlowArtworkCannotDelayPlaybackUpdatesAndCompletionKeepsTheLatestState()
     {
-        var client = new Client { HoldSend = new(TaskCreationOptions.RunContinuationsAsynchronously) };
-        await using var service = new PresenceService(() => client, Timing, TestApplicationId);
-        service.Update(Options(), "first");
-        await NativeHost.Until(() => client.Activities.Contains("first"));
-        service.Update(Options(), "second");
-        service.Update(Options(), "third");
-        client.HoldSend.SetResult();
-        await NativeHost.Until(() => client.Activities.Contains("third"));
-        service.Update(Options(), "third");
-        await Task.Delay(150);
-        CollectionAssert.AreEqual(new[] { "first", "third" }, client.Activities.ToArray());
+        var client = new Client();
+        var artwork = new Artwork { Hold = new(TaskCreationOptions.RunContinuationsAsynchronously) };
+        var options = new DiscordSettings { Enabled = true };
+        await using var service = new PresenceService(Examples.English, () => client, Timing, artwork);
+        service.Update(options, Media());
+        await NativeHost.Until(() => client.Activities.Any(json => Heading(json) == "Luna Player"));
+        service.Update(options, Media(false));
+        await NativeHost.Until(() => client.Activities.Any(json => Heading(json) == "[Paused]: Luna Player"));
+        artwork.Hold.SetResult(Icon);
+        await NativeHost.Until(() => client.Activities.Any(json => json?.Contains(Icon, StringComparison.Ordinal) == true));
+        var latest = client.Activities.Last(json => json is not null)!;
+        Assert.AreEqual("[Paused]: Luna Player", Heading(latest));
+        Assert.IsTrue(latest.Contains("Song title", StringComparison.Ordinal));
     }
 
     [TestMethod]
-    public async Task ShutdownCancelsBlockedConnectAndIsIdempotent()
+    public async Task ShutdownCancelsArtworkAndRepeatedIdenticalSamplesDoNotResend()
     {
-        var client = new Client { HoldConnect = new(TaskCreationOptions.RunContinuationsAsynchronously) };
-        var service = new PresenceService(() => client, Timing, TestApplicationId);
-        service.Update(Options(), "playing");
-        await NativeHost.Until(() => client.Connections > 0);
+        var client = new Client();
+        var artwork = new Artwork { Hold = new(TaskCreationOptions.RunContinuationsAsynchronously) };
+        var options = new DiscordSettings { Enabled = true };
+        var service = new PresenceService(Examples.English, () => client, Timing, artwork);
+        service.Update(options, Media(false));
+        await NativeHost.Until(() => client.Activities.Count == 1 && artwork.Calls > 0);
+        for (var i = 0; i < 5; i++) service.Update(options, Media(false));
+        await Task.Delay(60);
+        Assert.AreEqual(1, client.Activities.Count);
         await service.ShutdownAsync().WaitAsync(TimeSpan.FromSeconds(2));
         await service.ShutdownAsync();
-        service.Update(Options(), "ignored");
-        Assert.AreEqual(1, client.Disposals);
-    }
-
-    [TestMethod]
-    public async Task ShutdownClearsAnEstablishedPresence()
-    {
-        var client = new Client();
-        var service = new PresenceService(() => client, Timing, TestApplicationId);
-        service.Update(Options(), "playing");
-        await NativeHost.Until(() => client.Activities.Contains("playing"));
-        await service.ShutdownAsync();
         Assert.IsNull(client.Activities.Last());
-        Assert.AreEqual(1, client.Disposals);
     }
 }

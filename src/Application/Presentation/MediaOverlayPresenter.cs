@@ -19,13 +19,11 @@ internal sealed class MediaOverlayPresenter : IDisposable
 {
     private readonly Player _player;
     private readonly Settings _settings;
-    private readonly IApplicationDispatcher _dispatcher;
     private readonly MediaTagsCache _tags;
     private readonly SystemMediaControls _mediaControls;
     private readonly Spotify.Playback.Sessions _spotify;
     private readonly Func<bool> _canGoNext;
     private readonly Func<bool> _canGoPrevious;
-    private IDisposable? _clock;
 
     internal MediaOverlayPresenter(
         Player player,
@@ -40,13 +38,12 @@ internal sealed class MediaOverlayPresenter : IDisposable
     {
         _player = player;
         _settings = settings;
-        _dispatcher = dispatcher;
         _tags = tags;
         _mediaControls = mediaControls;
         _spotify = spotify;
         _canGoNext = canGoNext;
         _canGoPrevious = canGoPrevious;
-        _mediaControls.ButtonPressed += action => _dispatcher.Post(() => onButton(action));
+        _mediaControls.ButtonPressed += action => dispatcher.Post(() => onButton(action));
     }
 
     /// <summary>Brings the overlay into line with the general setting that governs it, read live so a change
@@ -77,28 +74,7 @@ internal sealed class MediaOverlayPresenter : IDisposable
             CanGoPrevious: hasMedia && (_player.InSession ? _canGoPrevious() : index > 0)));
     }
 
-    /// <summary>Runs the clock only while a file is open - paused counts, because a paused file can still be
-    /// seeked - so the scrubber keeps up with moves nothing else reports.</summary>
-    internal void UpdateClock()
-    {
-        var wanted = _mediaControls.IsAvailable && _player.IsLoaded;
-        if (wanted == (_clock is not null))
-            return;
-        if (wanted)
-            _clock = _dispatcher.Repeat(TimeSpan.FromSeconds(1), Sync);
-        else
-            StopClock();
-    }
+    internal bool RequiresTick => _mediaControls.IsAvailable && _player.IsLoaded;
 
-    internal void StopClock()
-    {
-        _clock?.Dispose();
-        _clock = null;
-    }
-
-    public void Dispose()
-    {
-        StopClock();
-        _mediaControls.Dispose();
-    }
+    public void Dispose() => _mediaControls.Dispose();
 }

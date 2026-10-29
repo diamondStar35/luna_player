@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-10-29 13:23+0300\n"
+"POT-Creation-Date: 2026-10-29 19:43+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2677,14 +2677,14 @@ msgstr ""
 #. Translators: Spoken when the playing video does not say which channel published it.
 #. Translators: Spoken when the chosen video does not say which channel published it.
 #: Application/Commands/YouTube/CurrentVideo.cs:87 YouTube/Playback/Feed.cs:55
-#: YouTube/Playback/Sessions.cs:288
+#: YouTube/Playback/Sessions.cs:305
 msgid "Channel link is not available."
 msgstr ""
 
 #. Translators: The short wording spoken when the playing video does not name its channel.
 #. Translators: The short wording spoken when the chosen video does not name its channel.
 #: Application/Commands/YouTube/CurrentVideo.cs:89 YouTube/Playback/Feed.cs:57
-#: YouTube/Playback/Sessions.cs:290
+#: YouTube/Playback/Sessions.cs:307
 msgid "No channel link."
 msgstr ""
 
@@ -2872,12 +2872,12 @@ msgid "No YouTube video."
 msgstr ""
 
 #. Translators: Spoken when the one-time chapter-end stop pauses playback.
-#: Application/Controller.cs:269
+#: Application/Controller.cs:286
 msgid "Playback paused at the end of the chapter."
 msgstr ""
 
 #. Translators: Brief announcement after pausing at a chapter boundary.
-#: Application/Controller.cs:271
+#: Application/Controller.cs:288
 msgid "Chapter ended. Paused."
 msgstr ""
 
@@ -2996,6 +2996,86 @@ msgstr ""
 #: Application/Presentation/WindowTitlePresenter.cs:49
 #: Application/Presentation/WindowTitlePresenter.cs:62
 msgid "[Paused]: {title} - {app}"
+msgstr ""
+
+#. Translators: Discord activity when no media is loaded.
+#: Discord/PresenceText.cs:14
+msgid "Idle"
+msgstr ""
+
+#. Translators: Discord title line when media details are hidden.
+#: Discord/PresenceText.cs:16
+msgid "Media playback"
+msgstr ""
+
+#. Translators: Discord fallback title when the media has no safe title.
+#: Discord/PresenceText.cs:18
+msgid "Untitled media"
+msgstr ""
+
+#. Translators: Activity name for local audio. Discord adds "Listening to" before this phrase.
+#: Discord/PresenceText.cs:20
+msgid "music on Luna"
+msgstr ""
+
+#. Translators: Activity name for local video. Discord adds "Watching" before this phrase.
+#: Discord/PresenceText.cs:22
+msgid "video on Luna"
+msgstr ""
+
+#. Translators: Activity name for YouTube. Discord adds "Listening to" or "Watching" before this phrase.
+#: Discord/PresenceText.cs:24
+msgid "YouTube on Luna"
+msgstr ""
+
+#. Translators: Activity name for radio. Discord adds "Listening to" before this phrase.
+#: Discord/PresenceText.cs:26
+msgid "radio on Luna"
+msgstr ""
+
+#. Translators: Activity name for Spotify. Discord adds "Listening to" before this phrase.
+#: Discord/PresenceText.cs:28
+msgid "Spotify on Luna"
+msgstr ""
+
+#. Translators: Audiobook activity name. Discord adds "Listening to" before this phrase.
+#: Discord/PresenceText.cs:30
+msgid "an audiobook on Luna"
+msgstr ""
+
+#. Translators: Discord button opening a public radio stream in the browser.
+#: Discord/PresenceText.cs:32
+msgid "Watch online"
+msgstr ""
+
+#. Translators: Discord button opening the current video on YouTube.
+#: Discord/PresenceText.cs:34
+msgid "Watch on YouTube"
+msgstr ""
+
+#. Translators: Discord button opening the current audio on YouTube.
+#: Discord/PresenceText.cs:36
+msgid "Listen on YouTube"
+msgstr ""
+
+#. Translators: Discord button opening the current track on Spotify.
+#: Discord/PresenceText.cs:38
+msgid "Open in Spotify"
+msgstr ""
+
+#. Translators: Discord button opening Luna Player's releases page.
+#: Discord/PresenceText.cs:40
+msgid "Download Luna Player"
+msgstr ""
+
+#. Translators: Artist credit in a Watching card's body, separate from its artwork label. {artist} is the performer or channel.
+#: Discord/PresenceText.cs:42
+msgid "By {artist}"
+msgstr ""
+
+#. Translators: Discord app heading while paused. {app} is the application name, Luna Player.
+#: Discord/PresenceText.cs:44
+msgid "[Paused]: {app}"
 msgstr ""
 
 #. Translators: Name of an equalizer preset that lifts the low frequencies.
@@ -3348,17 +3428,17 @@ msgid "Could not reach the radio directory. Check your internet connection."
 msgstr ""
 
 #. Translators: Title of the summary of loaded stations in a radio playback session.
-#: Radio/Playback.cs:165
+#: Radio/Playback.cs:167
 msgid "Radio session"
 msgstr ""
 
 #. Translators: Radio session summary. {count} is the number of stations loaded for the selected category.
-#: Radio/Playback.cs:167
+#: Radio/Playback.cs:169
 msgid "Loaded stations: {count}"
 msgstr ""
 
 #. Translators: Error shown when MPV could not accept the selected radio station.
-#: Radio/Playback.cs:219
+#: Radio/Playback.cs:221
 msgid "Could not open the radio station."
 msgstr ""
 
@@ -3529,55 +3609,55 @@ msgid "Artist"
 msgstr ""
 
 #. Translators: Spotify track title used in the main window, opened-files list and navigation announcements. {name} is the song and {artists} lists its performers.
-#: Spotify/Catalog.cs:47
+#: Spotify/Catalog.cs:48
 msgid "{name} - {artists}"
 msgstr ""
 
 #. Translators: Track row in Spotify lists. {name} is the song, {artists} lists its performers and {duration} is its playing time.
-#: Spotify/Catalog.cs:50
+#: Spotify/Catalog.cs:51
 msgid "{name} - {artists} - {duration}"
 msgstr ""
 
 #. Translators: A song result in Spotify search. {track} contains the name, artists and duration; Track identifies the result type.
-#: Spotify/Catalog.cs:64
+#: Spotify/Catalog.cs:65
 msgid "{track} - Track"
 msgstr ""
 
 #. Translators: Error when a Spotify developer app has exhausted its quota. {wait} is the localized waiting time.
-#: Spotify/Catalog.cs:78
+#: Spotify/Catalog.cs:79
 msgid ""
 "Spotify's developer-app quota has been reached. Spotify says to try again in "
 "{wait}."
 msgstr ""
 
 #. Translators: Error when Spotify has exhausted a developer app's quota without saying when it resets.
-#: Spotify/Catalog.cs:80
+#: Spotify/Catalog.cs:81
 msgid ""
 "Spotify's developer-app quota has been reached. Spotify did not provide a "
 "reset time."
 msgstr ""
 
 #. Translators: Waiting time in a Spotify quota error. {count} is the number of hours.
-#: Spotify/Catalog.cs:89
+#: Spotify/Catalog.cs:90
 msgid "{count} hour"
 msgid_plural "{count} hours"
 msgstr[0] ""
 msgstr[1] ""
 
 #. Translators: Waiting time in a Spotify quota error. {count} is the number of minutes.
-#: Spotify/Catalog.cs:91
+#: Spotify/Catalog.cs:92
 msgid "{count} minute"
 msgid_plural "{count} minutes"
 msgstr[0] ""
 msgstr[1] ""
 
 #. Translators: Waiting time in a Spotify quota error. {hours} and {minutes} already contain their localized number and unit.
-#: Spotify/Catalog.cs:94
+#: Spotify/Catalog.cs:95
 msgid "{hours} and {minutes}"
 msgstr ""
 
 #. Translators: Error when Spotify asks the app to delay requests. {seconds} is the waiting time in seconds.
-#: Spotify/Catalog.cs:105
+#: Spotify/Catalog.cs:106
 msgid "Spotify asked Luna to wait about {seconds} second before trying again."
 msgid_plural ""
 "Spotify asked Luna to wait about {seconds} seconds before trying again."
@@ -3585,66 +3665,66 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. Translators: Error when Spotify continues limiting requests without giving a waiting time.
-#: Spotify/Catalog.cs:110
+#: Spotify/Catalog.cs:111
 msgid "Spotify is still limiting requests. Wait a moment and try again."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:429
+#: Spotify/Catalog.cs:442
 msgid "Spotify authorization expired. Sign in again."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:431
+#: Spotify/Catalog.cs:444
 msgid ""
 "Spotify does not allow this content for this developer app or account. Some "
 "playlists and recommendations are restricted."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:433
+#: Spotify/Catalog.cs:446
 msgid "Spotify rate limit reached. Wait a moment and try again."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails. {code} is the HTTP status code.
-#: Spotify/Catalog.cs:435
+#: Spotify/Catalog.cs:448
 msgid "Spotify request failed ({code})."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:437
+#: Spotify/Catalog.cs:450
 msgid "Could not reach Spotify. Check your internet connection."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:439
+#: Spotify/Catalog.cs:452
 msgid "Spotify did not respond in time."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:441
+#: Spotify/Catalog.cs:454
 msgid "Spotify refused the playback sign in. Sign in again."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails.
-#: Spotify/Catalog.cs:443
+#: Spotify/Catalog.cs:456
 msgid "Spotify could not load this track."
 msgstr ""
 
 #. Translators: Error when Spotify audio/network data or protected account files cannot be read or saved.
-#: Spotify/Catalog.cs:445
+#: Spotify/Catalog.cs:458
 msgid ""
 "Spotify could not read or save required data. Check your connection and "
 "available storage, then try again."
 msgstr ""
 
 #. Translators: Error when an operation outlives its disconnected Spotify session.
-#: Spotify/Catalog.cs:447
+#: Spotify/Catalog.cs:460
 msgid "Spotify was disconnected. Sign in again to continue."
 msgstr ""
 
 #. Translators: Error shown when loading Spotify browsing results or preparing playback fails. {reason} is the failure reason returned by the service.
-#: Spotify/Catalog.cs:449
+#: Spotify/Catalog.cs:462
 msgid "Spotify request failed: {reason}"
 msgstr ""
 
@@ -5736,6 +5816,83 @@ msgstr ""
 msgid "JSON files (*.json)|*.json|All files (*.*)|*.*"
 msgstr ""
 
+#. Translators: F1 help for the Discord settings page.
+#: UI/Preferences/Discord.cs:17
+msgid ""
+"Share your Luna Player activity with Discord. Move with Tab or Shift+Tab and "
+"press F1 for help. Changes take effect when you accept Preferences."
+msgstr ""
+
+#. Translators: Opt-in checkbox for publishing playback activity to Discord.
+#: UI/Preferences/Discord.cs:22
+msgid "Enable Discord Rich Presence"
+msgstr ""
+
+#. Translators: Privacy control for titles, artists, thumbnails and public media links in Discord.
+#: UI/Preferences/Discord.cs:24
+msgid "Share media titles, artists and artwork"
+msgstr ""
+
+#. Translators: Whether the Discord activity includes public media and Luna download buttons.
+#: UI/Preferences/Discord.cs:26
+msgid "Show link buttons"
+msgstr ""
+
+#. Translators: Whether Discord shows Luna while no media is loaded.
+#: UI/Preferences/Discord.cs:28
+msgid "Show activity when idle"
+msgstr ""
+
+#. Translators: Accessible name for the read-only Discord setup instructions.
+#: UI/Preferences/Discord.cs:30
+msgid "Enable activity sharing in Discord"
+msgstr ""
+
+#. Translators: Instructions in Discord preferences. Activity Privacy is a page in Discord's settings.
+#: UI/Preferences/Discord.cs:33
+msgid ""
+"Open Discord Desktop, go to User Settings > Activity Privacy, and turn on "
+"Share your detected activities with others. Then select Enable Discord Rich "
+"Presence above and choose OK."
+msgstr ""
+
+#. Translators: F1 help for enabling Discord Rich Presence.
+#: UI/Preferences/Discord.cs:45
+msgid ""
+"Publishes your activity to the local Discord desktop app. Disabled by "
+"default. Turning this off clears Luna's Discord activity without stopping "
+"playback."
+msgstr ""
+
+#. Translators: F1 help for sharing media details with Discord.
+#: UI/Preferences/Discord.cs:47
+msgid ""
+"Shares media titles, artists, book chapters and available online artwork. "
+"Local files use Luna's icon. Clear this to hide media details, artwork and "
+"source links."
+msgstr ""
+
+#. Translators: F1 help for Discord link buttons.
+#: UI/Preferences/Discord.cs:49
+msgid ""
+"Adds a download button and a source link for YouTube, Spotify or public "
+"radio streams when media details are shared. Local paths and private stream "
+"addresses are not linked."
+msgstr ""
+
+#. Translators: F1 help for idle Discord presence.
+#: UI/Preferences/Discord.cs:51
+msgid ""
+"Keeps a generic Luna Player activity visible when playback is stopped or "
+"nothing is loaded. Clear this to remove the activity when idle. Paused media "
+"still counts as loaded."
+msgstr ""
+
+#. Translators: F1 help for the read-only Discord setup guide.
+#: UI/Preferences/Discord.cs:53
+msgid "Explains how to enable activity sharing in Discord Desktop."
+msgstr ""
+
 #. Translators: Label of the list for choosing the language the player speaks and shows its windows in.
 #. Translators: Column heading for the languages spoken by a radio station.
 #. Translators: Label for the language spoken by radio stations in Radio filters.
@@ -6047,8 +6204,13 @@ msgstr ""
 msgid "Spotify"
 msgstr ""
 
+#. Translators: Name of the Discord Rich Presence category in Preferences.
+#: UI/Preferences/MainDialog.cs:90
+msgid "Discord"
+msgstr ""
+
 #. Translators: Help text for the settings tree down the left of the Preferences window.
-#: UI/Preferences/MainDialog.cs:210
+#: UI/Preferences/MainDialog.cs:213
 msgid ""
 "Use the Arrow keys to move through settings pages. Press the Right Arrow key "
 "on a category to show its pages and the Left Arrow key to hide them. The "
@@ -6056,7 +6218,7 @@ msgid ""
 msgstr ""
 
 #. Translators: Spoken when the user asks for help on a control that has none.
-#: UI/Preferences/MainDialog.cs:217
+#: UI/Preferences/MainDialog.cs:220
 msgid "No detailed help is available for this control."
 msgstr ""
 
@@ -8280,7 +8442,7 @@ msgstr ""
 
 #. Translators: A channel browser tab: the channel's ordinary videos.
 #. Translators: Title of the window listing the videos a search or a playlist turned up.
-#: YouTube/Client/Channels.cs:30 YouTube/Playback/Sessions.cs:259
+#: YouTube/Client/Channels.cs:30 YouTube/Playback/Sessions.cs:276
 msgid "Videos"
 msgstr ""
 
@@ -8476,39 +8638,39 @@ msgid "Loading more videos..."
 msgstr ""
 
 #. Translators: Shown when a video was found but the player could not start playing it.
-#: YouTube/Playback/Playing.cs:75
+#: YouTube/Playback/Playing.cs:77
 msgid "Could not open YouTube stream."
 msgstr ""
 
 #. Translators: Spoken when the video before this one is being fetched before it can be played.
 #. Translators: The short wording spoken while the video before this one is being fetched.
-#: YouTube/Playback/Playing.cs:96 YouTube/Playback/Playing.cs:101
+#: YouTube/Playback/Playing.cs:98 YouTube/Playback/Playing.cs:103
 msgid "Loading previous video..."
 msgstr ""
 
 #. Translators: Spoken when the video after this one is being fetched before it can be played.
 #. Translators: The short wording spoken while the video after this one is being fetched.
-#: YouTube/Playback/Playing.cs:98 YouTube/Playback/Playing.cs:103
+#: YouTube/Playback/Playing.cs:100 YouTube/Playback/Playing.cs:105
 msgid "Loading next video..."
 msgstr ""
 
 #. Translators: Spoken when the video before this one could not be fetched.
-#: YouTube/Playback/Playing.cs:143
+#: YouTube/Playback/Playing.cs:145
 msgid "Could not load the previous video."
 msgstr ""
 
 #. Translators: Spoken when the video after this one could not be fetched, so playback stops.
-#: YouTube/Playback/Playing.cs:145
+#: YouTube/Playback/Playing.cs:147
 msgid "Could not load the next video."
 msgstr ""
 
 #. Translators: The short wording spoken when the previous video could not be fetched.
-#: YouTube/Playback/Playing.cs:148
+#: YouTube/Playback/Playing.cs:150
 msgid "Previous video failed."
 msgstr ""
 
 #. Translators: The short wording spoken when the next video could not be fetched.
-#: YouTube/Playback/Playing.cs:150
+#: YouTube/Playback/Playing.cs:152
 msgid "Next video failed."
 msgstr ""
 
@@ -8518,17 +8680,17 @@ msgid "Playlist videos"
 msgstr ""
 
 #. Translators: Shown when an address looked like a YouTube link but names no video.
-#: YouTube/Playback/Sessions.cs:140
+#: YouTube/Playback/Sessions.cs:155
 msgid "This link does not include a YouTube video."
 msgstr ""
 
 #. Translators: Title of the window shown while the address of a video is being looked up.
-#: YouTube/Playback/Sessions.cs:349
+#: YouTube/Playback/Sessions.cs:366
 msgid "Loading YouTube stream"
 msgstr ""
 
 #. Translators: First message shown while the address of a video is being looked up.
-#: YouTube/Playback/Sessions.cs:351
+#: YouTube/Playback/Sessions.cs:368
 msgid "Fetching stream URL..."
 msgstr ""
 

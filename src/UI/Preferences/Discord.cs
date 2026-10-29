@@ -1,6 +1,5 @@
 using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
-using LunaPlayer.Discord;
 using WxSharp;
 
 namespace LunaPlayer.UI.Preferences;
@@ -28,22 +27,11 @@ internal sealed class DiscordPreferences : PreferencesPage
         // Translators: Whether Discord shows Luna while no media is loaded.
         _idle = new CheckBox(panel, label: Tr("Show activity when idle"));
         // Translators: Accessible name for the read-only Discord setup instructions.
-        var guideLabel = new StaticText(panel, label: Tr("Discord setup and privacy"));
+        var guideLabel = new StaticText(panel, label: Tr("Enable activity sharing in Discord"));
         var guide = new TextCtrl(panel, style: TextCtrlStyle.MultiLine | TextCtrlStyle.ReadOnly,
-            value: string.Join(Environment.NewLine,
-                // Translators: Build status on the Discord preferences page when the publisher has not configured it.
-                !PublisherApplication.IsConfigured
-                    // Translators: Explain why enabling Discord is unavailable in this build; users do not enter credentials.
-                    ? Tr("Discord Rich Presence is unavailable in this build because the publisher has not configured Luna's application ID. No user API key or token is required.")
-                    // Translators: Explain that Discord developer configuration belongs to the publisher, not the user.
-                    : Tr("how to enable ritch presence?."),
-                // Translators: Instructions to make Rich Presence visible in the Discord desktop client.
-                Tr("Run the Discord desktop app and allow activity sharing in Discord's Activity Privacy settings. Enable Rich Presence above and choose OK."),
-                // Translators: Privacy explanation for Discord presence settings.
-                Tr("Sharing is off by default. Media details can include local file names. Hiding details also hides media artwork and media links. Only recognized YouTube and Spotify public pages are linked; local paths and raw stream addresses are never linked."),
-                // Translators: Troubleshooting information for Discord presence.
-                Tr("Discord reconnects automatically. The browser version is not supported. Changes may take a few seconds to appear.")),
-            size: new Size(-1, 160)) { Name = guideLabel.Label };
+            // Translators: Instructions in Discord preferences. Activity Privacy is a page in Discord's settings.
+            value: Tr("Open Discord Desktop, go to User Settings > Activity Privacy, and turn on Share your detected activities with others. Then select Enable Discord Rich Presence above and choose OK."),
+            size: new Size(-1, 120)) { Name = guideLabel.Label };
         guide.InsertionPoint = 0;
         var layout = new BoxSizer(Orientation.Vertical);
         layout.Add(_enabled, flags: SizerFlags.All, border: 8);
@@ -56,19 +44,19 @@ internal sealed class DiscordPreferences : PreferencesPage
         // Translators: F1 help for enabling Discord Rich Presence.
         Help(_enabled, Tr("Publishes your activity to the local Discord desktop app. Disabled by default. Turning this off clears Luna's Discord activity without stopping playback."));
         // Translators: F1 help for sharing media details with Discord.
-        Help(_details, Tr("Shares the title and artist of the current media, including local file names, and YouTube artwork when available. Clear this to show only generic playback activity and hide media links and artwork."));
+        Help(_details, Tr("Shares media titles, artists, book chapters and available online artwork. Local files use Luna's icon. Clear this to hide media details, artwork and source links."));
         // Translators: F1 help for Discord link buttons.
-        Help(_buttons, Tr("Adds a Luna Player download button and, when media details are shared, a public YouTube or Spotify link. Raw stream URLs and local file paths are never shared as buttons."));
+        Help(_buttons, Tr("Adds a download button and a source link for YouTube, Spotify or public radio streams when media details are shared. Local paths and private stream addresses are not linked."));
         // Translators: F1 help for idle Discord presence.
         Help(_idle, Tr("Keeps a generic Luna Player activity visible when playback is stopped or nothing is loaded. Clear this to remove the activity when idle. Paused media still counts as loaded."));
         // Translators: F1 help for the read-only Discord setup guide.
-        Help(guide, Tr("Use the Arrow keys to read or select these instructions. No Discord login credentials are stored by Luna."));
+        Help(guide, Tr("Explains how to enable activity sharing in Discord Desktop."));
         Refresh();
     }
 
     public override void Apply()
     {
-        _settings.Enabled = PublisherApplication.IsConfigured && _enabled.Checked;
+        _settings.Enabled = _enabled.Checked;
         _settings.ShowDetails = _details.Checked;
         _settings.ShowButtons = _buttons.Checked;
         _settings.ShowIdle = _idle.Checked;
@@ -76,8 +64,7 @@ internal sealed class DiscordPreferences : PreferencesPage
 
     public override void Refresh()
     {
-        _enabled.Enabled = PublisherApplication.IsConfigured;
-        _enabled.Checked = PublisherApplication.IsConfigured && _settings.Enabled;
+        _enabled.Checked = _settings.Enabled;
         _details.Checked = _settings.ShowDetails;
         _buttons.Checked = _settings.ShowButtons;
         _idle.Checked = _settings.ShowIdle;

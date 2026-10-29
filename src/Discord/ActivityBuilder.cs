@@ -5,61 +5,60 @@ using LunaPlayer.Configuration.Models;
 
 namespace LunaPlayer.Discord;
 
-// Immutable snapshots cross the UI/worker boundary; neither settings nor Player are read by IPC code.
-internal sealed record PresenceMedia(string Identity, string Title, string Artist, string? PublicUrl,
-    bool Playing, bool Video, double? Position, double? Duration, double Speed);
-internal sealed record PresenceText(string Idle, string Playing, string Paused, string Generic,
-    string Untitled, string Watch, string Listen, string Download);
-
-/// <summary>Builds NativeAOT-safe RPC JSON. Only recognized public catalog links may leave Luna;
-/// raw streams often contain IPTV passwords, signed tokens, or private network addresses.</summary>
+/// <summary>Builds NativeAOT-safe RPC JSON from playback snapshots.</summary>
 internal sealed class ActivityBuilder
 {
-    private readonly long _sessionStart;
-    private string? _identity;
-    private long? _start;
-    private long? _end;
-    private double _speed;
+    private readonly Timeline _timeline;
 
-    internal ActivityBuilder(DateTimeOffset started) => _sessionStart = started.ToUnixTimeSeconds();
+    internal ActivityBuilder(DateTimeOffset started) => _timeline = new(started);
 
-    internal string? Build(DiscordSettings settings, PresenceMedia? media, PresenceText text, DateTimeOffset now)
+    internal string? Build(DiscordSettings settings, PresenceMedia? media, PresenceText text, DateTimeOffset now, string? applicationIcon = null)
+        => BuildSnapshot(PresenceOptions.Capture(settings), media, text, now, applicationIcon);
+
+    internal string? BuildSnapshot(PresenceOptions settings, PresenceMedia? media, PresenceText text, DateTimeOffset now, string? applicationIcon = null)
     {
         if (!settings.Enabled || media is null && !settings.ShowIdle) return null;
-        long? start = null, end = null;
-        if (media is null) start = _sessionStart;
-        else if (media.Playing)
+        var (start, end) = _timeline.Sample(media, now);
+        var link = settings.ShowDetails && media is not null ? PublicLinks.Catalog(media.PublicUrl) : null;
+        var radioLink = settings.ShowDetails && media?.Kind == SourceKind.Radio ? PublicLinks.Stream(media.PublicUrl) : null;
+        var heading = media is { Playing: false } ? text.PausedApplication(AppInfo.Name) : AppInfo.Name;
+        var title = Text(media is null ? text.Idle : !settings.ShowDetails ? text.Generic : media.Title);
+        if (title.Length == 0) title = Text(text.Untitled);
+        var artworkLabel = media is null || !settings.ShowDetails ? null
+            : media.Kind == SourceKind.Book ? Text(media.Chapter) : Text(media.Artist);
+        var mediaLayout = media is not null;
+        var watching = media is { Video: true };
+        var includeArtistCredit = watching && settings.ShowDetails && media!.Kind != SourceKind.YouTube;
+        var details = mediaLayout ? Text(heading) : title;
+        var state = includeArtistCredit && !string.IsNullOrEmpty(artworkLabel)
+            ? WatchingState(title, text.By(artworkLabel)) : mediaLayout ? title : null;
+        var name = !mediaLayout ? heading : !settings.ShowDetails ? "Luna" : media!.Kind switch
         {
-            var speed = double.IsFinite(media.Speed) && media.Speed > 0 ? Math.Clamp(media.Speed, 0.1, 100) : 1;
-            var position = SafeSeconds(media.Position);
-            var duration = SafeSeconds(media.Duration);
-            start = Math.Max(0, now.ToUnixTimeSeconds() - (long)(position / speed));
-            if (duration > position) end = start + (long)(duration / speed);
-            // Sampling and rounding can differ by a second. Keep the original anchor unless a seek,
-            // speed change or new item actually moved it. Paused activities have no running clock.
-            if (_identity == media.Identity && _speed == speed && _start is long previous
-                && Math.Abs(start.Value - previous) <= 1 && SameEnd(end, _end))
-            {
-                start = _start;
-                end = _end;
-            }
-            _speed = speed;
+            SourceKind.YouTube => text.YouTube,
+            SourceKind.Radio => text.Radio,
+            SourceKind.Spotify => text.Spotify,
+            SourceKind.Book => text.Audiobook,
+            SourceKind.Local => media.Video ? text.Video : text.Music,
+            _ => "Luna",
+        };
+        string? artwork = null;
+        if (settings.ShowDetails && media is not null)
+        {
+            if (link is { VideoId: not null }) artwork = $"https://i.ytimg.com/vi/{link.VideoId}/hqdefault.jpg";
+            else if (media.Kind is SourceKind.Radio or SourceKind.Spotify) artwork = PublicLinks.Stream(media.ArtworkUrl);
         }
-        _identity = media?.Identity;
-        _start = start;
-        _end = end;
-        var link = settings.ShowDetails && media is not null ? PublicLink(media.PublicUrl) : null;
-        var state = media is null ? $"{AppInfo.Name} v{AppInfo.Version}" : media.Playing ? text.Playing : text.Paused;
-        if (settings.ShowDetails && media is not null && !string.IsNullOrWhiteSpace(media.Artist))
-            state = $"{state} • {media.Artist}";
         using var stream = new MemoryStream();
         using (var json = new Utf8JsonWriter(stream))
         {
             json.WriteStartObject();
-            json.WriteNumber("type", media is null ? 0 : media.Video ? 3 : 2); // Playing / Watching / Listening
-            json.WriteString("details", Text(media is null ? text.Idle : !settings.ShowDetails ? text.Generic
-                : string.IsNullOrWhiteSpace(media.Title) ? text.Untitled : media.Title));
-            json.WriteString("state", Text(state));
+            // YouTube keeps the artist in the artwork label, leaving the full state field for its title.
+            // Listening retains its app heading, title row and artist/chapter caption.
+            json.WriteNumber("type", !mediaLayout ? 0 : watching ? 3 : 2);
+            json.WriteNumber("status_display_type", 0);
+            json.WriteString("name", Text(name));
+            json.WriteString("details", Text(details));
+            // State is already sanitized; reprocessing it would strip the intentional line break.
+            if (!string.IsNullOrEmpty(state)) json.WriteString("state", state);
             if (start is long s)
             {
                 json.WriteStartObject("timestamps");
@@ -68,14 +67,18 @@ internal sealed class ActivityBuilder
                 json.WriteEndObject();
             }
             json.WriteStartObject("assets");
-            json.WriteString("large_image", link is { VideoId: not null }
-                ? $"https://i.ytimg.com/vi/{link.VideoId}/hqdefault.jpg" : "luna");
-            json.WriteString("large_text", Text($"{AppInfo.Name} v{AppInfo.Version}"));
+            json.WriteString("large_image", artwork ?? applicationIcon ?? "luna");
+            // Discord also exposes this as the artwork's accessible label: keep it to the
+            // artist/chapter itself, without prefixes or application branding.
+            var imageText = mediaLayout ? artworkLabel : null;
+            if (!string.IsNullOrEmpty(imageText)) json.WriteString("large_text", Text(imageText));
             json.WriteEndObject();
             if (settings.ShowButtons)
             {
                 json.WriteStartArray("buttons");
-                if (link is not null) Button(json, media!.Video ? text.Watch : text.Listen, link.Url);
+                if (link is not null) Button(json, link.VideoId is not null
+                    ? media!.Video ? text.WatchYouTube : text.ListenYouTube : text.OpenSpotify, link.Url);
+                else if (radioLink is not null) Button(json, text.Watch, radioLink);
                 Button(json, text.Download, AppInfo.RepositoryUrl + "/releases");
                 json.WriteEndArray();
             }
@@ -83,11 +86,6 @@ internal sealed class ActivityBuilder
         }
         return Encoding.UTF8.GetString(stream.ToArray());
     }
-
-    private static double SafeSeconds(double? value)
-        => value is double v && double.IsFinite(v) ? Math.Clamp(v, 0, 315360000) : 0;
-    private static bool SameEnd(long? left, long? right)
-        => left is long l && right is long r ? Math.Abs(l - r) <= 1 : left == right;
 
     internal static string Text(string? value, int maxBytes = 128)
     {
@@ -107,6 +105,14 @@ internal sealed class ActivityBuilder
         return result.ToString();
     }
 
+    private static string WatchingState(string title, string artistCredit)
+    {
+        // Both lines share Discord's 128-byte field limit. Bound the credit so a long artist
+        // name cannot displace the title, and reserve room for it when the title is long.
+        var credit = Text(artistCredit, 64);
+        return Text(title, 127 - Encoding.UTF8.GetByteCount(credit)) + "\n" + credit;
+    }
+
     private static void Button(Utf8JsonWriter json, string label, string url)
     {
         if (Encoding.UTF8.GetByteCount(url) > 512) return;
@@ -114,27 +120,5 @@ internal sealed class ActivityBuilder
         json.WriteString("label", Text(label, 32));
         json.WriteString("url", url);
         json.WriteEndObject();
-    }
-
-    internal sealed record Link(string Url, string? VideoId = null);
-    internal static Link? PublicLink(string? source)
-    {
-        if (!Uri.TryCreate(source, UriKind.Absolute, out var uri)
-            || uri.Scheme is not ("http" or "https") || uri.UserInfo.Length > 0 || !uri.IsDefaultPort) return null;
-        var host = uri.IdnHost.ToLowerInvariant();
-        var parts = uri.AbsolutePath.Split('/', StringSplitOptions.RemoveEmptyEntries);
-        string? id = null;
-        if (host is "youtu.be" or "www.youtu.be") id = parts.FirstOrDefault();
-        else if (host is "youtube.com" or "www.youtube.com" or "m.youtube.com" or "music.youtube.com")
-        {
-            if (parts.Length == 2 && parts[0] is "shorts" or "embed" or "v" or "live") id = parts[1];
-            else if (uri.AbsolutePath == "/watch")
-                id = uri.Query.TrimStart('?').Split('&').FirstOrDefault(p => p.StartsWith("v=", StringComparison.Ordinal))?[2..];
-        }
-        else if (host == "open.spotify.com" && parts.Length == 2 && parts[0] == "track"
-            && parts[1].Length == 22 && parts[1].All(char.IsAsciiLetterOrDigit))
-            return new($"https://open.spotify.com/track/{parts[1]}");
-        return id is { Length: 11 } && id.All(c => char.IsAsciiLetterOrDigit(c) || c is '_' or '-')
-            ? new($"https://www.youtube.com/watch?v={id}", id) : null;
     }
 }

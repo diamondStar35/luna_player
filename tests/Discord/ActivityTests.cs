@@ -9,15 +9,14 @@ namespace LunaPlayer.Tests.Discord;
 public sealed class ActivityTests
 {
     private static readonly DateTimeOffset Now = DateTimeOffset.FromUnixTimeSeconds(2000000000);
-    private static readonly PresenceText Texts = new("Idle", "Playing", "Paused", "Using Luna Player",
-        "Untitled media", "Watch online", "Listen online", "Download Luna Player");
+    private static readonly PresenceText Texts = Examples.English;
     private static DiscordSettings Options() => new() { Enabled = true };
     private static PresenceMedia Media() => new("track", "A title", "An artist", null, true, false, 30, 120, 1);
     private static JsonDocument Build(ActivityBuilder builder, DiscordSettings options, PresenceMedia? media, DateTimeOffset? now = null)
         => JsonDocument.Parse(builder.Build(options, media, Texts, now ?? Now)!);
 
     [TestMethod]
-    public void PlayingPausedAndResumedClocksReflectPlaybackAndSpeed()
+    public void PlayingPausedAndResumedClocksUseMediaTime()
     {
         var builder = new ActivityBuilder(Now);
         using var playing = Build(builder, Options(), Media());
@@ -25,10 +24,27 @@ public sealed class ActivityTests
         Assert.AreEqual(2000000090L, playing.RootElement.GetProperty("timestamps").GetProperty("end").GetInt64());
         using var paused = Build(builder, Options(), Media() with { Playing = false });
         Assert.IsFalse(paused.RootElement.TryGetProperty("timestamps", out _));
-        StringAssert.StartsWith(paused.RootElement.GetProperty("state").GetString()!, "Paused");
+        Assert.AreEqual("[Paused]: Luna Player", paused.RootElement.GetProperty("details").GetString());
+        Assert.AreEqual("A title", paused.RootElement.GetProperty("state").GetString());
+        Assert.AreEqual("An artist", paused.RootElement.GetProperty("assets").GetProperty("large_text").GetString());
         using var resumed = Build(builder, Options(), Media() with { Speed = 2 }, Now.AddSeconds(10));
-        Assert.AreEqual(1999999995L, resumed.RootElement.GetProperty("timestamps").GetProperty("start").GetInt64());
-        Assert.AreEqual(2000000055L, resumed.RootElement.GetProperty("timestamps").GetProperty("end").GetInt64());
+        Assert.AreEqual(1999999980L, resumed.RootElement.GetProperty("timestamps").GetProperty("start").GetInt64());
+        Assert.AreEqual(2000000100L, resumed.RootElement.GetProperty("timestamps").GetProperty("end").GetInt64());
+    }
+
+    [TestMethod]
+    [DataRow(1d)]
+    [DataRow(1.07d)]
+    [DataRow(2d)]
+    [DataRow(0.5d)]
+    public void ElapsedAndTotalMatchLunaWithoutSpeedScaling(double speed)
+    {
+        using var activity = Build(new(Now), Options(), Media() with { Position = 139, Duration = 263, Speed = speed });
+        var timestamps = activity.RootElement.GetProperty("timestamps");
+        var start = timestamps.GetProperty("start").GetInt64();
+        var end = timestamps.GetProperty("end").GetInt64();
+        Assert.AreEqual(139L, Now.ToUnixTimeSeconds() - start);
+        Assert.AreEqual(263L, end - start);
     }
 
     [TestMethod]
@@ -41,6 +57,19 @@ public sealed class ActivityTests
         Assert.AreEqual(1999999925L, seek.RootElement.GetProperty("timestamps").GetProperty("start").GetInt64());
         using var next = Build(builder, Options(), Media() with { Identity = "next", Position = 0 });
         Assert.AreEqual(2000000000L, next.RootElement.GetProperty("timestamps").GetProperty("start").GetInt64());
+    }
+
+    [TestMethod]
+    public void UnknownPositionKeepsItsAnchorAndCanGainAFiniteDuration()
+    {
+        var builder = new ActivityBuilder(Now);
+        var media = Media() with { Position = null, Duration = null };
+        var initial = builder.Build(Options(), media, Texts, Now);
+        Assert.AreEqual(initial, builder.Build(Options(), media, Texts, Now.AddSeconds(10)));
+        using var duration = Build(builder, Options(), media with { Duration = 120 }, Now.AddSeconds(10));
+        var timestamps = duration.RootElement.GetProperty("timestamps");
+        Assert.AreEqual(Now.ToUnixTimeSeconds(), timestamps.GetProperty("start").GetInt64());
+        Assert.AreEqual(Now.ToUnixTimeSeconds() + 120, timestamps.GetProperty("end").GetInt64());
     }
 
     [TestMethod]
@@ -73,11 +102,12 @@ public sealed class ActivityTests
     }
 
     [TestMethod]
-    public void VideoUsesWatchingTypeAndThumbnailAndCanonicalButton()
+    public void YouTubeVideoUsesWatchingWithThumbnailAndWatchButton()
     {
         using var activity = Build(new(Now), Options(), Media() with
-        { Video = true, PublicUrl = "https://www.youtube.com/watch?v=abcdefghijk&token=private" });
+        { Kind = SourceKind.YouTube, Video = true, PublicUrl = "https://www.youtube.com/watch?v=abcdefghijk&token=private" });
         Assert.AreEqual(3, activity.RootElement.GetProperty("type").GetInt32());
+        Assert.AreEqual("Watch on YouTube", activity.RootElement.GetProperty("buttons")[0].GetProperty("label").GetString());
         Assert.AreEqual("https://i.ytimg.com/vi/abcdefghijk/hqdefault.jpg",
             activity.RootElement.GetProperty("assets").GetProperty("large_image").GetString());
         Assert.AreEqual("https://www.youtube.com/watch?v=abcdefghijk",
@@ -94,7 +124,7 @@ public sealed class ActivityTests
     [DataRow("https://www.youtube.com:8888/watch?v=abcdefghijk")]
     [DataRow("https://youtu.be/bad")]
     public void PrivateOrInvalidLinksAreNeverShared(string? source)
-        => Assert.IsNull(ActivityBuilder.PublicLink(source));
+        => Assert.IsNull(PublicLinks.Catalog(source));
 
     [TestMethod]
     [DataRow("https://youtu.be/abcdefghijk?secret=anything")]
@@ -103,12 +133,12 @@ public sealed class ActivityTests
     [DataRow("https://www.youtube.com/embed/abcdefghijk")]
     [DataRow("https://www.youtube.com/live/abcdefghijk")]
     public void YouTubeLinksAreCanonicalized(string source)
-        => Assert.AreEqual("https://www.youtube.com/watch?v=abcdefghijk", ActivityBuilder.PublicLink(source)!.Url);
+        => Assert.AreEqual("https://www.youtube.com/watch?v=abcdefghijk", PublicLinks.Catalog(source)!.Url);
 
     [TestMethod]
     public void SpotifyLinkStripsTrackingParameters()
         => Assert.AreEqual("https://open.spotify.com/track/1234567890123456789012",
-            ActivityBuilder.PublicLink("https://open.spotify.com/track/1234567890123456789012?si=private")!.Url);
+            PublicLinks.Catalog("https://open.spotify.com/track/1234567890123456789012?si=private")!.Url);
 
     [TestMethod]
     public void TextLimitsPreserveUnicodeAndRemoveControls()
@@ -149,14 +179,6 @@ public sealed class ActivityTests
         old.ValidateStored();
         Assert.IsFalse(old.Discord.Enabled);
     }
-
-    [TestMethod]
-    [DataRow("")]
-    [DataRow("not-a-number")]
-    [DataRow("12345678901234567X")]
-    [DataRow("99999999999999999999")]
-    public void InvalidApplicationIdsAreRejected(string id)
-        => Assert.IsFalse(PublisherApplication.IsValidApplicationId(id));
 
     [TestMethod]
     public void LegacyPerUserApplicationIdIsIgnoredAndNotWrittenBack()

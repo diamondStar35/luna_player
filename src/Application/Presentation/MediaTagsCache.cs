@@ -18,10 +18,14 @@ internal sealed class MediaTagsCache
 
     internal MediaTags For(Player player)
     {
-        var tags = player.InRadioSession ? player.CurrentBroadcast : ForFile(player.CurrentPath);
+        var tags = Original(player);
         return player.AudiobookMode && player.CurrentChapter is Chapter chapter
             ? tags with { Title = Player.ChapterTitle(chapter) } : tags;
     }
+
+    // A chapter's display title must not replace the book's own title in richer presentations.
+    internal MediaTags Original(Player player)
+        => player.InRadioSession ? player.CurrentBroadcast : ForFile(player.CurrentPath);
 
     private MediaTags ForFile(string? path)
     {

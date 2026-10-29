@@ -3,6 +3,7 @@ using LunaPlayer.Application.Presentation;
 using LunaPlayer.Configuration.Models;
 using LunaPlayer.Discord;
 using LunaPlayer.Playback;
+using LunaPlayer.Media;
 using LunaPlayer.Tests.Infrastructure;
 
 namespace LunaPlayer.Tests.Discord;
@@ -29,6 +30,7 @@ public sealed class PlaybackTests
         var playing = Read()!;
         Assert.IsTrue(playing.Playing);
         Assert.IsFalse(playing.Title.Contains("private", StringComparison.Ordinal));
+        Assert.AreEqual("song", playing.Title);
         player.Pause();
         Assert.IsFalse(Read()!.Playing);
         player.SeekAbsolute(5);
@@ -51,6 +53,7 @@ public sealed class PlaybackTests
         var media = PresenceMediaReader.Read(player, tags, spotify, "Untitled media", true)!;
         Assert.AreEqual("A video", media.Title);
         Assert.AreEqual("https://youtu.be/abcdefghijk", media.PublicUrl);
+        Assert.AreEqual(SourceKind.YouTube, media.Kind);
         var hidden = PresenceMediaReader.Read(player, tags, spotify, "Untitled media", false)!;
         Assert.AreEqual(string.Empty, hidden.Title);
         Assert.AreEqual(string.Empty, hidden.Artist);
@@ -76,14 +79,60 @@ public sealed class PlaybackTests
     }
 
     [TestMethod]
-    public void StreamAddressCannotBecomeTitleOrPublicButton()
+    [DataRow(null)]
+    [DataRow("https://stream.example/user/password")]
+    public void StreamAddressCannotBecomeTitleOrPublicButton(string? title)
     {
         using var engine = new FakeEngine();
         using var player = new Player(engine);
         using var spotify = new LunaPlayer.Spotify.Playback.Sessions(new(), player, new Dispatcher());
-        player.OpenStream("https://stream.example/user/password", "https://stream.example/user/password");
+        player.OpenStream("https://stream.example/user/password", title);
         var media = PresenceMediaReader.Read(player, new(), spotify, "Untitled media", true)!;
         Assert.AreEqual("Untitled media", media.Title);
-        Assert.IsNull(ActivityBuilder.PublicLink(media.PublicUrl));
+        Assert.IsNull(PublicLinks.Catalog(media.PublicUrl));
+    }
+
+    [TestMethod]
+    public void LocalMetadataIsPreferredAndBooksKeepTitleSeparateFromChapter()
+    {
+        using var engine = new FakeEngine
+        { CurrentMetadata = new Metadata(new("Song title", "Performer", "Book title"), new Dictionary<string, string>()) };
+        using var player = new Player(engine);
+        using var spotify = new LunaPlayer.Spotify.Playback.Sessions(new(), player, new Dispatcher());
+        player.OpenFile(@"C:\private\filename.m4b");
+        var cache = new MediaTagsCache();
+        var local = PresenceMediaReader.Read(player, cache, spotify, "Untitled media", true)!;
+        Assert.AreEqual("Song title", local.Title);
+        Assert.AreEqual("Performer", local.Artist);
+        player.SetAudiobookMode(true);
+        player.SetChapters(player.CurrentPath!, [new Chapter(0, "Opening chapter", 0, 10)]);
+        var book = PresenceMediaReader.Read(player, cache, spotify, "Untitled media", true)!;
+        Assert.AreEqual(SourceKind.Book, book.Kind);
+        Assert.AreEqual("Book title", book.Title);
+        Assert.AreEqual("Opening chapter", book.Chapter);
+        Assert.AreEqual(string.Empty, book.Artist);
+        Assert.IsNull(book.ArtworkUrl);
+        var hidden = PresenceMediaReader.Read(player, cache, spotify, "Untitled media", false)!;
+        Assert.AreEqual(string.Empty, hidden.Title);
+        Assert.IsNull(hidden.Chapter);
+    }
+
+    [TestMethod]
+    public void RadioKeepsStationNameAndUsesTheArtistAnnouncedByPlayer()
+    {
+        using var engine = new FakeEngine
+        { CurrentMetadata = new Metadata(new("Artist - Broadcast title", "", ""), new Dictionary<string, string>()) };
+        using var player = new Player(engine);
+        using var spotify = new LunaPlayer.Spotify.Playback.Sessions(new(), player, new Dispatcher());
+        player.SetAudiobookMode(true);
+        player.PlayRadioStation("https://radio.example/stream", "Station name", "radio-browser://station", null, out _);
+        var station = new LunaPlayer.Radio.Station { Name = "Station name", Favicon = "https://radio.example/logo.png" };
+        var media = PresenceMediaReader.Read(player, new(), spotify, "Untitled media", true, station: station)!;
+        Assert.AreEqual(SourceKind.Radio, media.Kind);
+        Assert.AreEqual("Station name", media.Title);
+        Assert.AreEqual(player.CurrentArtist, media.Artist);
+        Assert.AreEqual("Artist", media.Artist);
+        Assert.AreEqual("https://radio.example/stream", media.PublicUrl);
+        Assert.AreEqual(station.Favicon, media.ArtworkUrl);
     }
 }

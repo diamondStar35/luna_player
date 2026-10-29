@@ -30,7 +30,6 @@ internal sealed class RpcClient : IRpcClient
 
     public async Task<bool> ConnectAsync(string clientId, CancellationToken token)
     {
-        if (!PublisherApplication.IsValidApplicationId(clientId)) return false;
         for (var i = 0; i < 10; i++)
         {
             token.ThrowIfCancellationRequested();
@@ -74,7 +73,7 @@ internal sealed class RpcClient : IRpcClient
         return false;
     }
 
-    // Single caller (PresenceService). The reader can concurrently write only PONG frames.
+    // Single caller (the publishing worker). The reader can concurrently write only PONG frames.
     public async Task<bool> SetActivityAsync(string? activity, CancellationToken token)
     {
         if (!IsConnected) throw new IOException("Discord is disconnected.");
