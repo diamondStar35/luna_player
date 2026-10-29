@@ -48,6 +48,7 @@ internal sealed partial class Sessions
     private bool Open(Resolved ready, bool audioOnly)
     {
         _activeChannelUrl = ready.Item.ChannelUrl;
+        _activeVideo = ready.Item;
         return Report(_player.PlaySessionStream(
             ready.Url, ready.Item.Title, ready.Item.Url, ready.AudioUrl, audioOnly,
             fadeTransition: _player.InSession && _player.IsLoaded));
@@ -63,6 +64,7 @@ internal sealed partial class Sessions
     {
         Clear();
         _activeChannelUrl = ready.Item.ChannelUrl;
+        _activeVideo = ready.Item;
         return Report(_player.OpenStream(ready.Url, ready.Item.Title, ready.Item.Url, ready.AudioUrl));
     }
 

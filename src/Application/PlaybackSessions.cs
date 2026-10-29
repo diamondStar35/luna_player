@@ -7,6 +7,7 @@ namespace LunaPlayer.Application;
 internal sealed class PlaybackSessions(Sessions youTube, Radio.Playback radio, Player player,
     Spotify.Playback.Sessions spotify, Func<bool> returnToSpotify)
 {
+    internal YouTube.YouTubeResult? CurrentYouTubeItem => youTube.CurrentVideo;
     internal Radio.Playback Radio => radio;
     internal Spotify.Playback.Sessions Spotify => spotify;
     internal bool CanMoveNext => spotify.HasSession ? spotify.CanMoveNext

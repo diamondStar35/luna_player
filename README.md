@@ -84,6 +84,8 @@ Bug reports are welcome.
 **Windows integration**
 
 - System Media Transport Controls: title and playback position appear in the Windows media overlay
+- Optional Discord Rich Presence with playback status, timing, artwork, and privacy controls;
+  see [Discord setup](docs/en/user-guide.md#discord-rich-presence)
 - Hardware media key support
 - Output device selection
 - Built-in updater for the application and for its YouTube components

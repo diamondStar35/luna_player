@@ -76,6 +76,7 @@ internal sealed class FakeEngine : IEngine
     public bool SetEqualizer(Preset? preset) => true;
     public void SetEndBehavior(EndBehavior behavior) {}
     public string? MediaTitle => default;
-    public Metadata GetMetadata() => Metadata.None;
+    internal Metadata CurrentMetadata { get; set; } = Metadata.None;
+    public Metadata GetMetadata() => CurrentMetadata;
     public bool HasVideo => default;
 }

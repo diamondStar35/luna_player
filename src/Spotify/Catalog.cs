@@ -43,6 +43,7 @@ internal sealed record Collection(string Id, string Name, CollectionKind Kind, s
 
 internal sealed record Track(string Name, string Artists, string Uri, int DurationMs)
 {
+    internal string? ArtworkUrl { get; init; }
     // Translators: Spotify track title used in the main window, opened-files list and navigation announcements. {name} is the song and {artists} lists its performers.
     internal string Title => TrFormat("{name} - {artists}", Name, Artists);
 
@@ -417,7 +418,19 @@ internal sealed class Catalog
             : string.Empty;
         var duration = Property(track, "duration_ms");
         return new Track(name, artistNames, uri,
-            duration.ValueKind == JsonValueKind.Number && duration.TryGetInt32(out var milliseconds) ? Math.Max(0, milliseconds) : 0);
+            duration.ValueKind == JsonValueKind.Number && duration.TryGetInt32(out var milliseconds) ? Math.Max(0, milliseconds) : 0)
+        { ArtworkUrl = AlbumArtwork(track) };
+    }
+
+    internal static string? AlbumArtwork(JsonElement track)
+    {
+        var images = Property(Property(track, "album"), "images");
+        if (images.ValueKind != JsonValueKind.Array) return null;
+        return images.EnumerateArray().Select(image => String(image, "url"))
+            .FirstOrDefault(url => Uri.TryCreate(url, UriKind.Absolute, out var uri)
+                && uri.Scheme == "https" && uri.UserInfo.Length == 0
+                && (uri.IdnHost == "i.scdn.co" || uri.IdnHost == "mosaic.scdn.co"
+                    || uri.IdnHost.EndsWith(".spotifycdn.com", StringComparison.Ordinal)));
     }
 
     internal static string DescribeError(Exception error) => error switch

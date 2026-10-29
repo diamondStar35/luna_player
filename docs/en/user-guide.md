@@ -871,6 +871,75 @@ See [Silence removal and audio processing](#8-silence-removal-and-audio-processi
 | Check for yt-dlp updates on startup | Performs a quiet component check after launch. |
 | Download YouTube components | Installs or refreshes yt-dlp and supporting tools. |
 
+### Discord Rich Presence
+
+Rich Presence lets people viewing your Discord profile see what you are playing in Luna.
+Sharing is off by default. You choose whether to include media details, artwork and links.
+
+#### Enable activity sharing
+
+1. Open **Discord Desktop** and sign in. Go to **User Settings > Activity Privacy** and turn on
+   **Share your detected activities with others**.
+2. In Luna, open **Preferences > Discord**, select **Enable Discord Rich Presence**, and choose **OK**.
+
+Discord must be running on the same computer. Its browser version cannot receive Luna's activity.
+Turning the option off clears the activity without interrupting playback.
+
+#### What appears on your profile
+
+The activity line identifies the source, such as **Listening to music on Luna**, **Listening to YouTube on Luna**, **Listening to radio on Luna**, or **Listening to Spotify
+on Luna**. Listening cards use **Luna Player** as their heading. Below it, Luna shows the media title and a separate
+artist credit when that information is available. Local music uses the title stored in the file; if it has
+no title, Luna uses the filename without its extension. Radio shows the station name and the current
+broadcast artist, when the station supplies one.
+
+In audiobook mode, the activity line is **Listening to an audiobook on Luna**. The title line shows
+the book title and the line below shows the current chapter instead of an artist credit. The book title comes from its album or title metadata,
+with the filename used when neither is available.
+
+Pausing changes the heading to **[Paused]: Luna Player**. The title and artist or chapter remain in
+their own lines, without another paused label after them. The source phrase stays the same while
+paused.
+
+YouTube uses the video's thumbnail. Spotify uses album artwork, and radio uses the station's image,
+when available. Local files and books use Luna's application icon. Artwork labels contain the artist
+or channel name without an added "By" prefix or application version. Listening cards show that name
+below the title. YouTube video uses **Watching YouTube on Luna**, while audio-only playback uses
+**Listening to YouTube on Luna**. Video playback keeps its thumbnail and **Watch on YouTube** button.
+YouTube's Watching card uses **Luna Player** as its heading, changing to **[Paused]: Luna Player** when
+paused. The video title appears below the heading. The artwork label contains the plain artist or
+channel name when known. Discord may shorten long titles.
+
+For media with a known duration, Luna supplies both progress timestamps using the same elapsed
+and total media time as the player, without dividing either by playback speed. Discord's Listening card
+shows elapsed and total time, including when audiobook mode is enabled. Paused media remains visible with a **Paused**
+label and no running timer. Resuming, seeking, changing speed or moving to another chapter updates
+the timer. Live streams show elapsed time when there is no known duration.
+
+#### Sharing controls
+
+| Setting | Purpose |
+| --- | --- |
+| Enable Discord Rich Presence | Turns sharing on or off. |
+| Share media titles, artists and artwork | Includes titles, artist credits, book chapters and online artwork. Clear this to show generic playback status and hide source links. |
+| Show link buttons | Adds **Download Luna Player** and, when media details are shared, a source button for YouTube, Spotify or a public radio stream. |
+| Show activity when idle | Shows **Idle** when playback is stopped or no media is loaded. Clear this to remove the activity while idle. Pausing does not count as idle. |
+
+For radio, **Watch online** opens the stream itself in the viewer's browser. Some browsers may download
+or reject a stream they cannot play. Luna omits private addresses, links containing credentials and
+links with unrecognized query parameters. Local file paths are never used as buttons. Clearing
+**Show link buttons** removes both buttons without hiding the artwork.
+
+#### If activity is missing
+
+Check that both Discord's activity sharing and Luna's Rich Presence option are enabled. Luna samples
+playback once per second and sends state changes without a fixed four-second delay. Rapid changes
+are combined when Discord's send limit is reached. Luna reconnects when Discord starts or restarts; allow
+about 15 seconds. If Discord is unavailable, playback continues normally.
+
+Discord may hide your own activity buttons when you view your profile. Another person viewing the
+profile can see the buttons.
+
 ### Recording
 
 This page sets the defaults used by direct recording shortcuts and seeds the recording interface at the beginning of each Luna session. It contains audio format, sample rate, channels, audio quality for compressed formats, and the recordings folder.

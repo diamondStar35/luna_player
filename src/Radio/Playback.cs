@@ -60,6 +60,8 @@ internal sealed class Playback : IDisposable
     }
 
     internal bool IsActive => _session is not null && _player.InRadioSession;
+    internal Station? CurrentStation => IsActive && _session is { } session
+        && session.Index >= 0 && session.Index < session.View.Stations.Count ? session.View.Stations[session.Index] : null;
     internal int Count => _session?.View.Stations.Count ?? 0;
     internal int CurrentIndex => _session?.Position ?? -1;
     internal bool IsShuffleEnabled => _session?.Shuffled == true;
