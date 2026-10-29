@@ -3,6 +3,7 @@ using LunaPlayer.Media;
 using WxSharp;
 
 namespace LunaPlayer.UI.Conversion;
+
 internal sealed partial class MainDialog
 {
 

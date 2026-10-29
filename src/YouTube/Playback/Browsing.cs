@@ -58,7 +58,8 @@ internal sealed class Browsing
             Tr("Searching YouTube"),
             // Translators: First message shown while a YouTube search is running.
             Tr("Searching videos..."),
-            update => update.Name) { Proportional = false };
+            update => update.Name)
+        { Proportional = false };
         BackgroundProgress.Start(_view, _dispatcher, prompt,
             (report, token) => RunSearch(query, filter, count, videoQuality, audioQuality, fetching, report, token),
             found =>
@@ -100,7 +101,8 @@ internal sealed class Browsing
             Tr("Loading YouTube link"),
             // Translators: First message shown while the videos in a YouTube playlist are being listed.
             Tr("Loading playlist items..."),
-            update => update.Name) { Proportional = false };
+            update => update.Name)
+        { Proportional = false };
         BackgroundProgress.Start(_view, _dispatcher, prompt,
             (_, token) => RunPlaylist(link, token),
             found =>
@@ -144,7 +146,8 @@ internal sealed class Browsing
             Tr("Loading channel"),
             // Translators: First message shown while a YouTube channel is being opened.
             Tr("Loading channel videos..."),
-            update => update.Name) { Proportional = false };
+            update => update.Name)
+        { Proportional = false };
         BackgroundProgress.Start(_view, _dispatcher, prompt,
             (_, token) => _backend.OpenChannelTab(channelBase, Client.Tabs.Keys[tabIndex], token),
             found =>

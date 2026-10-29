@@ -9,6 +9,7 @@ using LunaPlayer.UI.Equalizer;
 using LunaPlayer.YouTube;
 
 namespace LunaPlayer.UI.Bookmarks;
+
 internal enum BookmarkManagementAction { Jump, Rename, Delete }
 
 internal readonly record struct BookmarkListItem(string Id, string Name, string Position);

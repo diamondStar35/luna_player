@@ -500,7 +500,8 @@ namespace MpvNet
                     parameter => parameter.Value,
                     StringComparer.Ordinal
                 )
-            ) { }
+            )
+        { }
 
         public void SetParameter(string name, object? value)
         {

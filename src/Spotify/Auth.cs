@@ -52,7 +52,8 @@ internal sealed class Auth : IDisposable
             using var response = await _http.PostAsync("https://accounts.spotify.com/api/token",
                 new FormUrlEncodedContent(new Dictionary<string, string>
                 {
-                    ["grant_type"] = "refresh_token", ["refresh_token"] = token.RefreshToken,
+                    ["grant_type"] = "refresh_token",
+                    ["refresh_token"] = token.RefreshToken,
                     ["client_id"] = clientId,
                 }), cancellationToken).ConfigureAwait(false);
             if (response.StatusCode is HttpStatusCode.BadRequest or HttpStatusCode.Unauthorized)
@@ -107,8 +108,12 @@ internal sealed class Auth : IDisposable
         var state = Base64Url(RandomNumberGenerator.GetBytes(24));
         var url = "https://accounts.spotify.com/authorize?" + Form(new Dictionary<string, string>
         {
-            ["response_type"] = "code", ["client_id"] = clientId, ["redirect_uri"] = RedirectUri,
-            ["scope"] = Scopes, ["state"] = state, ["code_challenge_method"] = "S256",
+            ["response_type"] = "code",
+            ["client_id"] = clientId,
+            ["redirect_uri"] = RedirectUri,
+            ["scope"] = Scopes,
+            ["state"] = state,
+            ["code_challenge_method"] = "S256",
             ["code_challenge"] = challenge,
         });
         Process.Start(new ProcessStartInfo(url) { UseShellExecute = true });
@@ -140,8 +145,11 @@ internal sealed class Auth : IDisposable
         using var tokenResponse = await _http.PostAsync("https://accounts.spotify.com/api/token",
             new FormUrlEncodedContent(new Dictionary<string, string>
             {
-                ["grant_type"] = "authorization_code", ["code"] = code, ["redirect_uri"] = RedirectUri,
-                ["client_id"] = clientId, ["code_verifier"] = verifier,
+                ["grant_type"] = "authorization_code",
+                ["code"] = code,
+                ["redirect_uri"] = RedirectUri,
+                ["client_id"] = clientId,
+                ["code_verifier"] = verifier,
             }), timeout.Token).ConfigureAwait(false);
         var token = await ReadTokenAsync(tokenResponse, clientId, null, timeout.Token).ConfigureAwait(false);
         await _gate.WaitAsync(timeout.Token).ConfigureAwait(false);

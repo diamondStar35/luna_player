@@ -9,6 +9,7 @@ using LunaPlayer.UI.Equalizer;
 using LunaPlayer.YouTube;
 
 namespace LunaPlayer.UI.Playlists;
+
 internal enum OpenedFilesAction { Jump, Information }
 
 /// <summary>Whether the user picked a recent item to open, or its kind's Clear command.</summary>

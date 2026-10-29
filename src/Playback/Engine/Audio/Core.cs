@@ -3,6 +3,7 @@ using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
 using LunaPlayer.Equalizer;
 namespace LunaPlayer.Playback;
+
 internal sealed partial class AudioProcessor(MpvSession session)
 {
     private readonly MpvSession _session = session;

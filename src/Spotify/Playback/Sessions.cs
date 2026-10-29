@@ -97,7 +97,9 @@ internal sealed partial class Sessions : IDisposable
         && _player.CurrentPath?.StartsWith("luna-spotify://", StringComparison.Ordinal) == true;
     private int RequestedBitrate => _settings.AudioQuality?.ToUpperInvariant() switch
     {
-        "NORMAL" => 96, "HIGH" => 160, _ => 320,
+        "NORMAL" => 96,
+        "HIGH" => 160,
+        _ => 320,
     };
 
     internal void ConfigurePlayback(AudioSettings audioSettings,

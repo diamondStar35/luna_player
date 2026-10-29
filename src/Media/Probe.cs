@@ -56,9 +56,14 @@ internal sealed class Probe : IDisposable
                 {
                     _mpv = new MPV(options: new Dictionary<string, object?>
                     {
-                        ["vo"] = "null", ["ao"] = "null", ["vid"] = "no",
-                        ["pause"] = true, ["terminal"] = false, ["idle"] = "yes",
-                        ["sub_auto"] = "no", ["network_timeout"] = 2,
+                        ["vo"] = "null",
+                        ["ao"] = "null",
+                        ["vid"] = "no",
+                        ["pause"] = true,
+                        ["terminal"] = false,
+                        ["idle"] = "yes",
+                        ["sub_auto"] = "no",
+                        ["network_timeout"] = 2,
                     }, optionalOptions: new Dictionary<string, object?>
                     {
                         // Script-free builds may omit this option; builds with scripting must not

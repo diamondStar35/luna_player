@@ -33,7 +33,8 @@ internal static class CredentialStore
             finally { CryptographicOperations.ZeroMemory(plain); }
         }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException
-            or CryptographicException or FormatException) { return null; }
+            or CryptographicException or FormatException)
+        { return null; }
     }
 
     /// <summary>Reads the old librespot cache during migration without copying its unprotected JSON.</summary>
@@ -52,7 +53,8 @@ internal static class CredentialStore
             return new Login.Credentials(username, type, data);
         }
         catch (Exception error) when (error is IOException or UnauthorizedAccessException
-            or JsonException or FormatException or KeyNotFoundException) { return null; }
+            or JsonException or FormatException or KeyNotFoundException)
+        { return null; }
     }
 
     internal static void Save(Login.Credentials credentials)

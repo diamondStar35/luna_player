@@ -72,7 +72,8 @@ internal sealed class DownloadPreferences : LunaPlayer.UI.Preferences.Preference
             // Translators: One of the YouTube download types: save the picture and sound as a video file.
             Tr("Video"),
             // Translators: One of the YouTube download types: save the sound alone as an audio file.
-            Tr("Audio")]) { SelectedIndex = (int)settings.Kind };
+            Tr("Audio")])
+        { SelectedIndex = (int)settings.Kind };
         _type.SelectionChanged += (_, _) => SyncType();
 
         // Translators: Label of the list that chooses the picture quality for downloaded YouTube videos.

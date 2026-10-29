@@ -9,6 +9,7 @@ using LunaPlayer.UI.Equalizer;
 using LunaPlayer.YouTube;
 
 namespace LunaPlayer.UI.Preferences;
+
 internal sealed record PrefsOps(
     string SettingsPath,
     string BookmarksPath,

@@ -71,7 +71,8 @@ internal sealed class Updates : IDisposable
             // Translators: Initial message shown while contacting the application update server.
             Tr("Checking for updates..."),
             // Translators: Status shown while the application update check is still running.
-            _ => Tr("Checking for updates...")) { Proportional = false };
+            _ => Tr("Checking for updates..."))
+        { Proportional = false };
         BackgroundProgress.Start(
             _view,
             _dispatcher,
@@ -162,7 +163,8 @@ internal sealed class Updates : IDisposable
             // Translators: Title of the window shown while a Luna Player update package is downloaded.
             Tr("Downloading update"),
             DownloadStatus(empty),
-            Describe) { Detailed = true };
+            Describe)
+        { Detailed = true };
         BackgroundProgress.Start(
             _view,
             _dispatcher,

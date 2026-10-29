@@ -24,8 +24,12 @@ internal static class OAuth
         var state = Base64Url(RandomNumberGenerator.GetBytes(24));
         var parameters = new Dictionary<string, string>
         {
-            ["response_type"] = "code", ["client_id"] = ClientId, ["redirect_uri"] = Redirect,
-            ["scope"] = Scopes, ["state"] = state, ["code_challenge_method"] = "S256",
+            ["response_type"] = "code",
+            ["client_id"] = ClientId,
+            ["redirect_uri"] = Redirect,
+            ["scope"] = Scopes,
+            ["state"] = state,
+            ["code_challenge_method"] = "S256",
             ["code_challenge"] = challenge,
         };
         var authorize = "https://accounts.spotify.com/authorize?" + Form(parameters);
@@ -51,8 +55,10 @@ internal static class OAuth
         using var response = await http.PostAsync("https://accounts.spotify.com/api/token",
             new FormUrlEncodedContent(new Dictionary<string, string>
             {
-                ["grant_type"] = "authorization_code", ["code"] = code,
-                ["redirect_uri"] = Redirect, ["client_id"] = ClientId,
+                ["grant_type"] = "authorization_code",
+                ["code"] = code,
+                ["redirect_uri"] = Redirect,
+                ["client_id"] = ClientId,
                 ["code_verifier"] = verifier,
             }), timeout.Token).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();

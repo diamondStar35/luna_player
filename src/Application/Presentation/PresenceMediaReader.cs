@@ -24,11 +24,17 @@ internal static class PresenceMediaReader
             string.Empty, string.Empty, null,
             spotify.IsActive ? spotify.IsPlaying : player.IsPlaying, video,
             spotify.IsActive ? spotify.Elapsed : player.Elapsed,
-            spotify.IsActive ? spotify.Duration : player.Duration, player.Speed) { Kind = kind };
+            spotify.IsActive ? spotify.Duration : player.Duration, player.Speed)
+        { Kind = kind };
         if (!details) return media;
         if (track is not null)
-            return media with { Title = track.Name, Artist = track.Artists, PublicUrl = spotify.CurrentLink,
-                ArtworkUrl = track.ArtworkUrl };
+            return media with
+            {
+                Title = track.Name,
+                Artist = track.Artists,
+                PublicUrl = spotify.CurrentLink,
+                ArtworkUrl = track.ArtworkUrl
+            };
 
         var tags = tagsCache.Original(player);
         var live = player.CurrentMetadata.Display;

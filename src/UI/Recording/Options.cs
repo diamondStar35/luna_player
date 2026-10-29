@@ -3,6 +3,7 @@ using LunaPlayer.Recording;
 using WxSharp;
 
 namespace LunaPlayer.UI.Recording;
+
 internal sealed partial class MainDialog
 {
 

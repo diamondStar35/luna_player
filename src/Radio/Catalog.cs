@@ -96,7 +96,10 @@ internal sealed class Catalog : IDisposable
             BitrateMax = maximum,
             HideBroken = global.OnlyWorking || local.OnlyWorking,
             IsHttps = global.HttpsOnly || local.HttpsOnly ? true : null,
-            Order = order, Reverse = order != "name", Offset = view.Offset, Limit = PageSize,
+            Order = order,
+            Reverse = order != "name",
+            Offset = view.Offset,
+            Limit = PageSize,
         };
     }
 
@@ -205,12 +208,18 @@ internal sealed class Catalog : IDisposable
 
     internal static Station Normalize(Station station) => station with
     {
-        Name = station.Name ?? string.Empty, Country = station.Country ?? string.Empty,
-        CountryCode = station.CountryCode ?? string.Empty, State = station.State ?? string.Empty,
-        Language = station.Language ?? string.Empty, Tags = station.Tags ?? string.Empty,
-        Codec = station.Codec ?? string.Empty, Url = station.Url ?? string.Empty,
-        ResolvedUrl = station.ResolvedUrl ?? string.Empty, Homepage = station.Homepage ?? string.Empty,
-        LastCheckTime = station.LastCheckTime ?? string.Empty, LastChangeTime = station.LastChangeTime ?? string.Empty,
+        Name = station.Name ?? string.Empty,
+        Country = station.Country ?? string.Empty,
+        CountryCode = station.CountryCode ?? string.Empty,
+        State = station.State ?? string.Empty,
+        Language = station.Language ?? string.Empty,
+        Tags = station.Tags ?? string.Empty,
+        Codec = station.Codec ?? string.Empty,
+        Url = station.Url ?? string.Empty,
+        ResolvedUrl = station.ResolvedUrl ?? string.Empty,
+        Homepage = station.Homepage ?? string.Empty,
+        LastCheckTime = station.LastCheckTime ?? string.Empty,
+        LastChangeTime = station.LastChangeTime ?? string.Empty,
     };
 
     internal static string? StreamUrl(Station station)

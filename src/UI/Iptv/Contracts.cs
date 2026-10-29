@@ -9,6 +9,7 @@ using LunaPlayer.UI.Equalizer;
 using LunaPlayer.YouTube;
 
 namespace LunaPlayer.UI.Iptv;
+
 internal enum IptvSourceAction { Open, Add, Edit, Remove }
 
 

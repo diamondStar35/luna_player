@@ -1,4 +1,5 @@
 namespace LunaPlayer.Playback;
+
 internal sealed partial class PlaybackCoordinator
 {
     public string? MediaTitle => _metadata.Title;

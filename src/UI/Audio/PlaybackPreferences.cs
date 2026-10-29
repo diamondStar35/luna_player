@@ -72,7 +72,7 @@ internal sealed class PlaybackPreferences : LunaPlayer.UI.Preferences.Preference
             Tr("Linear")], (int)settings.CrossfadeCurve);
         // Translators: Checkbox on Audio > Playback that also overlaps audio when the user navigates to another file.
         _crossfadeManual = new CheckBox(panel, label: Tr("Enable cross-fading during manual navigation"))
-            { Checked = settings.CrossfadeManualNavigation };
+        { Checked = settings.CrossfadeManualNavigation };
 
         var sizer = new BoxSizer(Orientation.Vertical);
         AddCheck(sizer, _normalize);

@@ -1,5 +1,6 @@
 using LunaPlayer.Media;
 namespace LunaPlayer.Playback;
+
 internal sealed class MetadataDiscovery(MpvSession session, Action<string, object?> changed)
 {
     private readonly MpvSession _session = session;

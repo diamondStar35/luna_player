@@ -80,7 +80,7 @@ internal static class StalkerClient
             return IptvLoadResult.Fail(exception.Message);
         }
     }
-// PLACEHOLDER
+    // PLACEHOLDER
     /// <summary>Walks the paginated channel list, adding each channel. Returns whether any channel fell into no
     /// known genre, so the caller can add the catch-all category once.</summary>
     private static bool LoadChannels(

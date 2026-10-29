@@ -83,8 +83,11 @@ internal sealed class BufferedAudioStream : Stream
                 using var response = await http.SendAsync(request,
                     HttpCompletionOption.ResponseHeadersRead, timeout.Token).ConfigureAwait(false);
                 if (response.StatusCode != HttpStatusCode.PartialContent
-                    || response.Content.Headers.ContentRange is not { From: { } from, To: { } to,
-                        Length: { } total } || from != start || total <= 0
+                    || response.Content.Headers.ContentRange is not
+                    {
+                        From: { } from, To: { } to,
+                        Length: { } total
+                    } || from != start || total <= 0
                     || to != Math.Min(end, total - 1))
                     throw new InvalidDataException("Invalid audio range response.");
                 // Read only the validated range, even if a server sends an unbounded response body.

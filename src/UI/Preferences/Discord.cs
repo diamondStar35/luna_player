@@ -31,7 +31,8 @@ internal sealed class DiscordPreferences : PreferencesPage
         var guide = new TextCtrl(panel, style: TextCtrlStyle.MultiLine | TextCtrlStyle.ReadOnly,
             // Translators: Instructions in Discord preferences. Activity Privacy is a page in Discord's settings.
             value: Tr("Open Discord Desktop, go to User Settings > Activity Privacy, and turn on Share your detected activities with others. Then select Enable Discord Rich Presence above and choose OK."),
-            size: new Size(-1, 120)) { Name = guideLabel.Label };
+            size: new Size(-1, 120))
+        { Name = guideLabel.Label };
         guide.InsertionPoint = 0;
         var layout = new BoxSizer(Orientation.Vertical);
         layout.Add(_enabled, flags: SizerFlags.All, border: 8);

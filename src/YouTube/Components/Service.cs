@@ -106,7 +106,8 @@ internal sealed class Service
                 // program and its version, {step} which one it is and {total} how many there are.
                 return TrFormat("Downloading {name}, {step} of {total}", update.Name, update.Found, steps)
                     + "\n" + Sizes(update);
-            }) { Detailed = true };
+            })
+        { Detailed = true };
         BackgroundProgress.Start(_view, _dispatcher, prompt,
             (report, token) => Run(channel, report, token),
             outcome =>
@@ -158,7 +159,8 @@ internal sealed class Service
             Tr("Updating yt-dlp"),
             // Translators: First message shown while yt-dlp is updating itself.
             Tr("Checking current yt-dlp version..."),
-            update => update.Name) { Proportional = false };
+            update => update.Name)
+        { Proportional = false };
         BackgroundProgress.Start(_view, _dispatcher, prompt,
             (report, token) => RunUpdate(channel, report, token),
             outcome => Report(outcome, channel));

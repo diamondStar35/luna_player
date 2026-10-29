@@ -1,5 +1,6 @@
 using LunaPlayer.Recording;
 namespace LunaPlayer.UI.Recording;
+
 internal sealed class EncoderChoices
 {
     internal IReadOnlyList<int> Bitrates = [];

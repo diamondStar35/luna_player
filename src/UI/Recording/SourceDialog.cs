@@ -80,7 +80,8 @@ internal sealed class SourceDialog : IDisposable
             _others = new CheckBox(_dialog,
                 // Translators: Tick box on the recording source window. Ticked, the source records every
                 // program except the chosen one rather than the chosen one itself.
-                label: Tr("Capture everything except this application")) { Checked = source.CaptureOthers };
+                label: Tr("Capture everything except this application"))
+            { Checked = source.CaptureOthers };
             form.AddSpacer(0);
             form.Add(_others, flags: SizerFlags.Expand);
         }

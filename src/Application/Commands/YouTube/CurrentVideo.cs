@@ -27,7 +27,8 @@ internal sealed partial class YouTube
             Tr("Loading video details"),
             // Translators: Message shown while the text the uploader wrote under a video is being fetched.
             Tr("Loading video details..."),
-            update => update.Name) { Proportional = false };
+            update => update.Name)
+        { Proportional = false };
         BackgroundProgress.Start(_view, _dispatcher, prompt,
             (_, token) => _backend.Describe(watchUrl, token),
             found =>

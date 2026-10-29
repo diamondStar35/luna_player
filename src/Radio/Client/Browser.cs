@@ -45,7 +45,8 @@ internal sealed partial class Browser : IDisposable
         _http = httpClient ?? new HttpClient(new HttpClientHandler
         {
             AutomaticDecompression = DecompressionMethods.All,
-        }) { Timeout = Timeout.InfiniteTimeSpan };
+        })
+        { Timeout = Timeout.InfiniteTimeSpan };
         _disposedToken = _lifetime.Token;
     }
 

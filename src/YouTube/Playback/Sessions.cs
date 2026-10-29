@@ -366,7 +366,8 @@ internal sealed partial class Sessions : IDisposable
             Tr("Loading YouTube stream"),
             // Translators: First message shown while the address of a video is being looked up.
             Tr("Fetching stream URL..."),
-            update => update.Name) { Proportional = false };
+            update => update.Name)
+        { Proportional = false };
         BackgroundProgress.Start(_view, _dispatcher, prompt,
             (_, waitToken) => _cache.Wait(watchUrl, item, audioOnly, quality, token, waitToken),
             completed);

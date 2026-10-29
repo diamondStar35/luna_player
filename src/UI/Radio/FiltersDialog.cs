@@ -101,10 +101,15 @@ internal sealed class FiltersDialog : IDisposable
 
     private Filters Read() => new()
     {
-        CountryCode = _country.Value.Trim().ToUpperInvariant(), Region = _region.Value.Trim(),
-        Language = _language.Value.Trim(), Tags = _tags.Value.Trim(), Codec = _codec.Value.Trim(),
-        MinimumBitrate = (uint)_minimum.Value, MaximumBitrate = (uint)_maximum.Value,
-        OnlyWorking = _working.Checked, HttpsOnly = _https.Checked,
+        CountryCode = _country.Value.Trim().ToUpperInvariant(),
+        Region = _region.Value.Trim(),
+        Language = _language.Value.Trim(),
+        Tags = _tags.Value.Trim(),
+        Codec = _codec.Value.Trim(),
+        MinimumBitrate = (uint)_minimum.Value,
+        MaximumBitrate = (uint)_maximum.Value,
+        OnlyWorking = _working.Checked,
+        HttpsOnly = _https.Checked,
     };
 
     private void Load(Filters filters)

@@ -9,4 +9,5 @@ using LunaPlayer.UI.Equalizer;
 using LunaPlayer.YouTube;
 
 namespace LunaPlayer.UI.Updates;
+
 internal readonly record struct AppUpdatePrompt(string CurrentVersion, string AvailableVersion, string Changes);

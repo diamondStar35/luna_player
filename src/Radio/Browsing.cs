@@ -89,8 +89,13 @@ internal sealed class StationView(Category category)
 
     internal StationView Request() => new(Category)
     {
-        Query = Query, GlobalFilters = GlobalFilters, LocalFilters = LocalFilters,
-        Offset = Offset, HasMore = HasMore, Loaded = Loaded, Selected = Selected,
+        Query = Query,
+        GlobalFilters = GlobalFilters,
+        LocalFilters = LocalFilters,
+        Offset = Offset,
+        HasMore = HasMore,
+        Loaded = Loaded,
+        Selected = Selected,
     };
 
     internal void Reset()

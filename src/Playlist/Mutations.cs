@@ -1,6 +1,7 @@
 using LunaPlayer.Configuration;
 using LunaPlayer.Media;
 namespace LunaPlayer.Playlist;
+
 internal sealed partial class PlaylistState
 {
 

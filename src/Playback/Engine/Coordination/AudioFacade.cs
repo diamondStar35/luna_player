@@ -3,6 +3,7 @@ using LunaPlayer.Configuration;
 using LunaPlayer.Configuration.Models;
 using LunaPlayer.Equalizer;
 namespace LunaPlayer.Playback;
+
 internal sealed partial class PlaybackCoordinator
 {
     public bool SetNormalization(bool enabled) => _audio.SetNormalization(enabled);

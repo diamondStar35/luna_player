@@ -73,7 +73,7 @@ internal static class XtreamClient
             return IptvLoadResult.Fail(exception.Message);
         }
     }
-// PLACEHOLDER
+    // PLACEHOLDER
     /// <summary>Fetches one category list and its streams and adds them, as one kind, to the growing catalog.
     /// Category ids are prefixed with the kind (<c>live:</c>, <c>vod:</c>) so live and video categories that
     /// share a provider number stay apart in the browser's category filter.</summary>

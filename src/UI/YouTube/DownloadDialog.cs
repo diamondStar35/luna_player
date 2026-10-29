@@ -63,7 +63,8 @@ internal sealed class DownloadDialog : IDisposable
             // Translators: One of the download types: save the picture, with its sound, as a video file.
             Tr("Video"),
             // Translators: One of the download types: save the sound alone as an audio file.
-            Tr("Audio")]) { SelectedIndex = (int)defaults.Kind };
+            Tr("Audio")])
+        { SelectedIndex = (int)defaults.Kind };
         _type.SelectionChanged += (_, _) => SyncOptions();
         // Translators: Label of the list that chooses the picture quality a downloaded video is saved at.
         _videoQualityLabel = new StaticText(_dialog, label: Tr("Video quality"));

@@ -134,7 +134,7 @@ internal sealed class ChannelBrowserDialog : IDisposable
         _dialog.MinSize = new Size(820, 520);
         _dialog.Center(onParent: true);
     }
-// PLACEHOLDER
+    // PLACEHOLDER
     private void WireEvents()
     {
         _kind.SelectionChanged += (_, _) => Rebuild();
@@ -184,7 +184,7 @@ internal sealed class ChannelBrowserDialog : IDisposable
         // Translators: Channel-browser status line. {count} is how many channels pass the current filters.
         _count.Label = TrPluralFormat("{count} channel", "{count} channels", _filtered.Count, _filtered.Count);
     }
-// PLACEHOLDER
+    // PLACEHOLDER
     /// <summary>Answers the list as it draws a row, mapping the visible row back to a channel.</summary>
     private string CellText(long row, int column)
     {

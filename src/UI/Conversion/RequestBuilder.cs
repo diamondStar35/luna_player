@@ -1,5 +1,6 @@
 using LunaPlayer.Media;
 namespace LunaPlayer.UI.Conversion;
+
 internal static class RequestBuilder
 {
     internal static ConversionRequest Create(IReadOnlyList<string> files, string extension, bool preserve,

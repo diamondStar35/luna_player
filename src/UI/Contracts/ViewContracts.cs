@@ -9,6 +9,7 @@ using LunaPlayer.UI.Equalizer;
 using LunaPlayer.YouTube;
 
 namespace LunaPlayer.UI.Contracts;
+
 internal readonly record struct FileSelection(string Path, string Directory);
 internal readonly record struct UiOperation(bool Success, string Error = "");
 
