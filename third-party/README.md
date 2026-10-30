@@ -42,7 +42,10 @@ Media decoding libraries used by mpv, plus the command-line tool used for conver
 - Version: N-128110-gfa4daf630, shared GPL x86-64-v2 build
 - Licence: GPL-3.0-or-later (`--enable-gpl --enable-version3`); see the root [LICENSE](../LICENSE).
 
+The bundled FFmpeg also includes `sofalizer` with libmysofa for playback using user-supplied SOFA HRTF files. No HRTF dataset is bundled with Luna Player.
+
 ## wxWidgets
+
 
 Windows, controls, and the accessibility information screen readers read.
 

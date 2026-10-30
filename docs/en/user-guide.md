@@ -834,6 +834,22 @@ Import replaces the corresponding collection; it does not merge entries. Keep ex
 | Enable dynamic normalize and limiter | Evens loudness and restrains peaks. |
 | Play audio as Mono | Mixes left and right channels into mono. |
 
+#### Headphone spatialization with SOFA files
+
+Open **Preferences > Audio > Headphone spatialization**, choose **Browse for SOFA file...**, and select a local `.sofa` HRTF file. Select **Enable headphone spatialization**, then press OK. This is off by default.
+
+Luna uses FFmpeg's libmysofa-backed `sofalizer` filter to render virtual speakers as stereo sound for headphones. Use a SOFA file containing `SimpleFreeFieldHRIR` head-related impulse responses, not a media file. The bundled FFmpeg includes the required filter; a replacement build must include libmysofa support.
+
+- **Gain (dB):** -20 to 40, with a default of 0. Reduce it if the result is too loud or clips.
+- **Rotation (degrees):** -360 to 360, with a default of 0. Rotates the virtual speakers horizontally.
+- **Elevation (degrees):** -90 to 90, with a default of 0. Moves the virtual speakers above or below the listener.
+
+Spatialization is applied before normalization, mono mixing, and balance adjustment. Leave **Play audio as Mono** off to preserve its stereo cues. Disable spatialization for speakers or recordings that are already binaural. The filter remains active across file changes and seeks.
+
+The SOFA file stays at its chosen path and is not included in settings backups. If it becomes unavailable, select it again or turn spatialization off. Invalid SOFA data is rejected before it can replace the active filter.
+
+On Windows, libmysofa may not open a SOFA path containing non-ASCII characters. If a valid file cannot be opened, move it to a folder and filename using only ASCII characters and select it again.
+
 #### Cross-fading
 
 Under **Audio > Playback**, select **Enable cross-fading for audio files** to overlap the end of one audio file with the beginning of the next. Cross-fading is off by default and excludes files containing video. Album cover art does not count as video.

@@ -4,12 +4,16 @@ internal static class NativeHost
 {
     private static readonly Lock Gate = new();
     private static bool _initialized;
-    internal static Engine Create()
+    internal static void Initialize()
     {
         lock (Gate)
         {
             if (!_initialized) { NativeLibraryBootstrap.Initialize(); _initialized = true; }
         }
+    }
+    internal static Engine Create()
+    {
+        Initialize();
         return new Engine(0, new Dictionary<string, object?> { ["ao"] = "null", ["vo"] = "null" });
     }
     internal static async Task Until(Func<bool> condition)

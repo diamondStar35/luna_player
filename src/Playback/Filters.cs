@@ -7,6 +7,26 @@ namespace LunaPlayer.Playback;
 
 internal static class AudioFilters
 {
+    internal const string SofaLabel = "audiosofa";
+
+    internal static bool IsSofaFile(string path)
+        => string.Equals(Path.GetExtension(path), ".sofa", StringComparison.OrdinalIgnoreCase) && File.Exists(path);
+
+    internal static string SofaGraph(AudioSettings settings)
+    {
+        if (!settings.SofaEnabled)
+            return string.Empty;
+        var path = Path.GetFullPath(settings.SofaFile).Replace('\\', '/');
+        var option = EscapeToken(path, "\\':");
+        var graphPath = EscapeToken(option, "\\'[],;");
+        return FormattableString.Invariant(
+            $"sofalizer=sofa={graphPath}:gain={settings.SofaGain}:rotation={settings.SofaRotation}:elevation={settings.SofaElevation}:type=freq");
+    }
+
+    private static string EscapeToken(string value, string special)
+        => string.Concat(value.Select(character => special.Contains(character) || char.IsWhiteSpace(character)
+            ? $"\\{character}" : character.ToString()));
+
     internal static string SilenceGraph(SilenceSettings settings)
     {
         var culture = CultureInfo.InvariantCulture;

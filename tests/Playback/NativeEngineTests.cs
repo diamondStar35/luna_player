@@ -8,6 +8,32 @@ namespace LunaPlayer.Tests.Playback;
 public sealed class NativeEngineTests
 {
     [TestMethod]
+    public void InvalidSofaIsRejectedBeforeMediaLoads()
+    {
+        using var workspace = new Workspace();
+        using var engine = NativeHost.Create();
+        var settings = new AudioSettings { SofaEnabled = true, SofaFile = workspace.File("invalid.sofa", "not a SOFA file") };
+        Assert.IsFalse(engine.SetSofa(AudioFilters.SofaGraph(settings)));
+        Assert.IsTrue(engine.SetSofa(string.Empty));
+    }
+
+    [TestMethod]
+    public async Task InvalidSofaDoesNotBreakLoadedAudio()
+    {
+        using var workspace = new Workspace();
+        using var engine = NativeHost.Create();
+        Assert.IsTrue(engine.Load(NativeHost.Wave(workspace), paused: true));
+        await NativeHost.Until(() => !engine.IsLoading && engine.Duration is > 0);
+        var settings = new AudioSettings { SofaEnabled = true, SofaFile = workspace.File("invalid.sofa", "not a SOFA file") };
+        Assert.IsFalse(engine.SetSofa(AudioFilters.SofaGraph(settings)));
+        Assert.IsTrue(engine.SetSofa(string.Empty));
+        engine.Play();
+        await NativeHost.Until(() => engine.Elapsed is > 0.1);
+        engine.Pause();
+        Assert.IsNotEmpty(engine.GetAudioTracks());
+    }
+
+    [TestMethod]
     public async Task LoadSeekPauseAndDiscoverAudio()
     {
         using var workspace = new Workspace(); using var engine = NativeHost.Create();

@@ -78,6 +78,11 @@ internal sealed class Settings
         Require(FiniteBetween(Audio.PitchStep, AudioSettings.MinimumPitchStep, AudioSettings.MaximumPitchStep),
             "audio.pitchStep");
         Require(Audio.Device is not null, "audio.device");
+        Require(Audio.SofaFile is not null && (!Audio.SofaEnabled || !string.IsNullOrWhiteSpace(Audio.SofaFile)),
+            "audio.sofaFile");
+        Require(FiniteBetween(Audio.SofaGain, -20, 40), "audio.sofaGain");
+        Require(FiniteBetween(Audio.SofaRotation, -360, 360), "audio.sofaRotation");
+        Require(FiniteBetween(Audio.SofaElevation, -90, 90), "audio.sofaElevation");
         Require(Audio.VolumeStep is >= 1 and <= 20, "audio.volumeStep");
         Require(FiniteBetween(Audio.Pan, -100, 100), "audio.pan");
         Require(Audio.PanStep is >= 1 and <= 100, "audio.panStep");
@@ -167,6 +172,9 @@ internal sealed class Settings
             AudioSettings.MinimumPitchStep, AudioSettings.MaximumPitchStep));
         Audio.Pan = Precision.Normalize(Math.Clamp(Audio.Pan, -100, 100));
         Audio.PanStep = Math.Clamp(Audio.PanStep, 1, 100);
+        Audio.SofaGain = Math.Clamp(Audio.SofaGain, -20, 40);
+        Audio.SofaRotation = Math.Clamp(Audio.SofaRotation, -360, 360);
+        Audio.SofaElevation = Math.Clamp(Audio.SofaElevation, -90, 90);
         Audio.SpeedStep = Precision.Normalize(Audio.SpeedStep > 0 ? Audio.SpeedStep : 0.1);
         Audio.CustomSeekStep = Precision.Normalize(Audio.CustomSeekStep > 0 ? Audio.CustomSeekStep : 5);
         Audio.FadeIntervalMilliseconds = Math.Clamp(
@@ -227,6 +235,7 @@ internal sealed class Settings
         General.Language = string.IsNullOrWhiteSpace(General.Language)
             ? Localization.SystemLanguage : General.Language.Trim();
         Audio.Device ??= string.Empty;
+        Audio.SofaFile ??= string.Empty;
         Playback.LastFile ??= string.Empty;
         Shortcuts.Primary ??= [];
         Shortcuts.Secondary ??= [];
