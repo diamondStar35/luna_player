@@ -220,6 +220,9 @@ internal sealed class MainFrame : IMainView
 
     public void SetSilenceRemovalChecked(bool isChecked) => Menus.SetSilenceRemovalChecked(isChecked);
 
+    public void SetHeadphoneSpatializationState(bool available, bool enabled)
+        => Menus.SetHeadphoneSpatializationState(available, enabled);
+
     public void SetSelectionState(SelectionMenuState state) => Menus.SetSelectionState(state);
 
     public void SetFullScreenAvailable(bool available) => Menus.SetFullScreenAvailable(available);

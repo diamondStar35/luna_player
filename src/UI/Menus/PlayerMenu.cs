@@ -23,6 +23,8 @@ internal static partial class Builder
         MenuItem ShuffleItem,
         MenuItem RepeatItem,
         MenuItem SilenceItem,
+        MenuItem SofaItem,
+        IReadOnlyList<MenuItem> SofaAngleItems,
         MenuItem FullScreenItem,
         ChapterMenuComponents Chapters);
 
@@ -64,6 +66,26 @@ internal static partial class Builder
         Add(panMenu, playbackItems, commandIds, shortcuts, ActionId.AnnouncePan, Tr("Speak Pan"));
         // Translators: Player submenu holding the left/right audio balance controls.
         playerMenu.AppendSubMenu(panMenu, Tr("Pan"));
+
+        var sofaMenu = new Menu();
+        var sofaItem = sofaMenu.AppendCheckItem(commandIds[ActionId.ToggleHeadphoneSpatialization],
+            // Translators: Checkable menu item enabling headphone spatialization for the current session only.
+            Label(Tr("Enable Headphone Spatialization"), ActionId.ToggleHeadphoneSpatialization, shortcuts));
+        // These are gated on SOFA configuration, not on whether a media file is loaded.
+        sofaItem.Enabled = false;
+        var sofaAngleItems = new List<MenuItem>();
+        // Translators: Headphone spatialization command that rotates virtual speakers to the listener's left.
+        Add(sofaMenu, sofaAngleItems, commandIds, shortcuts, ActionId.RotateSofaLeft, Tr("Rotate Left"));
+        // Translators: Headphone spatialization command that rotates virtual speakers to the listener's right.
+        Add(sofaMenu, sofaAngleItems, commandIds, shortcuts, ActionId.RotateSofaRight, Tr("Rotate Right"));
+        // Translators: Headphone spatialization command that raises the virtual speakers' vertical angle.
+        Add(sofaMenu, sofaAngleItems, commandIds, shortcuts, ActionId.SofaElevationUp, Tr("Raise Elevation"));
+        // Translators: Headphone spatialization command that lowers the virtual speakers' vertical angle.
+        Add(sofaMenu, sofaAngleItems, commandIds, shortcuts, ActionId.SofaElevationDown, Tr("Lower Elevation"));
+        foreach (var item in sofaAngleItems)
+            item.Enabled = false;
+        // Translators: Player submenu holding session-only controls for binaural audio on headphones.
+        playerMenu.AppendSubMenu(sofaMenu, Tr("Headphone Spatialization"));
 
         var equalizerCommands = new Dictionary<int, string>();
         var equalizerItems = new Dictionary<string, MenuItem>(StringComparer.Ordinal);
@@ -173,7 +195,7 @@ internal static partial class Builder
         return new PlayerMenuParts(
             playerMenu, playbackItems, audioTrackItems, equalizerCommands, equalizerItems, equalizerMenu,
             subtitleCommands, subtitleItems, subtitleMenu, subtitleMenuItem, subtitleRememberItem,
-            shuffleItem, repeatItem, silenceItem, fullScreenItem, chapters);
+            shuffleItem, repeatItem, silenceItem, sofaItem, sofaAngleItems, fullScreenItem, chapters);
     }
     /// <summary>What <see cref="MainMenuComponents.EqualizerCommands"/> holds for the item that switches
     /// the equalizer off, in place of a preset name. Not a name any preset can have, because a preset

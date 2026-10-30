@@ -66,6 +66,7 @@ internal sealed class Preferences
             view.ApplyShortcuts(shortcuts);
             GlobalShortcutBinder.Apply(view, globalShortcuts, settings, speech: null);
             view.SetSilenceRemovalChecked(player.IsSilenceRemovalEnabled);
+            view.SetHeadphoneSpatializationState(player.CanToggleSofa, player.IsSofaEnabled);
         }
 
         bool OpenSettingsFolder()
