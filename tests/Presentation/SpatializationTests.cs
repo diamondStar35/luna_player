@@ -149,11 +149,11 @@ public sealed class SpatializationTests
         var dependent = children.Where(child => child != enabled).ToArray();
         Assert.IsTrue(enabled.Visible);
         Assert.IsTrue(dependent.All(child => !child.Visible));
-        TextCtrl Field(string label)
+        Window Field(string label)
         {
             var index = Array.FindIndex(children, child => child is StaticText text && text.Label == label);
             Assert.IsGreaterThanOrEqualTo(0, index);
-            return (TextCtrl)children[index + 1];
+            return children[index + 1];
         }
         void Toggle(bool value)
         {
@@ -162,46 +162,78 @@ public sealed class SpatializationTests
         }
         Toggle(true);
         Assert.IsTrue(dependent.All(child => child.Visible));
-        var file = Field("SOFA file");
-        var rotationStep = Field("Rotation step (degrees)");
-        var elevationStep = Field("Elevation step (degrees)");
-        Assert.AreEqual("5", rotationStep.Value);
-        Assert.AreEqual("5", elevationStep.Value);
+        Assert.AreEqual("Browse...", children.OfType<Button>().Single().Label);
+        Assert.HasCount(4, children.OfType<SpinCtrl>().ToArray());
+        Assert.HasCount(2, children.OfType<TextCtrl>().ToArray());
+        var file = (TextCtrl)Field("SOFA file");
+        var gain = (TextCtrl)Field("Gain (dB)");
+        var rotation = (SpinCtrl)Field("Rotation (degrees)");
+        var elevation = (SpinCtrl)Field("Elevation (degrees)");
+        var rotationStep = (SpinCtrl)Field("Rotation step (degrees)");
+        var elevationStep = (SpinCtrl)Field("Elevation step (degrees)");
+        Assert.AreEqual(-360, rotation.Minimum);
+        Assert.AreEqual(360, rotation.Maximum);
+        Assert.AreEqual(-89, elevation.Minimum);
+        Assert.AreEqual(89, elevation.Maximum);
+        Assert.AreEqual(1, rotationStep.Minimum);
+        Assert.AreEqual(90, rotationStep.Maximum);
+        Assert.AreEqual(1, elevationStep.Minimum);
+        Assert.AreEqual(90, elevationStep.Maximum);
+        Assert.AreEqual(5, rotationStep.Value);
+        Assert.AreEqual(5, elevationStep.Value);
         StringAssert.Contains(page.GetContextHelp(rotationStep), "1 to 90");
         StringAssert.Contains(page.GetContextHelp(elevationStep), "1 to 90");
         file.Value = workspace.File("test.sofa");
-        foreach (var invalid in new[] { "0", "91", "NaN", "Infinity", "not a number" })
+        foreach (var step in new[] { rotationStep, elevationStep })
         {
-            rotationStep.Value = invalid;
-            Assert.AreEqual("Rotation step must be a number from 1 to 90 degrees.", page.Validate());
-            rotationStep.Value = "5";
-            elevationStep.Value = invalid;
-            Assert.AreEqual("Elevation step must be a number from 1 to 90 degrees.", page.Validate());
-            elevationStep.Value = "5";
+            step.Value = 0;
+            Assert.AreEqual(1, step.Value);
+            step.Value = 91;
+            Assert.AreEqual(90, step.Value);
         }
-        rotationStep.Value = "1";
-        elevationStep.Value = "90";
+        rotation.Value = -360;
+        elevation.Value = 89;
+        rotationStep.Value = 1;
+        elevationStep.Value = 90;
+        gain.Value = "-2.5";
         Assert.IsNull(page.Validate());
-        rotationStep.Value = "2.5";
         Toggle(false);
         Assert.IsTrue(dependent.All(child => !child.Visible));
         Assert.IsNull(page.Validate());
         page.Apply();
         Assert.IsFalse(settings.SofaEnabled);
         Assert.AreEqual(file.Value, settings.SofaFile);
-        Assert.AreEqual(2.5, settings.SofaRotationStep);
+        Assert.AreEqual(-2.5, settings.SofaGain);
+        Assert.AreEqual(-360d, settings.SofaRotation);
+        Assert.AreEqual(89d, settings.SofaElevation);
+        Assert.AreEqual(1d, settings.SofaRotationStep);
         Assert.AreEqual(90d, settings.SofaElevationStep);
-        // Invalid hidden drafts neither block saving nor overwrite the last valid values.
-        rotationStep.Value = "invalid";
-        Field("Gain (dB)").Value = "invalid";
+        // An invalid hidden gain draft neither blocks saving nor overwrites the last valid value.
+        gain.Value = "invalid";
         Assert.IsNull(page.Validate());
         page.Apply();
-        Assert.AreEqual(2.5, settings.SofaRotationStep);
-        Assert.AreEqual(0d, settings.SofaGain);
+        Assert.AreEqual(1d, settings.SofaRotationStep);
+        Assert.AreEqual(-2.5, settings.SofaGain);
+        settings.SofaRotation = 12.5;
+        settings.SofaElevation = -4.5;
+        settings.SofaRotationStep = 2.5;
+        settings.SofaElevationStep = 1.5;
+        settings.SofaGain = -2.75;
         settings.SofaEnabled = true;
         page.Refresh();
         Assert.IsTrue(dependent.All(child => child.Visible));
-        Assert.AreEqual("2.5", rotationStep.Value);
+        Assert.AreEqual(13, rotation.Value);
+        Assert.AreEqual(-5, elevation.Value);
+        Assert.AreEqual(3, rotationStep.Value);
+        Assert.AreEqual(2, elevationStep.Value);
+        Assert.AreEqual("-2.75", gain.Value);
+        Assert.IsNull(page.Validate());
+        page.Apply();
+        Assert.AreEqual(13d, settings.SofaRotation);
+        Assert.AreEqual(-5d, settings.SofaElevation);
+        Assert.AreEqual(3d, settings.SofaRotationStep);
+        Assert.AreEqual(2d, settings.SofaElevationStep);
+        Assert.AreEqual(-2.75, settings.SofaGain);
         settings.SofaEnabled = false;
         page.Refresh();
         Assert.IsTrue(dependent.All(child => !child.Visible));

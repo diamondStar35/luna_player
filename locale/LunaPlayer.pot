@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-10-30 17:38+0200\n"
+"POT-Creation-Date: 2026-10-30 18:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -4137,8 +4137,19 @@ msgid "SOFA file"
 msgstr ""
 
 #. Translators: Button opening the file picker for a SOFA HRTF file.
-#: UI/Audio/SofaPreferences.cs:35
-msgid "Browse for SOFA file..."
+#. Translators: Button on the converter that opens a folder picker for the destination folder.
+#. Translators: Button beside the file box that opens a dialog to choose a playlist file.
+#. Translators: Button that opens a window for choosing the folder recordings are saved into.
+#. Translators: Button that opens a folder picker for selection files.
+#. Translators: Button that opens a folder picker to choose where the download is saved.
+#. Translators: Button on the YouTube download settings page that opens a folder picker.
+#. Translators: Button that opens a file picker to choose a cookie file by hand.
+#: UI/Audio/SofaPreferences.cs:35 UI/Conversion/MainDialog.cs:177
+#: UI/Iptv/SourceEditDialog.cs:73 UI/Preferences/Recording.cs:72
+#: UI/Recording/MainDialog.cs:151 UI/Selections/SaveDialog.cs:47
+#: UI/YouTube/DownloadDialog.cs:97 UI/YouTube/DownloadPreferences.cs:66
+#: UI/YouTube/GeneralPreferences.cs:90
+msgid "Browse..."
 msgstr ""
 
 #. Translators: Output gain applied by the SOFA filter, in decibels.
@@ -4158,17 +4169,17 @@ msgid "Elevation (degrees)"
 msgstr ""
 
 #. Translators: How far each left/right spatialization command rotates the virtual speakers.
-#: UI/Audio/SofaPreferences.cs:46
+#: UI/Audio/SofaPreferences.cs:47
 msgid "Rotation step (degrees)"
 msgstr ""
 
 #. Translators: How far each raise/lower spatialization command changes the vertical angle.
-#: UI/Audio/SofaPreferences.cs:48
+#: UI/Audio/SofaPreferences.cs:50
 msgid "Elevation step (degrees)"
 msgstr ""
 
 #. Translators: F1 help for the headphone spatialization enable checkbox.
-#: UI/Audio/SofaPreferences.cs:53
+#: UI/Audio/SofaPreferences.cs:56
 msgid ""
 "Enable binaural rendering for headphones and show its settings. Leave this "
 "off when listening through speakers or to audio that is already binaural. "
@@ -4177,7 +4188,7 @@ msgid ""
 msgstr ""
 
 #. Translators: F1 help for the SOFA file path and browse button.
-#: UI/Audio/SofaPreferences.cs:55
+#: UI/Audio/SofaPreferences.cs:58
 msgid ""
 "Choose a local .sofa file containing head-related impulse responses (HRTFs). "
 "Luna uses FFmpeg's sofalizer filter with libmysofa. The file must remain "
@@ -4185,82 +4196,62 @@ msgid ""
 msgstr ""
 
 #. Translators: F1 help for SOFA output gain.
-#: UI/Audio/SofaPreferences.cs:60
+#: UI/Audio/SofaPreferences.cs:63
 msgid ""
 "Enter a gain from -20 to 40 dB. The default is 0. Lower the gain if the "
 "spatialized sound clips or is too loud."
 msgstr ""
 
 #. Translators: F1 help for the horizontal rotation angle.
-#: UI/Audio/SofaPreferences.cs:63
+#: UI/Audio/SofaPreferences.cs:66
 msgid ""
-"Set the default rotation of the virtual speakers around your head, from -360 "
-"to 360 degrees. Positive values turn right and negative values turn left. "
-"The default is 0. Player menu and shortcut changes are not saved."
+"Set the default rotation of the virtual speakers around your head in whole "
+"degrees, from -360 to 360. Positive values turn right and negative values "
+"turn left. The default is 0. Player menu and shortcut changes are not saved."
 msgstr ""
 
 #. Translators: F1 help for the vertical angle.
-#: UI/Audio/SofaPreferences.cs:66
+#: UI/Audio/SofaPreferences.cs:69
 msgid ""
-"Set the default elevation of the virtual speakers above or below you, from -"
-"89 to 89 degrees. The default is 0. Player menu and shortcut changes are not "
-"saved."
+"Set the default elevation of the virtual speakers above or below you in "
+"whole degrees, from -89 to 89. The default is 0. Player menu and shortcut "
+"changes are not saved."
 msgstr ""
 
 #. Translators: F1 help for the step used by the spatialization rotation commands.
-#: UI/Audio/SofaPreferences.cs:69
+#: UI/Audio/SofaPreferences.cs:72
 msgid ""
-"Enter how many degrees each Rotate Left or Rotate Right command changes "
-"rotation, from 1 to 90. Decimals are accepted. The default is 5. Rotation "
-"wraps around after a full turn."
+"Set how many whole degrees each Rotate Left or Rotate Right command changes "
+"rotation, from 1 to 90. The default is 5. Rotation wraps around after a full "
+"turn."
 msgstr ""
 
 #. Translators: F1 help for the step used by the spatialization elevation commands.
-#: UI/Audio/SofaPreferences.cs:72
+#: UI/Audio/SofaPreferences.cs:75
 msgid ""
-"Enter how many degrees each Raise Elevation or Lower Elevation command "
-"changes elevation, from 1 to 90. Decimals are accepted. The default is 5. "
-"Elevation stops at -89 and 89 degrees."
+"Set how many whole degrees each Raise Elevation or Lower Elevation command "
+"changes elevation, from 1 to 90. The default is 5. Elevation stops at -89 "
+"and 89 degrees."
 msgstr ""
 
 #. Translators: Validation error when enabling SOFA processing without an existing .sofa file.
-#: UI/Audio/SofaPreferences.cs:85
+#: UI/Audio/SofaPreferences.cs:88
 msgid ""
 "Choose an existing .sofa HRTF file before enabling headphone spatialization."
 msgstr ""
 
 #. Translators: Validation error for SOFA output gain.
-#: UI/Audio/SofaPreferences.cs:91
+#: UI/Audio/SofaPreferences.cs:94
 msgid "Gain must be a number from -20 to 40 dB."
 msgstr ""
 
-#. Translators: Validation error for the SOFA horizontal rotation.
-#: UI/Audio/SofaPreferences.cs:97
-msgid "Rotation must be a number from -360 to 360 degrees."
-msgstr ""
-
-#. Translators: Validation error for the SOFA vertical angle.
-#: UI/Audio/SofaPreferences.cs:103
-msgid "Elevation must be a number from -89 to 89 degrees."
-msgstr ""
-
-#. Translators: Validation error for the number of degrees changed by a rotation command.
-#: UI/Audio/SofaPreferences.cs:109
-msgid "Rotation step must be a number from 1 to 90 degrees."
-msgstr ""
-
-#. Translators: Validation error for the number of degrees changed by an elevation command.
-#: UI/Audio/SofaPreferences.cs:115
-msgid "Elevation step must be a number from 1 to 90 degrees."
-msgstr ""
-
 #. Translators: Title of the file picker for headphone HRTF data.
-#: UI/Audio/SofaPreferences.cs:153
+#: UI/Audio/SofaPreferences.cs:128
 msgid "Choose a SOFA file"
 msgstr ""
 
 #. Translators: File picker filter. Translate only "SOFA files"; keep the extension and separators unchanged.
-#: UI/Audio/SofaPreferences.cs:155
+#: UI/Audio/SofaPreferences.cs:130
 msgid "SOFA files (*.sofa)|*.sofa"
 msgstr ""
 
@@ -4526,20 +4517,6 @@ msgstr ""
 #. Translators: Label of the box holding the folder the converted files are written to.
 #: UI/Conversion/MainDialog.cs:174
 msgid "Destination folder"
-msgstr ""
-
-#. Translators: Button on the converter that opens a folder picker for the destination folder.
-#. Translators: Button beside the file box that opens a dialog to choose a playlist file.
-#. Translators: Button that opens a window for choosing the folder recordings are saved into.
-#. Translators: Button that opens a folder picker for selection files.
-#. Translators: Button that opens a folder picker to choose where the download is saved.
-#. Translators: Button on the YouTube download settings page that opens a folder picker.
-#. Translators: Button that opens a file picker to choose a cookie file by hand.
-#: UI/Conversion/MainDialog.cs:177 UI/Iptv/SourceEditDialog.cs:73
-#: UI/Preferences/Recording.cs:72 UI/Recording/MainDialog.cs:151
-#: UI/Selections/SaveDialog.cs:47 UI/YouTube/DownloadDialog.cs:97
-#: UI/YouTube/DownloadPreferences.cs:66 UI/YouTube/GeneralPreferences.cs:90
-msgid "Browse..."
 msgstr ""
 
 #. Translators: Tick box on the converter that removes each source file once it has been converted.

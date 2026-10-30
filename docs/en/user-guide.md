@@ -835,15 +835,17 @@ Import replaces the corresponding collection; it does not merge entries. Keep ex
 
 #### Headphone spatialization with SOFA files
 
-Open **Preferences > Audio > Headphone spatialization** and select **Enable headphone spatialization** to reveal its settings. Choose **Browse for SOFA file...**, select a local `.sofa` HRTF file, configure the defaults, then press OK. Spatialization is off by default; all other controls on this page are hidden while its Enable checkbox is cleared. You can configure a file and defaults, then clear Enable before saving if you prefer to turn spatialization on only from the Player menu.
+Open **Preferences > Audio > Headphone spatialization** and select **Enable headphone spatialization** to reveal its settings. Choose **Browse...**, select a local `.sofa` HRTF file, configure the defaults, then press OK. Spatialization is off by default; all other controls on this page are hidden while its Enable checkbox is cleared. You can configure a file and defaults, then clear Enable before saving if you prefer to turn spatialization on only from the Player menu.
 
 Luna uses FFmpeg's libmysofa-backed `sofalizer` filter to render virtual speakers as stereo sound for headphones. Use a SOFA file containing `SimpleFreeFieldHRIR` head-related impulse responses, not a media file. The bundled FFmpeg includes the required filter; a replacement build must include libmysofa support.
 
 - **Gain (dB):** -20 to 40, with a default of 0. Reduce it if the result is too loud or clips.
 - **Rotation (degrees):** Default horizontal angle of the virtual speakers, from -360 to 360, initially 0. Positive values turn right; negative values turn left.
 - **Elevation (degrees):** Default vertical angle of the virtual speakers, from -89 to 89, initially 0.
-- **Rotation step (degrees):** Amount changed by each rotation command, from 1 to 90. The default is 5; decimals are accepted.
-- **Elevation step (degrees):** Amount changed by each elevation command, from 1 to 90. The default is 5; decimals are accepted.
+- **Rotation step (degrees):** Amount changed by each rotation command, from 1 to 90. The default is 5.
+- **Elevation step (degrees):** Amount changed by each elevation command, from 1 to 90. The default is 5.
+
+Rotation, elevation and their steps use whole-degree spin controls. Gain remains a text field that accepts decimals. Older decimal angle or step defaults are rounded to the nearest whole degree when this page is saved.
 
 The **Player > Headphone Spatialization** submenu is beside **Pan**:
 

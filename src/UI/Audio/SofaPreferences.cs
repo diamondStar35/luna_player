@@ -11,10 +11,10 @@ internal sealed class SofaPreferences : LunaPlayer.UI.Preferences.PreferencesPag
     private readonly CheckBox _enabled;
     private readonly TextCtrl _file;
     private readonly TextCtrl _gain;
-    private readonly TextCtrl _rotation;
-    private readonly TextCtrl _elevation;
-    private readonly TextCtrl _rotationStep;
-    private readonly TextCtrl _elevationStep;
+    private readonly SpinCtrl _rotation;
+    private readonly SpinCtrl _elevation;
+    private readonly SpinCtrl _rotationStep;
+    private readonly SpinCtrl _elevationStep;
     private readonly List<Window> _dependentControls = [];
 
     internal SofaPreferences(Window parent, AudioSettings settings)
@@ -32,20 +32,23 @@ internal sealed class SofaPreferences : LunaPlayer.UI.Preferences.PreferencesPag
         // Translators: Label for the path to the user's SOFA HRTF file. Keep SOFA unchanged.
         _file = Field(panel, sizer, Tr("SOFA file"));
         // Translators: Button opening the file picker for a SOFA HRTF file.
-        var browse = new Button(panel, label: Tr("Browse for SOFA file..."));
+        var browse = new Button(panel, label: Tr("Browse..."));
         browse.Click += Browse;
         _dependentControls.Add(browse);
         sizer.Add(browse, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         // Translators: Output gain applied by the SOFA filter, in decibels.
         _gain = Field(panel, sizer, Tr("Gain (dB)"));
         // Translators: Horizontal rotation of the virtual speakers around the listener.
-        _rotation = Field(panel, sizer, Tr("Rotation (degrees)"));
+        _rotation = SpinField(panel, sizer, Tr("Rotation (degrees)"), -360, 360);
         // Translators: Vertical angle of the virtual speakers relative to the listener.
-        _elevation = Field(panel, sizer, Tr("Elevation (degrees)"));
+        _elevation = SpinField(panel, sizer, Tr("Elevation (degrees)"),
+            -(int)AudioSettings.MaximumSofaElevation, (int)AudioSettings.MaximumSofaElevation);
         // Translators: How far each left/right spatialization command rotates the virtual speakers.
-        _rotationStep = Field(panel, sizer, Tr("Rotation step (degrees)"));
+        _rotationStep = SpinField(panel, sizer, Tr("Rotation step (degrees)"),
+            (int)AudioSettings.MinimumSofaStep, (int)AudioSettings.MaximumSofaStep);
         // Translators: How far each raise/lower spatialization command changes the vertical angle.
-        _elevationStep = Field(panel, sizer, Tr("Elevation step (degrees)"));
+        _elevationStep = SpinField(panel, sizer, Tr("Elevation step (degrees)"),
+            (int)AudioSettings.MinimumSofaStep, (int)AudioSettings.MaximumSofaStep);
         panel.SetSizer(sizer);
         _enabled.Toggled += (_, _) => ShowSettings();
         Help(_enabled,
@@ -60,16 +63,16 @@ internal sealed class SofaPreferences : LunaPlayer.UI.Preferences.PreferencesPag
             Tr("Enter a gain from -20 to 40 dB. The default is 0. Lower the gain if the spatialized sound clips or is too loud."));
         Help(_rotation,
             // Translators: F1 help for the horizontal rotation angle.
-            Tr("Set the default rotation of the virtual speakers around your head, from -360 to 360 degrees. Positive values turn right and negative values turn left. The default is 0. Player menu and shortcut changes are not saved."));
+            Tr("Set the default rotation of the virtual speakers around your head in whole degrees, from -360 to 360. Positive values turn right and negative values turn left. The default is 0. Player menu and shortcut changes are not saved."));
         Help(_elevation,
             // Translators: F1 help for the vertical angle.
-            Tr("Set the default elevation of the virtual speakers above or below you, from -89 to 89 degrees. The default is 0. Player menu and shortcut changes are not saved."));
+            Tr("Set the default elevation of the virtual speakers above or below you in whole degrees, from -89 to 89. The default is 0. Player menu and shortcut changes are not saved."));
         Help(_rotationStep,
             // Translators: F1 help for the step used by the spatialization rotation commands.
-            Tr("Enter how many degrees each Rotate Left or Rotate Right command changes rotation, from 1 to 90. Decimals are accepted. The default is 5. Rotation wraps around after a full turn."));
+            Tr("Set how many whole degrees each Rotate Left or Rotate Right command changes rotation, from 1 to 90. The default is 5. Rotation wraps around after a full turn."));
         Help(_elevationStep,
             // Translators: F1 help for the step used by the spatialization elevation commands.
-            Tr("Enter how many degrees each Raise Elevation or Lower Elevation command changes elevation, from 1 to 90. Decimals are accepted. The default is 5. Elevation stops at -89 and 89 degrees."));
+            Tr("Set how many whole degrees each Raise Elevation or Lower Elevation command changes elevation, from 1 to 90. The default is 5. Elevation stops at -89 and 89 degrees."));
         Refresh();
     }
 
@@ -90,30 +93,6 @@ internal sealed class SofaPreferences : LunaPlayer.UI.Preferences.PreferencesPag
             // Translators: Validation error for SOFA output gain.
             return Tr("Gain must be a number from -20 to 40 dB.");
         }
-        if (!NumberInRange(_rotation.Value, -360, 360))
-        {
-            _rotation.Focus();
-            // Translators: Validation error for the SOFA horizontal rotation.
-            return Tr("Rotation must be a number from -360 to 360 degrees.");
-        }
-        if (!NumberInRange(_elevation.Value, -AudioSettings.MaximumSofaElevation, AudioSettings.MaximumSofaElevation))
-        {
-            _elevation.Focus();
-            // Translators: Validation error for the SOFA vertical angle.
-            return Tr("Elevation must be a number from -89 to 89 degrees.");
-        }
-        if (!NumberInRange(_rotationStep.Value, AudioSettings.MinimumSofaStep, AudioSettings.MaximumSofaStep))
-        {
-            _rotationStep.Focus();
-            // Translators: Validation error for the number of degrees changed by a rotation command.
-            return Tr("Rotation step must be a number from 1 to 90 degrees.");
-        }
-        if (!NumberInRange(_elevationStep.Value, AudioSettings.MinimumSofaStep, AudioSettings.MaximumSofaStep))
-        {
-            _elevationStep.Focus();
-            // Translators: Validation error for the number of degrees changed by an elevation command.
-            return Tr("Elevation step must be a number from 1 to 90 degrees.");
-        }
         return null;
     }
 
@@ -122,16 +101,12 @@ internal sealed class SofaPreferences : LunaPlayer.UI.Preferences.PreferencesPag
         _settings.SofaEnabled = _enabled.Checked;
         var path = _file.Value.Trim();
         _settings.SofaFile = File.Exists(path) ? Path.GetFullPath(path) : path;
-        // Valid edits are retained even if the user clears Enable before saving. Invalid hidden
-        // drafts leave the previous default intact instead of preventing the effect from being disabled.
+        // A hidden invalid gain draft must not prevent disabling the effect or overwrite its default.
         _settings.SofaGain = NumberOrDefault(_gain.Value, -20, 40, _settings.SofaGain);
-        _settings.SofaRotation = NumberOrDefault(_rotation.Value, -360, 360, _settings.SofaRotation);
-        _settings.SofaElevation = NumberOrDefault(_elevation.Value,
-            -AudioSettings.MaximumSofaElevation, AudioSettings.MaximumSofaElevation, _settings.SofaElevation);
-        _settings.SofaRotationStep = NumberOrDefault(_rotationStep.Value,
-            AudioSettings.MinimumSofaStep, AudioSettings.MaximumSofaStep, _settings.SofaRotationStep);
-        _settings.SofaElevationStep = NumberOrDefault(_elevationStep.Value,
-            AudioSettings.MinimumSofaStep, AudioSettings.MaximumSofaStep, _settings.SofaElevationStep);
+        _settings.SofaRotation = _rotation.Value;
+        _settings.SofaElevation = _elevation.Value;
+        _settings.SofaRotationStep = _rotationStep.Value;
+        _settings.SofaElevationStep = _elevationStep.Value;
     }
 
     public override void Refresh()
@@ -139,10 +114,10 @@ internal sealed class SofaPreferences : LunaPlayer.UI.Preferences.PreferencesPag
         _enabled.Checked = _settings.SofaEnabled;
         _file.Value = _settings.SofaFile;
         _gain.Value = _settings.SofaGain.ToString(CultureInfo.InvariantCulture);
-        _rotation.Value = _settings.SofaRotation.ToString(CultureInfo.InvariantCulture);
-        _elevation.Value = _settings.SofaElevation.ToString(CultureInfo.InvariantCulture);
-        _rotationStep.Value = _settings.SofaRotationStep.ToString(CultureInfo.InvariantCulture);
-        _elevationStep.Value = _settings.SofaElevationStep.ToString(CultureInfo.InvariantCulture);
+        _rotation.Value = WholeDegrees(_settings.SofaRotation);
+        _elevation.Value = WholeDegrees(_settings.SofaElevation);
+        _rotationStep.Value = WholeDegrees(_settings.SofaRotationStep);
+        _elevationStep.Value = WholeDegrees(_settings.SofaElevationStep);
         ShowSettings();
     }
 
@@ -182,12 +157,28 @@ internal sealed class SofaPreferences : LunaPlayer.UI.Preferences.PreferencesPag
     {
         var title = new StaticText(parent, label: label);
         var field = new TextCtrl(parent);
+        AddField(sizer, title, field);
+        return field;
+    }
+
+    private SpinCtrl SpinField(Window parent, BoxSizer sizer, string label, int minimum, int maximum)
+    {
+        var title = new StaticText(parent, label: label);
+        var field = new SpinCtrl(parent, Math.Clamp(0, minimum, maximum), minimum, maximum);
+        AddField(sizer, title, field);
+        return field;
+    }
+
+    private void AddField(BoxSizer sizer, StaticText title, Window field)
+    {
         _dependentControls.Add(title);
         _dependentControls.Add(field);
         sizer.Add(title, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         sizer.Add(field, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom | SizerFlags.Expand, border: 8);
-        return field;
     }
+
+    // Retain compatibility with saved decimal defaults while presenting integer spin controls.
+    private static int WholeDegrees(double value) => (int)Math.Round(value, MidpointRounding.AwayFromZero);
 
     private static double NumberOrDefault(string text, double minimum, double maximum, double previous)
         => NumberInRange(text, minimum, maximum) ? double.Parse(text.Trim(), CultureInfo.InvariantCulture) : previous;
