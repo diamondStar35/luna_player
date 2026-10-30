@@ -30,7 +30,7 @@ public sealed class SofaTests
             var graph = AudioFilters.SofaGraph(settings);
             StringAssert.Contains(graph, "sofalizer=sofa=C\\\\:/");
             StringAssert.Contains(graph, "HRTF\\\\\\'s\\\\\\ \\[test\\]\\,\\\\\\ semi\\;\\\\\\ مثال.SOFA");
-            StringAssert.Contains(graph, ":gain=-2.5:rotation=30.5:elevation=-5.5:type=freq");
+            StringAssert.Contains(graph, ":gain=-2.5:rotation=-30.5:elevation=-5.5:type=freq");
             Assert.IsTrue(AudioFilters.IsSofaFile(path));
         }
         finally { CultureInfo.CurrentCulture = previousCulture; }
@@ -244,11 +244,11 @@ public sealed class SofaTests
     }
 
     [TestMethod]
-    [DataRow(89d, 5d, 90d)]
-    [DataRow(-89d, -5d, -90d)]
-    [DataRow(90d, 5d, 90d)]
+    [DataRow(88d, 5d, 89d)]
+    [DataRow(-88d, -5d, -89d)]
+    [DataRow(90d, 5d, 89d)]
     [DataRow(0d, -2.5d, -2.5d)]
-    public void RuntimeElevationStopsAtThePoles(double initial, double delta, double expected)
+    public void RuntimeElevationStopsBeforeTheBackendWrapsToZero(double initial, double delta, double expected)
     {
         using var workspace = new Workspace();
         using var player = new Player(new FakeEngine());
@@ -256,6 +256,18 @@ public sealed class SofaTests
             { SofaEnabled = true, SofaFile = workspace.File("test.sofa"), SofaElevation = initial }));
         Assert.IsTrue(player.ChangeSofaElevation(delta));
         Assert.AreEqual(expected, player.SofaElevation);
+    }
+
+    [TestMethod]
+    [DataRow(90d, 89d)]
+    [DataRow(-90d, -89d)]
+    public void LegacyElevationEndpointsAreAcceptedAndNormalized(double stored, double expected)
+    {
+        var settings = new Settings();
+        settings.Audio.SofaElevation = stored;
+        settings.ValidateStored();
+        settings.NormalizeValues();
+        Assert.AreEqual(expected, settings.Audio.SofaElevation);
     }
 
     [TestMethod]

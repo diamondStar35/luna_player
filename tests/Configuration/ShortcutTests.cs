@@ -1,4 +1,6 @@
+using System.Text.Json;
 using LunaPlayer.Actions;
+using LunaPlayer.Configuration.Models;
 
 namespace LunaPlayer.Tests.Configuration;
 
@@ -11,27 +13,40 @@ public sealed class ShortcutTests
     private static readonly Shortcut AltRight = new("r", ShortcutModifiers.Alt);
 
     [TestMethod]
-    public void LegacySeekBindingsCanBeReclaimedAfterMovingRotationShortcuts()
+    public void RetiredBindingsDoNotInvalidateOtherSettings()
     {
-        ActionDefinition[] definitions =
-        [
-            new(ActionId.SeekBackwardX4, "Seek backward four steps"),
-            new(ActionId.SeekForwardX4, "Seek forward four steps"),
-            new(ActionId.RotateSofaLeft, "Rotate left", Left),
-            new(ActionId.RotateSofaRight, "Rotate right", Right),
-        ];
-        var shortcuts = new ShortcutManager(definitions);
-        shortcuts.Set(ActionId.RotateSofaLeft, AltLeft);
-        shortcuts.Set(ActionId.RotateSofaRight, AltRight);
-        shortcuts.Set(ActionId.SeekBackwardX4, Left);
-        shortcuts.Set(ActionId.SeekForwardX4, Right);
-        var reloaded = new ShortcutManager(definitions);
-        reloaded.Apply(shortcuts.PrimaryOverrides(), shortcuts.SecondaryOverrides());
-        Assert.AreEqual(Left, reloaded.Get(ActionId.SeekBackwardX4));
-        Assert.AreEqual(Right, reloaded.Get(ActionId.SeekForwardX4));
-        Assert.AreEqual(AltLeft, reloaded.Get(ActionId.RotateSofaLeft));
-        Assert.AreEqual(AltRight, reloaded.Get(ActionId.RotateSofaRight));
-        AssertUnique(reloaded);
+        const string json = """
+            {"audio":{"volume":73},"shortcuts":{
+              "primary":{"SeekBackwardX4":{"key":"left","modifiers":"Control, Shift"},
+                         "PlayPause":{"key":"p","modifiers":"Alt"}},
+              "secondary":{"SeekForwardX4":{"key":"right","modifiers":"Control, Shift"}},
+              "global":{"SeekBackwardX4":{"key":"left","modifiers":"Win, Alt"}}
+            }}
+            """;
+        var settings = JsonSerializer.Deserialize(json, SettingsJsonContext.Default.Settings)!;
+        settings.ValidateStored();
+        Assert.AreEqual(73d, settings.Audio.Volume);
+        Assert.AreEqual(new Shortcut("p", ShortcutModifiers.Alt), settings.Shortcuts.Primary[ActionId.PlayPause]);
+        Assert.HasCount(1, settings.Shortcuts.Primary);
+        Assert.HasCount(0, settings.Shortcuts.Secondary);
+        Assert.HasCount(0, settings.Shortcuts.Global);
+        var saved = JsonSerializer.Serialize(settings, SettingsJsonContext.Default.Settings);
+        Assert.IsFalse(saved.Contains("SeekBackwardX4", StringComparison.Ordinal));
+        Assert.IsFalse(saved.Contains("SeekForwardX4", StringComparison.Ordinal));
+        var restored = JsonSerializer.Deserialize(saved, SettingsJsonContext.Default.Settings)!;
+        Assert.AreEqual(settings.Shortcuts.Primary[ActionId.PlayPause], restored.Shortcuts.Primary[ActionId.PlayPause]);
+    }
+
+    [TestMethod]
+    public void LegacyNumericBindingsKeepTheirOriginalActions()
+    {
+        const string json = """
+            {"shortcuts":{"primary":{"40":{"key":"left"},"41":{"key":"right"},"42":{"key":"home"}}}}
+            """;
+        var settings = JsonSerializer.Deserialize(json, SettingsJsonContext.Default.Settings)!;
+        settings.ValidateStored();
+        Assert.HasCount(1, settings.Shortcuts.Primary);
+        Assert.AreEqual(new Shortcut("home"), settings.Shortcuts.Primary[ActionId.SeekStart]);
     }
 
     [TestMethod]

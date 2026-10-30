@@ -203,7 +203,6 @@ If a finished or unloaded item can be reopened, Play/Pause reloads it. In Beginn
 Press <kbd>Left</kbd> or <kbd>Right</kbd> to move by one seek step. Larger movements are available without changing the selected step:
 
 - <kbd>Shift</kbd>+<kbd>Left</kbd> or <kbd>Shift</kbd>+<kbd>Right</kbd> moves by two steps.
-- Four-step rewind and forward commands are available in **Preferences > Shortcuts** but have no default shortcuts. <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Left</kbd> and <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Right</kbd> now rotate headphone spatialization. To restore the old seek bindings, first reassign the rotation commands, then assign those keys to four-step seeking.
 - <kbd>Home</kbd> moves to the beginning.
 - <kbd>End</kbd> moves to the end.
 
@@ -841,8 +840,8 @@ Open **Preferences > Audio > Headphone spatialization** and select **Enable head
 Luna uses FFmpeg's libmysofa-backed `sofalizer` filter to render virtual speakers as stereo sound for headphones. Use a SOFA file containing `SimpleFreeFieldHRIR` head-related impulse responses, not a media file. The bundled FFmpeg includes the required filter; a replacement build must include libmysofa support.
 
 - **Gain (dB):** -20 to 40, with a default of 0. Reduce it if the result is too loud or clips.
-- **Rotation (degrees):** Default horizontal angle of the virtual speakers, from -360 to 360, initially 0.
-- **Elevation (degrees):** Default vertical angle of the virtual speakers, from -90 to 90, initially 0.
+- **Rotation (degrees):** Default horizontal angle of the virtual speakers, from -360 to 360, initially 0. Positive values turn right; negative values turn left.
+- **Elevation (degrees):** Default vertical angle of the virtual speakers, from -89 to 89, initially 0.
 - **Rotation step (degrees):** Amount changed by each rotation command, from 1 to 90. The default is 5; decimals are accepted.
 - **Elevation step (degrees):** Amount changed by each elevation command, from 1 to 90. The default is 5; decimals are accepted.
 
@@ -856,7 +855,7 @@ The **Player > Headphone Spatialization** submenu is beside **Pan**:
 | Raise Elevation | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Up</kbd> | Adds the elevation step. |
 | Lower Elevation | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Down</kbd> | Subtracts the elevation step. |
 
-Rotation and elevation commands are available while spatialization is enabled. Rotation wraps around the listener: one default step left from 0 becomes 355 degrees. Elevation stops at -90 or 90 degrees. Each successful change is announced: for example, Beginner verbosity says “Rotation 270 degrees” and Advanced says “270 degrees.” Elevation follows the same pattern.
+Rotation and elevation commands are available while spatialization is enabled. Rotation wraps around the listener: one default step left from 0 becomes 355 degrees. Elevation stops at -89 or 89 degrees, while its step can still be as large as 90 degrees. The endpoints exclude exactly -90 and 90 because the bundled audio filter maps those angles back to horizontal. Each successful change is announced: for example, Beginner verbosity says “Rotation 270 degrees” and Advanced says “270 degrees.” Elevation follows the same pattern.
 
 These menu and shortcut changes last for the current session and do not overwrite saved defaults, even when other settings are saved. The initial enabled state, rotation, and elevation come from Preferences. Applying preferences reloads those defaults; toggling spatialization off and on from the menu retains the current session angles.
 
@@ -1092,8 +1091,6 @@ These are the factory defaults. Your current bindings may differ after customiza
 | Forward one step | <kbd>Right</kbd> | — |
 | Rewind two steps | <kbd>Shift</kbd>+<kbd>Left</kbd> | — |
 | Forward two steps | <kbd>Shift</kbd>+<kbd>Right</kbd> | — |
-| Rewind four steps | None | — |
-| Forward four steps | None | — |
 | Beginning | <kbd>Home</kbd> | — |
 | End | <kbd>End</kbd> | — |
 | Go to time | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>G</kbd> | — |

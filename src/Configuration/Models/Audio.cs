@@ -19,6 +19,8 @@ internal sealed class AudioSettings
     internal const double MaximumPitchStep = 12;
     internal const double MinimumSofaStep = 1;
     internal const double MaximumSofaStep = 90;
+    // The bundled sofalizer maps elevation modulo 90, so the poles must be excluded.
+    internal const double MaximumSofaElevation = 89;
     internal const int MaximumFadeIntervalMilliseconds = 10000;
     internal const int MaximumCrossfadeMilliseconds = 30000;
 

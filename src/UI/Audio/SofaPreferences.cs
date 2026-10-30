@@ -60,16 +60,16 @@ internal sealed class SofaPreferences : LunaPlayer.UI.Preferences.PreferencesPag
             Tr("Enter a gain from -20 to 40 dB. The default is 0. Lower the gain if the spatialized sound clips or is too loud."));
         Help(_rotation,
             // Translators: F1 help for the horizontal rotation angle.
-            Tr("Set the default rotation of the virtual speakers around your head, from -360 to 360 degrees. The default is 0. Player menu and shortcut changes are not saved."));
+            Tr("Set the default rotation of the virtual speakers around your head, from -360 to 360 degrees. Positive values turn right and negative values turn left. The default is 0. Player menu and shortcut changes are not saved."));
         Help(_elevation,
             // Translators: F1 help for the vertical angle.
-            Tr("Set the default elevation of the virtual speakers above or below you, from -90 to 90 degrees. The default is 0. Player menu and shortcut changes are not saved."));
+            Tr("Set the default elevation of the virtual speakers above or below you, from -89 to 89 degrees. The default is 0. Player menu and shortcut changes are not saved."));
         Help(_rotationStep,
             // Translators: F1 help for the step used by the spatialization rotation commands.
             Tr("Enter how many degrees each Rotate Left or Rotate Right command changes rotation, from 1 to 90. Decimals are accepted. The default is 5. Rotation wraps around after a full turn."));
         Help(_elevationStep,
             // Translators: F1 help for the step used by the spatialization elevation commands.
-            Tr("Enter how many degrees each Raise Elevation or Lower Elevation command changes elevation, from 1 to 90. Decimals are accepted. The default is 5. Elevation stops at -90 and 90 degrees."));
+            Tr("Enter how many degrees each Raise Elevation or Lower Elevation command changes elevation, from 1 to 90. Decimals are accepted. The default is 5. Elevation stops at -89 and 89 degrees."));
         Refresh();
     }
 
@@ -96,11 +96,11 @@ internal sealed class SofaPreferences : LunaPlayer.UI.Preferences.PreferencesPag
             // Translators: Validation error for the SOFA horizontal rotation.
             return Tr("Rotation must be a number from -360 to 360 degrees.");
         }
-        if (!NumberInRange(_elevation.Value, -90, 90))
+        if (!NumberInRange(_elevation.Value, -AudioSettings.MaximumSofaElevation, AudioSettings.MaximumSofaElevation))
         {
             _elevation.Focus();
             // Translators: Validation error for the SOFA vertical angle.
-            return Tr("Elevation must be a number from -90 to 90 degrees.");
+            return Tr("Elevation must be a number from -89 to 89 degrees.");
         }
         if (!NumberInRange(_rotationStep.Value, AudioSettings.MinimumSofaStep, AudioSettings.MaximumSofaStep))
         {
@@ -126,7 +126,8 @@ internal sealed class SofaPreferences : LunaPlayer.UI.Preferences.PreferencesPag
         // drafts leave the previous default intact instead of preventing the effect from being disabled.
         _settings.SofaGain = NumberOrDefault(_gain.Value, -20, 40, _settings.SofaGain);
         _settings.SofaRotation = NumberOrDefault(_rotation.Value, -360, 360, _settings.SofaRotation);
-        _settings.SofaElevation = NumberOrDefault(_elevation.Value, -90, 90, _settings.SofaElevation);
+        _settings.SofaElevation = NumberOrDefault(_elevation.Value,
+            -AudioSettings.MaximumSofaElevation, AudioSettings.MaximumSofaElevation, _settings.SofaElevation);
         _settings.SofaRotationStep = NumberOrDefault(_rotationStep.Value,
             AudioSettings.MinimumSofaStep, AudioSettings.MaximumSofaStep, _settings.SofaRotationStep);
         _settings.SofaElevationStep = NumberOrDefault(_elevationStep.Value,

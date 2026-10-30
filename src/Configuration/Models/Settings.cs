@@ -178,7 +178,9 @@ internal sealed class Settings
         Audio.PanStep = Math.Clamp(Audio.PanStep, 1, 100);
         Audio.SofaGain = Math.Clamp(Audio.SofaGain, -20, 40);
         Audio.SofaRotation = Math.Clamp(Audio.SofaRotation, -360, 360);
-        Audio.SofaElevation = Math.Clamp(Audio.SofaElevation, -90, 90);
+        // Accept older stored +/-90 values, then move them to the closest supported elevation.
+        Audio.SofaElevation = Math.Clamp(Audio.SofaElevation,
+            -AudioSettings.MaximumSofaElevation, AudioSettings.MaximumSofaElevation);
         Audio.SofaRotationStep = Math.Clamp(double.IsFinite(Audio.SofaRotationStep) ? Audio.SofaRotationStep : 5,
             AudioSettings.MinimumSofaStep, AudioSettings.MaximumSofaStep);
         Audio.SofaElevationStep = Math.Clamp(double.IsFinite(Audio.SofaElevationStep) ? Audio.SofaElevationStep : 5,
@@ -289,4 +291,5 @@ internal sealed class Settings
 
 [JsonSourceGenerationOptions(WriteIndented = true, PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase)]
 [JsonSerializable(typeof(Settings))]
+[JsonSerializable(typeof(Shortcut))]
 internal partial class SettingsJsonContext : JsonSerializerContext;

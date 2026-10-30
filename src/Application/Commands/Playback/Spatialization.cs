@@ -19,22 +19,22 @@ internal sealed class Spatialization
         _player = player;
         _speech = speech;
         _setMenuState = setMenuState;
-        router.Register(ActionId.ToggleHeadphoneSpatialization, ToggleHeadphoneSpatialization);
-        router.Register(ActionId.RotateSofaLeft, () => ChangeSofaRotation(-settings.SofaRotationStep));
-        router.Register(ActionId.RotateSofaRight, () => ChangeSofaRotation(settings.SofaRotationStep));
-        router.Register(ActionId.SofaElevationUp, () => ChangeSofaElevation(settings.SofaElevationStep));
-        router.Register(ActionId.SofaElevationDown, () => ChangeSofaElevation(-settings.SofaElevationStep));
+        router.Register(ActionId.ToggleHeadphoneSpatialization, Toggle);
+        router.Register(ActionId.RotateSofaLeft, () => ChangeRotation(-settings.SofaRotationStep));
+        router.Register(ActionId.RotateSofaRight, () => ChangeRotation(settings.SofaRotationStep));
+        router.Register(ActionId.SofaElevationUp, () => ChangeElevation(settings.SofaElevationStep));
+        router.Register(ActionId.SofaElevationDown, () => ChangeElevation(-settings.SofaElevationStep));
     }
 
-    private void SyncSofaMenu()
+    private void SyncMenu()
         => _setMenuState(_player.CanToggleSofa, _player.IsSofaEnabled);
 
-    private void ToggleHeadphoneSpatialization()
+    private void Toggle()
     {
         // Accelerators can fire even when the corresponding native menu item is disabled.
         if (!_player.CanToggleSofa)
         {
-            SyncSofaMenu();
+            SyncMenu();
             // Translators: Spoken if the spatialization shortcut is used before a SOFA path is configured.
             _speech.SpeakText(Tr("Choose a SOFA file in Preferences before enabling headphone spatialization."));
             return;
@@ -42,10 +42,10 @@ internal sealed class Spatialization
         var enabled = !_player.IsSofaEnabled;
         var applied = _player.SetSofaEnabled(enabled);
         // A checkable native item may have toggled itself even when applying the filter failed.
-        SyncSofaMenu();
+        SyncMenu();
         if (!applied)
         {
-            AnnounceSofaFailure();
+            AnnounceFailure();
             return;
         }
         _speech.SpeakText(enabled
@@ -55,7 +55,7 @@ internal sealed class Spatialization
             : Tr("Headphone spatialization off"));
     }
 
-    private bool RequireSofaEnabled()
+    private bool RequireEnabled()
     {
         if (_player.IsSofaEnabled)
             return true;
@@ -64,13 +64,13 @@ internal sealed class Spatialization
         return false;
     }
 
-    private void ChangeSofaRotation(double delta)
+    private void ChangeRotation(double delta)
     {
-        if (!RequireSofaEnabled())
+        if (!RequireEnabled())
             return;
         if (!_player.ChangeSofaRotation(delta))
         {
-            AnnounceSofaFailure();
+            AnnounceFailure();
             return;
         }
         var value = _player.SofaRotation.ToString("0.###", CultureInfo.InvariantCulture);
@@ -81,13 +81,13 @@ internal sealed class Spatialization
             TrFormat("{angle} degrees", value));
     }
 
-    private void ChangeSofaElevation(double delta)
+    private void ChangeElevation(double delta)
     {
-        if (!RequireSofaEnabled())
+        if (!RequireEnabled())
             return;
         if (!_player.ChangeSofaElevation(delta))
         {
-            AnnounceSofaFailure();
+            AnnounceFailure();
             return;
         }
         var value = _player.SofaElevation.ToString("0.###", CultureInfo.InvariantCulture);
@@ -98,7 +98,7 @@ internal sealed class Spatialization
             TrFormat("{angle} degrees", value));
     }
 
-    private void AnnounceSofaFailure()
+    private void AnnounceFailure()
         => _speech.SpeakText(
             // Translators: Spoken if the SOFA file or audio filter cannot be loaded; the previous state is retained.
             Tr("Could not change headphone spatialization. Check the SOFA file in Preferences."));
