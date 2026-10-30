@@ -29,6 +29,7 @@ internal sealed class Preferences
     {
         void ApplyRuntime(Settings source)
         {
+            var previousAudio = settings.Audio.Copy();
             settings.Apply(source);
             player.TrackPositions(settings.Audio.SaveFilePositions);
             player.SetAudiobookMode(settings.Audio.AudiobookMode);
@@ -43,6 +44,13 @@ internal sealed class Preferences
                 view.Dialogs.ShowError(
                     // Translators: Shown when the setting that mixes both channels into one could not be turned on or off.
                     Tr("Could not apply the mono audio filter."));
+            if (!player.ConfigureSofa(settings.Audio))
+            {
+                settings.Audio.ApplySofa(previousAudio);
+                view.Dialogs.ShowError(
+                    // Translators: Shown when headphone spatialization could not load the selected SOFA file or FFmpeg filter.
+                    Tr("Could not apply the SOFA headphone spatialization filter. Choose a valid SOFA HRTF file and use an FFmpeg build with libmysofa support."));
+            }
             settings.Audio.Pitch = player.SetPitch(settings.Audio.Pitch);
             settings.Audio.Pan = player.SetPan(settings.Audio.Pan);
             if (!player.SetSilenceRemoval(settings.Silence.Enabled))

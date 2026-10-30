@@ -8,10 +8,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-10-29 20:41+0300\n"
+"POT-Creation-Date: 2026-10-30 13:50+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -787,7 +788,9 @@ msgstr ""
 
 #. Translators: Name of the command that opens the channel of the video being played inside the player.
 #. Translators: Item in the Video options menu that opens the channel of the video being played inside the player.
+#. Translators: Context menu item in the results list that opens the channel that published the video inside the player.
 #: Actions/YouTubeActions.cs:45 UI/Menus/VideoMenu.cs:30
+#: UI/YouTube/ResultsDialog.cs:392
 msgid "Go to channel"
 msgstr ""
 
@@ -824,27 +827,34 @@ msgid "Windows did not start an application for this item."
 msgstr ""
 
 #. Translators: Shown when the setting that evens out the loudness could not be turned on or off.
-#: Application/Commands/App/Preferences.cs:41
+#: Application/Commands/App/Preferences.cs:42
 msgid "Could not apply the audio normalization filter."
 msgstr ""
 
 #. Translators: Shown when the setting that mixes both channels into one could not be turned on or off.
-#: Application/Commands/App/Preferences.cs:45
+#: Application/Commands/App/Preferences.cs:46
 msgid "Could not apply the mono audio filter."
 msgstr ""
 
+#. Translators: Shown when headphone spatialization could not load the selected SOFA file or FFmpeg filter.
+#: Application/Commands/App/Preferences.cs:52
+msgid ""
+"Could not apply the SOFA headphone spatialization filter. Choose a valid "
+"SOFA HRTF file and use an FFmpeg build with libmysofa support."
+msgstr ""
+
 #. Translators: Shown when the setting that trims the silent parts out could not be turned on or off.
-#: Application/Commands/App/Preferences.cs:51
+#: Application/Commands/App/Preferences.cs:59
 msgid "Could not apply the silence removal filter."
 msgstr ""
 
 #. Translators: Shown when the settings the user accepted could not be written to disk.
-#: Application/Commands/App/Preferences.cs:121
+#: Application/Commands/App/Preferences.cs:129
 msgid "Could not save settings."
 msgstr ""
 
 #. Translators: Shown after the user picks a different language, because the player only reads it when it starts.
-#: Application/Commands/App/Preferences.cs:128
+#: Application/Commands/App/Preferences.cs:136
 msgid "Please restart the app for language changes to take effect."
 msgstr ""
 
@@ -1302,8 +1312,7 @@ msgstr ""
 
 #. Translators: Title of the information dialog for the current Spotify queue.
 #. Translators: Title of the window listing details of every file in the playlist.
-#: Application/Commands/Files/Info.cs:73
-#: Application/Commands/Files/Info.cs:127
+#: Application/Commands/Files/Info.cs:73 Application/Commands/Files/Info.cs:127
 msgid "Playlist Info"
 msgstr ""
 
@@ -1314,8 +1323,7 @@ msgstr ""
 
 #. Translators: Line in the Spotify queue information dialog. {value} is the formatted combined playing time.
 #. Translators: The playlist summary. {value} is a duration as hours:minutes:seconds.
-#: Application/Commands/Files/Info.cs:77
-#: Application/Commands/Files/Info.cs:140
+#: Application/Commands/Files/Info.cs:77 Application/Commands/Files/Info.cs:140
 msgid "Total duration: {value}"
 msgstr ""
 
@@ -2428,8 +2436,7 @@ msgstr ""
 #. Translators: How far the file being converted right now has got. {percent} is a whole number.
 #. Translators: How far the download has got. {percent} is a whole number.
 #: Application/Commands/Playback/SelectionSaving.cs:77
-#: UI/Conversion/ProgressDialog.cs:156
-#: UI/YouTube/DownloadProgressDialog.cs:159
+#: UI/Conversion/ProgressDialog.cs:156 UI/YouTube/DownloadProgressDialog.cs:159
 msgid "Percentage: {percent}%"
 msgstr ""
 
@@ -2597,8 +2604,7 @@ msgstr ""
 
 #. Translators: Shown when recording started but some sources would not open. {names} is a
 #. list of what the user called them, separated by commas.
-#: Application/Commands/Recording/Recording.cs:116
-#: UI/Recording/Transport.cs:61
+#: Application/Commands/Recording/Recording.cs:116 UI/Recording/Transport.cs:61
 msgid "Recording started, but these sources could not be opened: {names}"
 msgstr ""
 
@@ -4052,6 +4058,112 @@ msgid ""
 "Seek fading interval must be a whole number from 1 to 10000 milliseconds."
 msgstr ""
 
+#. Translators: F1 help for the SOFA headphone spatialization page.
+#: UI/Audio/SofaPreferences.cs:20
+msgid ""
+"Use a SOFA HRTF file to make audio sound like speakers around you when "
+"listening with headphones. Move between controls with Tab or Shift+Tab and "
+"press F1 for help."
+msgstr ""
+
+#. Translators: Checkbox enabling SOFA-based binaural audio processing for headphones.
+#: UI/Audio/SofaPreferences.cs:26
+msgid "Enable headphone spatialization"
+msgstr ""
+
+#. Translators: Label for the path to the user's SOFA HRTF file. Keep SOFA unchanged.
+#: UI/Audio/SofaPreferences.cs:30
+msgid "SOFA file"
+msgstr ""
+
+#. Translators: Button opening the file picker for a SOFA HRTF file.
+#: UI/Audio/SofaPreferences.cs:32
+msgid "Browse for SOFA file..."
+msgstr ""
+
+#. Translators: Output gain applied by the SOFA filter, in decibels.
+#. Translators: Label of the box holding how far one equalizer band lifts or cuts, in decibels.
+#: UI/Audio/SofaPreferences.cs:36 UI/Equalizer/EditDialog.cs:143
+msgid "Gain (dB)"
+msgstr ""
+
+#. Translators: Horizontal rotation of the virtual speakers around the listener.
+#: UI/Audio/SofaPreferences.cs:38
+msgid "Rotation (degrees)"
+msgstr ""
+
+#. Translators: Vertical angle of the virtual speakers relative to the listener.
+#: UI/Audio/SofaPreferences.cs:40
+msgid "Elevation (degrees)"
+msgstr ""
+
+#. Translators: F1 help for the headphone spatialization enable checkbox.
+#: UI/Audio/SofaPreferences.cs:44
+msgid ""
+"Enable binaural rendering for headphones. Leave this off when listening "
+"through speakers or to audio that is already binaural."
+msgstr ""
+
+#. Translators: F1 help for the SOFA file path and browse button.
+#: UI/Audio/SofaPreferences.cs:46
+msgid ""
+"Choose a local .sofa file containing head-related impulse responses (HRTFs). "
+"Luna uses FFmpeg's sofalizer filter with libmysofa. The file must remain "
+"available at this path; it is not copied into settings backups."
+msgstr ""
+
+#. Translators: F1 help for SOFA output gain.
+#: UI/Audio/SofaPreferences.cs:51
+msgid ""
+"Enter a gain from -20 to 40 dB. The default is 0. Lower the gain if the "
+"spatialized sound clips or is too loud."
+msgstr ""
+
+#. Translators: F1 help for the horizontal rotation angle.
+#: UI/Audio/SofaPreferences.cs:54
+msgid ""
+"Rotate the virtual speakers around your head, from -360 to 360 degrees. The "
+"default is 0."
+msgstr ""
+
+#. Translators: F1 help for the vertical angle.
+#: UI/Audio/SofaPreferences.cs:57
+msgid ""
+"Move the virtual speakers above or below you, from -90 to 90 degrees. The "
+"default is 0."
+msgstr ""
+
+#. Translators: Validation error when enabling SOFA processing without an existing .sofa file.
+#: UI/Audio/SofaPreferences.cs:67
+msgid ""
+"Choose an existing .sofa HRTF file before enabling headphone spatialization."
+msgstr ""
+
+#. Translators: Validation error for SOFA output gain.
+#: UI/Audio/SofaPreferences.cs:73
+msgid "Gain must be a number from -20 to 40 dB."
+msgstr ""
+
+#. Translators: Validation error for the SOFA horizontal rotation.
+#: UI/Audio/SofaPreferences.cs:79
+msgid "Rotation must be a number from -360 to 360 degrees."
+msgstr ""
+
+#. Translators: Validation error for the SOFA vertical angle.
+#: UI/Audio/SofaPreferences.cs:85
+msgid "Elevation must be a number from -90 to 90 degrees."
+msgstr ""
+
+#. Translators: Title of the file picker for headphone HRTF data.
+#: UI/Audio/SofaPreferences.cs:113
+msgid "Choose a SOFA file"
+msgstr ""
+
+#. Translators: File picker filter. Translate only "SOFA files"; keep the extension and separators unchanged.
+#: UI/Audio/SofaPreferences.cs:115
+msgid "SOFA files (*.sofa)|*.sofa"
+msgstr ""
+
 #. Translators: Title of the window listing the audio tracks in the file to switch between.
 #: UI/Audio/TracksDialog.cs:15
 msgid "Audio Tracks"
@@ -4366,8 +4478,7 @@ msgstr ""
 #. Translators: A guess at the time left. {time} is a clock such as 3:20, or the word for a guess
 #. not yet worth making.
 #. Translators: Estimated time left for all unfinished queue items.
-#: UI/Conversion/ProgressDialog.cs:161
-#: UI/YouTube/DownloadProgressDialog.cs:164
+#: UI/Conversion/ProgressDialog.cs:161 UI/YouTube/DownloadProgressDialog.cs:164
 #: UI/YouTube/DownloadQueueDialog.cs:305
 msgid "Estimated time left: {time}"
 msgstr ""
@@ -4377,8 +4488,7 @@ msgstr ""
 #. Translators: Shown for estimated time left before enough data exists to calculate it.
 #. Translators: Shown for queue speed before enough data exists to measure it.
 #. Translators: Shown for queue time remaining before enough data exists to calculate it.
-#: UI/Conversion/ProgressDialog.cs:165
-#: UI/YouTube/DownloadProgressDialog.cs:148
+#: UI/Conversion/ProgressDialog.cs:165 UI/YouTube/DownloadProgressDialog.cs:148
 #: UI/YouTube/DownloadProgressDialog.cs:152
 #: UI/YouTube/DownloadQueueDialog.cs:289 UI/YouTube/DownloadQueueDialog.cs:293
 msgid "calculating…"
@@ -4485,11 +4595,6 @@ msgstr ""
 msgid "Frequency (Hz)"
 msgstr ""
 
-#. Translators: Label of the box holding how far one equalizer band lifts or cuts, in decibels.
-#: UI/Equalizer/EditDialog.cs:143
-msgid "Gain (dB)"
-msgstr ""
-
 #. Translators: Label of the box holding how wide one equalizer band is. Q is the usual name for it and is normally left as it is.
 #: UI/Equalizer/EditDialog.cs:146
 msgid "Q (width)"
@@ -4581,11 +4686,12 @@ msgstr ""
 #: UI/Help/AboutDialog.cs:31
 msgid ""
 "Luna includes mpv, copyright © the mpv developers and contributors to "
-"MPlayer and mplayer2, and a C# translation of python-mpv, copyright © 2017-"
-"2024 Sebastian Götte. These components are licensed under the GNU Lesser "
-"General Public License, version 2.1 or later. FFmpeg is licensed under the "
-"GNU Lesser General Public License, version 3 or later. See NOTICE.txt and "
-"the licenses folder for complete third-party notices and terms."
+"MPlayer and mplayer2, and a C# translation of python-mpv, copyright © "
+"2017-2024 Sebastian Götte. These components are licensed under the GNU "
+"Lesser General Public License, version 2.1 or later. FFmpeg is licensed "
+"under the GNU Lesser General Public License, version 3 or later. See "
+"NOTICE.txt and the licenses folder for complete third-party notices and "
+"terms."
 msgstr ""
 
 #. Translators: Final two lines in the About window. {publisher} is the developer's name and
@@ -4903,7 +5009,7 @@ msgstr ""
 #. Translators: Name of the settings category for recording sound.
 #. Translators: Title of the window where recording is set up and started.
 #. Translators: Title of the messages shown about recording.
-#: UI/Menus/Builder.cs:89 UI/Preferences/MainDialog.cs:64
+#: UI/Menus/Builder.cs:89 UI/Preferences/MainDialog.cs:66
 #: UI/Recording/MainDialog.cs:86 UI/Recording/MainDialog.cs:218
 msgid "Recording"
 msgstr ""
@@ -5434,17 +5540,20 @@ msgid "Sleep timer"
 msgstr ""
 
 #. Translators: Item in the Video options menu that opens the download window to choose how the video being played is saved.
-#: UI/Menus/VideoMenu.cs:16
+#. Translators: Context menu item in the results list that opens the download window to choose how the chosen video is saved.
+#: UI/Menus/VideoMenu.cs:16 UI/YouTube/ResultsDialog.cs:400
 msgid "Download..."
 msgstr ""
 
 #. Translators: Item in the Video options menu that saves the video being played straight to disk with the saved download settings.
-#: UI/Menus/VideoMenu.cs:18
+#. Translators: Context menu item in the results list that saves the chosen video straight to disk with the saved download settings.
+#: UI/Menus/VideoMenu.cs:18 UI/YouTube/ResultsDialog.cs:402
 msgid "Direct download"
 msgstr ""
 
 #. Translators: Item in the Video options menu that adds the video being played to the download queue.
-#: UI/Menus/VideoMenu.cs:20
+#. Translators: Context menu item that adds the selected video to the download queue.
+#: UI/Menus/VideoMenu.cs:20 UI/YouTube/ResultsDialog.cs:404
 msgid "Add to download queue"
 msgstr ""
 
@@ -5464,7 +5573,8 @@ msgid "Open video in browser"
 msgstr ""
 
 #. Translators: Item in the Video options menu that opens the channel of the video being played in the web browser.
-#: UI/Menus/VideoMenu.cs:28
+#. Translators: Context menu item in the results list that opens the channel that published the video in the web browser.
+#: UI/Menus/VideoMenu.cs:28 UI/YouTube/ResultsDialog.cs:390
 msgid "Open channel in browser"
 msgstr ""
 
@@ -6143,7 +6253,7 @@ msgstr ""
 #. Translators: Name of the general settings page inside the Audio category.
 #. Translators: Name of the general settings page inside the YouTube category.
 #: UI/Preferences/MainDialog.cs:46 UI/Preferences/MainDialog.cs:52
-#: UI/Preferences/MainDialog.cs:60
+#: UI/Preferences/MainDialog.cs:62
 msgid "General"
 msgstr ""
 
@@ -6165,13 +6275,18 @@ msgstr ""
 msgid "Playback"
 msgstr ""
 
-#. Translators: Name of the settings category for trimming the silent parts out of what is played.
+#. Translators: Name of the SOFA headphone spatialization settings page inside Audio.
 #: UI/Preferences/MainDialog.cs:56
+msgid "Headphone spatialization"
+msgstr ""
+
+#. Translators: Name of the settings category for trimming the silent parts out of what is played.
+#: UI/Preferences/MainDialog.cs:58
 msgid "Silence removal"
 msgstr ""
 
 #. Translators: Name of the expandable settings category containing the general and download pages for YouTube.
-#: UI/Preferences/MainDialog.cs:58
+#: UI/Preferences/MainDialog.cs:60
 msgid "YouTube"
 msgstr ""
 
@@ -6179,19 +6294,19 @@ msgstr ""
 #. Translators: Title of the window where a download's name, type, format and quality are chosen.
 #. Translators: The button that starts this download immediately.
 #. Translators: Button that saves the video chosen in the list of results to a folder on this computer.
-#: UI/Preferences/MainDialog.cs:62 UI/YouTube/DownloadDialog.cs:56
+#: UI/Preferences/MainDialog.cs:64 UI/YouTube/DownloadDialog.cs:56
 #: UI/YouTube/DownloadDialog.cs:127 UI/YouTube/ResultsDialog.cs:202
 msgid "Download"
 msgstr ""
 
 #. Translators: Name of the settings category for the key combinations that work while the player is the program in front.
-#: UI/Preferences/MainDialog.cs:66
+#: UI/Preferences/MainDialog.cs:68
 msgid "Keyboard Shortcuts"
 msgstr ""
 
 #. Translators: Name of the settings category for the key combinations that work while another program is in front.
 #. Translators: Heading above the list of shortcuts that work while another program is in front.
-#: UI/Preferences/MainDialog.cs:68 UI/Preferences/Shortcut.cs:54
+#: UI/Preferences/MainDialog.cs:70 UI/Preferences/Shortcut.cs:54
 msgid "Global Shortcuts"
 msgstr ""
 
@@ -6199,18 +6314,18 @@ msgstr ""
 #. Translators: Title of the Spotify home, search and library browser. Keep Spotify unchanged.
 #. Translators: Heading on the Spotify preferences page. Keep Spotify unchanged.
 #. Translators: Title of the dialog offering to configure Spotify credentials. Keep Spotify unchanged.
-#: UI/Preferences/MainDialog.cs:87 UI/Spotify/BrowserDialog.cs:59
+#: UI/Preferences/MainDialog.cs:90 UI/Spotify/BrowserDialog.cs:59
 #: UI/Spotify/CredentialsPreferences.cs:21 UI/Spotify/CredentialsPrompt.cs:12
 msgid "Spotify"
 msgstr ""
 
 #. Translators: Name of the Discord Rich Presence category in Preferences.
-#: UI/Preferences/MainDialog.cs:90
+#: UI/Preferences/MainDialog.cs:93
 msgid "Discord"
 msgstr ""
 
 #. Translators: Help text for the settings tree down the left of the Preferences window.
-#: UI/Preferences/MainDialog.cs:213
+#: UI/Preferences/MainDialog.cs:216
 msgid ""
 "Use the Arrow keys to move through settings pages. Press the Right Arrow key "
 "on a category to show its pages and the Left Arrow key to hide them. The "
@@ -6218,7 +6333,7 @@ msgid ""
 msgstr ""
 
 #. Translators: Spoken when the user asks for help on a control that has none.
-#: UI/Preferences/MainDialog.cs:220
+#: UI/Preferences/MainDialog.cs:223
 msgid "No detailed help is available for this control."
 msgstr ""
 
@@ -6668,13 +6783,16 @@ msgid "Removed from favorites."
 msgstr ""
 
 #. Translators: Radio station context-menu action removing a saved station.
-#: UI/Radio/Actions.cs:89
+#. Translators: Context menu item in the results list that takes the chosen video back out of the favourites.
+#: UI/Radio/Actions.cs:89 UI/YouTube/ResultsDialog.cs:416
 msgid "Remove from favorites"
 msgstr ""
 
 #. Translators: Radio station context-menu action saving a station.
 #. Translators: Radio station context-menu action saving the selected station locally.
+#. Translators: Context menu item in the results list that saves the chosen video to the favourites.
 #: UI/Radio/Actions.cs:91 UI/Radio/BrowserDialog.cs:154
+#: UI/YouTube/ResultsDialog.cs:397 UI/YouTube/ResultsDialog.cs:418
 msgid "Add to favorites"
 msgstr ""
 
@@ -7264,8 +7382,8 @@ msgstr ""
 #. Translators: Save dialog file types. JSON, M3U and M3U8 and all wildcard patterns must remain unchanged.
 #: UI/Services/Dialogs/Playlists.cs:82
 msgid ""
-"M3U8 playlist (*.m3u8)|*.m3u8|M3U playlist (*.m3u)|*.m3u|JSON playlist (*."
-"json)|*.json"
+"M3U8 playlist (*.m3u8)|*.m3u8|M3U playlist (*.m3u)|*.m3u|JSON playlist "
+"(*.json)|*.json"
 msgstr ""
 
 #. Translators: Confirmation before replacing an existing playlist after adjusting its filename extension.
@@ -8222,8 +8340,8 @@ msgstr ""
 #. Translators: Help text for the list that chooses the sound quality a video's audio is played at.
 #: UI/YouTube/GeneralPreferences.cs:152
 msgid ""
-"Sets the bitrate Luna asks for when you play a video's sound alone with Ctrl"
-"+Enter. Luna falls back to the closest the video offers."
+"Sets the bitrate Luna asks for when you play a video's sound alone with "
+"Ctrl+Enter. Luna falls back to the closest the video offers."
 msgstr ""
 
 #. Translators: Help text for the box holding how many videos a search should look for. The two numbers are
@@ -8408,6 +8526,16 @@ msgstr ""
 #. Translators: Heading above a YouTube channel's browser when the channel's name is not known.
 #: UI/YouTube/ResultsDialog.cs:354 YouTube/Playback/Session.cs:93
 msgid "Channel"
+msgstr ""
+
+#. Translators: Context menu item in the results list that copies the address of the chosen video.
+#: UI/YouTube/ResultsDialog.cs:386
+msgid "Copy link"
+msgstr ""
+
+#. Translators: Context menu item in the results list that shows the chosen video in the web browser.
+#: UI/YouTube/ResultsDialog.cs:388
+msgid "Open in browser"
 msgstr ""
 
 #. Translators: Label of the box where the user types what to search YouTube for.

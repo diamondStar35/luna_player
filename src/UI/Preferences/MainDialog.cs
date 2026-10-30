@@ -52,6 +52,8 @@ internal sealed class MainDialog : IDisposable
         var audioGeneralLabel = Tr("General");
         // Translators: Name of the playback settings page inside the Audio category.
         var audioPlaybackLabel = Tr("Playback");
+        // Translators: Name of the SOFA headphone spatialization settings page inside Audio.
+        var sofaLabel = Tr("Headphone spatialization");
         // Translators: Name of the settings category for trimming the silent parts out of what is played.
         var silenceLabel = Tr("Silence removal");
         // Translators: Name of the expandable settings category containing the general and download pages for YouTube.
@@ -77,6 +79,7 @@ internal sealed class MainDialog : IDisposable
         var audioItem = _tree.Add(root, audioLabel);
         AddPage(audioItem, audioGeneralLabel, () => new Audio.GeneralPreferences(_book, settings.Audio));
         AddPage(audioItem, audioPlaybackLabel, () => new Audio.PlaybackPreferences(_book, settings.Audio));
+        AddPage(audioItem, sofaLabel, () => new Audio.SofaPreferences(_book, settings.Audio));
         AddPage(root, silenceLabel, () => new SilencePreferences(_book, settings.Silence));
         var youTubeItem = _tree.Add(root, youTubeLabel);
         AddPage(youTubeItem, youTubeGeneralLabel,
@@ -101,7 +104,7 @@ internal sealed class MainDialog : IDisposable
         _tree.Expand(audioItem, expand: false);
         _tree.Expand(youTubeItem, expand: false);
         SizeTreeToLabels([
-            generalLabel, backupLabel, audioLabel, audioGeneralLabel, audioPlaybackLabel, silenceLabel, youTubeLabel,
+            generalLabel, backupLabel, audioLabel, audioGeneralLabel, audioPlaybackLabel, sofaLabel, silenceLabel, youTubeLabel,
             youTubeGeneralLabel, youTubeDownloadLabel, spotifyLabel, discordLabel, recordingLabel, shortcutsLabel, globalsLabel]);
 
         _tree.SelectionChanged += OnTreeChanged;

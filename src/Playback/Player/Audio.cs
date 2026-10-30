@@ -68,6 +68,20 @@ internal sealed partial class Player
         return false;
     }
 
+    internal bool ConfigureSofa(AudioSettings settings)
+    {
+        if (settings.SofaEnabled && !AudioFilters.IsSofaFile(settings.SofaFile))
+            return false;
+        var graph = AudioFilters.SofaGraph(settings);
+        if (!_engine.SetSofa(graph))
+        {
+            _engine.SetSofa(_sofaGraph);
+            return false;
+        }
+        _sofaGraph = graph;
+        return true;
+    }
+
     internal bool SetSilenceRemoval(bool enabled)
     {
         var previous = _silenceEnabled;

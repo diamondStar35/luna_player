@@ -67,6 +67,7 @@ internal sealed class Engine : IEngine
     public bool AddSubtitle(string source, string? title, string? language) => _coordinator.AddSubtitle(source, title, language);
     public bool SetNormalization(bool enabled) => _coordinator.SetNormalization(enabled);
     public bool SetMono(bool enabled) => _coordinator.SetMono(enabled);
+    public bool SetSofa(string graph) => _coordinator.SetSofa(graph);
     public bool SetSilenceRemoval(bool enabled, string graph) => _coordinator.SetSilenceRemoval(enabled, graph);
     public bool SetEqualizer(Preset? preset) => _coordinator.SetEqualizer(preset);
     public void SetEndBehavior(EndBehavior behavior) => _coordinator.SetEndBehavior(behavior);

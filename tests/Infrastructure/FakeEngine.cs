@@ -72,6 +72,15 @@ internal sealed class FakeEngine : IEngine
     public bool AddSubtitle(string source, string? title, string? language) => true;
     public bool SetNormalization(bool enabled) => true;
     public bool SetMono(bool enabled) => true;
+    internal string SofaGraph { get; private set; } = string.Empty;
+    internal bool RejectSofa { get; set; }
+    public bool SetSofa(string graph)
+    {
+        if (RejectSofa && graph.Length > 0)
+            return false;
+        SofaGraph = graph;
+        return true;
+    }
     public bool SetSilenceRemoval(bool enabled, string graph) => true;
     public bool SetEqualizer(Preset? preset) => true;
     public void SetEndBehavior(EndBehavior behavior) {}

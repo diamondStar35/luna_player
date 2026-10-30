@@ -192,6 +192,8 @@ internal static class Resources
         player.ConfigureSilence(settings.Silence);
         player.SetNormalization(settings.Audio.NormalizeAudio);
         player.SetMono(settings.Audio.MonoAudio);
+        if (!player.ConfigureSofa(settings.Audio))
+            settings.Audio.SofaEnabled = false;
         player.SetPan(settings.Audio.Pan);
         player.SetSilenceRemoval(settings.Silence.Enabled);
         settings.Audio.NormalizeAudio = player.IsNormalizationEnabled;

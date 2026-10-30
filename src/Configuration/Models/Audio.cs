@@ -38,6 +38,11 @@ internal sealed class AudioSettings
     public bool AudiobookMode { get; set; }
     public bool NormalizeAudio { get; set; } = true;
     public bool MonoAudio { get; set; }
+    public bool SofaEnabled { get; set; }
+    public string SofaFile { get; set; } = string.Empty;
+    public double SofaGain { get; set; }
+    public double SofaRotation { get; set; }
+    public double SofaElevation { get; set; }
     public int FadeIntervalMilliseconds { get; set; }
     public bool FadeSeeking { get; set; }
     public int SeekFadeIntervalMilliseconds { get; set; } = 100;
@@ -70,6 +75,7 @@ internal sealed class AudioSettings
         AudiobookMode = source.AudiobookMode;
         NormalizeAudio = source.NormalizeAudio;
         MonoAudio = source.MonoAudio;
+        ApplySofa(source);
         FadeIntervalMilliseconds = source.FadeIntervalMilliseconds;
         FadeSeeking = source.FadeSeeking;
         SeekFadeIntervalMilliseconds = source.SeekFadeIntervalMilliseconds;
@@ -80,6 +86,15 @@ internal sealed class AudioSettings
         CrossfadeMilliseconds = source.CrossfadeMilliseconds;
         CrossfadeCurve = source.CrossfadeCurve;
         CrossfadeManualNavigation = source.CrossfadeManualNavigation;
+    }
+
+    internal void ApplySofa(AudioSettings source)
+    {
+        SofaEnabled = source.SofaEnabled;
+        SofaFile = source.SofaFile;
+        SofaGain = source.SofaGain;
+        SofaRotation = source.SofaRotation;
+        SofaElevation = source.SofaElevation;
     }
 }
 

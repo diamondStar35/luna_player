@@ -30,6 +30,7 @@ Bug reports are welcome.
 **Audio processing**
 
 - A 15-band equalizer with named presets and a custom preset of your own
+- Headphone spatialization using your own SOFA HRTF files through FFmpeg's libmysofa-backed sofalizer
 - Dynamic normalization with a limiter, for recordings with inconsistent levels
 - Mono downmix
 - Silence removal, with threshold and duration settings and a full set of advanced parameters

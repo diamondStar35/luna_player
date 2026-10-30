@@ -114,6 +114,7 @@ internal interface IEngine : IDisposable
     bool AddSubtitle(string source, string? title, string? language);
     bool SetNormalization(bool enabled);
     bool SetMono(bool enabled);
+    bool SetSofa(string graph);
     bool SetSilenceRemoval(bool enabled, string graph);
 
     /// <summary>Puts a preset's curve into the equalizer, or removes the equalizer when
