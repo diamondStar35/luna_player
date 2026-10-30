@@ -71,8 +71,6 @@ public sealed class SpatializationTests
             Assert.HasCount(1, shortcuts.GetBindings().Where(binding => binding.Shortcut == key).ToArray());
             StringAssert.EndsWith(Item(pair.Key).Label, "\t" + key.ToDisplayString());
         }
-        Assert.IsNull(shortcuts.Get(ActionId.SeekBackwardX4));
-        Assert.IsNull(shortcuts.Get(ActionId.SeekForwardX4));
 
         using var engine = new FakeEngine();
         using var player = new Player(engine);

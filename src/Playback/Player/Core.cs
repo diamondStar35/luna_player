@@ -20,7 +20,6 @@ internal sealed partial class Player : IDisposable
     private bool _disposed;
     private bool _normalizationEnabled;
     private bool _monoEnabled;
-    private string _sofaGraph = string.Empty;
     private bool _silenceEnabled;
     private bool _loaded;
     private SilenceSettings _silence = new();

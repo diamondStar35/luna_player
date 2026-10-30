@@ -70,10 +70,6 @@ internal static class PlaybackActions
             new(ActionId.SeekBackwardX2, Tr("Rewind by two steps"), new("left", ShortcutModifiers.Shift)),
             // Translators: Name of the command that moves forward by twice the chosen seek step.
             new(ActionId.SeekForwardX2, Tr("Fast forward by two steps"), new("right", ShortcutModifiers.Shift)),
-            // Translators: Name of the command that moves back by four times the chosen seek step.
-            new(ActionId.SeekBackwardX4, Tr("Rewind by four steps")),
-            // Translators: Name of the command that moves forward by four times the chosen seek step.
-            new(ActionId.SeekForwardX4, Tr("Fast forward by four steps")),
             // Translators: Name of the command that jumps to the very start of the file.
             new(ActionId.SeekStart, Tr("Beginning of the file"), new("home")),
             // Translators: Name of the command that jumps to the very end of the file.

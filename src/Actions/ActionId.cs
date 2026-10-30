@@ -11,7 +11,8 @@ internal enum ActionId
     MarkedCopyToClipboard, MarkedDelete, AddBookmark, ManageBookmarks, JumpBookmark1, JumpBookmark2,
     JumpBookmark3, JumpBookmark4, JumpBookmark5, JumpBookmark6, JumpBookmark7, JumpBookmark8,
     JumpBookmark9, JumpBookmark10, PlayPause, SeekBackward, SeekForward, SeekBackwardX2, SeekForwardX2,
-    SeekBackwardX4, SeekForwardX4, SeekStart, SeekEnd, SeekStep1, SeekStep2, SeekStep3, SeekStep4, SeekStep5,
+    // Keep later numeric IDs stable when retired commands leave gaps in persisted shortcuts.
+    SeekStart = 42, SeekEnd, SeekStep1, SeekStep2, SeekStep3, SeekStep4, SeekStep5,
     SeekStep6, SeekStep7, SeekStep8, SeekStep9, SeekStep0, SeekStepCustom,
     VolumeUp, VolumeDown, VolumeMaximize, VolumeMinimize, AnnounceVolume, AnnounceElapsed, AnnounceRemaining,
     AnnounceDuration, AnnouncePercent, AnnounceSpeed, ToggleVerbosity, SpeedUp, SpeedDown, ResetSpeed,

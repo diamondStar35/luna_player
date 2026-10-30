@@ -8,11 +8,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-10-30 16:17+0200\n"
+"POT-Creation-Date: 2026-10-30 17:38+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -38,13 +37,13 @@ msgstr ""
 
 #. Translators: Name of the command that makes the sound louder, here in the list of shortcuts that work while another program is in front.
 #. Translators: Name of the command that makes the sound louder.
-#: Actions/GlobalActions.cs:20 Actions/PlaybackActions.cs:112
+#: Actions/GlobalActions.cs:20 Actions/PlaybackActions.cs:108
 msgid "Increase volume"
 msgstr ""
 
 #. Translators: Name of the command that makes the sound quieter, here in the list of shortcuts that work while another program is in front.
 #. Translators: Name of the command that makes the sound quieter.
-#: Actions/GlobalActions.cs:22 Actions/PlaybackActions.cs:114
+#: Actions/GlobalActions.cs:22 Actions/PlaybackActions.cs:110
 msgid "Decrease volume"
 msgstr ""
 
@@ -327,323 +326,313 @@ msgstr ""
 msgid "Fast forward by two steps"
 msgstr ""
 
-#. Translators: Name of the command that moves back by four times the chosen seek step.
-#: Actions/PlaybackActions.cs:74
-msgid "Rewind by four steps"
-msgstr ""
-
-#. Translators: Name of the command that moves forward by four times the chosen seek step.
-#: Actions/PlaybackActions.cs:76
-msgid "Fast forward by four steps"
-msgstr ""
-
 #. Translators: Name of the command that jumps to the very start of the file.
-#: Actions/PlaybackActions.cs:78
+#: Actions/PlaybackActions.cs:74
 msgid "Beginning of the file"
 msgstr ""
 
 #. Translators: Name of the command that jumps to the very end of the file.
-#: Actions/PlaybackActions.cs:80
+#: Actions/PlaybackActions.cs:76
 msgid "End of the file"
 msgstr ""
 
 #. Translators: Name of the command that opens the window asking for a time to jump to.
-#: Actions/PlaybackActions.cs:82
+#: Actions/PlaybackActions.cs:78
 msgid "Go to time dialog"
 msgstr ""
 
 #. Translators: Name of the command that opens the window listing the audio output devices to play through.
-#: Actions/PlaybackActions.cs:84
+#: Actions/PlaybackActions.cs:80
 msgid "Sound cards dialog"
 msgstr ""
 
 #. Translators: Name of the command that fills the whole screen with the video, or leaves that mode, shown in the shortcut list and the Player menu.
 #. Translators: Player menu item that fills the whole screen with the video, or leaves that mode. It is ticked while full screen.
-#: Actions/PlaybackActions.cs:86 UI/Menus/PlayerMenu.cs:194
+#: Actions/PlaybackActions.cs:82 UI/Menus/PlayerMenu.cs:194
 msgid "Full screen"
 msgstr ""
 
 #. Translators: Name of the command that opens the window listing the file's audio tracks to switch between.
-#: Actions/PlaybackActions.cs:88
+#: Actions/PlaybackActions.cs:84
 msgid "Audio tracks dialog"
 msgstr ""
 
 #. Translators: Shortcut command that jumps to the previous chapter in the current source file.
-#: Actions/PlaybackActions.cs:90
+#: Actions/PlaybackActions.cs:86
 msgid "Go to the previous chapter"
 msgstr ""
 
 #. Translators: Shortcut command that jumps to the next chapter in the current source file.
-#: Actions/PlaybackActions.cs:92
+#: Actions/PlaybackActions.cs:88
 msgid "Go to the next chapter"
 msgstr ""
 
 #. Translators: Shortcut command that speaks the current chapter name.
-#: Actions/PlaybackActions.cs:94
+#: Actions/PlaybackActions.cs:90
 msgid "Speak current chapter name"
 msgstr ""
 
 #. Translators: Shortcut command that pauses once at the current chapter's end.
 #. Translators: Checkable Chapters menu command that pauses once at the end of the current chapter.
-#: Actions/PlaybackActions.cs:96 UI/Menus/ChaptersMenu.cs:29
+#: Actions/PlaybackActions.cs:92 UI/Menus/ChaptersMenu.cs:29
 msgid "Stop playback at the end of current chapter"
 msgstr ""
 
 #. Translators: Shortcut command that treats chapters as individual playlist items.
-#: Actions/PlaybackActions.cs:98
+#: Actions/PlaybackActions.cs:94
 msgid "Turn audiobook mode on or off"
 msgstr ""
 
 #. Translators: Shortcut command that selects the next audio track within the current media file.
-#: Actions/PlaybackActions.cs:100
+#: Actions/PlaybackActions.cs:96
 msgid "Next audio track"
 msgstr ""
 
 #. Translators: Name of the command that switches to the previous audio track in the file.
-#: Actions/PlaybackActions.cs:102
+#: Actions/PlaybackActions.cs:98
 msgid "Previous audio track"
 msgstr ""
 
 #. Translators: Name of the command that starts or stops reading the file's subtitles aloud.
-#: Actions/PlaybackActions.cs:104
+#: Actions/PlaybackActions.cs:100
 msgid "Turn subtitle reading on or off"
 msgstr ""
 
 #. Translators: Name of the command that loads a subtitle file from this computer.
-#: Actions/PlaybackActions.cs:106
+#: Actions/PlaybackActions.cs:102
 msgid "Load subtitle from file"
 msgstr ""
 
 #. Translators: Name of the command that loads a subtitle from a web address.
-#: Actions/PlaybackActions.cs:108
+#: Actions/PlaybackActions.cs:104
 msgid "Load subtitle from a web address"
 msgstr ""
 
 #. Translators: Name of the command that keeps the chosen subtitle selected across the playlist for this session.
 #. Translators: Subtitles submenu item that keeps the chosen subtitle selected until the player closes.
-#: Actions/PlaybackActions.cs:110 UI/Menus/PlayerMenu.cs:302
+#: Actions/PlaybackActions.cs:106 UI/Menus/PlayerMenu.cs:302
 msgid "Remember subtitle for this session"
 msgstr ""
 
 #. Translators: Name of the command that sets the volume to the loudest setting in one step.
-#: Actions/PlaybackActions.cs:116
+#: Actions/PlaybackActions.cs:112
 msgid "Set volume to maximum"
 msgstr ""
 
 #. Translators: Name of the command that sets the volume to the quietest setting in one step.
-#: Actions/PlaybackActions.cs:119
+#: Actions/PlaybackActions.cs:115
 msgid "Set volume to minimum"
 msgstr ""
 
 #. Translators: Name of the command that speaks the current volume.
-#: Actions/PlaybackActions.cs:122
+#: Actions/PlaybackActions.cs:118
 msgid "Speak current volume"
 msgstr ""
 
 #. Translators: Name of the command that speaks how much of the file has already played.
-#: Actions/PlaybackActions.cs:124
+#: Actions/PlaybackActions.cs:120
 msgid "Speak elapsed time"
 msgstr ""
 
 #. Translators: Name of the command that speaks how much of the file is left to play.
-#: Actions/PlaybackActions.cs:126
+#: Actions/PlaybackActions.cs:122
 msgid "Speak remaining time"
 msgstr ""
 
 #. Translators: Name of the command that speaks the total length of the file.
-#: Actions/PlaybackActions.cs:128
+#: Actions/PlaybackActions.cs:124
 msgid "Speak total duration"
 msgstr ""
 
 #. Translators: Name of the command that speaks how far through the file playing has reached, as a percentage.
-#: Actions/PlaybackActions.cs:130
+#: Actions/PlaybackActions.cs:126
 msgid "Speak position as a percentage"
 msgstr ""
 
 #. Translators: Name of the command that speaks how fast the file is playing.
-#: Actions/PlaybackActions.cs:132
+#: Actions/PlaybackActions.cs:128
 msgid "Speak playback speed"
 msgstr ""
 
 #. Translators: Name of the command that switches between short and detailed spoken announcements.
-#: Actions/PlaybackActions.cs:134
+#: Actions/PlaybackActions.cs:130
 msgid "Switch between brief and detailed announcements"
 msgstr ""
 
 #. Translators: Name of the command that plays the file faster.
-#: Actions/PlaybackActions.cs:136
+#: Actions/PlaybackActions.cs:132
 msgid "Increase playback speed"
 msgstr ""
 
 #. Translators: Name of the command that plays the file slower.
-#: Actions/PlaybackActions.cs:138
+#: Actions/PlaybackActions.cs:134
 msgid "Decrease playback speed"
 msgstr ""
 
 #. Translators: Name of the command that returns the playing speed to normal.
-#: Actions/PlaybackActions.cs:140
+#: Actions/PlaybackActions.cs:136
 msgid "Reset playback speed to normal"
 msgstr ""
 
 #. Translators: Name of the command that raises audio pitch without changing playback speed.
-#: Actions/PlaybackActions.cs:142
+#: Actions/PlaybackActions.cs:138
 msgid "Raise pitch"
 msgstr ""
 
 #. Translators: Name of the command that lowers audio pitch without changing playback speed.
-#: Actions/PlaybackActions.cs:144
+#: Actions/PlaybackActions.cs:140
 msgid "Lower pitch"
 msgstr ""
 
 #. Translators: Name of the command that returns audio pitch to its original value.
-#: Actions/PlaybackActions.cs:146
+#: Actions/PlaybackActions.cs:142
 msgid "Reset pitch to normal"
 msgstr ""
 
 #. Translators: Name of the command that speaks the current audio pitch.
-#: Actions/PlaybackActions.cs:149
+#: Actions/PlaybackActions.cs:145
 msgid "Speak current pitch"
 msgstr ""
 
 #. Translators: Name of the command that moves the sound toward the left speaker.
-#: Actions/PlaybackActions.cs:151
+#: Actions/PlaybackActions.cs:147
 msgid "Pan audio left"
 msgstr ""
 
 #. Translators: Name of the command that moves the sound toward the right speaker.
-#: Actions/PlaybackActions.cs:153
+#: Actions/PlaybackActions.cs:149
 msgid "Pan audio right"
 msgstr ""
 
 #. Translators: Name of the command that speaks the current left/right audio balance.
-#: Actions/PlaybackActions.cs:155
+#: Actions/PlaybackActions.cs:151
 msgid "Speak current pan"
 msgstr ""
 
 #. Translators: Shortcut command that enables or disables headphone spatialization for this session.
-#: Actions/PlaybackActions.cs:157
+#: Actions/PlaybackActions.cs:153
 msgid "Turn headphone spatialization on or off"
 msgstr ""
 
 #. Translators: Shortcut command that rotates the virtual speakers left around the listener.
-#: Actions/PlaybackActions.cs:160
+#: Actions/PlaybackActions.cs:156
 msgid "Rotate headphone spatialization left"
 msgstr ""
 
 #. Translators: Shortcut command that rotates the virtual speakers right around the listener.
-#: Actions/PlaybackActions.cs:163
+#: Actions/PlaybackActions.cs:159
 msgid "Rotate headphone spatialization right"
 msgstr ""
 
 #. Translators: Shortcut command that raises the virtual speakers above the listener.
-#: Actions/PlaybackActions.cs:166
+#: Actions/PlaybackActions.cs:162
 msgid "Raise headphone spatialization elevation"
 msgstr ""
 
 #. Translators: Shortcut command that lowers the virtual speakers below the listener.
-#: Actions/PlaybackActions.cs:169
+#: Actions/PlaybackActions.cs:165
 msgid "Lower headphone spatialization elevation"
 msgstr ""
 
 #. Translators: Name of the command that turns skipping the silent parts of the file on or off.
-#: Actions/PlaybackActions.cs:172
+#: Actions/PlaybackActions.cs:168
 msgid "Turn silence removal on or off"
 msgstr ""
 
 #. Translators: Name of the command that opens the equalizer editor on the preset in use, shown in the shortcut list.
-#: Actions/PlaybackActions.cs:174
+#: Actions/PlaybackActions.cs:170
 msgid "Edit the current equalizer preset"
 msgstr ""
 
 #. Translators: Name of the command that opens the window listing every equalizer preset, shown in the shortcut list.
 #. Translators: Title of the window listing every equalizer preset, where the user's own are made and removed.
-#: Actions/PlaybackActions.cs:176 UI/Equalizer/PresetsDialog.cs:38
+#: Actions/PlaybackActions.cs:172 UI/Equalizer/PresetsDialog.cs:38
 msgid "Manage equalizer presets"
 msgstr ""
 
 #. Translators: Name of the command that marks the beginning of a part of the file to play on its own.
-#: Actions/PlaybackActions.cs:178
+#: Actions/PlaybackActions.cs:174
 msgid "Mark start of selection"
 msgstr ""
 
 #. Translators: Name of the command that marks the end of a part of the file to play on its own.
-#: Actions/PlaybackActions.cs:180
+#: Actions/PlaybackActions.cs:176
 msgid "Mark end of selection"
 msgstr ""
 
 #. Translators: Name of the command that forgets the marked part and plays the whole file again.
-#: Actions/PlaybackActions.cs:182
+#: Actions/PlaybackActions.cs:178
 msgid "Clear the selection"
 msgstr ""
 
 #. Translators: Name of the command that marks the beginning of a precise selection slot.
-#: Actions/PlaybackActions.cs:184
+#: Actions/PlaybackActions.cs:180
 msgid "Set selection start marker"
 msgstr ""
 
 #. Translators: Name of the command that asks for the exact time where a selection begins.
 #. Translators: Title of the dialog for entering the exact beginning of a selection.
-#: Actions/PlaybackActions.cs:186
+#: Actions/PlaybackActions.cs:182
 #: Application/Commands/Playback/SelectionPoints.cs:32
 msgid "Set selection start time"
 msgstr ""
 
 #. Translators: Name of the command that marks the end of a precise selection slot.
-#: Actions/PlaybackActions.cs:188
+#: Actions/PlaybackActions.cs:184
 msgid "Set selection end marker"
 msgstr ""
 
 #. Translators: Name of the command that asks for the exact time where a selection ends.
 #. Translators: Title of the dialog for entering the exact end of a selection.
-#: Actions/PlaybackActions.cs:190
+#: Actions/PlaybackActions.cs:186
 #: Application/Commands/Playback/SelectionPoints.cs:74
 msgid "Set selection end time"
 msgstr ""
 
 #. Translators: Name of the command that plays the selection before the current one.
-#: Actions/PlaybackActions.cs:192
+#: Actions/PlaybackActions.cs:188
 msgid "Previous selection"
 msgstr ""
 
 #. Translators: Name of the command that plays the selection after the current one.
-#: Actions/PlaybackActions.cs:194
+#: Actions/PlaybackActions.cs:190
 msgid "Next selection"
 msgstr ""
 
 #. Translators: Name of the command that removes the current precise selection slot.
-#: Actions/PlaybackActions.cs:196
+#: Actions/PlaybackActions.cs:192
 msgid "Clear selection point"
 msgstr ""
 
 #. Translators: Name of the command that removes every selection from the current file.
-#: Actions/PlaybackActions.cs:198
+#: Actions/PlaybackActions.cs:194
 msgid "Clear all selections"
 msgstr ""
 
 #. Translators: Name of the command that saves the selected part as a new media file.
-#: Actions/PlaybackActions.cs:200
+#: Actions/PlaybackActions.cs:196
 msgid "Save selected time to a file"
 msgstr ""
 
 #. Translators: Name of the command that saves every precise selection as a separate media file.
-#: Actions/PlaybackActions.cs:202
+#: Actions/PlaybackActions.cs:198
 msgid "Save selection points to files"
 msgstr ""
 
 #. Translators: Name of the command that turns repeated selection playback on or off.
-#: Actions/PlaybackActions.cs:205
+#: Actions/PlaybackActions.cs:201
 msgid "Repeat selections"
 msgstr ""
 
 #. Translators: Name of the command that chooses how far a single rewind or fast forward moves.
 #. {amount} is one of the seek step amounts, such as "10 seconds".
-#: Actions/PlaybackActions.cs:212
+#: Actions/PlaybackActions.cs:208
 msgid "Set seek step to {amount}"
 msgstr ""
 
 #. Translators: Name of the command that jumps to a position given as a percentage of the file.
 #. {percent} is a whole number from 10 to 100.
-#: Actions/PlaybackActions.cs:228
+#: Actions/PlaybackActions.cs:224
 msgid "Jump to {percent}% of the file"
 msgstr ""
 
@@ -813,9 +802,7 @@ msgstr ""
 
 #. Translators: Name of the command that opens the channel of the video being played inside the player.
 #. Translators: Item in the Video options menu that opens the channel of the video being played inside the player.
-#. Translators: Context menu item in the results list that opens the channel that published the video inside the player.
 #: Actions/YouTubeActions.cs:45 UI/Menus/VideoMenu.cs:30
-#: UI/YouTube/ResultsDialog.cs:392
 msgid "Go to channel"
 msgstr ""
 
@@ -1337,7 +1324,8 @@ msgstr ""
 
 #. Translators: Title of the information dialog for the current Spotify queue.
 #. Translators: Title of the window listing details of every file in the playlist.
-#: Application/Commands/Files/Info.cs:73 Application/Commands/Files/Info.cs:127
+#: Application/Commands/Files/Info.cs:73
+#: Application/Commands/Files/Info.cs:127
 msgid "Playlist Info"
 msgstr ""
 
@@ -1348,7 +1336,8 @@ msgstr ""
 
 #. Translators: Line in the Spotify queue information dialog. {value} is the formatted combined playing time.
 #. Translators: The playlist summary. {value} is a duration as hours:minutes:seconds.
-#: Application/Commands/Files/Info.cs:77 Application/Commands/Files/Info.cs:140
+#: Application/Commands/Files/Info.cs:77
+#: Application/Commands/Files/Info.cs:140
 msgid "Total duration: {value}"
 msgstr ""
 
@@ -1849,7 +1838,7 @@ msgstr ""
 #. Translators: Short announcement when playback progress cannot be calculated.
 #. Translators: Radio Browser's latest check did not find the station available.
 #: Application/Commands/MediaGuard.cs:108
-#: Application/Commands/Playback/Playback.cs:305 UI/Radio/DetailsDialog.cs:43
+#: Application/Commands/Playback/Playback.cs:303 UI/Radio/DetailsDialog.cs:43
 msgid "Unavailable"
 msgstr ""
 
@@ -1998,8 +1987,8 @@ msgstr ""
 #. Translators: Shown when the player cannot determine the current file's duration.
 #. Translators: Shown when the player cannot offer exact time fields for the current item.
 #: Application/Commands/Playback/Bookmarks.cs:191
-#: Application/Commands/Playback/Playback.cs:222
-#: Application/Commands/Playback/Playback.cs:233
+#: Application/Commands/Playback/Playback.cs:220
+#: Application/Commands/Playback/Playback.cs:231
 #: Application/Commands/Playback/SelectionPoints.cs:206
 msgid "Time is not available for the current file."
 msgstr ""
@@ -2108,17 +2097,17 @@ msgid "The preset could not be saved."
 msgstr ""
 
 #. Translators: Spoken before the time played so far, as in "Elapsed time: 1 minute 20 seconds".
-#: Application/Commands/Playback/Playback.cs:72
+#: Application/Commands/Playback/Playback.cs:70
 msgid "Elapsed time:"
 msgstr ""
 
 #. Translators: Spoken before the time still left to play, as in "Remaining time: 1 minute 20 seconds".
-#: Application/Commands/Playback/Playback.cs:75
+#: Application/Commands/Playback/Playback.cs:73
 msgid "Remaining time:"
 msgstr ""
 
 #. Translators: Spoken before the whole length of the file, as in "Total time: 3 minutes 40 seconds".
-#: Application/Commands/Playback/Playback.cs:78
+#: Application/Commands/Playback/Playback.cs:76
 msgid "Total time:"
 msgstr ""
 
@@ -2131,9 +2120,9 @@ msgstr ""
 #. Translators: Radio station context-menu action that starts playback.
 #. Translators: Button in a Spotify collection window that plays the selected track.
 #. Translators: Button that plays the video chosen in the list of results.
-#: Application/Commands/Playback/Playback.cs:126
-#: Application/Commands/Playback/Playback.cs:145
-#: Application/Commands/Playback/Playback.cs:154
+#: Application/Commands/Playback/Playback.cs:124
+#: Application/Commands/Playback/Playback.cs:143
+#: Application/Commands/Playback/Playback.cs:152
 #: UI/Iptv/ChannelBrowserDialog.cs:118 UI/MainFrame.cs:99 UI/MainFrame.cs:188
 #: UI/Radio/BrowserDialog.cs:120 UI/Radio/BrowserDialog.cs:148
 #: UI/Spotify/TracksDialog.cs:50 UI/YouTube/ResultsDialog.cs:196
@@ -2148,8 +2137,8 @@ msgstr ""
 #. Translators: The timer action that pauses playback.
 #. Translators: Button that holds a recording where it is, and starts it again when pressed a second time.
 #. Translators: Button that holds a recording where it is.
-#: Application/Commands/Playback/Playback.cs:128
-#: Application/Commands/Playback/Playback.cs:156 UI/MainFrame.cs:186
+#: Application/Commands/Playback/Playback.cs:126
+#: Application/Commands/Playback/Playback.cs:154 UI/MainFrame.cs:186
 #: UI/MenuController.cs:316 UI/Menus/RecordingMenu.cs:23
 #: UI/Playback/SleepTimerDialog.cs:80 UI/Recording/MainDialog.cs:172
 #: UI/Recording/Transport.cs:115
@@ -2157,122 +2146,122 @@ msgid "Pause"
 msgstr ""
 
 #. Translators: Spoken when full-screen mode is turned on. The beginner form names the F11 key so the user knows how to leave it again.
-#: Application/Commands/Playback/Playback.cs:254
+#: Application/Commands/Playback/Playback.cs:252
 msgid "Full-screen mode on. Press F11 again to turn it off."
 msgstr ""
 
 #. Translators: The short advanced-verbosity wording spoken when full-screen mode is turned on.
-#: Application/Commands/Playback/Playback.cs:256
+#: Application/Commands/Playback/Playback.cs:254
 msgid "Full-screen on"
 msgstr ""
 
 #. Translators: Spoken when full-screen mode is turned off.
 #. Translators: Spoken when full-screen mode ends on its own because the video stopped playing.
-#: Application/Commands/Playback/Playback.cs:261
+#: Application/Commands/Playback/Playback.cs:259
 #: Application/Presentation/ViewStatePresenter.cs:79
 msgid "Full-screen mode off."
 msgstr ""
 
 #. Translators: The short advanced-verbosity wording spoken when full-screen mode is turned off.
 #. Translators: Short announcement when full-screen mode ends because the video stopped.
-#: Application/Commands/Playback/Playback.cs:263
+#: Application/Commands/Playback/Playback.cs:261
 #: Application/Presentation/ViewStatePresenter.cs:81
 msgid "Full-screen off"
 msgstr ""
 
 #. Translators: Spoken after the loudness has been changed. {volume} is the new loudness as a number out of a hundred.
-#: Application/Commands/Playback/Playback.cs:277
+#: Application/Commands/Playback/Playback.cs:275
 msgid "Volume {volume} percent"
 msgstr ""
 
 #. Translators: Spoken when the user asks how loud the sound is. {percent} is the loudness as a number out of a hundred.
-#: Application/Commands/Playback/Playback.cs:284
+#: Application/Commands/Playback/Playback.cs:282
 msgid "Volume is {percent}%"
 msgstr ""
 
 #. Translators: Spoken when the player cannot work out how far through the file it is.
-#: Application/Commands/Playback/Playback.cs:303
+#: Application/Commands/Playback/Playback.cs:301
 msgid "Percentage not available"
 msgstr ""
 
 #. Translators: Spoken playback position. {percent} is a number from 0 to 100.
-#: Application/Commands/Playback/Playback.cs:311
-#: Application/Commands/Playback/Playback.cs:453
-#: Application/Commands/Playback/Playback.cs:468
+#: Application/Commands/Playback/Playback.cs:309
+#: Application/Commands/Playback/Playback.cs:451
+#: Application/Commands/Playback/Playback.cs:466
 msgid "{percent} percent"
 msgstr ""
 
 #. Translators: Short spoken playback position. {percent} is the percentage; retain a percent sign.
-#: Application/Commands/Playback/Playback.cs:313
-#: Application/Commands/Playback/Playback.cs:455
-#: Application/Commands/Playback/Playback.cs:470
+#: Application/Commands/Playback/Playback.cs:311
+#: Application/Commands/Playback/Playback.cs:453
+#: Application/Commands/Playback/Playback.cs:468
 msgid "{percent}%"
 msgstr ""
 
 #. Translators: Spoken when the user asks how fast the file is playing. {speed} is the speed, where 1 is the normal
 #. speed; "x" is short for "times" and is usually left as it is.
 #. Translators: Spoken after playback speed changes. {speed} is the multiplier, where 1 is normal; "x" means "times".
-#: Application/Commands/Playback/Playback.cs:318
-#: Application/Commands/Playback/Playback.cs:327
+#: Application/Commands/Playback/Playback.cs:316
+#: Application/Commands/Playback/Playback.cs:325
 msgid "{speed}x"
 msgstr ""
 
 #. Translators: Short announcement of pitch in advanced mode. {pitch} is a signed number such as
 #. +1, -2, or +0.25, or zero when pitch is normal.
-#: Application/Commands/Playback/Playback.cs:357
+#: Application/Commands/Playback/Playback.cs:355
 msgid "{pitch} semitones"
 msgstr ""
 
 #. Translators: Spoken when audio is playing at its original pitch.
-#: Application/Commands/Playback/Playback.cs:361
+#: Application/Commands/Playback/Playback.cs:359
 msgid "Pitch normal"
 msgstr ""
 
 #. Translators: Spoken after audio pitch changes or when it is requested. {pitch} is a signed
 #. number of semitones, such as +1, -2, or +0.25.
-#: Application/Commands/Playback/Playback.cs:366
+#: Application/Commands/Playback/Playback.cs:364
 msgid "Pitch {pitch} semitones"
 msgstr ""
 
 #. Translators: Spoken after audio panning changes or when it is requested. Negative values are
 #. toward the left, positive values are toward the right, and zero is centered.
-#: Application/Commands/Playback/Playback.cs:389
+#: Application/Commands/Playback/Playback.cs:387
 msgid "Pan {pan}%"
 msgstr ""
 
 #. Translators: Spoken when the user switches to whole, clearly worded messages. It should read the same as
 #. the "Beginner" entry in the Verbosity list on the General settings page.
-#: Application/Commands/Playback/Playback.cs:399
+#: Application/Commands/Playback/Playback.cs:397
 msgid "Beginner mode"
 msgstr ""
 
 #. Translators: Spoken when the user switches to short messages. It should read the same as the "Advanced"
 #. entry in the Verbosity list on the General settings page.
-#: Application/Commands/Playback/Playback.cs:406
+#: Application/Commands/Playback/Playback.cs:404
 msgid "Advanced mode"
 msgstr ""
 
 #. Translators: Spoken when trimming the silent parts out could not be switched on or off.
-#: Application/Commands/Playback/Playback.cs:418
+#: Application/Commands/Playback/Playback.cs:416
 msgid "Could not change silence removal filter."
 msgstr ""
 
 #. Translators: The short wording spoken when trimming the silent parts out could not be switched on or off.
-#: Application/Commands/Playback/Playback.cs:420
+#: Application/Commands/Playback/Playback.cs:418
 msgid "Filter failed."
 msgstr ""
 
 #. Translators: Spoken once the player has started trimming silent parts out.
 #. Translators: Short announcement once the player has started trimming silent parts out.
+#: Application/Commands/Playback/Playback.cs:429
 #: Application/Commands/Playback/Playback.cs:431
-#: Application/Commands/Playback/Playback.cs:433
 msgid "Silence removal on"
 msgstr ""
 
 #. Translators: Spoken once the player has stopped trimming silent parts out.
 #. Translators: Short announcement once the player has stopped trimming silent parts out.
+#: Application/Commands/Playback/Playback.cs:436
 #: Application/Commands/Playback/Playback.cs:438
-#: Application/Commands/Playback/Playback.cs:440
 msgid "Silence removal off"
 msgstr ""
 
@@ -2461,7 +2450,8 @@ msgstr ""
 #. Translators: How far the file being converted right now has got. {percent} is a whole number.
 #. Translators: How far the download has got. {percent} is a whole number.
 #: Application/Commands/Playback/SelectionSaving.cs:77
-#: UI/Conversion/ProgressDialog.cs:156 UI/YouTube/DownloadProgressDialog.cs:159
+#: UI/Conversion/ProgressDialog.cs:156
+#: UI/YouTube/DownloadProgressDialog.cs:159
 msgid "Percentage: {percent}%"
 msgstr ""
 
@@ -2673,7 +2663,8 @@ msgstr ""
 
 #. Translators: Shown when recording started but some sources would not open. {names} is a
 #. list of what the user called them, separated by commas.
-#: Application/Commands/Recording/Recording.cs:116 UI/Recording/Transport.cs:61
+#: Application/Commands/Recording/Recording.cs:116
+#: UI/Recording/Transport.cs:61
 msgid "Recording started, but these sources could not be opened: {names}"
 msgstr ""
 
@@ -4204,16 +4195,16 @@ msgstr ""
 #: UI/Audio/SofaPreferences.cs:63
 msgid ""
 "Set the default rotation of the virtual speakers around your head, from -360 "
-"to 360 degrees. The default is 0. Player menu and shortcut changes are not "
-"saved."
+"to 360 degrees. Positive values turn right and negative values turn left. "
+"The default is 0. Player menu and shortcut changes are not saved."
 msgstr ""
 
 #. Translators: F1 help for the vertical angle.
 #: UI/Audio/SofaPreferences.cs:66
 msgid ""
-"Set the default elevation of the virtual speakers above or below you, from "
-"-90 to 90 degrees. The default is 0. Player menu and shortcut changes are "
-"not saved."
+"Set the default elevation of the virtual speakers above or below you, from -"
+"89 to 89 degrees. The default is 0. Player menu and shortcut changes are not "
+"saved."
 msgstr ""
 
 #. Translators: F1 help for the step used by the spatialization rotation commands.
@@ -4229,7 +4220,7 @@ msgstr ""
 msgid ""
 "Enter how many degrees each Raise Elevation or Lower Elevation command "
 "changes elevation, from 1 to 90. Decimals are accepted. The default is 5. "
-"Elevation stops at -90 and 90 degrees."
+"Elevation stops at -89 and 89 degrees."
 msgstr ""
 
 #. Translators: Validation error when enabling SOFA processing without an existing .sofa file.
@@ -4250,7 +4241,7 @@ msgstr ""
 
 #. Translators: Validation error for the SOFA vertical angle.
 #: UI/Audio/SofaPreferences.cs:103
-msgid "Elevation must be a number from -90 to 90 degrees."
+msgid "Elevation must be a number from -89 to 89 degrees."
 msgstr ""
 
 #. Translators: Validation error for the number of degrees changed by a rotation command.
@@ -4264,12 +4255,12 @@ msgid "Elevation step must be a number from 1 to 90 degrees."
 msgstr ""
 
 #. Translators: Title of the file picker for headphone HRTF data.
-#: UI/Audio/SofaPreferences.cs:152
+#: UI/Audio/SofaPreferences.cs:153
 msgid "Choose a SOFA file"
 msgstr ""
 
 #. Translators: File picker filter. Translate only "SOFA files"; keep the extension and separators unchanged.
-#: UI/Audio/SofaPreferences.cs:154
+#: UI/Audio/SofaPreferences.cs:155
 msgid "SOFA files (*.sofa)|*.sofa"
 msgstr ""
 
@@ -4587,7 +4578,8 @@ msgstr ""
 #. Translators: A guess at the time left. {time} is a clock such as 3:20, or the word for a guess
 #. not yet worth making.
 #. Translators: Estimated time left for all unfinished queue items.
-#: UI/Conversion/ProgressDialog.cs:161 UI/YouTube/DownloadProgressDialog.cs:164
+#: UI/Conversion/ProgressDialog.cs:161
+#: UI/YouTube/DownloadProgressDialog.cs:164
 #: UI/YouTube/DownloadQueueDialog.cs:305
 msgid "Estimated time left: {time}"
 msgstr ""
@@ -4597,7 +4589,8 @@ msgstr ""
 #. Translators: Shown for estimated time left before enough data exists to calculate it.
 #. Translators: Shown for queue speed before enough data exists to measure it.
 #. Translators: Shown for queue time remaining before enough data exists to calculate it.
-#: UI/Conversion/ProgressDialog.cs:165 UI/YouTube/DownloadProgressDialog.cs:148
+#: UI/Conversion/ProgressDialog.cs:165
+#: UI/YouTube/DownloadProgressDialog.cs:148
 #: UI/YouTube/DownloadProgressDialog.cs:152
 #: UI/YouTube/DownloadQueueDialog.cs:289 UI/YouTube/DownloadQueueDialog.cs:293
 msgid "calculating…"
@@ -4795,12 +4788,11 @@ msgstr ""
 #: UI/Help/AboutDialog.cs:31
 msgid ""
 "Luna includes mpv, copyright © the mpv developers and contributors to "
-"MPlayer and mplayer2, and a C# translation of python-mpv, copyright © "
-"2017-2024 Sebastian Götte. These components are licensed under the GNU "
-"Lesser General Public License, version 2.1 or later. FFmpeg is licensed "
-"under the GNU Lesser General Public License, version 3 or later. See "
-"NOTICE.txt and the licenses folder for complete third-party notices and "
-"terms."
+"MPlayer and mplayer2, and a C# translation of python-mpv, copyright © 2017-"
+"2024 Sebastian Götte. These components are licensed under the GNU Lesser "
+"General Public License, version 2.1 or later. FFmpeg is licensed under the "
+"GNU Lesser General Public License, version 3 or later. See NOTICE.txt and "
+"the licenses folder for complete third-party notices and terms."
 msgstr ""
 
 #. Translators: Final two lines in the About window. {publisher} is the developer's name and
@@ -5679,20 +5671,17 @@ msgid "Sleep timer"
 msgstr ""
 
 #. Translators: Item in the Video options menu that opens the download window to choose how the video being played is saved.
-#. Translators: Context menu item in the results list that opens the download window to choose how the chosen video is saved.
-#: UI/Menus/VideoMenu.cs:16 UI/YouTube/ResultsDialog.cs:400
+#: UI/Menus/VideoMenu.cs:16
 msgid "Download..."
 msgstr ""
 
 #. Translators: Item in the Video options menu that saves the video being played straight to disk with the saved download settings.
-#. Translators: Context menu item in the results list that saves the chosen video straight to disk with the saved download settings.
-#: UI/Menus/VideoMenu.cs:18 UI/YouTube/ResultsDialog.cs:402
+#: UI/Menus/VideoMenu.cs:18
 msgid "Direct download"
 msgstr ""
 
 #. Translators: Item in the Video options menu that adds the video being played to the download queue.
-#. Translators: Context menu item that adds the selected video to the download queue.
-#: UI/Menus/VideoMenu.cs:20 UI/YouTube/ResultsDialog.cs:404
+#: UI/Menus/VideoMenu.cs:20
 msgid "Add to download queue"
 msgstr ""
 
@@ -5712,8 +5701,7 @@ msgid "Open video in browser"
 msgstr ""
 
 #. Translators: Item in the Video options menu that opens the channel of the video being played in the web browser.
-#. Translators: Context menu item in the results list that opens the channel that published the video in the web browser.
-#: UI/Menus/VideoMenu.cs:28 UI/YouTube/ResultsDialog.cs:390
+#: UI/Menus/VideoMenu.cs:28
 msgid "Open channel in browser"
 msgstr ""
 
@@ -6922,16 +6910,13 @@ msgid "Removed from favorites."
 msgstr ""
 
 #. Translators: Radio station context-menu action removing a saved station.
-#. Translators: Context menu item in the results list that takes the chosen video back out of the favourites.
-#: UI/Radio/Actions.cs:89 UI/YouTube/ResultsDialog.cs:416
+#: UI/Radio/Actions.cs:89
 msgid "Remove from favorites"
 msgstr ""
 
 #. Translators: Radio station context-menu action saving a station.
 #. Translators: Radio station context-menu action saving the selected station locally.
-#. Translators: Context menu item in the results list that saves the chosen video to the favourites.
 #: UI/Radio/Actions.cs:91 UI/Radio/BrowserDialog.cs:154
-#: UI/YouTube/ResultsDialog.cs:397 UI/YouTube/ResultsDialog.cs:418
 msgid "Add to favorites"
 msgstr ""
 
@@ -7521,8 +7506,8 @@ msgstr ""
 #. Translators: Save dialog file types. JSON, M3U and M3U8 and all wildcard patterns must remain unchanged.
 #: UI/Services/Dialogs/Playlists.cs:82
 msgid ""
-"M3U8 playlist (*.m3u8)|*.m3u8|M3U playlist (*.m3u)|*.m3u|JSON playlist "
-"(*.json)|*.json"
+"M3U8 playlist (*.m3u8)|*.m3u8|M3U playlist (*.m3u)|*.m3u|JSON playlist (*."
+"json)|*.json"
 msgstr ""
 
 #. Translators: Confirmation before replacing an existing playlist after adjusting its filename extension.
@@ -8479,8 +8464,8 @@ msgstr ""
 #. Translators: Help text for the list that chooses the sound quality a video's audio is played at.
 #: UI/YouTube/GeneralPreferences.cs:152
 msgid ""
-"Sets the bitrate Luna asks for when you play a video's sound alone with "
-"Ctrl+Enter. Luna falls back to the closest the video offers."
+"Sets the bitrate Luna asks for when you play a video's sound alone with Ctrl"
+"+Enter. Luna falls back to the closest the video offers."
 msgstr ""
 
 #. Translators: Help text for the box holding how many videos a search should look for. The two numbers are
@@ -8665,16 +8650,6 @@ msgstr ""
 #. Translators: Heading above a YouTube channel's browser when the channel's name is not known.
 #: UI/YouTube/ResultsDialog.cs:354 YouTube/Playback/Session.cs:93
 msgid "Channel"
-msgstr ""
-
-#. Translators: Context menu item in the results list that copies the address of the chosen video.
-#: UI/YouTube/ResultsDialog.cs:386
-msgid "Copy link"
-msgstr ""
-
-#. Translators: Context menu item in the results list that shows the chosen video in the web browser.
-#: UI/YouTube/ResultsDialog.cs:388
-msgid "Open in browser"
 msgstr ""
 
 #. Translators: Label of the box where the user types what to search YouTube for.
