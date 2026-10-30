@@ -71,9 +71,9 @@ internal static class PlaybackActions
             // Translators: Name of the command that moves forward by twice the chosen seek step.
             new(ActionId.SeekForwardX2, Tr("Fast forward by two steps"), new("right", ShortcutModifiers.Shift)),
             // Translators: Name of the command that moves back by four times the chosen seek step.
-            new(ActionId.SeekBackwardX4, Tr("Rewind by four steps"), new("left", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
+            new(ActionId.SeekBackwardX4, Tr("Rewind by four steps")),
             // Translators: Name of the command that moves forward by four times the chosen seek step.
-            new(ActionId.SeekForwardX4, Tr("Fast forward by four steps"), new("right", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
+            new(ActionId.SeekForwardX4, Tr("Fast forward by four steps")),
             // Translators: Name of the command that jumps to the very start of the file.
             new(ActionId.SeekStart, Tr("Beginning of the file"), new("home")),
             // Translators: Name of the command that jumps to the very end of the file.
@@ -153,6 +153,21 @@ internal static class PlaybackActions
             new(ActionId.PanRight, Tr("Pan audio right"), new("right", ShortcutModifiers.Control)),
             // Translators: Name of the command that speaks the current left/right audio balance.
             new(ActionId.AnnouncePan, Tr("Speak current pan"), new("b")),
+            // Translators: Shortcut command that enables or disables headphone spatialization for this session.
+            new(ActionId.ToggleHeadphoneSpatialization, Tr("Turn headphone spatialization on or off"),
+                new("h", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
+            // Translators: Shortcut command that rotates the virtual speakers left around the listener.
+            new(ActionId.RotateSofaLeft, Tr("Rotate headphone spatialization left"),
+                new("left", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
+            // Translators: Shortcut command that rotates the virtual speakers right around the listener.
+            new(ActionId.RotateSofaRight, Tr("Rotate headphone spatialization right"),
+                new("right", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
+            // Translators: Shortcut command that raises the virtual speakers above the listener.
+            new(ActionId.SofaElevationUp, Tr("Raise headphone spatialization elevation"),
+                new("up", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
+            // Translators: Shortcut command that lowers the virtual speakers below the listener.
+            new(ActionId.SofaElevationDown, Tr("Lower headphone spatialization elevation"),
+                new("down", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
             // Translators: Name of the command that turns skipping the silent parts of the file on or off.
             new(ActionId.ToggleSilenceRemoval, Tr("Turn silence removal on or off"), new("m", ShortcutModifiers.Control)),
             // Translators: Name of the command that opens the equalizer editor on the preset in use, shown in the shortcut list.

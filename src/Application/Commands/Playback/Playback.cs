@@ -44,6 +44,7 @@ internal sealed partial class Playback
         _selections = selections;
         _guard = new MediaGuard(player, speech);
         _spotify = spotify;
+        _ = new Spatialization(router, player, settings.Audio, speech, view.SetHeadphoneSpatializationState);
         RegisterCoreActions(router);
         RegisterGeneratedActions(router);
     }

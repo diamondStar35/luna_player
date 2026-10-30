@@ -109,16 +109,38 @@ internal sealed class ShortcutManager
 
     internal void Apply(IReadOnlyDictionary<ActionId, Shortcut> primary, IReadOnlyDictionary<ActionId, Shortcut> secondary)
     {
+        // Resolve all requested assignments together: a key freed by a later action (or the
+        // other slot) must already be available to an earlier action, including shortcut swaps.
+        var defaults = new Dictionary<(ActionId Action, ShortcutSlot Slot), Shortcut>();
+        foreach (var pair in _defaultPrimary) defaults[(pair.Key, ShortcutSlot.Primary)] = pair.Value;
+        foreach (var pair in _defaultSecondary) defaults[(pair.Key, ShortcutSlot.Secondary)] = pair.Value;
+        var requested = new Dictionary<(ActionId Action, ShortcutSlot Slot), Shortcut>();
+        CollectOverrides(primary, _actions, ShortcutSlot.Primary, defaults, requested);
+        CollectOverrides(secondary, _defaultSecondary.Keys, ShortcutSlot.Secondary, defaults, requested);
+
+        Dictionary<(ActionId Action, ShortcutSlot Slot), Shortcut> effective;
+        bool rejected;
+        do
+        {
+            effective = new(defaults);
+            foreach (var pair in requested) effective[pair.Key] = pair.Value;
+            rejected = false;
+            foreach (var group in effective.GroupBy(pair => pair.Value))
+            {
+                // An unchanged binding wins a conflict. Otherwise use a stable slot/action order.
+                var losers = group.OrderBy(pair => requested.ContainsKey(pair.Key))
+                    .ThenBy(pair => pair.Key.Slot).ThenBy(pair => pair.Key.Action).Skip(1);
+                foreach (var pair in losers)
+                    rejected |= requested.Remove(pair.Key);
+            }
+            // Restoring a rejected override's default can conflict with another request. Repeat
+            // until all retained requests are compatible, rather than silently losing a default.
+        } while (rejected);
+
         _primary.Clear();
         _secondary.Clear();
-        foreach (var pair in _defaultPrimary) _primary[pair.Key] = pair.Value;
-        foreach (var pair in _defaultSecondary) _secondary[pair.Key] = pair.Value;
-        var occupied = new HashSet<Shortcut>(_primary.Values.Concat(_secondary.Values));
-        // The primary slot exists for every action, including the ones that ship without a shortcut; the
-        // secondary slot only for the actions that define one, which is what the preferences page lets the
-        // user edit.
-        ApplyOverrides(primary, _primary, _actions, occupied);
-        ApplyOverrides(secondary, _secondary, _defaultSecondary.Keys, occupied);
+        foreach (var pair in effective)
+            (pair.Key.Slot == ShortcutSlot.Primary ? _primary : _secondary)[pair.Key.Action] = pair.Value;
     }
 
     internal Dictionary<ActionId, Shortcut> PrimaryOverrides()
@@ -137,24 +159,21 @@ internal sealed class ShortcutManager
         return result;
     }
 
-    /// <param name="allowed">The actions this slot can hold a binding for. An override naming anything else -
-    /// an action from the other set, or one that has been removed since the file was written - is dropped.
-    /// </param>
-    private static void ApplyOverrides(
+    // Primary slots exist for every action; secondary slots only for actions defining a default.
+    private static void CollectOverrides(
         IReadOnlyDictionary<ActionId, Shortcut> overrides,
-        IDictionary<ActionId, Shortcut> effective,
         IReadOnlyCollection<ActionId> allowed,
-        ISet<Shortcut> occupied)
+        ShortcutSlot slot,
+        IReadOnlyDictionary<(ActionId Action, ShortcutSlot Slot), Shortcut> defaults,
+        IDictionary<(ActionId Action, ShortcutSlot Slot), Shortcut> requested)
     {
-        foreach (var pair in overrides.OrderBy(pair => pair.Key))
+        foreach (var pair in overrides)
         {
             if (!allowed.Contains(pair.Key)) continue;
-            // Freeing the previous binding first, so moving a shortcut between two actions is not read as a
-            // collision with itself. An action that ships without one has nothing to free.
-            if (effective.TryGetValue(pair.Key, out var previous)) occupied.Remove(previous);
             var value = new Shortcut(pair.Value.Key.Trim().ToLowerInvariant(), pair.Value.Modifiers);
-            if (IsValid(value) && !occupied.Contains(value)) effective[pair.Key] = value;
-            if (effective.TryGetValue(pair.Key, out var current)) occupied.Add(current);
+            var key = (pair.Key, slot);
+            if (IsValid(value) && (!defaults.TryGetValue(key, out var original) || original != value))
+                requested[key] = value;
         }
     }
 

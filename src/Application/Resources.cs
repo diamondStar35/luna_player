@@ -193,7 +193,13 @@ internal static class Resources
         player.SetNormalization(settings.Audio.NormalizeAudio);
         player.SetMono(settings.Audio.MonoAudio);
         if (!player.ConfigureSofa(settings.Audio))
-            settings.Audio.SofaEnabled = false;
+        {
+            // Keep the configured path and defaults available for this session without rewriting
+            // preferences merely because the external file could not be loaded at startup.
+            var fallback = settings.Audio.Copy();
+            fallback.SofaEnabled = false;
+            player.ConfigureSofa(fallback);
+        }
         player.SetPan(settings.Audio.Pan);
         player.SetSilenceRemoval(settings.Silence.Enabled);
         settings.Audio.NormalizeAudio = player.IsNormalizationEnabled;

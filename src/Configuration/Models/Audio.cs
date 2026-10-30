@@ -17,6 +17,8 @@ internal sealed class AudioSettings
     internal const double MaximumPitch = 12;
     internal const double MinimumPitchStep = 0.001;
     internal const double MaximumPitchStep = 12;
+    internal const double MinimumSofaStep = 1;
+    internal const double MaximumSofaStep = 90;
     internal const int MaximumFadeIntervalMilliseconds = 10000;
     internal const int MaximumCrossfadeMilliseconds = 30000;
 
@@ -43,6 +45,8 @@ internal sealed class AudioSettings
     public double SofaGain { get; set; }
     public double SofaRotation { get; set; }
     public double SofaElevation { get; set; }
+    public double SofaRotationStep { get; set; } = 5;
+    public double SofaElevationStep { get; set; } = 5;
     public int FadeIntervalMilliseconds { get; set; }
     public bool FadeSeeking { get; set; }
     public int SeekFadeIntervalMilliseconds { get; set; } = 100;
@@ -95,6 +99,8 @@ internal sealed class AudioSettings
         SofaGain = source.SofaGain;
         SofaRotation = source.SofaRotation;
         SofaElevation = source.SofaElevation;
+        SofaRotationStep = source.SofaRotationStep;
+        SofaElevationStep = source.SofaElevationStep;
     }
 }
 

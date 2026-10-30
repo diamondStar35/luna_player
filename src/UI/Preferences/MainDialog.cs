@@ -229,12 +229,18 @@ internal sealed class MainDialog : IDisposable
         // Only the pages the user actually opened exist, and only they can carry an unsaved change or an
         // invalid value - a page never opened leaves its settings exactly as they were. Validate them all
         // before applying any, so a bad value stops the save with nothing half-written.
-        foreach (var page in _pages.Values)
+        foreach (var entry in _pages)
         {
+            var page = entry.Value;
             var error = page.Validate();
             if (string.IsNullOrEmpty(error)) continue;
+            // A visited page may now be hidden. Reveal it before presenting the error, then
+            // repeat validation after the message closes so its invalid control can take focus.
+            ShowPage(entry.Key);
+            _tree.Selection = entry.Key;
             Messages.Show(
                 error, MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
+            page.Validate();
             return;
         }
         foreach (var page in _pages.Values) page.Apply();

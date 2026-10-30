@@ -39,6 +39,7 @@ internal sealed class ViewStatePresenter
         _view.SetAudioTrackControlsEnabled(false);
         _view.SetSubtitleControlsEnabled(false);
         _view.SetSilenceRemovalChecked(_player.IsSilenceRemovalEnabled);
+        _view.SetHeadphoneSpatializationState(_player.CanToggleSofa, _player.IsSofaEnabled);
         _view.SetSelectionState(new SelectionMenuState(false, false, false, false, false, false, false, false));
         // Both belong to a playlist rather than to the player, so they change when a list of videos is put
         // in front of the one the user opened and change back when it goes.
@@ -80,6 +81,7 @@ internal sealed class ViewStatePresenter
                 Tr("Full-screen off"));
         }
         _view.SetSilenceRemovalChecked(_player.IsSilenceRemovalEnabled);
+        _view.SetHeadphoneSpatializationState(_player.CanToggleSofa, _player.IsSofaEnabled);
         _view.SetShuffleChecked(_spotify.IsActive ? _spotify.IsShuffleEnabled : _sessions.IsShuffleEnabled);
         _view.SetRepeatFileChecked(_spotify.IsActive ? _spotify.IsRepeatCurrentEnabled : _player.IsRepeatFileEnabled);
     }

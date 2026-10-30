@@ -37,6 +37,8 @@ internal sealed record MainMenuComponents(
     MenuItem ShuffleItem,
     MenuItem RepeatFileItem,
     MenuItem SilenceRemovalItem,
+    MenuItem SofaItem,
+    IReadOnlyList<MenuItem> SofaAngleItems,
     MenuItem FullScreenItem,
     MenuItem StartRecordingItem,
     MenuItem PauseRecordingItem,
@@ -101,7 +103,7 @@ internal static partial class Builder
             player.SubtitleRememberItem, file.RecentCommands, file.RecentFilesMenu, file.RecentFoldersMenu,
             file.RecentPlaylistsMenu, player.EqualizerCommands, player.EqualizerItems, player.EqualizerMenu,
             edit.MarkCurrentItem, edit.MarkAllItem, player.ShuffleItem, player.RepeatItem, player.SilenceItem,
-            player.FullScreenItem, recording.StartItem, recording.PauseItem, recording.StopItem, player.Chapters);
+            player.SofaItem, player.SofaAngleItems, player.FullScreenItem, recording.StartItem, recording.PauseItem, recording.StopItem, player.Chapters);
     }
 
     /// <summary>Appends an action item (labelled with its shortcut) and records it for group enable/disable.</summary>

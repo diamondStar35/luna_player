@@ -43,6 +43,7 @@ internal interface IMenuState
     void SetShuffleChecked(bool isChecked);
     void SetRepeatFileChecked(bool isChecked);
     void SetSilenceRemovalChecked(bool isChecked);
+    void SetHeadphoneSpatializationState(bool available, bool enabled);
     void SetSelectionState(SelectionMenuState state);
 
     /// <summary>Ticks the equalizer preset in force, or the Off item when <paramref name="presetId"/> is

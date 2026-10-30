@@ -45,6 +45,8 @@ internal sealed class MenuController
     private readonly MenuItem _shuffleItem;
     private readonly MenuItem _repeatFileItem;
     private readonly MenuItem _silenceRemovalItem;
+    private readonly MenuItem _sofaItem;
+    private readonly IReadOnlyList<MenuItem> _sofaAngleItems;
     private readonly MenuItem _repeatSelectionsItem;
     private readonly MenuItem _fullScreenItem;
     private readonly MenuItem _startRecordingItem;
@@ -104,6 +106,8 @@ internal sealed class MenuController
         _shuffleItem = menu.ShuffleItem;
         _repeatFileItem = menu.RepeatFileItem;
         _silenceRemovalItem = menu.SilenceRemovalItem;
+        _sofaItem = menu.SofaItem;
+        _sofaAngleItems = menu.SofaAngleItems;
         _repeatSelectionsItem = menu.RepeatSelectionsItem;
         _fullScreenItem = menu.FullScreenItem;
         _startRecordingItem = menu.StartRecordingItem;
@@ -177,6 +181,14 @@ internal sealed class MenuController
     internal void SetRepeatFileChecked(bool isChecked) => _repeatFileItem.Checked = isChecked;
 
     internal void SetSilenceRemovalChecked(bool isChecked) => _silenceRemovalItem.Checked = isChecked;
+
+    internal void SetHeadphoneSpatializationState(bool available, bool enabled)
+    {
+        _sofaItem.Enabled = available;
+        _sofaItem.Checked = enabled;
+        foreach (var item in _sofaAngleItems)
+            item.Enabled = available && enabled;
+    }
 
     internal void SetSelectionState(SelectionMenuState state)
     {
