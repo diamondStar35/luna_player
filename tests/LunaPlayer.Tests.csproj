@@ -4,6 +4,7 @@
     <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     <SelfContained>true</SelfContained>
     <BuildInParallel>false</BuildInParallel>
+    <ShouldUnsetParentConfigurationAndPlatform>false</ShouldUnsetParentConfigurationAndPlatform>
     <!-- Match the application suppression: mpv retains optional DynamicObject proxies;
          tests use its typed API, which is exercised by the published native runner. -->
     <NoWarn>$(NoWarn);IL3050</NoWarn>
@@ -16,6 +17,10 @@
   <ItemGroup>
     <!-- Old nested test-project build outputs must not become test source files. -->
     <Compile Remove="**/bin/**/*.cs;**/obj/**/*.cs" />
-    <ProjectReference Include="../src/LunaPlayer.csproj" AdditionalProperties="TestBuild=true;NativeAotBuildInvocation=true;BuildInParallel=false" />
+    <ProjectReference Include="../src/LunaPlayer.csproj">
+      <!-- A solution build already builds/publishes the application. Share that project instance;
+           standalone test builds still suppress publishing the player. -->
+      <AdditionalProperties Condition="'$(BuildingSolutionFile)' != 'true'">TestBuild=true;NativeAotBuildInvocation=true;BuildInParallel=false</AdditionalProperties>
+    </ProjectReference>
   </ItemGroup>
 </Project>
