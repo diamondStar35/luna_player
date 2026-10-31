@@ -151,7 +151,9 @@ internal sealed partial class PlaybackCoordinator
         CancelEndFade(restoreVolume: false);
         void PlainSeek(MpvNet.MPV mpv)
         {
-            mpv.FadeVolume(1, 0);
+            // A paused seek must stay silent. Raising gain makes fade-play flush the
+            // output with a refresh seek, which can overwrite this still-pending target.
+            mpv.FadeVolume(mpv.GetProperty("pause") is true ? 0 : 1, 0);
             mpv.Command("seek", target, absolute ? "absolute" : "relative");
         }
         var interval = _seekFadeIntervalMilliseconds / 1000.0;
