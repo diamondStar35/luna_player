@@ -33,6 +33,8 @@ internal sealed partial class PlaybackCoordinator : IEngine
     private bool _fadePauseResume;
     private bool? _loadingPaused;
     private bool _fadeInOnRestart;
+    private int _restartFadeMilliseconds;
+    private volatile bool _replacementMuted;
     private bool _endFadeActive;
 
     private bool _loaded;

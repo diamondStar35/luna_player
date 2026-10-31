@@ -59,7 +59,9 @@ internal sealed partial class PlaybackCoordinator
         {
             _awaitingLoadRestart = false;
             _loadingPath = null;
-            _loadingPaused = null;
+            // Ordinary replacements remain physically paused until their filters are ready.
+            // Their logical pause state continues to reflect the latest user command.
+            if (!_fadeInOnRestart) _loadingPaused = null;
             _loadingSourceEntryId = null;
             _lastPosition = null;
             _activeEntryId = _session.PositiveEntryId();
@@ -93,14 +95,22 @@ internal sealed partial class PlaybackCoordinator
             RetryQueuedAudio();
             SelectionSeekCompleted?.Invoke();
         }
-        if (_fadeInOnRestart)
+        if (_fadeInOnRestart && !_awaitingLoadRestart)
         {
             _fadeInOnRestart = false;
             _endFadeActive = false;
             // Loading already muted the new entry. Do not replace a transport request made while
             // it was opening; mpv owns that envelope until the pause, resume or seek is settled.
-            if (!IsPaused && _session.ReadBoolean("audio-fade/transport-active") != true)
-                FadeVolume(1, _fadeIntervalMilliseconds);
+            FinishReplacement(_loadGeneration, _restartFadeMilliseconds);
+        }
+        else if (!_awaitingLoadRestart)
+        {
+            var generation = _loadGeneration;
+            _session.TryDo(_ =>
+            {
+                if (!_disposed && generation == Volatile.Read(ref _loadGeneration))
+                    _audio.CompleteEqualizerLoad();
+            });
         }
         if (_pendingAdvance is LoadRequest advance
             && Paths.AreSame(_session.ReadString("path"), advance.Path))

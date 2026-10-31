@@ -8,11 +8,11 @@ internal sealed partial class PlaybackCoordinator
     private bool CurrentIsAudio()
         => _session.ReadObject("track-list") is IEnumerable<object?> tracks && Probe.Tracks(tracks).AudioOnly;
 
-    private bool LoadWithCrossfade(LoadRequest request, bool paused, bool fadeTransition, long generation)
+    private bool LoadWithCrossfade(LoadRequest request, bool paused, long generation)
     {
         var probe = _probe!;
         if (probe.CachedResult(request.Path) is Probe.Result cached)
-            return CompleteManualLoad(request, paused, fadeTransition, cached.AudioOnly);
+            return CompleteManualLoad(request, paused, cached.AudioOnly);
         // First playback never waits on a probe. Only an explicitly requested overlap needs to know
         // the destination's tracks before capturing the outgoing audio.
         _loaded = true;
@@ -30,21 +30,20 @@ internal sealed partial class PlaybackCoordinator
                 var requestedPause = _loadingPaused ?? paused;
                 _manualRequest = null;
                 _loadingPaused = null;
-                if (!CompleteManualLoad(destination, requestedPause, fadeTransition, result?.AudioOnly == true))
+                if (!CompleteManualLoad(destination, requestedPause, result?.AudioOnly == true))
                     Ended?.Invoke(EndReason.Error);
             }
         });
         return true;
     }
 
-    private bool CompleteManualLoad(LoadRequest request, bool paused, bool fadeTransition, bool overlap)
+    private bool CompleteManualLoad(LoadRequest request, bool paused, bool overlap)
     {
         overlap &= _crossfade && _crossfadeManual && !paused && !IsPaused
-            && !_currentUsesAudioFile && CurrentIsAudio();
-        _fadeInOnRestart = !overlap && fadeTransition && ShouldFadeTransitions;
-        if (!overlap)
-            _session.SetFade(_fadeInOnRestart ? 0 : 1);
-        return LoadCore(request, paused, overlap);
+            && !_replacementMuted && !_currentUsesAudioFile && CurrentIsAudio();
+        _fadeInOnRestart = !overlap;
+        return overlap ? LoadCore(request, paused, crossfade: true)
+            : BeginReplacement(request, paused, _loadGeneration);
     }
 
     private void PrepareAudioSuccessor(LoadRequest request)

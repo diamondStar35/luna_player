@@ -69,15 +69,13 @@ internal static partial class AudioFilters
     ///
     /// A band whose centre sits at or above <see cref="SafeNyquistFraction"/> of the current file's
     /// Nyquist frequency is skipped rather than emitted, since at the edge it self-oscillates instead of
-    /// filtering. <paramref name="sampleRate"/> is the decoded rate the chain will run at; when it is not
-    /// yet known - before a file is loaded - every band is kept and the graph is rebuilt with the real
-    /// rate once one is.
+    /// filtering. No bands are emitted until the decoded sample rate is known.
     /// </remarks>
     internal static string EqualizerGraph(IReadOnlyList<Band> slots, double? sampleRate = null)
     {
-        var ceiling = sampleRate is > 0
-            ? sampleRate.Value / 2 * SafeNyquistFraction
-            : double.PositiveInfinity;
+        if (sampleRate is not > 0 || !double.IsFinite(sampleRate.Value))
+            return string.Empty;
+        var ceiling = sampleRate.Value / 2 * SafeNyquistFraction;
         var stages = new List<string>(slots.Count);
         for (var slot = 0; slot < slots.Count; slot++)
         {

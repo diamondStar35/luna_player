@@ -20,8 +20,9 @@ internal sealed partial class PlaybackCoordinator
     private bool BeginLoad(string path, double? startPosition, bool paused, string? audioFile,
         bool noVideo, bool fadeTransition, PlaybackRange? range, string? itemId, double? chapterStop)
     {
+        var declick = _replacement is not null || _loaded && !IsPaused && !_awaitingLoadRestart;
         var overlap = fadeTransition && _crossfade && _crossfadeManual && _loaded && !IsPaused
-            && !_awaitingLoadRestart && !_currentUsesAudioFile && audioFile is null && CurrentIsAudio();
+            && !_awaitingLoadRestart && !_replacementMuted && !_currentUsesAudioFile && audioFile is null && CurrentIsAudio();
         var generation = ++_loadGeneration;
         ++_queueGeneration;
         _loadingSourceEntryId = _session.PositiveEntryId();
@@ -43,16 +44,17 @@ internal sealed partial class PlaybackCoordinator
         _queuedSourceEntryId = null;
         _awaitingLoadRestart = true;
         _loadingPath = path;
-        _fadeInOnRestart = !overlap && fadeTransition && ShouldFadeTransitions;
-        // Ordinary replacement fades begin with the destination muted. Native overlaps retain the
-        // outgoing envelope until the mixer captures it, avoiding a sudden gain jump before the overlap.
-        if (!overlap)
-            _session.SetFade(_fadeInOnRestart ? 0 : 1);
+        _replacement = null;
+        _loadingPaused = paused;
+        _fadeInOnRestart = !overlap;
+        _restartFadeMilliseconds = fadeTransition && ShouldFadeTransitions
+            ? Math.Max(DeclickMilliseconds, _fadeIntervalMilliseconds) : DeclickMilliseconds;
         // Cancel the old successor immediately, including while a manual destination's metadata is
         // being inspected. A replaced request may never advance the old queue in the meantime.
         if (overlap)
             _session.TryDo(static mpv => mpv.CommandAsync(0, "playlist-clear"));
-        var loaded = overlap ? LoadWithCrossfade(request, paused, fadeTransition, generation) : LoadCore(request, paused);
+        var loaded = overlap ? LoadWithCrossfade(request, paused, generation)
+            : declick ? BeginReplacement(request, paused, generation) : LoadCore(request, paused);
         _selectionRangeActive = false;
         _selectionRangeRepeats = false;
         _selectionRangeCompleted = false;
@@ -158,9 +160,20 @@ internal sealed partial class PlaybackCoordinator
         _chapterStopEnd = request.ChapterStop;
         _chapterStopCompleted = false;
         _heldEndNotified = false;
-        var options = LoadOptions(request, paused);
+        // Decode replacements while paused so configuring their filters cannot consume
+        // the first part of the file. Native crossfades keep their continuous output path.
+        var options = LoadOptions(request, paused: !crossfade || paused);
+        var generation = _loadGeneration;
+        var muted = _fadeInOnRestart;
         var loaded = _session.TryDo(mpv =>
         {
+            if (_disposed || generation != Volatile.Read(ref _loadGeneration)) return;
+            if (!crossfade)
+            {
+                _session.TryDoNow(native => native.FadeVolume(muted ? 0 : 1, 0));
+                _audio.ClearEqualizerForLoad();
+            }
+            if (_disposed || generation != Volatile.Read(ref _loadGeneration)) return;
             mpv.SetPropertyAsync(0, "audio-files",
                 request.AudioFile is null ? Array.Empty<string>() : new[] { request.AudioFile });
             if (crossfade)
@@ -170,6 +183,7 @@ internal sealed partial class PlaybackCoordinator
         });
         _loaded = loaded;
         _currentUsesAudioFile = request.AudioFile is not null;
+        _replacementMuted = !crossfade;
         _loadingPaused = paused;
         if (loaded && !_crossfade && _nextRequest is not null)
             AppendNext();
@@ -228,6 +242,7 @@ internal sealed partial class PlaybackCoordinator
         _pendingAdvance = null;
         _completedAdvance = null;
         _manualRequest = null;
+        _replacement = null;
         _playbackRange = null;
         _chapterStopEnd = null;
         _chapterStopCompleted = false;
