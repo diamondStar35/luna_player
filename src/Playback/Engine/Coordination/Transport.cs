@@ -29,6 +29,11 @@ internal sealed partial class PlaybackCoordinator
 
     private void PlayCore()
     {
+        if (_replacement is not null || _awaitingLoadRestart && _manualRequest is null)
+        {
+            _loadingPaused = false;
+            return;
+        }
         // Clearing an mpv end boundary does not release its EOF latch. When playback is explicitly resumed
         // from the free slot, seek to the exact current timestamp to re-arm decoding, then play after mpv
         // confirms that zero-distance seek. Entering the free slot itself never changes time or playback.
@@ -53,6 +58,8 @@ internal sealed partial class PlaybackCoordinator
     {
         _loadingPaused = false;
         var interval = _fadePauseResume ? _fadeIntervalMilliseconds / 1000.0 : 0;
+        if (_replacementMuted) interval = Math.Max(interval, DeclickMilliseconds / 1000.0);
+        _replacementMuted = false;
         _session.TryDo(mpv => mpv.FadePlay(interval), mpv =>
         {
             mpv.FadeVolume(1, 0);
@@ -68,6 +75,11 @@ internal sealed partial class PlaybackCoordinator
 
     private void PauseCore()
     {
+        if (_replacement is not null || _awaitingLoadRestart && _manualRequest is null)
+        {
+            _loadingPaused = true;
+            return;
+        }
         if (IsPaused)
             return;
         _loadingPaused = true;
@@ -80,10 +92,17 @@ internal sealed partial class PlaybackCoordinator
         });
     }
 
-    private void HandlePauseChange(string _, object? value)
+    private void HandlePauseChange(string name, object? value)
     {
         lock (_loadSync)
         {
+            // audio-fade/paused reports pause intent before the ramp is audible.
+            // Only the actual pause property proves that outgoing audio reached silence.
+            if (name == "pause" && value is true && _replacement is { } replacement)
+                _session.TryDo(mpv =>
+                {
+                    if (mpv.GetProperty("pause") is true) CompleteReplacement(replacement.Generation);
+                });
             if (!_awaitingLoadRestart && _manualRequest is null && value is bool paused && _loadingPaused == paused)
                 _loadingPaused = null;
         }
