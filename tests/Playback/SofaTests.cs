@@ -31,7 +31,6 @@ public sealed class SofaTests
             StringAssert.Contains(graph, "sofalizer=sofa=C\\\\:/");
             StringAssert.Contains(graph, "HRTF\\\\\\'s\\\\\\ \\[test\\]\\,\\\\\\ semi\\;\\\\\\ مثال.SOFA");
             StringAssert.Contains(graph, ":gain=-2.5:rotation=-30.5:elevation=-5.5:type=freq");
-            Assert.IsTrue(AudioFilters.IsSofaFile(path));
         }
         finally { CultureInfo.CurrentCulture = previousCulture; }
     }
@@ -54,7 +53,7 @@ public sealed class SofaTests
     }
 
     [TestMethod]
-    public void MissingFileAndWrongExtensionLeaveTheCurrentGraphAlone()
+    public void SofaPathsArePassedToTheEngineWithoutFileValidation()
     {
         using var workspace = new Workspace();
         using var engine = new FakeEngine();
@@ -63,10 +62,11 @@ public sealed class SofaTests
         Assert.IsTrue(player.ConfigureSofa(settings));
         var graph = engine.SofaGraph;
         settings.SofaFile = Path.Combine(workspace.Root, "missing.sofa");
-        Assert.IsFalse(player.ConfigureSofa(settings));
+        Assert.IsTrue(player.ConfigureSofa(settings));
+        Assert.AreNotEqual(graph, engine.SofaGraph);
         settings.SofaFile = workspace.File("test.wav");
-        Assert.IsFalse(player.ConfigureSofa(settings));
-        Assert.AreEqual(graph, engine.SofaGraph);
+        Assert.IsTrue(player.ConfigureSofa(settings));
+        Assert.AreEqual(AudioFilters.SofaGraph(settings), engine.SofaGraph);
     }
 
     [TestMethod]
@@ -244,11 +244,11 @@ public sealed class SofaTests
     }
 
     [TestMethod]
-    [DataRow(88d, 5d, 89d)]
-    [DataRow(-88d, -5d, -89d)]
-    [DataRow(90d, 5d, 89d)]
+    [DataRow(88d, 5d, 90d)]
+    [DataRow(-88d, -5d, -90d)]
+    [DataRow(90d, 5d, 90d)]
     [DataRow(0d, -2.5d, -2.5d)]
-    public void RuntimeElevationStopsBeforeTheBackendWrapsToZero(double initial, double delta, double expected)
+    public void RuntimeElevationClampsAtThePoles(double initial, double delta, double expected)
     {
         using var workspace = new Workspace();
         using var player = new Player(new FakeEngine());
@@ -259,9 +259,9 @@ public sealed class SofaTests
     }
 
     [TestMethod]
-    [DataRow(90d, 89d)]
-    [DataRow(-90d, -89d)]
-    public void LegacyElevationEndpointsAreAcceptedAndNormalized(double stored, double expected)
+    [DataRow(90d, 90d)]
+    [DataRow(-90d, -90d)]
+    public void ElevationEndpointsArePreserved(double stored, double expected)
     {
         var settings = new Settings();
         settings.Audio.SofaElevation = stored;
@@ -306,8 +306,42 @@ public sealed class SofaTests
         Assert.IsFalse(player.ChangeSofaElevation(5));
         Assert.IsTrue(player.ConfigureSofa(new AudioSettings { SofaFile = "missing.sofa" }));
         Assert.IsTrue(player.CanToggleSofa);
-        Assert.IsFalse(player.SetSofaEnabled(true));
-        Assert.IsFalse(player.ChangeSofaRotation(5));
-        Assert.IsFalse(player.ChangeSofaElevation(5));
+        Assert.IsTrue(player.SetSofaEnabled(true));
+        Assert.IsTrue(player.ChangeSofaRotation(5));
+        Assert.IsTrue(player.ChangeSofaElevation(5));
     }
+    [TestMethod]
+    public void RuntimeDirectionsDoNotRebuildTheFilter()
+    {
+        using var engine = new FakeEngine();
+        using var player = new Player(engine);
+        Assert.IsTrue(player.ConfigureSofa(new AudioSettings { SofaEnabled = true, SofaFile = "not-checked.any-extension" }));
+        var graph = engine.SofaGraph;
+        for (var i = 0; i < 10; i++)
+        {
+            Assert.IsTrue(player.ChangeSofaRotation(5));
+            Assert.IsTrue(player.ChangeSofaElevation(10));
+        }
+        Assert.AreEqual(1, engine.SofaConfigurations);
+        Assert.AreEqual(20, engine.SofaDirectionChanges);
+        Assert.AreEqual(-50d, engine.SofaRotation);
+        Assert.AreEqual(90d, engine.SofaElevation);
+        Assert.AreEqual(graph, engine.SofaGraph);
+        Assert.IsTrue(player.OpenFiles(["one", "two"]));
+        Assert.IsTrue(player.Next(false));
+        Assert.AreEqual(1, engine.SofaConfigurations);
+    }
+
+    [TestMethod]
+    public void BackgroundFailureCanDisableTheRequestedSpatialization()
+    {
+        using var engine = new FakeEngine();
+        using var player = new Player(engine);
+        player.AudioFilterFailed += player.DisableFailedFilter;
+        player.ConfigureSofa(new AudioSettings { SofaEnabled = true, SofaFile = "missing.sofa" });
+        engine.FailFilter(AudioFilter.Spatialization);
+        Assert.IsFalse(player.IsSofaEnabled);
+        Assert.AreEqual(string.Empty, engine.SofaGraph);
+    }
+
 }

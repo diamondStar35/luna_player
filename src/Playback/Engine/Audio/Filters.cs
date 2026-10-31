@@ -8,6 +8,9 @@ internal sealed partial class AudioProcessor
     private string? _silenceFilterGraph;
 
     public bool SetNormalization(bool enabled)
+        => _session.QueueFilter(AudioFilter.Normalization, () => ApplyNormalization(enabled));
+
+    private bool ApplyNormalization(bool enabled)
     {
         // Rebuilding an unchanged graph discards decoded lookahead just before a native overlap.
         // Check the persisted filter list too, since a file can supply its own per-file options.
@@ -32,6 +35,9 @@ internal sealed partial class AudioProcessor
     }
 
     public bool SetMono(bool enabled)
+        => _session.QueueFilter(AudioFilter.Mono, () => ApplyMono(enabled));
+
+    private bool ApplyMono(bool enabled)
     {
         if (_monoFilterState == enabled && HasFilter("audiomono") == enabled)
             return true;
@@ -42,6 +48,9 @@ internal sealed partial class AudioProcessor
     }
 
     public bool SetSilenceRemoval(bool enabled, string graph)
+        => _session.QueueFilter(AudioFilter.SilenceRemoval, () => ApplySilenceRemoval(enabled, graph));
+
+    private bool ApplySilenceRemoval(bool enabled, string graph)
     {
         var desired = enabled ? graph : string.Empty;
         if (_silenceFilterGraph == desired && HasFilter("silenceremove") == enabled)
@@ -53,15 +62,15 @@ internal sealed partial class AudioProcessor
     }
 
     private bool HasFilter(string label)
-        => _session.ReadObject("af") is IEnumerable<object?> filters
+        => _session.ReadLiveObject("af") is IEnumerable<object?> filters
             && filters.Any(value => value is IDictionary<string, object?> filter
                 && filter.TryGetValue("label", out var name) && string.Equals(name as string, label, StringComparison.Ordinal)
                 && (!filter.TryGetValue("enabled", out var enabled) || enabled is not false));
 
     public bool SetEqualizer(Preset? preset)
     {
-        _equalizerPreset = preset;
-        return BuildEqualizer();
+        _equalizerPreset = preset is null ? null : preset with { Bands = preset.Bands.ToArray() };
+        return _session.QueueFilter(AudioFilter.Equalizer, BuildEqualizer);
     }
 
     /// <summary>Rebuilds the equalizer from its persisted filter string. Updating only the live filter
@@ -72,19 +81,20 @@ internal sealed partial class AudioProcessor
     {
         _session.RemoveFilter($"@{AudioFilters.EqualizerLabel}");
         _equalizerFilterActive = false;
-        if (_equalizerPreset is null)
+        var preset = _equalizerPreset;
+        if (preset is null)
             return true;
 
         // The rate the decoded audio runs at, so bands at or beyond its Nyquist are left out. Null before
         // a file is loaded; the graph is then built whole and rebuilt once the real rate is known.
-        _equalizerSampleRate = _session.ReadDouble("audio-params/samplerate") ?? 0;
+        _equalizerSampleRate = MpvSession.TryConvertDouble(_session.ReadLiveObject("audio-params/samplerate"), out var rate) ? rate : 0;
         var graph = AudioFilters.EqualizerGraph(
-            Bands.Slots(_equalizerPreset), _equalizerSampleRate > 0 ? _equalizerSampleRate : null);
+            Bands.Slots(preset), _equalizerSampleRate > 0 ? _equalizerSampleRate : null);
         if (graph.Length == 0)
             return true;
 
         var filter = $"@{AudioFilters.EqualizerLabel}:lavfi=[{graph}]";
-        _equalizerFilterActive = _session.TryDo(mpv => mpv.Command("af", "pre", filter)) || _session.AddFilter(filter);
+        _equalizerFilterActive = _session.TryDoNow(mpv => mpv.Command("af", "pre", filter)) || _session.AddFilter(filter);
         return _equalizerFilterActive;
     }
 

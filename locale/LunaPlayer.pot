@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-10-30 18:05+0200\n"
+"POT-Creation-Date: 2026-10-31 11:58+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -813,6 +813,19 @@ msgstr ""
 msgid "Update YouTube components"
 msgstr ""
 
+#. Translators: Reports a background failure of headphone spatialization on the main window.
+#. Translators: Shown when headphone spatialization could not load the selected SOFA file or FFmpeg filter.
+#: Application/AudioFailures.cs:15 Application/Commands/App/Preferences.cs:52
+msgid ""
+"Could not apply the SOFA headphone spatialization filter. Choose a valid "
+"SOFA HRTF file and use an FFmpeg build with libmysofa support."
+msgstr ""
+
+#. Translators: Reports a background failure of an audio processing filter on the main window.
+#: Application/AudioFailures.cs:17
+msgid "Could not apply the audio filter."
+msgstr ""
+
 #. Translators: Shown when Windows cannot open the installed HTML user guide.
 #: Application/Commands/App/Help.cs:34
 msgid "The user guide could not be opened."
@@ -846,13 +859,6 @@ msgstr ""
 #. Translators: Shown when the setting that mixes both channels into one could not be turned on or off.
 #: Application/Commands/App/Preferences.cs:46
 msgid "Could not apply the mono audio filter."
-msgstr ""
-
-#. Translators: Shown when headphone spatialization could not load the selected SOFA file or FFmpeg filter.
-#: Application/Commands/App/Preferences.cs:52
-msgid ""
-"Could not apply the SOFA headphone spatialization filter. Choose a valid "
-"SOFA HRTF file and use an FFmpeg build with libmysofa support."
 msgstr ""
 
 #. Translators: Shown when the setting that trims the silent parts out could not be turned on or off.
@@ -2938,12 +2944,12 @@ msgid "No YouTube video."
 msgstr ""
 
 #. Translators: Spoken when the one-time chapter-end stop pauses playback.
-#: Application/Controller.cs:286
+#: Application/Controller.cs:288
 msgid "Playback paused at the end of the chapter."
 msgstr ""
 
 #. Translators: Brief announcement after pausing at a chapter boundary.
-#: Application/Controller.cs:288
+#: Application/Controller.cs:290
 msgid "Chapter ended. Paused."
 msgstr ""
 
@@ -4119,7 +4125,7 @@ msgid ""
 msgstr ""
 
 #. Translators: F1 help for the SOFA headphone spatialization page.
-#: UI/Audio/SofaPreferences.cs:23
+#: UI/Audio/SofaPreferences.cs:22
 msgid ""
 "Use a SOFA HRTF file to make audio sound like speakers around you when "
 "listening with headphones. Move between controls with Tab or Shift+Tab and "
@@ -4127,12 +4133,12 @@ msgid ""
 msgstr ""
 
 #. Translators: Checkbox enabling SOFA-based binaural audio processing for headphones.
-#: UI/Audio/SofaPreferences.cs:29
+#: UI/Audio/SofaPreferences.cs:28
 msgid "Enable headphone spatialization"
 msgstr ""
 
 #. Translators: Label for the path to the user's SOFA HRTF file. Keep SOFA unchanged.
-#: UI/Audio/SofaPreferences.cs:33
+#: UI/Audio/SofaPreferences.cs:32
 msgid "SOFA file"
 msgstr ""
 
@@ -4144,7 +4150,7 @@ msgstr ""
 #. Translators: Button that opens a folder picker to choose where the download is saved.
 #. Translators: Button on the YouTube download settings page that opens a folder picker.
 #. Translators: Button that opens a file picker to choose a cookie file by hand.
-#: UI/Audio/SofaPreferences.cs:35 UI/Conversion/MainDialog.cs:177
+#: UI/Audio/SofaPreferences.cs:34 UI/Conversion/MainDialog.cs:177
 #: UI/Iptv/SourceEditDialog.cs:73 UI/Preferences/Recording.cs:72
 #: UI/Recording/MainDialog.cs:151 UI/Selections/SaveDialog.cs:47
 #: UI/YouTube/DownloadDialog.cs:97 UI/YouTube/DownloadPreferences.cs:66
@@ -4154,32 +4160,32 @@ msgstr ""
 
 #. Translators: Output gain applied by the SOFA filter, in decibels.
 #. Translators: Label of the box holding how far one equalizer band lifts or cuts, in decibels.
-#: UI/Audio/SofaPreferences.cs:40 UI/Equalizer/EditDialog.cs:143
+#: UI/Audio/SofaPreferences.cs:39 UI/Equalizer/EditDialog.cs:143
 msgid "Gain (dB)"
 msgstr ""
 
 #. Translators: Horizontal rotation of the virtual speakers around the listener.
-#: UI/Audio/SofaPreferences.cs:42
+#: UI/Audio/SofaPreferences.cs:41
 msgid "Rotation (degrees)"
 msgstr ""
 
 #. Translators: Vertical angle of the virtual speakers relative to the listener.
-#: UI/Audio/SofaPreferences.cs:44
+#: UI/Audio/SofaPreferences.cs:43
 msgid "Elevation (degrees)"
 msgstr ""
 
 #. Translators: How far each left/right spatialization command rotates the virtual speakers.
-#: UI/Audio/SofaPreferences.cs:47
+#: UI/Audio/SofaPreferences.cs:46
 msgid "Rotation step (degrees)"
 msgstr ""
 
 #. Translators: How far each raise/lower spatialization command changes the vertical angle.
-#: UI/Audio/SofaPreferences.cs:50
+#: UI/Audio/SofaPreferences.cs:49
 msgid "Elevation step (degrees)"
 msgstr ""
 
 #. Translators: F1 help for the headphone spatialization enable checkbox.
-#: UI/Audio/SofaPreferences.cs:56
+#: UI/Audio/SofaPreferences.cs:55
 msgid ""
 "Enable binaural rendering for headphones and show its settings. Leave this "
 "off when listening through speakers or to audio that is already binaural. "
@@ -4188,7 +4194,7 @@ msgid ""
 msgstr ""
 
 #. Translators: F1 help for the SOFA file path and browse button.
-#: UI/Audio/SofaPreferences.cs:58
+#: UI/Audio/SofaPreferences.cs:57
 msgid ""
 "Choose a local .sofa file containing head-related impulse responses (HRTFs). "
 "Luna uses FFmpeg's sofalizer filter with libmysofa. The file must remain "
@@ -4196,14 +4202,14 @@ msgid ""
 msgstr ""
 
 #. Translators: F1 help for SOFA output gain.
-#: UI/Audio/SofaPreferences.cs:63
+#: UI/Audio/SofaPreferences.cs:62
 msgid ""
 "Enter a gain from -20 to 40 dB. The default is 0. Lower the gain if the "
 "spatialized sound clips or is too loud."
 msgstr ""
 
 #. Translators: F1 help for the horizontal rotation angle.
-#: UI/Audio/SofaPreferences.cs:66
+#: UI/Audio/SofaPreferences.cs:65
 msgid ""
 "Set the default rotation of the virtual speakers around your head in whole "
 "degrees, from -360 to 360. Positive values turn right and negative values "
@@ -4211,15 +4217,15 @@ msgid ""
 msgstr ""
 
 #. Translators: F1 help for the vertical angle.
-#: UI/Audio/SofaPreferences.cs:69
+#: UI/Audio/SofaPreferences.cs:68
 msgid ""
 "Set the default elevation of the virtual speakers above or below you in "
-"whole degrees, from -89 to 89. The default is 0. Player menu and shortcut "
+"whole degrees, from -90 to 90. The default is 0. Player menu and shortcut "
 "changes are not saved."
 msgstr ""
 
 #. Translators: F1 help for the step used by the spatialization rotation commands.
-#: UI/Audio/SofaPreferences.cs:72
+#: UI/Audio/SofaPreferences.cs:71
 msgid ""
 "Set how many whole degrees each Rotate Left or Rotate Right command changes "
 "rotation, from 1 to 90. The default is 5. Rotation wraps around after a full "
@@ -4227,31 +4233,25 @@ msgid ""
 msgstr ""
 
 #. Translators: F1 help for the step used by the spatialization elevation commands.
-#: UI/Audio/SofaPreferences.cs:75
+#: UI/Audio/SofaPreferences.cs:74
 msgid ""
 "Set how many whole degrees each Raise Elevation or Lower Elevation command "
-"changes elevation, from 1 to 90. The default is 5. Elevation stops at -89 "
-"and 89 degrees."
-msgstr ""
-
-#. Translators: Validation error when enabling SOFA processing without an existing .sofa file.
-#: UI/Audio/SofaPreferences.cs:88
-msgid ""
-"Choose an existing .sofa HRTF file before enabling headphone spatialization."
+"changes elevation, from 1 to 90. The default is 5. Elevation stops at -90 "
+"and 90 degrees."
 msgstr ""
 
 #. Translators: Validation error for SOFA output gain.
-#: UI/Audio/SofaPreferences.cs:94
+#: UI/Audio/SofaPreferences.cs:87
 msgid "Gain must be a number from -20 to 40 dB."
 msgstr ""
 
 #. Translators: Title of the file picker for headphone HRTF data.
-#: UI/Audio/SofaPreferences.cs:128
+#: UI/Audio/SofaPreferences.cs:121
 msgid "Choose a SOFA file"
 msgstr ""
 
 #. Translators: File picker filter. Translate only "SOFA files"; keep the extension and separators unchanged.
-#: UI/Audio/SofaPreferences.cs:130
+#: UI/Audio/SofaPreferences.cs:123
 msgid "SOFA files (*.sofa)|*.sofa"
 msgstr ""
 

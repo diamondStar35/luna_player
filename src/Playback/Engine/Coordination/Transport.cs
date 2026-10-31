@@ -51,14 +51,13 @@ internal sealed partial class PlaybackCoordinator
 
     private void ResumePlaybackCore()
     {
-        _loadingPaused = _manualRequest is null ? null : false;
+        _loadingPaused = false;
         var interval = _fadePauseResume ? _fadeIntervalMilliseconds / 1000.0 : 0;
-        if (!_session.TryDo(mpv => mpv.FadePlay(interval)))
+        _session.TryDo(mpv => mpv.FadePlay(interval), mpv =>
         {
-            // Unpatched libraries retain ordinary transport without managed fading or timers.
-            _session.SetFade(1);
-            _session.SetPropertySafely("pause", false);
-        }
+            mpv.FadeVolume(1, 0);
+            mpv.SetProperty("pause", false);
+        });
     }
 
     public void Pause()
@@ -71,13 +70,22 @@ internal sealed partial class PlaybackCoordinator
     {
         if (IsPaused)
             return;
-        _loadingPaused = _manualRequest is null ? null : true;
+        _loadingPaused = true;
         CancelEndFade(restoreVolume: false);
         var interval = _fadePauseResume ? _fadeIntervalMilliseconds / 1000.0 : 0;
-        if (!_session.TryDo(mpv => mpv.FadePause(interval)))
+        _session.TryDo(mpv => mpv.FadePause(interval), mpv =>
         {
-            _session.SetPropertySafely("pause", true);
-            _session.SetFade(1);
+            mpv.SetProperty("pause", true);
+            mpv.FadeVolume(1, 0);
+        });
+    }
+
+    private void HandlePauseChange(string _, object? value)
+    {
+        lock (_loadSync)
+        {
+            if (!_awaitingLoadRestart && _manualRequest is null && value is bool paused && _loadingPaused == paused)
+                _loadingPaused = null;
         }
     }
 
@@ -122,10 +130,17 @@ internal sealed partial class PlaybackCoordinator
         if (SeekPendingManualLoad(target, absolute))
             return;
         CancelEndFade(restoreVolume: false);
-        if (_fadeSeeking && _loaded
-            && _session.TryDo(mpv => mpv.FadeSeek(target, _seekFadeIntervalMilliseconds / 1000.0, absolute)))
+        void PlainSeek(MpvNet.MPV mpv)
+        {
+            mpv.FadeVolume(1, 0);
+            mpv.Command("seek", target, absolute ? "absolute" : "relative");
+        }
+        var interval = _seekFadeIntervalMilliseconds / 1000.0;
+        if (_fadeSeeking && _loaded)
+        {
+            _session.TryDo(mpv => mpv.FadeSeek(target, interval, absolute), PlainSeek);
             return;
-        _session.SetFade(1);
-        _session.TryDo(mpv => mpv.Command("seek", target, absolute ? "absolute" : "relative"));
+        }
+        _session.TryDo(PlainSeek);
     }
 }

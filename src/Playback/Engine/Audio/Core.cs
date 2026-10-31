@@ -6,8 +6,9 @@ namespace LunaPlayer.Playback;
 internal sealed partial class AudioProcessor(MpvSession session)
 {
     private readonly MpvSession _session = session;
-    private void ApplyVolume() => _session.SetPropertySafely("volume", ToMpvVolume(_volume));
+    private void ApplyVolume() => _session.TryDo(mpv => mpv.SetProperty("volume", ToMpvVolume(_volume)));
     private double _volume = 100;
+    private double _speed = 1;
     private double _pitch;
     private bool _pitchFilterActive;
     private double _pan;
@@ -38,7 +39,7 @@ internal sealed partial class AudioProcessor(MpvSession session)
             return;
         }
         if (rate > 0 && rate != _equalizerSampleRate)
-            BuildEqualizer();
+            _session.QueueFilter(AudioFilter.Equalizer, BuildEqualizer);
     }
 
 }

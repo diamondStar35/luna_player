@@ -77,6 +77,7 @@ internal sealed partial class PlaybackCoordinator : IEngine
     private bool _playAfterSelectionSeek;
     private bool _restoreEndBehaviorAfterSelectionSeek;
     private double _selectionSeekTarget;
+    private long _selectionSeekGeneration;
 
 
     // The last subtitle line handed out, so mpv re-reporting the same cue is not announced twice. Cleared
@@ -88,6 +89,8 @@ internal sealed partial class PlaybackCoordinator : IEngine
     {
         _session = new MpvSession(windowHandle, _loadSync, options);
         _audio = new AudioProcessor(_session);
+        _session.FilterFailed += filter => { if (!_disposed) AudioFilterFailed?.Invoke(filter); };
+        _session.OnEvent(_ => _audio.ReplaySofaDirection(), MpvEventId.AudioReconfig);
         _tracks = new TrackDiscovery(_session);
         _metadata = new MetadataDiscovery(_session, HandleMetadataChange);
         _session.SetPropertySafely("network-timeout", 10);
@@ -95,6 +98,8 @@ internal sealed partial class PlaybackCoordinator : IEngine
         _session.OnEvent(HandlePlaybackRestart, MpvEventId.PlaybackRestart);
         _session.OnEvent(HandleFileLoaded, MpvEventId.FileLoaded);
         _session.ObserveProperty("time-pos", HandlePositionChange);
+        _session.ObserveProperty("audio-fade/paused", HandlePauseChange);
+        _session.ObserveProperty("pause", HandlePauseChange);
         // The equalizer is left out of the chain entirely until a preset asks for it, and which bands it
         // then carries depends on the file's sample rate: a band at the Nyquist frequency rings rather
         // than filters, so the graph is rebuilt whenever that rate changes under it. Off is nothing at
@@ -102,9 +107,10 @@ internal sealed partial class PlaybackCoordinator : IEngine
         _session.ObserveProperty("audio-params/samplerate", (name, value) => { if (!_disposed) _audio.HandleSampleRateChange(name, value); });
         // Video parameters are not known when the load returns, so the width is watched rather than read.
         _session.ObserveProperty("video-params/w", HandleVideoParamsChange);
-        // Tracks are learned after the load returns as well, so the count is watched to tell when the audio
-        // tracks a file offers have changed under the menu that gates on them.
-        _session.ObserveProperty("track-list/count", HandleTrackListChange);
+        _session.ObserveProperty("current-tracks/video/image", HandleVideoParamsChange);
+        _session.ObserveProperty("current-tracks/video/albumart", HandleVideoParamsChange);
+        // Watch the full track list so menus see the updated entries before announcing the change.
+        _session.ObserveProperty("track-list", HandleTrackListChange);
         // The text of the subtitle currently on screen. Watching it turns each cue into a line to announce as
         // it comes up; mpv leaves it empty between cues and whenever no subtitle track is selected.
         _session.ObserveProperty("sub-text", HandleSubTextChange);
@@ -115,6 +121,7 @@ internal sealed partial class PlaybackCoordinator : IEngine
     }
 
     public event Action<EndReason>? Ended;
+    public event Action<AudioFilter>? AudioFilterFailed;
 
     public event Action<double>? SelectionEnded;
 

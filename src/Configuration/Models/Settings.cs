@@ -178,7 +178,6 @@ internal sealed class Settings
         Audio.PanStep = Math.Clamp(Audio.PanStep, 1, 100);
         Audio.SofaGain = Math.Clamp(Audio.SofaGain, -20, 40);
         Audio.SofaRotation = Math.Clamp(Audio.SofaRotation, -360, 360);
-        // Accept older stored +/-90 values, then move them to the closest supported elevation.
         Audio.SofaElevation = Math.Clamp(Audio.SofaElevation,
             -AudioSettings.MaximumSofaElevation, AudioSettings.MaximumSofaElevation);
         Audio.SofaRotationStep = Math.Clamp(double.IsFinite(Audio.SofaRotationStep) ? Audio.SofaRotationStep : 5,

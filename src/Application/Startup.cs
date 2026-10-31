@@ -19,6 +19,8 @@ internal sealed class Startup : IDisposable
     private StartupSettings? _settings;
     private WindowResources? _window;
     private StartupResources? _services;
+    private StartupResources? _pendingServices;
+    private Task _cleanupTask = Task.CompletedTask;
     private ShortcutManager _shortcuts = null!;
     private ShortcutManager _globalShortcuts = null!;
     private Task? _nativeTask;
@@ -148,12 +150,29 @@ internal sealed class Startup : IDisposable
         }
         try
         {
+            lock (_gate)
+            {
+                if (_disposed || _stopping || _failed)
+                {
+                    QueueCleanup(services, disposeSpeech: false);
+                    return;
+                }
+                // Publish before posting, so closing can release these services even if the UI
+                // callback has not run yet. The native window remains alive until cleanup finishes.
+                _pendingServices = services;
+            }
             _dispatcher.Post(() => OnServicesReady(services));
         }
         catch (InvalidOperationException)
         {
-            // wx has already shut down. Release MPV without interrupting another app's speech.
-            services.Dispose(disposeSpeech: false);
+            lock (_gate)
+            {
+                if (_pendingServices == services)
+                {
+                    _pendingServices = null;
+                    QueueCleanup(services, disposeSpeech: false);
+                }
+            }
         }
     }
 
@@ -204,12 +223,17 @@ internal sealed class Startup : IDisposable
 
     private void OnServicesReady(StartupResources services)
     {
-        if (_disposed || _stopping || _failed)
+        lock (_gate)
         {
-            services.Dispose(disposeSpeech: false);
-            return;
+            if (_pendingServices != services) return;
+            _pendingServices = null;
+            if (_disposed || _stopping || _failed)
+            {
+                QueueCleanup(services, disposeSpeech: false);
+                return;
+            }
+            _services = services;
         }
-        _services = services;
         TryComplete();
     }
 
@@ -227,7 +251,7 @@ internal sealed class Startup : IDisposable
         }
         catch (Exception failure)
         {
-            services.Dispose();
+            lock (_gate) QueueCleanup(services);
             Fail(failure);
         }
     }
@@ -237,8 +261,30 @@ internal sealed class Startup : IDisposable
         lock (_gate)
         {
             _stopping = true;
-            return _nativeTask ?? Task.CompletedTask;
+            ReleaseServices();
+            // Native creation may still finish and queue cleanup after this snapshot.
+            return FinishStoppingAsync(_nativeTask ?? Task.CompletedTask);
         }
+    }
+
+    private async Task FinishStoppingAsync(Task nativeTask)
+    {
+        await nativeTask.ConfigureAwait(false);
+        Task cleanup;
+        lock (_gate) cleanup = _cleanupTask;
+        await cleanup.ConfigureAwait(false);
+    }
+
+    // Called under _gate; disposal can wait for filter initialization, so only workers perform it.
+    private void QueueCleanup(StartupResources services, bool disposeSpeech = true)
+        => _cleanupTask = Task.WhenAll(_cleanupTask, Task.Run(() => services.Dispose(disposeSpeech)));
+
+    private void ReleaseServices()
+    {
+        if (_services is { } services) QueueCleanup(services, disposeSpeech: false);
+        if (_pendingServices is { } pending) QueueCleanup(pending, disposeSpeech: false);
+        _services = null;
+        _pendingServices = null;
     }
 
     public void Dispose()
@@ -249,9 +295,8 @@ internal sealed class Startup : IDisposable
                 return;
             _disposed = true;
             _stopping = true;
+            ReleaseServices();
         }
-        _services?.Dispose(disposeSpeech: false);
-        _services = null;
     }
 
     private void PostFailure(Exception failure)

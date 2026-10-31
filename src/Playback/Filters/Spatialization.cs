@@ -6,13 +6,10 @@ internal static partial class AudioFilters
 {
     internal const string SofaLabel = "audiosofa";
 
-    internal static bool IsSofaFile(string path)
-        => string.Equals(Path.GetExtension(path), ".sofa", StringComparison.OrdinalIgnoreCase) && File.Exists(path);
-
     internal static string SofaGraph(AudioSettings settings)
     {
         if (!settings.SofaEnabled) return string.Empty;
-        var path = Path.GetFullPath(settings.SofaFile).Replace('\\', '/');
+        var path = settings.SofaFile.Replace('\\', '/');
         var option = EscapeToken(path, "\\':");
         var graphPath = EscapeToken(option, "\\'[],;");
         // SOFA azimuth increases to the left; Luna's controls report clockwise angles.

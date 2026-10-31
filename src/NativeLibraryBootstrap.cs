@@ -16,7 +16,6 @@ internal static class NativeLibraryBootstrap
     private static string? _nativeDirectory;
     private static nint _wrapperHandle;
     private static nint _mpvHandle;
-    private static nint _avfilterHandle;
     private static nint _prismHandle;
 
     public static void Initialize()
@@ -73,13 +72,6 @@ internal static class NativeLibraryBootstrap
     {
         _ = assembly;
         _ = searchPath;
-        if (string.Equals(libraryName, "avfilter", StringComparison.OrdinalIgnoreCase))
-        {
-            lock (Sync)
-                return _avfilterHandle != 0
-                    ? _avfilterHandle
-                    : _avfilterHandle = LoadRequired(_nativeDirectory!, "avfilter-12.dll");
-        }
         if (!string.Equals(libraryName, MpvImportName, StringComparison.OrdinalIgnoreCase))
             return nint.Zero;
         lock (Sync)

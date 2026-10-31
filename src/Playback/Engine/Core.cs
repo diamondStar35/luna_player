@@ -68,6 +68,8 @@ internal sealed class Engine : IEngine
     public bool SetNormalization(bool enabled) => _coordinator.SetNormalization(enabled);
     public bool SetMono(bool enabled) => _coordinator.SetMono(enabled);
     public bool SetSofa(string graph) => _coordinator.SetSofa(graph);
+    public bool SetSofaDirection(double rotation, double elevation) => _coordinator.SetSofaDirection(rotation, elevation);
+    public event Action<AudioFilter>? AudioFilterFailed { add => _coordinator.AudioFilterFailed += value; remove => _coordinator.AudioFilterFailed -= value; }
     public bool SetSilenceRemoval(bool enabled, string graph) => _coordinator.SetSilenceRemoval(enabled, graph);
     public bool SetEqualizer(Preset? preset) => _coordinator.SetEqualizer(preset);
     public void SetEndBehavior(EndBehavior behavior) => _coordinator.SetEndBehavior(behavior);

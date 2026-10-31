@@ -158,11 +158,11 @@ internal sealed partial class PlaybackCoordinator
         _chapterStopEnd = request.ChapterStop;
         _chapterStopCompleted = false;
         _heldEndNotified = false;
+        var options = LoadOptions(request, paused);
         var loaded = _session.TryDo(mpv =>
         {
             mpv.SetPropertyAsync(0, "audio-files",
                 request.AudioFile is null ? Array.Empty<string>() : new[] { request.AudioFile });
-            var options = LoadOptions(request, paused);
             if (crossfade)
                 mpv.CrossfadeLoadFileAsync(request.Path, _crossfadeMilliseconds / 1000.0, _crossfadeEqualPower, options);
             else
@@ -180,11 +180,11 @@ internal sealed partial class PlaybackCoordinator
     {
         if (_nextRequest is not LoadRequest request)
             return false;
+        var options = LoadOptions(request, paused: false);
         var appended = _session.TryDo(mpv =>
         {
             mpv.CommandAsync(0, "playlist-clear");
-            mpv.LoadFileAsync(request.Path, "append",
-                LoadOptions(request, paused: false));
+            mpv.LoadFileAsync(request.Path, "append", options);
         });
         _queuedNext = appended;
         return appended;

@@ -13,7 +13,15 @@ internal sealed partial class PlaybackCoordinator
         _restoreEndBehaviorAfterSelectionSeek = restoreEndBehavior;
         _playAfterSelectionSeek = play;
         _selectionSeekTarget = target;
-        if (_session.TryDo(mpv => mpv.Command("seek", target, "absolute+exact")))
+        var generation = ++_selectionSeekGeneration;
+        if (_session.TryDo(mpv => mpv.Command("seek", target, "absolute+exact"), _ =>
+        {
+            lock (_loadSync)
+            {
+                // A refused seek must not leave transport disabled. A newer seek owns its own state.
+                if (_selectionSeekGeneration == generation) CancelSelectionSeek();
+            }
+        }))
             return true;
         CancelSelectionSeek();
         return false;
@@ -43,6 +51,7 @@ internal sealed partial class PlaybackCoordinator
     {
         if (_disposed)
             return;
+        _audio.ReplaySofaDirection();
         // Chapters share a path. A queued restart from an outgoing seek is not proof that the new
         // chapter loaded: wait for that replacement's FILE_LOADED and native entry identity first.
         if (_awaitingLoadRestart && _loadingFileSeen && Paths.AreSame(_session.ReadString("path"), _loadingPath)
@@ -171,6 +180,7 @@ internal sealed partial class PlaybackCoordinator
 
     private void CancelSelectionSeek()
     {
+        ++_selectionSeekGeneration;
         _selectionSeekPending = false;
         _restoreEndBehaviorAfterSelectionSeek = false;
         _playAfterSelectionSeek = false;

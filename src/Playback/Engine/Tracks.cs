@@ -98,7 +98,7 @@ internal sealed class TrackDiscovery(MpvSession session)
         IDictionary<string, object?> Values, int Id, string? Title, string? Language, bool Selected);
 
     // sub-add <url> [<flags> [<title> [<lang>]]] - "select" adds and switches to it. The track-list grows,
-    // which the count observer turns into SubtitleTracksChanged, so the menu and reading pick it up with no
+    // which the track-list observer turns into SubtitleTracksChanged, so the menu and reading pick it up with no
     // extra wiring. mpv opens an http(s) url through ffmpeg just as it opens a local path. Only the arguments
     // that were given are passed, so an empty title does not overwrite the name mpv derives from the source.
     public bool AddSubtitle(string source, string? title, string? language)

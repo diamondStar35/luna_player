@@ -173,8 +173,8 @@ public sealed class SpatializationTests
         var elevationStep = (SpinCtrl)Field("Elevation step (degrees)");
         Assert.AreEqual(-360, rotation.Minimum);
         Assert.AreEqual(360, rotation.Maximum);
-        Assert.AreEqual(-89, elevation.Minimum);
-        Assert.AreEqual(89, elevation.Maximum);
+        Assert.AreEqual(-90, elevation.Minimum);
+        Assert.AreEqual(90, elevation.Maximum);
         Assert.AreEqual(1, rotationStep.Minimum);
         Assert.AreEqual(90, rotationStep.Maximum);
         Assert.AreEqual(1, elevationStep.Minimum);
@@ -192,7 +192,7 @@ public sealed class SpatializationTests
             Assert.AreEqual(90, step.Value);
         }
         rotation.Value = -360;
-        elevation.Value = 89;
+        elevation.Value = 90;
         rotationStep.Value = 1;
         elevationStep.Value = 90;
         gain.Value = "-2.5";
@@ -205,7 +205,7 @@ public sealed class SpatializationTests
         Assert.AreEqual(file.Value, settings.SofaFile);
         Assert.AreEqual(-2.5, settings.SofaGain);
         Assert.AreEqual(-360d, settings.SofaRotation);
-        Assert.AreEqual(89d, settings.SofaElevation);
+        Assert.AreEqual(90d, settings.SofaElevation);
         Assert.AreEqual(1d, settings.SofaRotationStep);
         Assert.AreEqual(90d, settings.SofaElevationStep);
         // An invalid hidden gain draft neither blocks saving nor overwrites the last valid value.

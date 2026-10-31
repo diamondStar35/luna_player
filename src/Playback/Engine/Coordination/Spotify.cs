@@ -15,7 +15,7 @@ internal sealed partial class PlaybackCoordinator
         if (!_spotifyProtocolRegistered)
         {
             // Optional Spotify initialization must not affect ordinary player startup.
-            _session.Native.RegisterStreamProtocol("luna-spotify", OpenSpotifyStream);
+            _session.TryDo(mpv => mpv.RegisterStreamProtocol("luna-spotify", OpenSpotifyStream));
             _spotifyProtocolRegistered = true;
         }
         var id = Guid.NewGuid().ToString("N", CultureInfo.InvariantCulture);

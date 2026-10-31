@@ -837,11 +837,11 @@ Import replaces the corresponding collection; it does not merge entries. Keep ex
 
 Open **Preferences > Audio > Headphone spatialization** and select **Enable headphone spatialization** to reveal its settings. Choose **Browse...**, select a local `.sofa` HRTF file, configure the defaults, then press OK. Spatialization is off by default; all other controls on this page are hidden while its Enable checkbox is cleared. You can configure a file and defaults, then clear Enable before saving if you prefer to turn spatialization on only from the Player menu.
 
-Luna uses FFmpeg's libmysofa-backed `sofalizer` filter to render virtual speakers as stereo sound for headphones. Use a SOFA file containing `SimpleFreeFieldHRIR` head-related impulse responses, not a media file. The bundled FFmpeg includes the required filter; a replacement build must include libmysofa support.
+Luna uses FFmpeg's libmysofa-backed `sofalizer` filter to render virtual speakers as stereo sound for headphones. Use a SOFA file containing `SimpleFreeFieldHRIR` head-related impulse responses, not a media file. The bundled FFmpeg includes the required filter; a replacement build must include libmysofa and support changing SOFA rotation and elevation during playback.
 
 - **Gain (dB):** -20 to 40, with a default of 0. Reduce it if the result is too loud or clips.
 - **Rotation (degrees):** Default horizontal angle of the virtual speakers, from -360 to 360, initially 0. Positive values turn right; negative values turn left.
-- **Elevation (degrees):** Default vertical angle of the virtual speakers, from -89 to 89, initially 0.
+- **Elevation (degrees):** Default vertical angle of the virtual speakers, from -90 to 90, initially 0.
 - **Rotation step (degrees):** Amount changed by each rotation command, from 1 to 90. The default is 5.
 - **Elevation step (degrees):** Amount changed by each elevation command, from 1 to 90. The default is 5.
 
@@ -857,13 +857,15 @@ The **Player > Headphone Spatialization** submenu is beside **Pan**:
 | Raise Elevation | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Up</kbd> | Adds the elevation step. |
 | Lower Elevation | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Down</kbd> | Subtracts the elevation step. |
 
-Rotation and elevation commands are available while spatialization is enabled. Rotation wraps around the listener: one default step left from 0 becomes 355 degrees. Elevation stops at -89 or 89 degrees, while its step can still be as large as 90 degrees. The endpoints exclude exactly -90 and 90 because the bundled audio filter maps those angles back to horizontal. Each successful change is announced: for example, Beginner verbosity says “Rotation 270 degrees” and Advanced says “270 degrees.” Elevation follows the same pattern.
+Rotation and elevation commands are available while spatialization is enabled. Rotation wraps around the listener: one default step left from 0 becomes 355 degrees. Elevation stops at -90 degrees directly below you or 90 degrees directly above you, while its step can be as large as 90 degrees. Each successful change is announced: for example, Beginner verbosity says “Rotation 270 degrees” and Advanced says “270 degrees.” Elevation follows the same pattern.
 
 These menu and shortcut changes last for the current session and do not overwrite saved defaults, even when other settings are saved. The initial enabled state, rotation, and elevation come from Preferences. Applying preferences reloads those defaults; toggling spatialization off and on from the menu retains the current session angles.
 
+Pausing preserves the spatialization settings and the audio history needed for a smooth resume. Seeking and reloading clear audio left over from the previous playback position while keeping the current settings. Compatible reloads reuse the prepared filter; a change in audio format can require it to be prepared again. Direction changes requested during a seek take effect when playback is ready.
+
 Spatialization is applied before normalization, mono mixing, and balance adjustment. Leave **Play audio as Mono** off to preserve its stereo cues. Disable spatialization for speakers or recordings that are already binaural. The filter remains active across file changes and seeks.
 
-The SOFA file stays at its chosen path and is not included in settings backups. If it becomes unavailable, select it again or turn spatialization off. Invalid SOFA data is rejected before it can replace the active filter.
+The SOFA file stays at its chosen path and is not included in settings backups. If it becomes unavailable, select it again or turn spatialization off. Luna passes the file to FFmpeg without loading a separate copy for validation. If FFmpeg cannot apply the filter, Luna reports an error and turns spatialization off for the current session.
 
 On Windows, libmysofa may not open a SOFA path containing non-ASCII characters. If a valid file cannot be opened, move it to a folder and filename using only ASCII characters and select it again.
 

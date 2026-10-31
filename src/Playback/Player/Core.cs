@@ -45,12 +45,14 @@ internal sealed partial class Player : IDisposable
         _engine.AudioTracksChanged += OnAudioTracksChanged;
         _engine.SubtitleTracksChanged += OnSubtitleTracksChanged;
         _engine.SubtitleTextChanged += OnSubtitleTextChanged;
+        _engine.AudioFilterFailed += OnAudioFilterFailed;
     }
 
     internal event Action<EndReason>? Ended;
     internal event Action<double>? SelectionEnded;
     internal event Action? CurrentChanged;
     internal event Action? StateChanged;
+    internal event Action<AudioFilter>? AudioFilterFailed;
     internal event Action? NextPreparationRequested;
     internal event Action? SelectionSeekCompleted;
 
@@ -125,6 +127,7 @@ internal sealed partial class Player : IDisposable
         _engine.AudioTracksChanged -= OnAudioTracksChanged;
         _engine.SubtitleTracksChanged -= OnSubtitleTracksChanged;
         _engine.SubtitleTextChanged -= OnSubtitleTextChanged;
+        _engine.AudioFilterFailed -= OnAudioFilterFailed;
         _engine.Dispose();
     }
 

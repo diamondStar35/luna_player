@@ -74,13 +74,28 @@ internal sealed class FakeEngine : IEngine
     public bool SetMono(bool enabled) => true;
     internal string SofaGraph { get; private set; } = string.Empty;
     internal bool RejectSofa { get; set; }
+    internal int SofaConfigurations { get; private set; }
     public bool SetSofa(string graph)
     {
+        SofaConfigurations++;
         if (RejectSofa && graph.Length > 0)
             return false;
         SofaGraph = graph;
         return true;
     }
+    internal double SofaRotation { get; private set; }
+    internal double SofaElevation { get; private set; }
+    internal int SofaDirectionChanges { get; private set; }
+    public bool SetSofaDirection(double rotation, double elevation)
+    {
+        if (RejectSofa) return false;
+        SofaRotation = rotation;
+        SofaElevation = elevation;
+        SofaDirectionChanges++;
+        return true;
+    }
+    public event Action<AudioFilter>? AudioFilterFailed { add => _events[nameof(AudioFilterFailed)] = Delegate.Combine(_events.GetValueOrDefault(nameof(AudioFilterFailed)), value); remove => _events[nameof(AudioFilterFailed)] = Delegate.Remove(_events.GetValueOrDefault(nameof(AudioFilterFailed)), value); }
+    internal void FailFilter(AudioFilter filter) => ((Action<AudioFilter>?)_events.GetValueOrDefault(nameof(AudioFilterFailed)))?.Invoke(filter);
     public bool SetSilenceRemoval(bool enabled, string graph) => true;
     public bool SetEqualizer(Preset? preset) => true;
     public void SetEndBehavior(EndBehavior behavior) {}

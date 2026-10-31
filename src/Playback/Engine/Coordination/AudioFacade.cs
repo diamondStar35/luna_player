@@ -8,6 +8,7 @@ internal sealed partial class PlaybackCoordinator
     public bool SetNormalization(bool enabled) => _audio.SetNormalization(enabled);
     public bool SetMono(bool enabled) => _audio.SetMono(enabled);
     public bool SetSofa(string graph) => _audio.SetSofa(graph);
+    public bool SetSofaDirection(double rotation, double elevation) => _audio.SetSofaDirection(rotation, elevation);
     public bool SetSilenceRemoval(bool enabled, string graph) => _audio.SetSilenceRemoval(enabled, graph);
     public bool SetEqualizer(Preset? preset) => _audio.SetEqualizer(preset);
     public double SetVolume(double volume) => _audio.SetVolume(volume);

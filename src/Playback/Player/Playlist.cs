@@ -194,7 +194,6 @@ internal sealed partial class Player
             return false;
         _engine.SetNormalization(_normalizationEnabled);
         _engine.SetMono(_monoEnabled);
-        _engine.SetSofa(_sofaGraph);
         _engine.SetSilenceRemoval(_silenceEnabled, AudioFilters.SilenceGraph(_silence));
         _loaded = true;
         PrepareNext();

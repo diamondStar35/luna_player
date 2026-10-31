@@ -22,38 +22,38 @@ internal sealed partial class AudioProcessor
         var value = Precision.Normalize(Math.Clamp(
             speed, AudioSettings.MinimumSpeed, AudioSettings.MaximumSpeed));
         _session.SetPropertySafely("speed", value);
+        _speed = value;
         return value;
     }
 
-    public double Speed => _session.ReadDouble("speed") is double speed
-        ? Precision.Normalize(Math.Clamp(
-            speed, AudioSettings.MinimumSpeed, AudioSettings.MaximumSpeed))
-        : 1;
+    public double Speed => _speed;
 
     public double SetPitch(double semitones)
     {
         var value = Precision.Normalize(Math.Clamp(
             semitones, AudioSettings.MinimumPitch, AudioSettings.MaximumPitch));
+        _pitch = value;
+        _session.QueueFilter(AudioFilter.Pitch, () => ApplyPitch(value));
+        return value;
+    }
+
+    private bool ApplyPitch(double value)
+    {
         if (value == 0 && !_pitchFilterActive)
-        {
-            _pitch = 0;
-            return _pitch;
-        }
+            return true;
 
         // Keep scaletempo2 in the graph once pitch is used. Letting mpv insert and remove it as pitch
         // crosses zero changes the audio chain, while Luna's pitch and speed ranges fit its supported range.
         if (!_pitchFilterActive)
             _pitchFilterActive = _session.AddFilter("@audiopitch:scaletempo2");
         if (!_pitchFilterActive)
-            return _pitch;
+            return false;
 
         // Semitones are logarithmic: twelve semitones double the frequency and twelve negative
         // semitones halve it. Recompute the derived multiplier from the normalized semitone state so
         // repeated changes cannot accumulate floating-point drift.
         var scale = Math.Pow(2, value / 12);
-        if (_session.TrySetProperty("pitch", scale))
-            _pitch = value;
-        return _pitch;
+        return _session.TryDoNow(mpv => mpv.SetProperty("pitch", scale));
     }
 
     public double Pitch => _pitch;
@@ -68,21 +68,25 @@ internal sealed partial class AudioProcessor
     public double SetPan(double pan)
     {
         var value = Precision.Normalize(Math.Clamp(pan, -100, 100));
+        _pan = value;
+        _session.QueueFilter(AudioFilter.Pan, () => ApplyPan(value));
+        return value;
+    }
+
+    private bool ApplyPan(double value)
+    {
         if (_panFilterActive)
             _session.RemoveFilter("@audiopan");
         _panFilterActive = false;
         if (value == 0)
         {
-            _pan = 0;
-            return _pan;
+            return true;
         }
 
         var balance = Precision.Normalize(value / 100).ToString("0.###", CultureInfo.InvariantCulture);
         _panFilterActive = _session.AddFilter(
             $"@audiopan:lavfi=[aformat=channel_layouts=stereo,stereotools=balance_out={balance}]");
-        if (_panFilterActive)
-            _pan = value;
-        return _pan;
+        return _panFilterActive;
     }
 
     public double Pan => _pan;

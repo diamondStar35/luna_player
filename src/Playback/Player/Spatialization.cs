@@ -28,7 +28,7 @@ internal sealed partial class Player
         var next = _sofa.Copy();
         // Luna reports clockwise angles: subtracting a step turns left, wrapping after a full turn.
         next.SofaRotation = Precision.Normalize(((_sofa.SofaRotation + delta) % 360 + 360) % 360) % 360;
-        return ConfigureSofa(next);
+        return ChangeSofaDirection(next);
     }
 
     internal bool ChangeSofaElevation(double delta)
@@ -37,23 +37,35 @@ internal sealed partial class Player
         var next = _sofa.Copy();
         next.SofaElevation = Precision.Normalize(Math.Clamp(_sofa.SofaElevation + delta,
             -AudioSettings.MaximumSofaElevation, AudioSettings.MaximumSofaElevation));
-        return ConfigureSofa(next);
+        return ChangeSofaDirection(next);
     }
 
     internal bool ConfigureSofa(AudioSettings settings)
     {
-        if (settings.SofaEnabled && !AudioFilters.IsSofaFile(settings.SofaFile)) return false;
         var next = settings.Copy();
         next.SofaElevation = Math.Clamp(next.SofaElevation,
             -AudioSettings.MaximumSofaElevation, AudioSettings.MaximumSofaElevation);
         var graph = AudioFilters.SofaGraph(next);
-        if (!_engine.SetSofa(graph))
+        var sameFile = _sofa.SofaEnabled && next.SofaEnabled
+            && string.Equals(_sofa.SofaFile, next.SofaFile, StringComparison.OrdinalIgnoreCase)
+            && _sofa.SofaGain == next.SofaGain;
+        if (!(sameFile ? _engine.SetSofaDirection(-next.SofaRotation, next.SofaElevation) : _engine.SetSofa(graph)))
         {
             _engine.SetSofa(_sofaGraph);
             return false;
         }
         _sofaGraph = graph;
         _sofa = next;
+        StateChanged?.Invoke();
+        return true;
+    }
+
+    private bool ChangeSofaDirection(AudioSettings next)
+    {
+        // Runtime angles never change the filter definition or reload its SOFA dataset.
+        if (!_engine.SetSofaDirection(-next.SofaRotation, next.SofaElevation)) return false;
+        _sofa = next;
+        _sofaGraph = AudioFilters.SofaGraph(next);
         StateChanged?.Invoke();
         return true;
     }

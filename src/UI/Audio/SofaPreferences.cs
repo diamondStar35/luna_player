@@ -1,6 +1,5 @@
 using System.Globalization;
 using LunaPlayer.Configuration.Models;
-using LunaPlayer.Playback;
 using WxSharp;
 
 namespace LunaPlayer.UI.Audio;
@@ -66,13 +65,13 @@ internal sealed class SofaPreferences : LunaPlayer.UI.Preferences.PreferencesPag
             Tr("Set the default rotation of the virtual speakers around your head in whole degrees, from -360 to 360. Positive values turn right and negative values turn left. The default is 0. Player menu and shortcut changes are not saved."));
         Help(_elevation,
             // Translators: F1 help for the vertical angle.
-            Tr("Set the default elevation of the virtual speakers above or below you in whole degrees, from -89 to 89. The default is 0. Player menu and shortcut changes are not saved."));
+            Tr("Set the default elevation of the virtual speakers above or below you in whole degrees, from -90 to 90. The default is 0. Player menu and shortcut changes are not saved."));
         Help(_rotationStep,
             // Translators: F1 help for the step used by the spatialization rotation commands.
             Tr("Set how many whole degrees each Rotate Left or Rotate Right command changes rotation, from 1 to 90. The default is 5. Rotation wraps around after a full turn."));
         Help(_elevationStep,
             // Translators: F1 help for the step used by the spatialization elevation commands.
-            Tr("Set how many whole degrees each Raise Elevation or Lower Elevation command changes elevation, from 1 to 90. The default is 5. Elevation stops at -89 and 89 degrees."));
+            Tr("Set how many whole degrees each Raise Elevation or Lower Elevation command changes elevation, from 1 to 90. The default is 5. Elevation stops at -90 and 90 degrees."));
         Refresh();
     }
 
@@ -81,12 +80,6 @@ internal sealed class SofaPreferences : LunaPlayer.UI.Preferences.PreferencesPag
         // Hidden fields must not prevent disabling the effect or receive validation focus.
         if (!_enabled.Checked)
             return null;
-        if (!AudioFilters.IsSofaFile(_file.Value.Trim()))
-        {
-            _file.Focus();
-            // Translators: Validation error when enabling SOFA processing without an existing .sofa file.
-            return Tr("Choose an existing .sofa HRTF file before enabling headphone spatialization.");
-        }
         if (!NumberInRange(_gain.Value, -20, 40))
         {
             _gain.Focus();
@@ -100,7 +93,7 @@ internal sealed class SofaPreferences : LunaPlayer.UI.Preferences.PreferencesPag
     {
         _settings.SofaEnabled = _enabled.Checked;
         var path = _file.Value.Trim();
-        _settings.SofaFile = File.Exists(path) ? Path.GetFullPath(path) : path;
+        _settings.SofaFile = path;
         // A hidden invalid gain draft must not prevent disabling the effect or overwrite its default.
         _settings.SofaGain = NumberOrDefault(_gain.Value, -20, 40, _settings.SofaGain);
         _settings.SofaRotation = _rotation.Value;

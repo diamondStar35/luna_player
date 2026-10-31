@@ -14,7 +14,7 @@ namespace LunaPlayer.Application;
 /// <summary>Wires the view and the player together: routes commands, keeps the presenters in step with
 /// playback, and owns startup and shutdown. The view state, window title and Windows media overlay are each
 /// their own presenter; what is left here is coordination and the end-of-playback decision.</summary>
-internal sealed class ApplicationController : IDisposable
+internal sealed partial class ApplicationController : IDisposable
 {
     private readonly IMainView _view;
     private readonly Player _player;
@@ -93,6 +93,7 @@ internal sealed class ApplicationController : IDisposable
         _view.EscapePressed += _sessions.HandleEscape;
         _player.CurrentChanged += OnCurrentChanged;
         _player.StateChanged += SyncViewState;
+        _player.AudioFilterFailed += OnAudioFilterFailed;
         _player.SelectionSeekCompleted += OnSelectionSeekCompleted;
         _player.SelectionEnded += OnSelectionEnded;
         _player.Ended += OnPlaybackEnded;
@@ -157,6 +158,7 @@ internal sealed class ApplicationController : IDisposable
         _view.CloseRequested -= ShutdownAsync;
         _player.CurrentChanged -= OnCurrentChanged;
         _player.StateChanged -= SyncViewState;
+        _player.AudioFilterFailed -= OnAudioFilterFailed;
         _player.SelectionSeekCompleted -= OnSelectionSeekCompleted;
         _player.SelectionEnded -= OnSelectionEnded;
         _player.Ended -= OnPlaybackEnded;
