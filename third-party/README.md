@@ -23,13 +23,13 @@ crate. Its MIT license is included separately in `licenses/shannon-LICENSE.txt`.
 Media decoding and playback.
 
 - Source: https://github.com/mpv-player/mpv
-- Build revision: https://github.com/diamondStar35/mpv-winbuild/tree/b27346e3f504c713adfe5993c2bafb728cf7d7e2
-- Binary: https://github.com/diamondStar35/mpv-winbuild/actions/runs/40492335903/artifacts/12733716109
-- Version: v0.41.0-1321-g8dea34900, shared GPL x86-64-v2 build
+- Build revision: https://github.com/diamondStar35/mpv-winbuild/tree/c22fff7cadb503813ca4cbc2bb68e534ff2a8540
+- Binary: https://github.com/diamondStar35/mpv-winbuild/actions/runs/41209964795/artifacts/13047501069
+- Version: v0.41.0-1378-g3b687a153, shared GPL x86-64-v2 build
 - Licence: GPL-3.0-or-later for this build; see the root [LICENSE](../LICENSE).
 
-Includes DVD-Audio/DVD-Video readers and Luna's native fade, transport and
-cross-fading patches. Upstream mpv is GPL-2.0-or-later; this build links against
+Includes DVD-Audio/DVD-Video readers and Luna's native fade, transport,
+cross-fading and audio-filter preservation patches. Upstream mpv is GPL-2.0-or-later; this build links against
 GPL-3.0-or-later FFmpeg.
 
 ## FFmpeg
@@ -37,12 +37,12 @@ GPL-3.0-or-later FFmpeg.
 Media decoding libraries used by mpv, plus the command-line tool used for conversion and export.
 
 - Source: https://github.com/FFmpeg/FFmpeg
-- Build revision: https://github.com/diamondStar35/mpv-winbuild/tree/b27346e3f504c713adfe5993c2bafb728cf7d7e2
-- Binary: https://github.com/diamondStar35/mpv-winbuild/actions/runs/40492335903/artifacts/12733726076
-- Version: N-128110-gfa4daf630, shared GPL x86-64-v2 build
+- Build revision: https://github.com/diamondStar35/mpv-winbuild/tree/c22fff7cadb503813ca4cbc2bb68e534ff2a8540
+- Binary: https://github.com/diamondStar35/mpv-winbuild/actions/runs/41209964795/artifacts/13047575557
+- Version: N-128253-gd45648062, shared GPL x86-64-v2 build
 - Licence: GPL-3.0-or-later (`--enable-gpl --enable-version3`); see the root [LICENSE](../LICENSE).
 
-The bundled FFmpeg also includes `sofalizer` with libmysofa for playback using user-supplied SOFA HRTF files. No HRTF dataset is bundled with Luna Player.
+The bundled FFmpeg includes `sofalizer` with libmysofa and Luna's runtime rotation/elevation patch. Direction changes reuse the loaded SOFA data and crossfade the responses; elevation supports both poles. An audio-history reset API lets mpv clear supported filters' buffered audio during seeks and compatible reloads while preserving their configuration and prepared data. No HRTF dataset is bundled with Luna Player.
 
 ## wxWidgets
 
