@@ -1,7 +1,14 @@
 namespace LunaPlayer.Playback;
 internal sealed partial class PlaybackCoordinator
 {
-    public string? MediaTitle => _metadata.Title;
+    public string? MediaTitle
+    {
+        get
+        {
+            lock (_loadSync)
+                return _disposed || !_loaded || _awaitingLoadRestart ? null : _metadata.Title;
+        }
+    }
     public Metadata GetMetadata()
     {
         lock (_loadSync)

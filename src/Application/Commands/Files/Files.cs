@@ -27,6 +27,8 @@ internal sealed partial class Files
     private long _fileInfoLastPress;
     private readonly PlaylistInfoService _playlistInfo = new();
     private readonly RecentsStore _recents;
+    private readonly MetadataReader _metadata;
+    private readonly Func<LunaPlayer.YouTube.YouTubeResult?> _currentVideo;
 
     internal Files(
         ActionRouter router,
@@ -39,7 +41,8 @@ internal sealed partial class Files
         RecentsStore recents,
         Radio.Playback radio,
         LunaPlayer.Spotify.Playback.Sessions spotify,
-        Action cancelSpotifyStart)
+        Action cancelSpotifyStart,
+        Func<LunaPlayer.YouTube.YouTubeResult?> currentVideo)
     {
         _view = view;
         _player = player;
@@ -51,6 +54,8 @@ internal sealed partial class Files
         _spotify = spotify;
         _cancelSpotifyStart = cancelSpotifyStart;
         _radio = radio;
+        _metadata = new MetadataReader(player);
+        _currentVideo = currentVideo;
         _guard = new MediaGuard(player, speech);
         router.Register(ActionId.OpenFile, OpenFileFromDialog);
         router.Register(ActionId.OpenLink, OpenLink);

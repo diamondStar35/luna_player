@@ -95,7 +95,7 @@ internal sealed partial class Features : IDisposable
         var appUpdates = new Updates(router, _view, _settings, _dispatcher, speech);
         _appUpdates = appUpdates;
         var fileActions = new Files(router, _view, player, _settings, speech, clipboard, _dispatcher,
-            window.Recents, radio, _spotifyPlayback, CancelPendingSpotifyStart);
+            window.Recents, radio, _spotifyPlayback, CancelPendingSpotifyStart, () => _sessions?.CurrentVideo);
         _fileActions = fileActions;
         _ = new SavedPlaylists(router, _view, player, speech);
         _ = new Commands.Playback.Playback(
