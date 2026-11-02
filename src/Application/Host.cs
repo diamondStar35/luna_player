@@ -1,4 +1,5 @@
 using LunaPlayer.UI;
+using LunaPlayer.Configuration;
 
 namespace LunaPlayer.Application;
 
@@ -24,7 +25,7 @@ internal sealed class ApplicationHost : IDisposable
         // Begin settings before constructing even the shell, preserving overlap with native window creation.
         var settingsTask = Task.Run(Resources.LoadSettings);
         _dispatcher = new LunaPlayer.UI.Services.WxDispatcher();
-        _view = new MainFrame();
+        _view = new MainFrame(SettingsStore.PeekStartMaximized(Paths.SettingsFile));
         _startup = new Startup(_view, _dispatcher, initialPaths, CompleteStartup);
         // Register close handling before the first background service can be attached.
         _view.CloseRequested += StopStartupAsync;

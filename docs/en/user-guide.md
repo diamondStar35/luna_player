@@ -793,6 +793,7 @@ Press <kbd>F1</kbd> while a setting has focus to hear a detailed explanation of 
 | --- | --- |
 | Language | Uses the Windows display language or an included translation. Restart Luna after changing it. |
 | Theme | Follows Windows or forces a light or dark appearance. High contrast always follows Windows. Restart Luna after changing it. |
+| Start maximized | Opens the main window maximized on the next launch. Off by default, keeping the normal window size. |
 | Remember last file position | Restores the last active local file and its position on the next launch. |
 | Speak file name when navigating | Announces the item reached with Previous or Next. |
 | Check for app updates on startup | Checks quietly after startup and prompts only for a ready, newer release. |

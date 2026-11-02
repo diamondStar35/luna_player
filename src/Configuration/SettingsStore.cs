@@ -67,6 +67,29 @@ internal sealed class SettingsStore
         return true;
     }
 
+    /// <summary>Reads the initial window state before the background settings load finishes, so the first
+    /// visible frame has the requested size. Missing or invalid values keep the normal window size.</summary>
+    internal static bool PeekStartMaximized(string jsonPath)
+    {
+        try
+        {
+            if (!File.Exists(jsonPath))
+                return false;
+            using var stream = File.OpenRead(jsonPath);
+            using var document = JsonDocument.Parse(stream);
+            return document.RootElement.ValueKind == JsonValueKind.Object
+                && document.RootElement.TryGetProperty("general", out var general)
+                && general.ValueKind == JsonValueKind.Object
+                && general.TryGetProperty("startMaximized", out var value)
+                && value.ValueKind == JsonValueKind.True;
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException or JsonException)
+        {
+            // The complete settings load reports malformed or unreadable data.
+            return false;
+        }
+    }
+
     internal Settings Load() => Load(normalize: true);
 
     /// <summary>Reads and structurally validates settings on a worker during application startup. Startup
