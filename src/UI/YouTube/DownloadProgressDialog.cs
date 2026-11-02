@@ -13,6 +13,7 @@ internal sealed class DownloadProgressDialog : IDisposable
     private static readonly TimeSpan TickInterval = TimeSpan.FromMilliseconds(150);
 
     private readonly Dialog _dialog;
+    private readonly Window _completionOwner;
     private readonly IApplicationDispatcher _dispatcher;
     private readonly Downloads.DownloadQueue _queue;
     private readonly Guid _itemId;
@@ -25,10 +26,12 @@ internal sealed class DownloadProgressDialog : IDisposable
     private bool _disposed;
 
     internal DownloadProgressDialog(
+        Window completionOwner,
         IApplicationDispatcher dispatcher,
         Downloads.DownloadQueue queue,
         Guid itemId)
     {
+        _completionOwner = completionOwner;
         _dispatcher = dispatcher;
         _queue = queue;
         _itemId = itemId;
@@ -110,12 +113,19 @@ internal sealed class DownloadProgressDialog : IDisposable
         }
         if (current.Status == Downloads.QueueItemStatus.Completed)
         {
+            // Timers also run inside modal event loops. A completion box owned by an
+            // already-disabled frame can leave focus on that unavailable frame after OK.
+            // Keep polling until the existing modal (including another completion) ends.
+            if (!_completionOwner.Enabled)
+                return;
             _queue.Remove(_itemId);
             Close(Downloads.Outcome.Saved(current.FilePath));
             return;
         }
         if (current.Status == Downloads.QueueItemStatus.Failed)
         {
+            if (!_completionOwner.Enabled)
+                return;
             _queue.Remove(_itemId);
             Close(Downloads.Outcome.Failed(current.Error));
             return;
