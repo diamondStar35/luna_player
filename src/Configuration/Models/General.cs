@@ -15,6 +15,7 @@ internal sealed class GeneralSettings
     public bool RememberLastPosition { get; set; }
     public bool SpeakFileOnNavigation { get; set; }
     public bool CheckUpdatesOnStartup { get; set; } = true;
+    public bool StartMaximized { get; set; }
     public bool SaveOnClose { get; set; } = true;
     public bool OpenFilesInExistingWindow { get; set; } = true;
 
@@ -56,6 +57,7 @@ internal sealed class GeneralSettings
         RememberLastPosition = source.RememberLastPosition;
         SpeakFileOnNavigation = source.SpeakFileOnNavigation;
         CheckUpdatesOnStartup = source.CheckUpdatesOnStartup;
+        StartMaximized = source.StartMaximized;
         SaveOnClose = source.SaveOnClose;
         OpenFilesInExistingWindow = source.OpenFilesInExistingWindow;
         DisableMediaControls = source.DisableMediaControls;

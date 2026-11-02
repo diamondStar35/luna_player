@@ -8967,3 +8967,15 @@ msgstr ""
 #: YouTube/Utils.cs:191
 msgid "Could not resolve YouTube stream."
 msgstr ""
+
+#. Translators: Tick box on the General settings page: open the main window maximized on the next launch.
+#: UI/Preferences/General.cs:58
+msgid "Start maximized"
+msgstr ""
+
+#. Translators: Help text for the tick box that opens the main window maximized.
+#: UI/Preferences/General.cs:148
+msgid ""
+"Opens Luna's main window maximized. Leave this off to use the normal window "
+"size. Changes take effect the next time Luna starts."
+msgstr ""
