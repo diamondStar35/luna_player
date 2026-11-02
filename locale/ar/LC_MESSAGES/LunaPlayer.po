@@ -1640,6 +1640,8 @@ msgid ""
 "Unavailable or empty playlist entries:\n"
 "{paths}"
 msgstr ""
+"عناصر قائمة التشغيل غير المتاحة أو الفارغة:\n"
+"{paths}"
 
 #. Translators: Error opening a JSON playlist. {error} is the storage or format failure.
 #. Translators: Shown when an M3U or M3U8 playlist could not be read. {error} is the reason.
@@ -1710,7 +1712,7 @@ msgstr "تعذر إكمال عملية قائمة التشغيل: {error}"
 #. Translators: Reason shown when a playlist operation cannot complete; describes invalid content or an unsupported operation.
 #: Application/Commands/Files/SavedPlaylists.cs:47
 msgid "Leave the online session before adding playlist entries."
-msgstr ""
+msgstr "غادر الجلسة عبر الإنترنت قبل إضافة عناصر إلى قائمة التشغيل."
 
 #. Translators: Spoken after appending entries to the current playback playlist.
 #: Application/Commands/Files/SavedPlaylists.cs:52
@@ -1725,7 +1727,7 @@ msgstr "تعذر حفظ قائمة التشغيل: {error}"
 #. Translators: Reason shown when a playlist operation cannot complete; describes invalid content or an unsupported operation.
 #: Application/Commands/Files/SavedPlaylists.cs:77
 msgid "Leave the online session before saving the playlist."
-msgstr ""
+msgstr "غادر الجلسة عبر الإنترنت قبل حفظ قائمة التشغيل."
 
 #. Translators: Success confirmation shown on the main window after a playlist is saved or exported.
 #: Application/Commands/Files/SavedPlaylists.cs:105
@@ -4561,10 +4563,8 @@ msgstr "تعذر نسخ التفاصيل إلى الحافظة. التفاصيل
 
 #. Translators: Extra Open File filter for Luna playlist documents; keep JSON and the wildcard unchanged.
 #: UI/DialogService.cs:69
-#, fuzzy
-#| msgid "JSON files (*.json)|*.json|All files (*.*)|*.*"
 msgid "JSON playlists (*.json)|*.json"
-msgstr "ملفات JSON (*.json)|*.json|جميع الملفات (*.*)|*.*"
+msgstr "قوائم تشغيل JSON (*.json)|*.json"
 
 #. Translators: Label of the list for choosing which preset a preset being edited starts out from.
 #: UI/Equalizer/EditDialog.cs:64
@@ -5732,10 +5732,8 @@ msgstr "تمت إضافة {count} عنصراً لقائمة التشغيل."
 
 #. Translators: Spoken after removing entries from a playlist only. {count} is the number removed.
 #: UI/Playlists/EditorDialog.cs:201
-#, fuzzy
-#| msgid "Could not remove from favorites."
 msgid "{count} entries removed from playlist."
-msgstr "تعذر الإزالة من المفضلة."
+msgstr "تمت إزالة {count} عنصراً من قائمة التشغيل."
 
 #. Translators: Spoken after reordering the selected playlist entries.
 #: UI/Playlists/EditorDialog.cs:213
@@ -6012,6 +6010,9 @@ msgid ""
 "Shares media titles, artists, book chapters and available online artwork. Local "
 "files use Luna's icon. Clear this to hide media details, artwork and source links."
 msgstr ""
+"يشارك عناوين الوسائط والفنانين وفصول الكتب وصور الأغلفة المتاحة عبر الإنترنت. "
+"تستخدم الملفات المحلية أيقونة Luna. ألغِ تحديد هذا الخيار لإخفاء تفاصيل الوسائط "
+"وصور الأغلفة وروابط المصادر."
 
 #. Translators: F1 help for Discord link buttons.
 #: UI/Preferences/Discord.cs:49
@@ -6031,11 +6032,14 @@ msgid ""
 "is loaded. Clear this to remove the activity when idle. Paused media still counts "
 "as loaded."
 msgstr ""
+"يبقي نشاطاً عاماً باسم Luna Player ظاهراً عند إيقاف التشغيل أو عدم تحميل أي "
+"وسائط. ألغِ تحديد هذا الخيار لإزالة النشاط عند الخمول. تُعد الوسائط المتوقفة "
+"مؤقتاً محمّلة."
 
 #. Translators: F1 help for the read-only Discord setup guide.
 #: UI/Preferences/Discord.cs:53
 msgid "Explains how to enable activity sharing in Discord Desktop."
-msgstr ""
+msgstr "يشرح كيفية تمكين مشاركة النشاط في تطبيق Discord لسطح المكتب."
 
 #. Translators: Label of the list for choosing the language the player speaks and shows its windows in.
 #. Translators: Column heading for the languages spoken by a radio station.
@@ -7491,10 +7495,8 @@ msgstr "إضافة ملفات..."
 
 #. Translators: Title of the dialog choosing a playlist export filename and format.
 #: UI/Services/Dialogs/Playlists.cs:80
-#, fuzzy
-#| msgid "Playlists"
 msgid "Save Playlist As"
-msgstr "قوائم التشغيل"
+msgstr "حفظ قائمة التشغيل باسم"
 
 #. Translators: Save dialog file types. JSON, M3U and M3U8 and all wildcard patterns must remain unchanged.
 #: UI/Services/Dialogs/Playlists.cs:82
@@ -7502,6 +7504,8 @@ msgid ""
 "M3U8 playlist (*.m3u8)|*.m3u8|M3U playlist (*.m3u)|*.m3u|JSON playlist (*.json)|"
 "*.json"
 msgstr ""
+"قائمة تشغيل M3U8 (*.m3u8)|*.m3u8|قائمة تشغيل M3U (*.m3u)|*.m3u|قائمة تشغيل JSON "
+"(*.json)|*.json"
 
 #. Translators: Confirmation before replacing an existing playlist after adjusting its filename extension.
 #: UI/Services/Dialogs/Playlists.cs:93
