@@ -90,7 +90,8 @@ internal static partial class Builder
         var equalizerCommands = new Dictionary<int, string>();
         var equalizerItems = new Dictionary<string, MenuItem>(StringComparer.Ordinal);
         var equalizerMenu = new Menu();
-        FillEqualizerMenu(equalizerMenu, presets, commandIds, shortcuts, equalizerCommands, equalizerItems);
+        FillEqualizerMenu(equalizerMenu, presets, equalizerCommands, equalizerItems);
+        AppendEqualizerCommands(equalizerMenu, commandIds, shortcuts);
         // Translators: Player submenu holding the equalizer presets and the commands for editing them.
         playerMenu.AppendSubMenu(equalizerMenu, Tr("Equalizer"));
         playerMenu.AppendSeparator();
@@ -205,7 +206,7 @@ internal static partial class Builder
     /// <summary>The key the Subtitles menu holds for the Off item, in place of a track id.</summary>
     internal const string SubtitleOffKey = "";
 
-    /// <summary>Puts Off, every preset and the two editing commands into the equalizer submenu.</summary>
+    /// <summary>Inserts Off and every preset above the equalizer submenu's fixed command tail.</summary>
     ///
     /// <remarks>
     /// Called again whenever the user adds or removes a preset, so it fills a menu rather than making
@@ -220,15 +221,23 @@ internal static partial class Builder
     internal static void FillEqualizerMenu(
         Menu menu,
         IReadOnlyList<PresetEntry> presets,
-        IReadOnlyDictionary<ActionId, int> commandIds,
-        ShortcutManager shortcuts,
         IDictionary<int, string> commands,
         IDictionary<string, MenuItem> items)
     {
+        var position = 0;
         // Translators: Item in the Equalizer submenu that leaves the sound unequalized. It is ticked while no preset is in use.
-        AddEqualizerItem(menu, commands, items, EqualizerOffKey, Tr("Off"));
+        AddEqualizerItem(menu, position++, commands, items, EqualizerOffKey, Tr("Off"));
         foreach (var preset in presets)
-            AddEqualizerItem(menu, commands, items, preset.Id, preset.Name);
+            AddEqualizerItem(menu, position++, commands, items, preset.Id, preset.Name);
+    }
+
+    /// <summary>Adds the permanent commands once. Keeping these items alive keeps their auto IDs reserved
+    /// when the preset radio items are rebuilt.</summary>
+    private static void AppendEqualizerCommands(
+        Menu menu,
+        IReadOnlyDictionary<ActionId, int> commandIds,
+        ShortcutManager shortcuts)
+    {
         menu.AppendSeparator();
         menu.Append(commandIds[ActionId.EditEqualizerPreset],
             // Translators: Item in the Equalizer submenu that opens the current preset for editing.
@@ -244,6 +253,7 @@ internal static partial class Builder
     /// </remarks>
     private static void AddEqualizerItem(
         Menu menu,
+        int position,
         IDictionary<int, string> commands,
         IDictionary<string, MenuItem> items,
         string presetId,
@@ -251,7 +261,7 @@ internal static partial class Builder
     {
         var id = IdManager.NewId();
         commands[id] = presetId;
-        items[presetId] = menu.AppendRadioItem(id, label);
+        items[presetId] = menu.Insert(position, id, label, kind: MenuItemKind.Radio);
     }
     /// <summary>Fills the Subtitles submenu's dynamic region: Off and one radio item per track, ticking the
     /// active one. Items are inserted at the top so they sit above the fixed command tail that
