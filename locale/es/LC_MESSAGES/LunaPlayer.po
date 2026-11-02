@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
 "POT-Creation-Date: 2026-10-31 11:58+0200\n"
-"PO-Revision-Date: 2026-10-31 14:52-0300\n"
+"PO-Revision-Date: 2026-11-02 18:05-0300\n"
 "Last-Translator: anagisellear86\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
@@ -512,7 +512,6 @@ msgstr "Anunciar el balance actual"
 
 #. Translators: Shortcut command that enables or disables headphone spatialization for this session.
 #: Actions/PlaybackActions.cs:153
-#| msgid "Turn repeat file on or off"
 msgid "Turn headphone spatialization on or off"
 msgstr "Activar o desactivar la espacialización de auriculares"
 
@@ -2591,7 +2590,6 @@ msgstr ""
 
 #. Translators: Beginner announcement after changing horizontal rotation. {rotation} is the angle in degrees.
 #: Application/Commands/Playback/Spatialization.cs:79
-#| msgid "Station: {station}"
 msgid "Rotation {rotation} degrees"
 msgstr "Rotación {rotation} grados"
 
@@ -4300,7 +4298,6 @@ msgstr "Activar la espacialización de auriculares"
 
 #. Translators: Label for the path to the user's SOFA HRTF file. Keep SOFA unchanged.
 #: UI/Audio/SofaPreferences.cs:32
-#| msgid "Add files"
 msgid "SOFA file"
 msgstr "Archivo SOFA"
 
@@ -4328,7 +4325,6 @@ msgstr "Ganancia (dB)"
 
 #. Translators: Horizontal rotation of the virtual speakers around the listener.
 #: UI/Audio/SofaPreferences.cs:41
-#| msgid "Station details"
 msgid "Rotation (degrees)"
 msgstr "Rotación (grados)"
 
@@ -4339,13 +4335,11 @@ msgstr "Elevación (grados)"
 
 #. Translators: How far each left/right spatialization command rotates the virtual speakers.
 #: UI/Audio/SofaPreferences.cs:46
-#| msgid "Pan step (percent)"
 msgid "Rotation step (degrees)"
 msgstr "Paso de rotación (grados)"
 
 #. Translators: How far each raise/lower spatialization command changes the vertical angle.
 #: UI/Audio/SofaPreferences.cs:49
-#| msgid "Pan step (percent)"
 msgid "Elevation step (degrees)"
 msgstr "Paso de elevación (grados)"
 
@@ -4430,19 +4424,16 @@ msgstr ""
 
 #. Translators: Validation error for SOFA output gain.
 #: UI/Audio/SofaPreferences.cs:87
-#| msgid "Pitch step must be a number from 0.001 to 12."
 msgid "Gain must be a number from -20 to 40 dB."
 msgstr "La ganancia debe ser un número de -20 a 40 dB."
 
 #. Translators: Title of the file picker for headphone HRTF data.
 #: UI/Audio/SofaPreferences.cs:121
-#| msgid "Close all files"
 msgid "Choose a SOFA file"
 msgstr "Elegir un archivo SOFA"
 
 #. Translators: File picker filter. Translate only "SOFA files"; keep the extension and separators unchanged.
 #: UI/Audio/SofaPreferences.cs:123
-#| msgid "JSON playlists (*.json)|*.json"
 msgid "SOFA files (*.sofa)|*.sofa"
 msgstr "Archivos SOFA (.sofa)|.sofa"
 
@@ -5583,25 +5574,21 @@ msgstr "Habilitar espacialización de auriculares"
 
 #. Translators: Headphone spatialization command that rotates virtual speakers to the listener's left.
 #: UI/Menus/PlayerMenu.cs:78
-#| msgid "Pan Left"
 msgid "Rotate Left"
 msgstr "Girar a la izquierda"
 
 #. Translators: Headphone spatialization command that rotates virtual speakers to the listener's right.
 #: UI/Menus/PlayerMenu.cs:80
-#| msgid "Pan Right"
 msgid "Rotate Right"
 msgstr "Girar a la derecha"
 
 #. Translators: Headphone spatialization command that raises the virtual speakers' vertical angle.
 #: UI/Menus/PlayerMenu.cs:82
-#| msgid "selection"
 msgid "Raise Elevation"
 msgstr "Aumentar elevación"
 
 #. Translators: Headphone spatialization command that lowers the virtual speakers' vertical angle.
 #: UI/Menus/PlayerMenu.cs:84
-#| msgid "Location"
 msgid "Lower Elevation"
 msgstr "Reducir elevación"
 
@@ -9472,6 +9459,22 @@ msgstr ""
 #: YouTube/Utils.cs:191
 msgid "Could not resolve YouTube stream."
 msgstr "No se pudo obtener la transmisión de YouTube."
+
+#. Translators: Tick box on the General settings page: open the main window maximized on the next launch.
+#: UI/Preferences/General.cs:58
+#| msgid "Start {time}"
+msgid "Start maximized"
+msgstr "Iniciar maximizado"
+
+#. Translators: Help text for the tick box that opens the main window maximized.
+#: UI/Preferences/General.cs:148
+msgid ""
+"Opens Luna's main window maximized. Leave this off to use the normal window "
+"size. Changes take effect the next time Luna starts."
+msgstr ""
+"Abre la ventana principal de Luna maximizada. Deja esto desactivado para "
+"usar el tamaño de ventana normal. Los cambios surten efecto la próxima vez "
+"que se inicie Luna."
 
 #~ msgid "Rewind by four steps"
 #~ msgstr "Retroceder cuatro pasos"
