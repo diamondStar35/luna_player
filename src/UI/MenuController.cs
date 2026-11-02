@@ -218,14 +218,14 @@ internal sealed class MenuController
 
     internal void RebuildEqualizerMenu(IReadOnlyList<PresetEntry> presets, string? selected)
     {
-        // Emptied and filled again rather than replaced. The submenu is already attached to the menu bar,
-        // and swapping it would leave the bar pointing at a menu nothing else knows about.
-        while (_equalizerMenu.Count > 0)
+        // Rebuild only the preset radio items. Deleting the permanent commands frees their auto IDs,
+        // so reusing those IDs would trip wxWidgets' IncIdRefCount assertion.
+        while (_equalizerMenu.Count > 0 && _equalizerMenu[0].Kind != MenuItemKind.Separator)
             _equalizerMenu.Delete(_equalizerMenu[0]);
         _equalizerCommands.Clear();
         _equalizerItems.Clear();
         LunaPlayer.UI.Menus.Builder.FillEqualizerMenu(
-            _equalizerMenu, presets, _commandIds, _shortcuts, _equalizerCommands, _equalizerItems);
+            _equalizerMenu, presets, _equalizerCommands, _equalizerItems);
         SetEqualizerPreset(selected);
     }
 
