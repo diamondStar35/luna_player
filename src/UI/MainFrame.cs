@@ -113,7 +113,7 @@ internal sealed class MainFrame : IMainView
         var sizer = new BoxSizer(Orientation.Vertical);
         sizer.Add(buttonSizer, flags: SizerFlags.AlignCenterHorizontal | SizerFlags.All, border: 15);
         _frame.SetSizer(sizer);
-        _frame.Fit();
+        _frame.Layout();
 
         previousButton.Click += (_, _) => input.Request(ActionId.PreviousTrack);
         rewindButton.Click += (_, _) => input.Request(ActionId.SeekBackward);
@@ -163,6 +163,7 @@ internal sealed class MainFrame : IMainView
 
     public void Show()
     {
+        _frame.Maximize();
         _frame.Show();
         // wxWidgets normally leaves the first paint in the event queue. Force the lightweight shell to draw
         // now, before menu construction or any service completion callback can occupy the UI thread.
