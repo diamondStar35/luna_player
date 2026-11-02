@@ -206,7 +206,7 @@ internal sealed partial class Files
     private void AnnounceMetadata()
     {
         if (!_spotify.IsActive && !_guard.RequireFile(out _)) return;
-        var metadata = _player.CurrentMetadata;
+        var metadata = _metadata.Read(_currentVideo());
         var display = _spotify.IsActive && _spotify.CurrentTrack is { } track
             ? metadata.Display with { Title = track.Name, Artist = track.Artists }
             : metadata.Display;
@@ -275,7 +275,7 @@ internal sealed partial class Files
     private void AnnounceArtist()
     {
         if (!_spotify.IsActive && !_guard.RequireFile(out _)) return;
-        var artist = _spotify.IsActive ? _spotify.CurrentTrack?.Artists : _player.CurrentArtist;
+        var artist = _spotify.IsActive ? _spotify.CurrentTrack?.Artists : _metadata.Read(_currentVideo()).Display.Artist;
         if (!string.IsNullOrWhiteSpace(artist))
             _speech.Speak(artist, artist);
         else
