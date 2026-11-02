@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="../../third-party/WxSharp/src/WxSharp/WxSharp.csproj" />
+    <Compile Include="../../src/UI/YouTube/DownloadProgressDialog.cs" Link="DownloadProgressDialog.cs" />
+    <Compile Include="../../src/UI/Services/Messages.cs" Link="Messages.cs" />
+    <None Include="../../third-party/wx.dll;../../third-party/WxSharp/third-party/Windows/lib/vc_x64_dll/*.dll" Link="%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+</Project>

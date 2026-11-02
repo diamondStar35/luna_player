@@ -53,7 +53,7 @@ internal sealed class YouTubeDialogs(DialogContext context) : IDisposable
         Guid itemId,
         Action<Downloads.Outcome?> completed)
     {
-        var dialog = new YouTube.DownloadProgressDialog(_context.Dispatcher, queue, itemId);
+        var dialog = new YouTube.DownloadProgressDialog(_context.Frame, _context.Dispatcher, queue, itemId);
         dialog.Closed += (closed, outcome) =>
         {
             _downloadProgressDialogs.Remove(closed);
