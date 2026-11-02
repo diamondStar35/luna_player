@@ -7,6 +7,49 @@ namespace LunaPlayer.Tests.Configuration;
 public sealed class StorageTests
 {
     [TestMethod]
+    [DataRow("{}", false)]
+    [DataRow("{\"general\":{}}", false)]
+    [DataRow("{\"general\":{\"startMaximized\":true}}", true)]
+    [DataRow("{\"general\":{\"startMaximized\":false}}", false)]
+    [DataRow("{\"general\":{\"startMaximized\":\"true\"}}", false)]
+    [DataRow("{\"general\":null}", false)]
+    [DataRow("[]", false)]
+    [DataRow("invalid json", false)]
+    public void StartupWindowPreferenceUsesOnlyAnExplicitTrue(string json, bool expected)
+    {
+        using var workspace = new Workspace();
+        var path = workspace.File("settings.json", json);
+        Assert.AreEqual(expected, SettingsStore.PeekStartMaximized(path));
+    }
+
+    [TestMethod]
+    public void MissingSettingsKeepTheNormalWindowSize()
+    {
+        using var workspace = new Workspace();
+        Assert.IsFalse(SettingsStore.PeekStartMaximized(Path.Combine(workspace.Root, "missing.json")));
+        Assert.IsFalse(new Settings().General.StartMaximized);
+    }
+
+    [TestMethod]
+    [DataRow(true)]
+    [DataRow(false)]
+    public void StartupWindowPreferenceSurvivesCopyApplyAndSerialization(bool maximized)
+    {
+        using var workspace = new Workspace();
+        var settings = new Settings();
+        settings.General.StartMaximized = maximized;
+        var applied = new GeneralSettings { StartMaximized = !maximized };
+        applied.Apply(settings.Copy().General);
+        Assert.AreEqual(maximized, applied.StartMaximized);
+        settings.General = applied;
+        var json = System.Text.Json.JsonSerializer.Serialize(settings, SettingsJsonContext.Default.Settings);
+        var path = workspace.File("settings.json", json);
+        Assert.AreEqual(maximized, SettingsStore.PeekStartMaximized(path));
+        var loaded = System.Text.Json.JsonSerializer.Deserialize(json, SettingsJsonContext.Default.Settings)!;
+        Assert.AreEqual(maximized, loaded.General.StartMaximized);
+    }
+
+    [TestMethod]
     public void AtomicSaveReplacesTheWholeFile()
     {
         using var workspace = new Workspace();

@@ -13,6 +13,7 @@ internal sealed class GeneralPreferences : PreferencesPage
     private readonly Choice _theme;
     private readonly CheckBox _speakNavigation;
     private readonly CheckBox _checkUpdates;
+    private readonly CheckBox _startMaximized;
     private readonly CheckBox _rememberPosition;
     private readonly CheckBox _saveOnClose;
     private readonly CheckBox _openFilesInExistingWindow;
@@ -53,6 +54,8 @@ internal sealed class GeneralPreferences : PreferencesPage
         _speakNavigation = new CheckBox(panel, label: Tr("Speak file name when navigating (Previous/Next)")) { Checked = settings.SpeakFileOnNavigation };
         // Translators: Tick box on the General settings page: look for a newer version of the player when it starts.
         _checkUpdates = new CheckBox(panel, label: Tr("Check for app updates on startup")) { Checked = settings.CheckUpdatesOnStartup };
+        // Translators: Tick box on the General settings page: open the main window maximized on the next launch.
+        _startMaximized = new CheckBox(panel, label: Tr("Start maximized")) { Checked = settings.StartMaximized };
         // Translators: Tick box on the General settings page: keep changes such as volume and speed when the player closes.
         _saveOnClose = new CheckBox(panel, label: Tr("Save settings on close")) { Checked = settings.SaveOnClose };
         // Translators: Tick box on the General settings page: send a file opened from Windows to the Luna window that is already running.
@@ -106,6 +109,7 @@ internal sealed class GeneralPreferences : PreferencesPage
             flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         sizer.Add(_speakNavigation, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         sizer.Add(_checkUpdates, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
+        sizer.Add(_startMaximized, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         sizer.Add(_saveOnClose, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         sizer.Add(_openFilesInExistingWindow,
             flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
@@ -139,6 +143,10 @@ internal sealed class GeneralPreferences : PreferencesPage
         Help(_checkUpdates,
             // Translators: Help text for the tick box that looks for a newer version of the player when it starts.
             Tr("Checks for a newer Luna release in the background after startup. A prompt appears only when a newer package is ready to download."));
+        Help(_startMaximized,
+            // Translators: Help text for the tick box that opens the main window maximized.
+            Tr("Opens Luna's main window maximized. Leave this off to use the normal window size. " +
+            "Changes take effect the next time Luna starts."));
         Help(_saveOnClose,
             // Translators: Help text for the tick box that keeps changes such as volume and speed when the player closes.
             Tr("Writes changes made during the session when Luna exits, including volume and speed. " +
@@ -182,6 +190,7 @@ internal sealed class GeneralPreferences : PreferencesPage
         _settings.RememberLastPosition = _rememberPosition.Checked;
         _settings.SpeakFileOnNavigation = _speakNavigation.Checked;
         _settings.CheckUpdatesOnStartup = _checkUpdates.Checked;
+        _settings.StartMaximized = _startMaximized.Checked;
         _settings.SaveOnClose = _saveOnClose.Checked;
         _settings.OpenFilesInExistingWindow = _openFilesInExistingWindow.Checked;
         _settings.DisableMediaControls = _disableMediaControls.Checked;
@@ -200,6 +209,7 @@ internal sealed class GeneralPreferences : PreferencesPage
         _rememberPosition.Checked = _settings.RememberLastPosition;
         _speakNavigation.Checked = _settings.SpeakFileOnNavigation;
         _checkUpdates.Checked = _settings.CheckUpdatesOnStartup;
+        _startMaximized.Checked = _settings.StartMaximized;
         _saveOnClose.Checked = _settings.SaveOnClose;
         _openFilesInExistingWindow.Checked = _settings.OpenFilesInExistingWindow;
         _disableMediaControls.Checked = _settings.DisableMediaControls;

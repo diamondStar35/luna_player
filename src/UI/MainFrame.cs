@@ -31,7 +31,7 @@ internal sealed class MainFrame : IMainView
 
     /// <summary>Creates only the top-level window. Its menus and controls are added after the window has
     /// been shown, so native and configuration startup work cannot delay the first visible frame.</summary>
-    internal MainFrame()
+    internal MainFrame(bool startMaximized)
     {
         _frame = new Frame(title: AppInfo.Name, size: new Size(420, 160));
         // The themed window background rather than the grey a frame paints by default, so the main window
@@ -39,6 +39,8 @@ internal sealed class MainFrame : IMainView
         // it is already the dark colour when dark mode is on.
         _frame.BackgroundColour = SystemSettings.GetColour(SystemColour.Window);
         _frame.Closing += OnClosing;
+        if (startMaximized)
+            _frame.Maximize();
     }
 
     /// <param name="dispatcher">Handed on to the windows that fetch things in the background - the
@@ -113,7 +115,10 @@ internal sealed class MainFrame : IMainView
         var sizer = new BoxSizer(Orientation.Vertical);
         sizer.Add(buttonSizer, flags: SizerFlags.AlignCenterHorizontal | SizerFlags.All, border: 15);
         _frame.SetSizer(sizer);
-        _frame.Layout();
+        if (_frame.IsMaximized)
+            _frame.Layout();
+        else
+            _frame.Fit();
 
         previousButton.Click += (_, _) => input.Request(ActionId.PreviousTrack);
         rewindButton.Click += (_, _) => input.Request(ActionId.SeekBackward);
@@ -163,7 +168,6 @@ internal sealed class MainFrame : IMainView
 
     public void Show()
     {
-        _frame.Maximize();
         _frame.Show();
         // wxWidgets normally leaves the first paint in the event queue. Force the lightweight shell to draw
         // now, before menu construction or any service completion callback can occupy the UI thread.
