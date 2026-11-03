@@ -82,7 +82,12 @@ internal sealed class Requests : IDisposable
                     pending = BinaryPrimitives.ReadUInt32BigEndian(packet) == _pendingSequence
                         ? _pending : null;
                 if (pending is null) continue;
-                if (kind == 0x0e || packet.Length != 20)
+                if (kind == 0x0e)
+                {
+                    pending.TrySetException(new AudioKeyUnavailableException(packet.Length >= 6
+                        ? BinaryPrimitives.ReadUInt16BigEndian(packet.AsSpan(4, 2)) : null));
+                }
+                else if (packet.Length != 20)
                     pending.TrySetException(new InvalidDataException());
                 else pending.TrySetResult(packet.AsSpan(4, 16).ToArray());
             }

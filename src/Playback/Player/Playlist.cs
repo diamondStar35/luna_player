@@ -67,15 +67,15 @@ internal sealed partial class Player
     /// <summary>Queues a resolved session stream as the preloaded successor without changing what Luna says
     /// is current. Split video/audio streams are rejected by the engine and keep the ordinary YouTube path.</summary>
     internal bool QueueSessionStream(string expectedCurrentSource, string url, string? title, string? source,
-        string? audioFile, bool audioOnly)
+        string? audioFile, bool audioOnly, double? startPosition = null)
     {
         if ((!_crossfade && _gaplessPlayback == GaplessPlaybackMode.Disabled) || !_loaded || _holdAutomaticAdvance
             || !string.Equals(CurrentSource, expectedCurrentSource, StringComparison.Ordinal))
             return false;
-        if (_engine.QueueNext(url, audioFile: audioFile, noVideo: audioOnly))
+        if (_engine.QueueNext(url, startPosition, audioFile: audioFile, noVideo: audioOnly))
         {
             _queuedSessionStream = new PendingSessionStream(
-                expectedCurrentSource, url, title, source, audioFile, audioOnly);
+                expectedCurrentSource, url, title, source, audioFile, audioOnly, startPosition);
             return true;
         }
         _queuedSessionStream = null;
@@ -83,7 +83,7 @@ internal sealed partial class Player
     }
 
     private sealed record PendingSessionStream(
-        string CurrentSource, string Url, string? Title, string? Source, string? AudioFile, bool AudioOnly);
+        string CurrentSource, string Url, string? Title, string? Source, string? AudioFile, bool AudioOnly, double? StartPosition);
 
     internal bool OpenFolder(string folderPath)
     {
@@ -150,6 +150,7 @@ internal sealed partial class Player
         _endBehavior = behavior;
         _engine.SetEndBehavior(behavior);
         PrepareNext();
+        NextPreparationRequested?.Invoke();
     }
 
     internal void ConfigurePlaybackEffects(AudioSettings settings)
@@ -270,7 +271,7 @@ internal sealed partial class Player
         if (_queuedSessionStream is PendingSessionStream stream
             && string.Equals(CurrentSource, stream.CurrentSource, StringComparison.Ordinal))
         {
-            _engine.QueueNext(stream.Url, audioFile: stream.AudioFile, noVideo: stream.AudioOnly);
+            _engine.QueueNext(stream.Url, stream.StartPosition, audioFile: stream.AudioFile, noVideo: stream.AudioOnly);
             return;
         }
         if (_playlist.PeekNext(_wrapPlaylist) is not { } next)

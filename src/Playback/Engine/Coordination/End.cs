@@ -14,6 +14,9 @@ internal sealed partial class PlaybackCoordinator
     {
         if (_disposed || mpvEvent.Data is not MpvEndFileEvent endFile)
             return;
+        if (_awaitingLoadRestart && _loadingEntryId.HasValue && endFile.PlaylistEntryId > 0
+            && endFile.PlaylistEntryId != _loadingEntryId.Value)
+            return;
         // A replacement owns the next EOF. Late completion from any outgoing entry must not move
         // the logical playlist again while the replacement is waiting on metadata or opening.
         if (_awaitingLoadRestart && (endFile.Reason != MpvEndFileReason.Error

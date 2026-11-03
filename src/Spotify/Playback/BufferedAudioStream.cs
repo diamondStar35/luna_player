@@ -5,7 +5,8 @@ namespace LunaPlayer.Spotify.Playback;
 
 /// <summary>Fetches requested encrypted audio blocks with bounded, memory-only read-ahead.</summary>
 /// <remarks>Demand reads use their own request, cancelling speculative work before a miss or seek.
-/// The worker stops four MiB ahead of the reader; it never downloads the remainder of a track.</remarks>
+/// The worker reads at most four MiB ahead and retains at most twenty MiB per stream.
+/// Short tracks can fit entirely in that memory buffer.</remarks>
 internal sealed class BufferedAudioStream : Stream
 {
     private const int BlockSize = 64 * 1024;
@@ -211,8 +212,11 @@ internal sealed class BufferedAudioStream : Stream
         return Read(buffer.AsSpan(offset, count));
     }
 
-    public override int Read(Span<byte> buffer)
+    public override int Read(Span<byte> buffer) => Read(buffer, CancellationToken.None);
+
+    internal int Read(Span<byte> buffer, CancellationToken cancellationToken)
     {
+        cancellationToken.ThrowIfCancellationRequested();
         long position;
         long block;
         lock (_gate)
@@ -232,8 +236,9 @@ internal sealed class BufferedAudioStream : Stream
         try
         {
             // This request is independent of the speculative worker, so a slow read-ahead cannot queue it.
+            using var reading = CancellationTokenSource.CreateLinkedTokenSource(_token, cancellationToken);
             var (data, total) = FetchAsync(_http, _urls, block * BlockSize,
-                Math.Min(_length - 1, (block + 1) * BlockSize - 1), _token).GetAwaiter().GetResult();
+                Math.Min(_length - 1, (block + 1) * BlockSize - 1), reading.Token).GetAwaiter().GetResult();
             if (total != _length) throw new InvalidDataException("Audio length changed.");
             lock (_gate)
             {

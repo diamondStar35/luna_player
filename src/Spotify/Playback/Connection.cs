@@ -16,6 +16,8 @@ internal sealed class Connection : IDisposable
     private readonly CancellationToken _stopToken;
     private Requests _requests;
     private readonly Files _files;
+    private readonly AudioKeys _audioKeys;
+    private readonly Dictionary<(string Uri, int Bitrate), (Task<(TrackId KeyTrack, byte[] FileId, int Format)> Task, DateTimeOffset Created)> _metadata = [];
     private volatile bool _disposed;
 
     internal static async Task<Connection> ConnectAsync(
@@ -57,6 +59,7 @@ internal sealed class Connection : IDisposable
         _credentials = credentials;
         _deviceId = deviceId;
         _stopToken = _stop.Token;
+        _audioKeys = new AudioKeys(GetAudioKeyAsync, _stopToken);
     }
 
     internal void SaveCredentials()
@@ -66,12 +69,13 @@ internal sealed class Connection : IDisposable
     }
 
     internal async Task<AudioDecryptStream> GetAudioAsync(string uri, int bitrate,
-        CancellationToken cancellationToken)
+        CancellationToken cancellationToken, bool speculative = false)
     {
         if (_disposed) throw new ObjectDisposedException(nameof(Connection));
-        var (track, fileId, format) = await _files.GetTrackFileAsync(uri, bitrate, cancellationToken)
+        cancellationToken.ThrowIfCancellationRequested();
+        var (track, fileId, format) = await GetMetadataAsync(uri, bitrate, cancellationToken)
             .ConfigureAwait(false);
-        var key = await GetAudioKeyAsync(track, fileId, cancellationToken).ConfigureAwait(false);
+        var key = await _audioKeys.GetAsync(track, fileId, cancellationToken, speculative).ConfigureAwait(false);
         try
         {
             var encrypted = await _files.OpenAudioAsync(fileId, cancellationToken)
@@ -82,6 +86,34 @@ internal sealed class Connection : IDisposable
             catch { encrypted.Dispose(); throw; }
         }
         finally { System.Security.Cryptography.CryptographicOperations.ZeroMemory(key); }
+    }
+
+    private async Task<(TrackId KeyTrack, byte[] FileId, int Format)> GetMetadataAsync(string uri, int bitrate, CancellationToken token)
+    {
+        Task<(TrackId KeyTrack, byte[] FileId, int Format)> task;
+        var id = (uri, bitrate);
+        lock (_stateLock)
+        {
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            foreach (var item in _metadata.ToArray())
+                if (item.Value.Task.IsCompleted && (item.Value.Task.Status != TaskStatus.RanToCompletion
+                    || DateTimeOffset.UtcNow - item.Value.Created > TimeSpan.FromMinutes(1))) _metadata.Remove(item.Key);
+            if (!_metadata.TryGetValue(id, out var cached))
+            {
+                // Share only metadata, never decoder streams or their cancellation lifetimes.
+                task = _files.GetTrackFileAsync(uri, bitrate, _stopToken);
+                _ = task.ContinueWith(failed => { _ = failed.Exception; }, CancellationToken.None,
+                    TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
+                if (_metadata.Count >= 64)
+                {
+                    var oldest = _metadata.OrderBy(item => item.Value.Created).First();
+                    _metadata.Remove(oldest.Key);
+                }
+                _metadata[id] = (task, DateTimeOffset.UtcNow);
+            }
+            else task = cached.Task;
+        }
+        return await task.WaitAsync(token).ConfigureAwait(false);
     }
 
     private async Task<byte[]> GetAudioKeyAsync(TrackId track, byte[] fileId,
@@ -135,9 +167,11 @@ internal sealed class Connection : IDisposable
         {
             if (_disposed) return;
             _disposed = true;
+            _metadata.Clear();
             requests = _requests;
         }
         _stop.Cancel();
+        _audioKeys.Dispose();
         requests.Dispose();
         _http.Dispose();
         _stop.Dispose();
