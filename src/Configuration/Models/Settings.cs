@@ -78,8 +78,7 @@ internal sealed class Settings
         Require(FiniteBetween(Audio.PitchStep, AudioSettings.MinimumPitchStep, AudioSettings.MaximumPitchStep),
             "audio.pitchStep");
         Require(Audio.Device is not null, "audio.device");
-        Require(Audio.SofaFile is not null && (!Audio.SofaEnabled || !string.IsNullOrWhiteSpace(Audio.SofaFile)),
-            "audio.sofaFile");
+        Require(Audio.SofaFile is not null, "audio.sofaFile");
         Require(FiniteBetween(Audio.SofaGain, -20, 40), "audio.sofaGain");
         Require(FiniteBetween(Audio.SofaRotation, -360, 360), "audio.sofaRotation");
         Require(FiniteBetween(Audio.SofaElevation, -90, 90), "audio.sofaElevation");
@@ -245,6 +244,10 @@ internal sealed class Settings
             ? Localization.SystemLanguage : General.Language.Trim();
         Audio.Device ??= string.Empty;
         Audio.SofaFile ??= string.Empty;
+        // Older preferences could save the effect enabled without a path. Recover the other settings
+        // and leave spatialization off until a file is configured.
+        if (string.IsNullOrWhiteSpace(Audio.SofaFile))
+            Audio.SofaEnabled = false;
         Playback.LastFile ??= string.Empty;
         Shortcuts.Primary ??= [];
         Shortcuts.Secondary ??= [];

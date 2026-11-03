@@ -171,6 +171,28 @@ public sealed class SpatializationTests
         var elevation = (SpinCtrl)Field("Elevation (degrees)");
         var rotationStep = (SpinCtrl)Field("Rotation step (degrees)");
         var elevationStep = (SpinCtrl)Field("Elevation step (degrees)");
+        foreach (var emptyPath in new[] { "", " \t " })
+        {
+            file.Value = emptyPath;
+            Assert.AreEqual("Choose a SOFA file in Preferences before enabling headphone spatialization.", page.Validate());
+            Toggle(false);
+            Assert.IsNull(page.Validate());
+            page.Apply();
+
+            var saved = new Settings { Audio = settings.Copy() };
+            saved.Audio.Volume = 45;
+            var path = Path.Combine(workspace.Root, "settings.json");
+            var store = new SettingsStore(path);
+            Assert.IsTrue(store.SaveExplicit(saved), store.LastError);
+            var restarted = new SettingsStore(path);
+            var loaded = restarted.Load();
+            Assert.AreEqual(string.Empty, restarted.LastError);
+            Assert.IsFalse(loaded.Audio.SofaEnabled);
+            Assert.AreEqual(string.Empty, loaded.Audio.SofaFile);
+            Assert.AreEqual(45d, loaded.Audio.Volume);
+            Assert.IsTrue(restarted.SaveExplicit(loaded), restarted.LastError);
+            Toggle(true);
+        }
         Assert.AreEqual(-360, rotation.Minimum);
         Assert.AreEqual(360, rotation.Maximum);
         Assert.AreEqual(-90, elevation.Minimum);

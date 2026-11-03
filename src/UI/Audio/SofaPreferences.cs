@@ -80,6 +80,12 @@ internal sealed class SofaPreferences : LunaPlayer.UI.Preferences.PreferencesPag
         // Hidden fields must not prevent disabling the effect or receive validation focus.
         if (!_enabled.Checked)
             return null;
+        if (string.IsNullOrWhiteSpace(_file.Value))
+        {
+            _file.Focus();
+            // Translators: Validation error on the headphone spatialization preferences page when its SOFA path is empty.
+            return Tr("Choose a SOFA file in Preferences before enabling headphone spatialization.");
+        }
         if (!NumberInRange(_gain.Value, -20, 40))
         {
             _gain.Focus();
