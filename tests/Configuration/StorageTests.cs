@@ -88,6 +88,35 @@ public sealed class StorageTests
     }
 
     [TestMethod]
+    [DataRow("", true)]
+    [DataRow(" \t ", true)]
+    [DataRow("", false)]
+    [DataRow(" \t ", false)]
+    public void StartupRecoversEmptySofaPathsWithoutDiscardingOtherSettings(string sofaFile, bool enabled)
+    {
+        using var workspace = new Workspace();
+        var settings = new Settings();
+        settings.General.StartMaximized = true;
+        settings.Audio.Volume = 45;
+        settings.Audio.SofaEnabled = enabled;
+        settings.Audio.SofaFile = sofaFile;
+        settings.Audio.SofaGain = -2.5;
+        var json = System.Text.Json.JsonSerializer.Serialize(settings, SettingsJsonContext.Default.Settings);
+        var path = workspace.File("settings.json", json);
+
+        var store = new SettingsStore(path);
+        var loaded = store.LoadForStartup();
+
+        Assert.AreEqual(string.Empty, store.LastError);
+        Assert.IsFalse(loaded.Audio.SofaEnabled);
+        Assert.AreEqual(sofaFile, loaded.Audio.SofaFile);
+        Assert.AreEqual(-2.5, loaded.Audio.SofaGain);
+        Assert.AreEqual(45d, loaded.Audio.Volume);
+        Assert.IsTrue(loaded.General.StartMaximized);
+        Assert.AreEqual(json, File.ReadAllText(path));
+    }
+
+    [TestMethod]
     [DataRow(-1d)]
     [DataRow(2001d)]
     [DataRow(double.NaN)]
