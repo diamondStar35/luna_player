@@ -68,7 +68,10 @@ public sealed partial class CrossfadeTests
         await Until(dispatcher, () => reported.Count == 1);
         var generation = sessions.CurrentLoadGeneration;
         typeof(Sessions).GetMethod("LoadManaged", BindingFlags.NonPublic | BindingFlags.Instance)!.Invoke(sessions, [track.Uri, 0.0]);
-        await Until(dispatcher, () => !engine.IsLoading && engine.Duration is > 0);
+        // Decoder readiness precedes the worker's resume and its cached pause notification.
+        // Wait for advancing playback before checking ownership of the earlier failure.
+        await Until(dispatcher, () => !engine.IsLoading && engine.Duration is > 0
+            && player.IsPlaying && player.Elapsed is > 0);
         Check(sessions.CurrentLoadGeneration == generation && player.IsPlaying, "Retry test did not retain the selected track.");
         Check(!sessions.TakeCurrentFailure(reported[0]), "A failure from the previous attempt can still stop successful playback.");
         var current = new InvalidDataException();
