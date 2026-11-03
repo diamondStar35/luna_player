@@ -10,7 +10,7 @@ runs:
         ./scripts/check-translator-comments.ps1
         if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
         ./scripts/compile-translations.ps1
-    - name: Test publication logic without GitHub requests
+    - name: Test publication logic
       shell: pwsh
       run: python -m unittest discover -s tests/Workflows -v
     - shell: pwsh
@@ -20,7 +20,7 @@ runs:
     - shell: pwsh
       run: ./tests/TestResults/native/LunaPlayer.Tests.exe --filter "TestCategory=Integration" --report-trx --results-directory
         tests/TestResults/native-results
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@v7
       if: ${{ always() }}
       with:
         name: test-results
