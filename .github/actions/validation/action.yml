@@ -1,0 +1,29 @@
+name: Validation
+description: Validate metadata, translations, publication logic and application tests.
+runs:
+  using: composite
+  steps:
+    - shell: pwsh
+      run: |-
+        ./.githooks/check-version.ps1
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        ./scripts/check-translator-comments.ps1
+        if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+        ./scripts/compile-translations.ps1
+    - name: Test publication logic without GitHub requests
+      shell: pwsh
+      run: python -m unittest discover -s tests/Workflows -v
+    - shell: pwsh
+      run: dotnet test --project tests/LunaPlayer.Tests.csproj -c Release --report-trx --results-directory tests/TestResults/current
+    - shell: pwsh
+      run: dotnet publish tests/LunaPlayer.Tests.csproj -c Release -m:1 -p:PublishAot=true -o tests/TestResults/native
+    - shell: pwsh
+      run: ./tests/TestResults/native/LunaPlayer.Tests.exe --filter "TestCategory=Integration" --report-trx --results-directory
+        tests/TestResults/native-results
+    - uses: actions/upload-artifact@v4
+      if: ${{ always() }}
+      with:
+        name: test-results
+        path: |-
+          tests/TestResults/**/*.trx
+          tests/TestResults/**/*.log

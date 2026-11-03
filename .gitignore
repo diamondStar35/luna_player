@@ -27,6 +27,9 @@ bld/
 project.lock.json
 project.fragment.lock.json
 artifacts/
+release-assets/
+release-metadata.json
+__pycache__/
 
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
