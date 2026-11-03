@@ -91,30 +91,11 @@ internal sealed partial class YouTube
             _downloadQueue.Start();
     }
 
-    /// <summary>Starts a download owned by the queue and opens a modeless progress window for it. The
-    /// completion message is always owned by the main frame; stopping or minimizing says nothing.</summary>
+    /// <summary>Starts a download owned by the queue and opens its modeless progress window.</summary>
     private void Run(Downloads.Request request, string title)
     {
         var itemId = _downloadQueue.StartSingle(title, request);
-        _view.Dialogs.ShowDownloadProgress(_downloadQueue, itemId, ShowDownloadOutcome);
-    }
-
-    private void ShowDownloadOutcome(Downloads.Outcome? outcome)
-    {
-        if (outcome is not { } result)
-            return;
-        if (result.Success)
-            _view.Dialogs.ShowMainInfo(
-                // Translators: Shown when a download finished.
-                Tr("The download finished. The file was saved to your downloads folder."));
-        else
-            _view.Dialogs.ShowMainError(
-                result.Error.Length > 0
-                    // Translators: Shown when a download failed. {details} is the technical reason from yt-dlp,
-                    // which is not translated.
-                    ? TrFormat("The download could not be completed.\n\nDetails: {details}", result.Error)
-                    // Translators: Shown when a download failed and no reason was given.
-                    : Tr("The download could not be completed. Check your internet connection and try again."));
+        _view.Dialogs.ShowDownloadProgress(_downloadQueue, itemId);
     }
 
     /// <summary>Whether the yt-dlp programs are present; offers to fetch them and retries if not.</summary>

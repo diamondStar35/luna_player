@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-11-03 15:43+0200\n"
+"POT-Creation-Date: 2026-11-03 19:34+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2131,7 +2131,7 @@ msgstr ""
 #: Application/Commands/Playback/Playback.cs:152
 #: UI/Iptv/ChannelBrowserDialog.cs:118 UI/MainFrame.cs:101 UI/MainFrame.cs:193
 #: UI/Radio/BrowserDialog.cs:120 UI/Radio/BrowserDialog.cs:148
-#: UI/Spotify/TracksDialog.cs:50 UI/YouTube/ResultsDialog.cs:196
+#: UI/Spotify/TracksDialog.cs:50 UI/YouTube/ResultsDialog.cs:198
 msgid "Play"
 msgstr ""
 
@@ -2457,7 +2457,7 @@ msgstr ""
 #. Translators: How far the download has got. {percent} is a whole number.
 #: Application/Commands/Playback/SelectionSaving.cs:77
 #: UI/Conversion/ProgressDialog.cs:156
-#: UI/YouTube/DownloadProgressDialog.cs:169
+#: UI/YouTube/DownloadProgressDialog.cs:161
 msgid "Percentage: {percent}%"
 msgstr ""
 
@@ -2792,27 +2792,6 @@ msgstr ""
 #. Translators: Shown when the queue's multi-link box contains a non-video YouTube address.
 #: Application/Commands/YouTube/Download.cs:77
 msgid "This is not a valid YouTube video link: {link}"
-msgstr ""
-
-#. Translators: Shown when a download finished.
-#: Application/Commands/YouTube/Download.cs:109
-msgid "The download finished. The file was saved to your downloads folder."
-msgstr ""
-
-#. Translators: Shown when a download failed. {details} is the technical reason from yt-dlp,
-#. which is not translated.
-#: Application/Commands/YouTube/Download.cs:115
-msgid ""
-"The download could not be completed.\n"
-"\n"
-"Details: {details}"
-msgstr ""
-
-#. Translators: Shown when a download failed and no reason was given.
-#: Application/Commands/YouTube/Download.cs:117
-msgid ""
-"The download could not be completed. Check your internet connection and try "
-"again."
 msgstr ""
 
 #. Translators: Shown when the address saved as a plain stream could not be played.
@@ -3297,7 +3276,7 @@ msgstr ""
 #. Translators: Marks a row in the results list as a playlist rather than a single video.
 #. Translators: Search filter: return playlists rather than videos.
 #: Favorites/FavoriteStore.cs:176 Spotify/Catalog.cs:40
-#: UI/YouTube/ResultsDialog.cs:344 UI/YouTube/SearchDialog.cs:74
+#: UI/YouTube/ResultsDialog.cs:346 UI/YouTube/SearchDialog.cs:74
 msgid "Playlist"
 msgstr ""
 
@@ -4363,7 +4342,7 @@ msgstr ""
 #: UI/Playlists/OpenedFilesDialog.cs:51 UI/Radio/FiltersDialog.cs:79
 #: UI/Selections/SaveDialog.cs:82 UI/Selections/TimeDialog.cs:62
 #: UI/Spotify/CredentialsPrompt.cs:19 UI/YouTube/DownloadDialog.cs:134
-#: UI/YouTube/DownloadExitDialog.cs:22 UI/YouTube/DownloadProgressDialog.cs:64
+#: UI/YouTube/DownloadExitDialog.cs:22 UI/YouTube/DownloadProgressDialog.cs:61
 #: UI/YouTube/DownloadQueueDialog.cs:379 UI/YouTube/LinkKindDialog.cs:33
 msgid "Cancel"
 msgstr ""
@@ -4558,7 +4537,7 @@ msgstr ""
 #. not yet worth making.
 #. Translators: Estimated time left for all unfinished queue items.
 #: UI/Conversion/ProgressDialog.cs:161
-#: UI/YouTube/DownloadProgressDialog.cs:174
+#: UI/YouTube/DownloadProgressDialog.cs:166
 #: UI/YouTube/DownloadQueueDialog.cs:305
 msgid "Estimated time left: {time}"
 msgstr ""
@@ -4569,8 +4548,8 @@ msgstr ""
 #. Translators: Shown for queue speed before enough data exists to measure it.
 #. Translators: Shown for queue time remaining before enough data exists to calculate it.
 #: UI/Conversion/ProgressDialog.cs:165
-#: UI/YouTube/DownloadProgressDialog.cs:158
-#: UI/YouTube/DownloadProgressDialog.cs:162
+#: UI/YouTube/DownloadProgressDialog.cs:150
+#: UI/YouTube/DownloadProgressDialog.cs:154
 #: UI/YouTube/DownloadQueueDialog.cs:289 UI/YouTube/DownloadQueueDialog.cs:293
 msgid "calculating…"
 msgstr ""
@@ -6413,7 +6392,7 @@ msgstr ""
 #. Translators: The button that starts this download immediately.
 #. Translators: Button that saves the video chosen in the list of results to a folder on this computer.
 #: UI/Preferences/MainDialog.cs:64 UI/YouTube/DownloadDialog.cs:56
-#: UI/YouTube/DownloadDialog.cs:127 UI/YouTube/ResultsDialog.cs:202
+#: UI/YouTube/DownloadDialog.cs:127 UI/YouTube/ResultsDialog.cs:204
 msgid "Download"
 msgstr ""
 
@@ -8044,6 +8023,26 @@ msgstr ""
 msgid "Close anyway"
 msgstr ""
 
+#. Translators: Success message box shown after a YouTube download finishes and its progress window closes.
+#: UI/YouTube/DownloadOutcomes.cs:62
+msgid "The download finished. The file was saved to your downloads folder."
+msgstr ""
+
+#. Translators: YouTube download error message box. {details} is the untranslated technical reason from yt-dlp.
+#: UI/YouTube/DownloadOutcomes.cs:67
+msgid ""
+"The download could not be completed.\n"
+"\n"
+"Details: {details}"
+msgstr ""
+
+#. Translators: YouTube download error message box when no technical reason is available.
+#: UI/YouTube/DownloadOutcomes.cs:69
+msgid ""
+"The download could not be completed. Check your internet connection and try "
+"again."
+msgstr ""
+
 #. Translators: Tick box on the YouTube download settings page: sort files into video and audio subfolders.
 #: UI/YouTube/DownloadPreferences.cs:69
 msgid "Sort downloads by type"
@@ -8195,81 +8194,81 @@ msgstr ""
 #. Translators: Title of the window showing progress for one YouTube download.
 #. Translators: Title of the progress window while a YouTube file is downloading.
 #. Translators: Status of a queue item while it is downloading.
-#: UI/YouTube/DownloadProgressDialog.cs:42
-#: UI/YouTube/DownloadProgressDialog.cs:149
+#: UI/YouTube/DownloadProgressDialog.cs:39
+#: UI/YouTube/DownloadProgressDialog.cs:141
 #: UI/YouTube/DownloadQueueDialog.cs:318
 msgid "Downloading"
 msgstr ""
 
 #. Translators: Shown in the download window before the first progress has arrived.
-#: UI/YouTube/DownloadProgressDialog.cs:50
+#: UI/YouTube/DownloadProgressDialog.cs:47
 msgid "Preparing to download…"
 msgstr ""
 
 #. Translators: Hides this progress window while leaving its download visible in the queue.
-#: UI/YouTube/DownloadProgressDialog.cs:58
+#: UI/YouTube/DownloadProgressDialog.cs:55
 msgid "Minimize to queue"
 msgstr ""
 
 #. Translators: Shown for the total download size before yt-dlp reports it.
 #. Translators: Stands in for a version number that could not be read.
-#: UI/YouTube/DownloadProgressDialog.cs:153 YouTube/Components/Service.cs:270
+#: UI/YouTube/DownloadProgressDialog.cs:145 YouTube/Components/Service.cs:270
 msgid "unknown"
 msgstr ""
 
 #. Translators: Download speed. {size} is a file size and "/s" means per second.
 #. Translators: Combined queue speed. {size} is a file size and "/s" means per second.
-#: UI/YouTube/DownloadProgressDialog.cs:156
+#: UI/YouTube/DownloadProgressDialog.cs:148
 #: UI/YouTube/DownloadQueueDialog.cs:287
 msgid "{size}/s"
 msgstr ""
 
 #. Translators: How much of the file has downloaded. {done} and {total} are sizes such as "4.2 MB".
-#: UI/YouTube/DownloadProgressDialog.cs:165
+#: UI/YouTube/DownloadProgressDialog.cs:157
 msgid "Downloaded: {done} of {total}"
 msgstr ""
 
 #. Translators: The current download speed. {speed} is a size per second such as "1.3 MB/s".
 #. Translators: Combined download speed of all active queue items.
-#: UI/YouTube/DownloadProgressDialog.cs:171
+#: UI/YouTube/DownloadProgressDialog.cs:163
 #: UI/YouTube/DownloadQueueDialog.cs:303
 msgid "Speed: {speed}"
 msgstr ""
 
 #. Translators: A download has finished conversion and is being finalized.
 #. Translators: yt-dlp is moving the finished file to its destination.
-#: UI/YouTube/DownloadProgressDialog.cs:181
-#: UI/YouTube/DownloadProgressDialog.cs:199
+#: UI/YouTube/DownloadProgressDialog.cs:173
+#: UI/YouTube/DownloadProgressDialog.cs:191
 msgid "Finishing…"
 msgstr ""
 
 #. Translators: yt-dlp is joining the downloaded audio and video streams.
-#: UI/YouTube/DownloadProgressDialog.cs:184
+#: UI/YouTube/DownloadProgressDialog.cs:176
 msgid "Merging video and audio…"
 msgstr ""
 
 #. Translators: yt-dlp/ffmpeg is converting the download to the chosen format.
-#: UI/YouTube/DownloadProgressDialog.cs:189
+#: UI/YouTube/DownloadProgressDialog.cs:181
 msgid "Converting…"
 msgstr ""
 
 #. Translators: yt-dlp is embedding metadata, artwork, subtitles, or chapters.
-#: UI/YouTube/DownloadProgressDialog.cs:192
+#: UI/YouTube/DownloadProgressDialog.cs:184
 msgid "Embedding information…"
 msgstr ""
 
 #. Translators: yt-dlp is modifying chapters or removing sponsored sections.
-#: UI/YouTube/DownloadProgressDialog.cs:196
+#: UI/YouTube/DownloadProgressDialog.cs:188
 msgid "Processing chapters…"
 msgstr ""
 
 #. Translators: Generic state while yt-dlp performs a finishing operation after downloading.
-#: UI/YouTube/DownloadProgressDialog.cs:201
+#: UI/YouTube/DownloadProgressDialog.cs:193
 msgid "Post-processing…"
 msgstr ""
 
 #. Translators: Asks the user to confirm stopping a download that is still running.
-#: UI/YouTube/DownloadProgressDialog.cs:218
+#: UI/YouTube/DownloadProgressDialog.cs:210
 msgid "The download is still running. Would you like to stop it?"
 msgstr ""
 
@@ -8621,25 +8620,25 @@ msgid "{height}p"
 msgstr ""
 
 #. Translators: Button that plays only the sound of the video chosen in the list, with no picture.
-#: UI/YouTube/ResultsDialog.cs:199
+#: UI/YouTube/ResultsDialog.cs:201
 msgid "Play as audio"
 msgstr ""
 
 #. Translators: Names who published a result. {author} is a channel name.
 #. Translators: Names who published a video result. {author} is a channel name.
-#: UI/YouTube/ResultsDialog.cs:347 UI/YouTube/ResultsDialog.cs:366
+#: UI/YouTube/ResultsDialog.cs:349 UI/YouTube/ResultsDialog.cs:368
 msgid "by {author}"
 msgstr ""
 
 #. Translators: How many videos a playlist holds. {count} is a number.
 #. Translators: How many videos a channel holds. {count} is a number.
-#: UI/YouTube/ResultsDialog.cs:350 UI/YouTube/ResultsDialog.cs:359
+#: UI/YouTube/ResultsDialog.cs:352 UI/YouTube/ResultsDialog.cs:361
 msgid "contains {count} videos"
 msgstr ""
 
 #. Translators: Marks a row in the results list as a channel rather than a single video.
 #. Translators: Heading above a YouTube channel's browser when the channel's name is not known.
-#: UI/YouTube/ResultsDialog.cs:354 YouTube/Playback/Session.cs:93
+#: UI/YouTube/ResultsDialog.cs:356 YouTube/Playback/Session.cs:93
 msgid "Channel"
 msgstr ""
 
