@@ -136,8 +136,7 @@ internal sealed class DialogService : IDialogService, IDisposable
         Action start) => _youtube.ShowDownloadQueue(queue, addLinks, start);
     public void ShowDownloadProgress(
         Downloads.DownloadQueue queue,
-        Guid itemId,
-        Action<Downloads.Outcome?> completed) => _youtube.ShowDownloadProgress(queue, itemId, completed);
+        Guid itemId) => _youtube.ShowDownloadProgress(queue, itemId);
     internal void CloseDownloadProgressWindows() => _youtube.CloseDownloadProgressWindows();
     public void ShowVideoDescription(string title, string description) => _youtube.ShowVideoDescription(title, description);
     public LunaPlayer.UI.Iptv.IptvSourceRequest? ManageIptvSources(IReadOnlyList<LunaPlayer.UI.Iptv.IptvSourceListItem> sources, string selectedId) => _iptv.ManageIptvSources(sources, selectedId);

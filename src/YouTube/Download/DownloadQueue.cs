@@ -70,6 +70,7 @@ internal sealed class DownloadQueue : IDisposable
 
     private readonly Lock _gate = new();
     private readonly Settings _settings;
+    private readonly Func<Request, Action<Progress>, CancellationToken, Outcome> _download;
     private readonly List<Item> _items = [];
     private bool _running;
     private bool _disposed;
@@ -77,7 +78,12 @@ internal sealed class DownloadQueue : IDisposable
     /// <summary>Includes removed jobs whose process is still winding down, so their slots are not reused early.</summary>
     private int _activeWorkers;
 
-    internal DownloadQueue(Settings settings) => _settings = settings;
+    internal DownloadQueue(Settings settings,
+        Func<Request, Action<Progress>, CancellationToken, Outcome>? download = null)
+    {
+        _settings = settings;
+        _download = download ?? ((request, progress, token) => new Engine(settings).Run(request, progress, token));
+    }
 
     /// <summary>Raised once when every visible queue item has completed successfully.</summary>
     internal event Action? AllCompleted;
@@ -313,7 +319,7 @@ internal sealed class DownloadQueue : IDisposable
         var notify = false;
         try
         {
-            outcome = new Engine(_settings).Run(item.Request, progress => Report(item, progress), token);
+            outcome = _download(item.Request, progress => Report(item, progress), token);
         }
         catch (OperationCanceledException)
         {

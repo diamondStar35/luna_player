@@ -143,8 +143,7 @@ internal interface IDialogService
     /// <summary>Shows a modeless progress window for a download already owned by the queue.</summary>
     void ShowDownloadProgress(
         Downloads.DownloadQueue queue,
-        Guid itemId,
-        Action<Downloads.Outcome?> completed);
+        Guid itemId);
 
     /// <summary>Opens the window where recording is set up and run. It is modal, but closing it does not
     /// end a recording: the sources and the recorder outlive it.</summary>

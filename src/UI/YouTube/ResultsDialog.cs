@@ -141,6 +141,8 @@ internal sealed class ResultsDialog : IDisposable
     /// the two have different control structures.</summary>
     internal bool IsSingleList => _notebook is null;
 
+    internal Window Window => _dialog;
+
     /// <summary>The row the user chose to play and whether they asked for its picture or its sound, or null
     /// when they closed the window instead.</summary>
     internal ResultChoice? Show()

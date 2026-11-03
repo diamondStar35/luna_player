@@ -9,11 +9,20 @@ using Downloads = LunaPlayer.YouTube.Download;
 
 namespace LunaPlayer.UI.Services.Dialogs;
 
-internal sealed class YouTubeDialogs(DialogContext context) : IDisposable
+internal sealed class YouTubeDialogs : IDisposable
 {
-    private readonly DialogContext _context = context;
+    private readonly DialogContext _context;
+    private readonly YouTube.DownloadOutcomes _downloadOutcomes;
     private YouTube.ResultsDialog? _youTubeResults;
+    private Window? _resultsOwner;
     private readonly HashSet<YouTube.DownloadProgressDialog> _downloadProgressDialogs = [];
+
+    internal YouTubeDialogs(DialogContext context)
+    {
+        _context = context;
+        _downloadOutcomes = new YouTube.DownloadOutcomes(context.Dispatcher, () => YouTube.DownloadOutcomes.SelectOwner(
+            Wx.GetActiveWindow(), _resultsOwner, context.Frame, _downloadProgressDialogs.Select(dialog => dialog.Window)));
+    }
     public bool ConfirmCloseWithDownloads()
     { using var dialog = new YouTube.DownloadExitDialog(_context.Parent); return dialog.Show(); }
 
@@ -27,7 +36,7 @@ internal sealed class YouTubeDialogs(DialogContext context) : IDisposable
         if (prompt.Tabs is { Count: > 0 })
         {
             using var channel = new YouTube.ResultsDialog(_context.Parent, prompt);
-            return channel.Show();
+            return ShowResults(channel);
         }
         // The plain single-list window is built once and reused: reopening refreshes the list instead of
         // reconstructing the window. Parented to the main frame, which outlives every such open.
@@ -35,7 +44,17 @@ internal sealed class YouTubeDialogs(DialogContext context) : IDisposable
             _youTubeResults = new YouTube.ResultsDialog(_context.Frame, prompt);
         else
             _youTubeResults.Refresh(prompt);
-        return _youTubeResults.Show();
+        return ShowResults(_youTubeResults);
+    }
+
+    private YouTube.ResultChoice? ShowResults(YouTube.ResultsDialog dialog)
+    {
+        // The modal results window remains the completion owner even when Luna is in the
+        // background. Restore the previous owner when a nested channel browser closes.
+        var previous = _resultsOwner;
+        _resultsOwner = dialog.Window;
+        try { return dialog.Show(); }
+        finally { _resultsOwner = previous; }
     }
     public bool OfferYouTubeComponents() { using var dialog = new YouTube.ComponentsDialog(_context.Parent); return dialog.Show(); }
 
@@ -50,14 +69,13 @@ internal sealed class YouTubeDialogs(DialogContext context) : IDisposable
 
     public void ShowDownloadProgress(
         Downloads.DownloadQueue queue,
-        Guid itemId,
-        Action<Downloads.Outcome?> completed)
+        Guid itemId)
     {
-        var dialog = new YouTube.DownloadProgressDialog(_context.Frame, _context.Dispatcher, queue, itemId);
+        var dialog = new YouTube.DownloadProgressDialog(_context.Dispatcher, queue, itemId);
         dialog.Closed += (closed, outcome) =>
         {
             _downloadProgressDialogs.Remove(closed);
-            completed(outcome);
+            _downloadOutcomes.Add(outcome);
         };
         _downloadProgressDialogs.Add(dialog);
         dialog.Show();
@@ -65,10 +83,17 @@ internal sealed class YouTubeDialogs(DialogContext context) : IDisposable
 
     internal void CloseDownloadProgressWindows()
     {
+        _downloadOutcomes.Clear();
         foreach (var dialog in _downloadProgressDialogs.ToArray())
             dialog.Dispose();
         _downloadProgressDialogs.Clear();
     }
     public void ShowVideoDescription(string title, string description) { using var dialog = new YouTube.DescriptionDialog(_context.Parent, title, description); dialog.Show(); }
-    public void Dispose() { _youTubeResults?.Dispose(); _youTubeResults = null; CloseDownloadProgressWindows(); }
+    public void Dispose()
+    {
+        _downloadOutcomes.Dispose();
+        _youTubeResults?.Dispose();
+        _youTubeResults = null;
+        CloseDownloadProgressWindows();
+    }
 }
