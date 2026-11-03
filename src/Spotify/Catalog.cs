@@ -452,9 +452,7 @@ internal sealed class Catalog
         OperationCanceledException or TimeoutException => Tr("Spotify did not respond in time."),
         // Translators: Error shown when loading Spotify browsing results or preparing playback fails.
         Login5StatusException => Tr("Spotify refused the playback sign in. Sign in again."),
-        // Translators: Spotify temporarily refused audio-key requests after bounded automatic backoff.
-        Playback.AudioKeyUnavailableException { Code: 2 } => Tr("Spotify is temporarily refusing playback requests. Please wait a moment and try again."),
-        // Translators: Error shown when loading Spotify browsing results or preparing playback fails.
+        // Translators: Error displayed in the Spotify error dialog when a track cannot be prepared for playback.
         Playback.AudioKeyUnavailableException or InvalidDataException => Tr("Spotify could not load this track."),
         // Translators: Error when Spotify audio/network data or protected account files cannot be read or saved.
         IOException or UnauthorizedAccessException => Tr("Spotify could not read or save required data. Check your connection and available storage, then try again."),

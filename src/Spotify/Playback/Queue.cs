@@ -5,10 +5,8 @@ namespace LunaPlayer.Spotify.Playback;
 /// <summary>Keeps the Spotify queue order and paged navigation separate from its audio transport.</summary>
 internal sealed partial class Sessions
 {
-    private readonly object _navigationLock = new();
     private Session? _session;
 
-    // A manager exists at startup; queue and navigation state belong only to a selected session.
     private sealed class Session
     {
         internal List<Track> Tracks { get; set; } = [];
@@ -36,33 +34,6 @@ internal sealed partial class Sessions
     internal bool CanMovePrevious => _active && _session is { } session
         && (session.Index > 0 || _audioSettings?.WrapPlaylist == true && session.Tracks.Count > 1);
     internal bool IsShuffleEnabled => _session?.Shuffle == true;
-    internal bool ToggleShuffle()
-    {
-        if (_session is not { } session) return false;
-        lock (_navigationLock)
-        {
-            if (!_active) return false;
-            AcceptSpotifyAdvance(prepareNext: false);
-            if (!_active || !ReferenceEquals(_session, session)) return false;
-            var current = _current;
-            session.Shuffle = !session.Shuffle;
-            session.Tracks = [.. session.Source];
-            if (session.Shuffle)
-            {
-                // Like Luna's local shuffle, randomize the entire order and then locate
-                // the current track. Pinning it first prevents ordinary Previous navigation.
-                for (var index = session.Tracks.Count - 1; index > 0; index--)
-                {
-                    var other = Random.Shared.Next(index + 1);
-                    (session.Tracks[index], session.Tracks[other]) = (session.Tracks[other], session.Tracks[index]);
-                }
-            }
-            session.Index = session.Tracks.FindIndex(track => ReferenceEquals(track, current));
-            if (session.Index < 0) session.Index = 0;
-            RefreshSuccessor();
-            return session.Shuffle;
-        }
-    }
     internal string? NextPage => _session?.NextPage;
     internal void Play(Track track, IReadOnlyList<Track>? queue,
         CancellationToken cancellationToken, double? startPosition = null,
@@ -70,10 +41,11 @@ internal sealed partial class Sessions
         string? nextPage = null, bool deduplicateArtist = false, bool shuffle = false)
     {
         cancellationToken.ThrowIfCancellationRequested();
-        BeginSession();
-        var session = _session ?? throw new InvalidOperationException("No Spotify session is open.");
         lock (_navigationLock)
         {
+            SynchronizeNavigation();
+            BeginSession();
+            var session = _session ?? throw new InvalidOperationException("No Spotify session is open.");
             SavePosition();
             if (_active) _player.Stop();
             CancelPageRead();
@@ -91,51 +63,10 @@ internal sealed partial class Sessions
             session.Index = selected;
             _active = true;
             session.Shuffle = false;
-            // The shared mpv engine retains Luna's volume and audio effects.
             SetCurrent(track, playing: false);
             if (shuffle) ToggleShuffle();
             cancellationToken.ThrowIfCancellationRequested();
             LoadTrack(track, startPosition ?? SavedPosition(track));
-        }
-    }
-
-    internal bool Next() => Step(1);
-    internal bool Previous() => Step(-1);
-
-    internal bool CloseCurrent()
-    {
-        if (_session is not { } session) return false;
-        lock (_navigationLock)
-        {
-            if (!HasSession) return false;
-            if (!_active || _current is null)
-            {
-                QueueEmpty?.Invoke();
-                return true;
-            }
-            SavePosition();
-            var removed = _current;
-            var position = session.Index;
-            CancelPageRead();
-            _player.Stop();
-            session.Tracks.RemoveAt(position);
-            var original = session.Source.FindIndex(track => ReferenceEquals(track, removed));
-            if (original >= 0) session.Source.RemoveAt(original);
-            if (session.Tracks.Count > 0)
-            {
-                session.Index = Math.Min(position, session.Tracks.Count - 1);
-                var next = session.Tracks[session.Index];
-                SetCurrent(next, playing: false);
-                LoadTrack(next, SavedPosition(next));
-            }
-            else
-            {
-                ClearCurrent();
-                session.Index = -1;
-                if (session.NextPage is not null) FetchMore(afterTrackEnded: true);
-                else QueueEmpty?.Invoke();
-            }
-            return true;
         }
     }
 
@@ -149,59 +80,6 @@ internal sealed partial class Sessions
         session.PageFetchAfterEnded = false;
         session.PageNavigationRequested = false;
     }
-    internal bool GoToIndex(int index)
-    {
-        lock (_navigationLock)
-            return _active && _session is { } session && index >= 0 && index < session.Tracks.Count
-                && Step(index - session.Index);
-    }
-
-    private bool Step(int delta, bool savePosition = true, bool delay = true)
-    {
-        if (_session is not { } session) return false;
-        lock (_navigationLock)
-        {
-            AcceptSpotifyAdvance(prepareNext: false);
-            if (!_active || !ReferenceEquals(_session, session)) return false;
-            if (delta > 0 && session.Index == session.Tracks.Count - 1 && session.NextPage is not null)
-            {
-                _playRequested = true;
-                FetchMore();
-                return true;
-            }
-            if (!TryTarget(session.Index, delta, out var target)) return false;
-            CancelPageRead();
-            if (savePosition) SavePosition();
-            var keepPlaying = _manualTransition ? _playRequested : _player.IsPlaying;
-            var overlap = _audioSettings is { Crossfade: true, CrossfadeManualNavigation: true } && _player.IsLoaded;
-            session.Index = target;
-            var track = session.Tracks[target];
-            // Preserve a ready successor across selection invalidation. Its registered audio can
-            // be reopened even when mpv already opened it for speculative decoding.
-            var preparedUrl = ReferenceEquals(track, _successor) ? _successorUrl : null;
-            if (preparedUrl is not null)
-            {
-                _successorUrl = null;
-                _successor = null;
-            }
-            // Select immediately; a manual overlap keeps the outgoing stream until audio is ready.
-            SetCurrent(track, playing: false);
-            _manualTransition = overlap;
-            if (overlap) _playRequested = keepPlaying;
-            Navigated?.Invoke(track);
-            if (preparedUrl is not null && OpenPreparedTrack(track, preparedUrl)) return true;
-            // Keep uncached key bursts inexpensive without delaying an already prepared track.
-            if (delay)
-            {
-                if (!overlap && !session.NavigationStopped) { _player.Stop(); session.NavigationStopped = true; }
-                session.NavigationDelay = new CancellationTokenSource();
-                _ = LoadAfterNavigationAsync(track, CurrentLoadGeneration, session.NavigationDelay.Token);
-            }
-            else LoadTrack(track, SavedPosition(track));
-            return true;
-        }
-    }
-
     private void FetchMore(bool afterTrackEnded = false, bool prepareOnly = false)
     {
         if (_session is not { } session) return;
@@ -303,46 +181,6 @@ internal sealed partial class Sessions
                 });
             }
         });
-    }
-
-    private bool TryTarget(int index, int delta, out int target)
-    {
-        target = index + delta;
-        if (_session is not { } session) return false;
-        if (session.Tracks.Count == 0) return false;
-        if (target >= 0 && target < session.Tracks.Count) return true;
-        if (_audioSettings?.WrapPlaylist != true || session.Tracks.Count < 2) return false;
-        target = (target + session.Tracks.Count) % session.Tracks.Count;
-        return true;
-    }
-
-    private void CancelNavigationDelay()
-    {
-        if (_session is not { } session) return;
-        session.NavigationDelay?.Cancel();
-        session.NavigationDelay?.Dispose();
-        session.NavigationDelay = null;
-    }
-
-    private async Task LoadAfterNavigationAsync(Track track, int generation, CancellationToken token)
-    {
-        try
-        {
-            await Task.Delay(75, token).ConfigureAwait(false);
-            OnPlayerThread(() =>
-            {
-                lock (_navigationLock)
-                {
-                    if (token.IsCancellationRequested || !_active || CurrentLoadGeneration != generation
-                        || !ReferenceEquals(_current, track)) return;
-                    LoadTrack(track, SavedPosition(track));
-                }
-            });
-        }
-        catch (OperationCanceledException) when (token.IsCancellationRequested)
-        {
-            // A newer selection, session exit or source switch supersedes this Spotify-only delay.
-        }
     }
 
     private void AdvanceAtEnd(string endedUri)

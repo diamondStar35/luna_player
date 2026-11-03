@@ -36,15 +36,13 @@ public sealed partial class CrossfadeTests
         var stale = Audio();
         oldPreparation.SetResult(stale);
         newPreparation.SetResult(Audio());
-        await Until(dispatcher, () => Field(sessions, "_successorUrl") is string && !stale.CanRead);
+        await Until(dispatcher, () => HasSuccessor(engine) && !stale.CanRead);
         Check(sessions.CurrentIndex == 0, "Replacing speculative preparation navigated away from the current track.");
     }
 
 
     [TestMethod]
-    public Task SharedSettingsTest() => SharedSettings();
-
-    static Task SharedSettings()
+    public Task PlaybackSettingsSurviveLeavingSpotify()
     {
         using var engine = NewEngine(); using var player = new Player(engine);
         var audio = Options();
@@ -69,9 +67,7 @@ public sealed partial class CrossfadeTests
     }
 
     [TestMethod]
-    public Task RegistrationsTest() => Registrations();
-
-    static Task Registrations()
+    public Task UnclaimedAudioIsReleasedWithoutAffectingOtherRegistrations()
     {
         using var engine = NewEngine();
         var first = Audio(); var second = Audio();
@@ -89,9 +85,7 @@ public sealed partial class CrossfadeTests
     }
 
     [TestMethod]
-    public Task ReopenTest() => Reopen();
-
-    static Task Reopen()
+    public Task DecoderReadersHaveIndependentPositionsAndCancellation()
     {
         using var engine = NewEngine();
         var audio = Audio(); var url = engine.RegisterSpotifyAudio(audio);
@@ -115,14 +109,12 @@ public sealed partial class CrossfadeTests
     [TestMethod]
     [DataRow((int)CrossfadeCurve.EqualPower)]
     [DataRow((int)CrossfadeCurve.Linear)]
-    public Task AutomaticTest(int curve) => Automatic((CrossfadeCurve)curve);
-
-    static async Task Automatic(CrossfadeCurve curve)
+    public async Task AutomaticTransitionsReusePreparedAudio(int curve)
     {
         using var engine = NewEngine();
         using var player = new Player(engine);
         var dispatcher = new Dispatcher(); var options = Options();
-        options.CrossfadeCurve = curve;
+        options.CrossfadeCurve = (CrossfadeCurve)curve;
         var opens = new ConcurrentDictionary<string, int>();
         using var sessions = new Sessions(new SpotifySettings(), player, dispatcher, (uri, _, _) =>
         {
@@ -133,7 +125,7 @@ public sealed partial class CrossfadeTests
         engine.Ended += reason => { var generation = sessions.CurrentLoadGeneration; dispatcher.Post(() => sessions.HandleEnded(reason, generation)); };
         var tracks = new[] { Track(1), Track(2) };
         sessions.Play(tracks[0], tracks, default);
-        await Until(dispatcher, () => Field(sessions, "_successorUrl") is string && engine.Duration is > 0);
+        await Until(dispatcher, () => HasSuccessor(engine) && engine.Duration is > 0);
         await Until(dispatcher, () => (bool)Field(engine, "_queuedNext")!);
         engine.SeekAbsolute(11);
         await Until(dispatcher, () => sessions.CurrentIndex == 1);
@@ -146,9 +138,7 @@ public sealed partial class CrossfadeTests
     }
 
     [TestMethod]
-    public Task ManualTest() => Manual();
-
-    static async Task Manual()
+    public async Task RapidNavigationKeepsOutgoingAudioUntilReplacementIsReady()
     {
         using var engine = NewEngine(); using var player = new Player(engine);
         var dispatcher = new Dispatcher(); var options = Options(manual: true);
@@ -179,9 +169,7 @@ public sealed partial class CrossfadeTests
     }
 
     [TestMethod]
-    public Task FastNextTest() => FastNext();
-
-    static async Task FastNext()
+    public async Task PreparedSuccessorOpensWithoutAnotherFetch()
     {
         using var engine = NewEngine(); using var player = new Player(engine);
         var dispatcher = new Dispatcher(); var options = Options(manual: true);
@@ -195,7 +183,7 @@ public sealed partial class CrossfadeTests
         sessions.CommandFailed += _ => errors++;
         Configure(player, sessions, options);
         sessions.Play(tracks[0], tracks, default);
-        await Until(dispatcher, () => Field(sessions, "_successorUrl") is string && !engine.IsLoading);
+        await Until(dispatcher, () => HasSuccessor(engine) && !engine.IsLoading);
         Check(fetches == 2, "Preparation fetched more than one successor.");
         sessions.Next();
         Check(player.CurrentSource == sessions.CurrentLink && sessions.CurrentIndex == 1,
@@ -205,9 +193,7 @@ public sealed partial class CrossfadeTests
     }
 
     [TestMethod]
-    public Task DoubleNextTest() => DoubleNext();
-
-    static async Task DoubleNext()
+    public async Task ConsecutiveSkipsIgnoreSupersededDecoderFailures()
     {
         foreach (var delay in new[] { 0, 20, 80, 200, 500 })
         {
@@ -221,7 +207,7 @@ public sealed partial class CrossfadeTests
             engine.Ended += reason => { var generation = sessions.CurrentLoadGeneration; dispatcher.Post(() => sessions.HandleEnded(reason, generation)); };
             var tracks = new[] { Track(1), Track(2), Track(3), Track(4) };
             sessions.Play(tracks[0], tracks, default);
-            await Until(dispatcher, () => errors.Count > 0 || Field(sessions, "_successorUrl") is string && !engine.IsLoading);
+            await Until(dispatcher, () => errors.Count > 0 || HasSuccessor(engine) && !engine.IsLoading);
             Check(errors.IsEmpty, "Initial load before double Next failed at " + delay + "ms: " + string.Join("; ", errors.Select(error => error.GetType().Name + " " + error.StackTrace)));
             sessions.Next();
             await Task.Delay(delay);
@@ -235,9 +221,7 @@ public sealed partial class CrossfadeTests
     }
 
     [TestMethod]
-    public Task ReaderCancellationTest() => ReaderCancellation();
-
-    static async Task ReaderCancellation()
+    public async Task CancellingOneDecoderDoesNotCancelAnother()
     {
         using var engine = NewEngine();
         using var handler = new HeldRange(); using var http = new HttpClient(handler);
@@ -257,9 +241,7 @@ public sealed partial class CrossfadeTests
     }
 
     [TestMethod]
-    public Task PagingTest() => Paging();
-
-    static async Task Paging()
+    public async Task PrefetchingAnotherPageDoesNotNavigate()
     {
         using var engine = NewEngine(); using var player = new Player(engine);
         var dispatcher = new Dispatcher(); var options = Options();
@@ -275,9 +257,7 @@ public sealed partial class CrossfadeTests
     }
 
     [TestMethod]
-    public Task StalePreparationTest() => StalePreparation();
-
-    static async Task StalePreparation()
+    public async Task CancelledLoadDisposesLateAudio()
     {
         using var engine = NewEngine(); using var player = new Player(engine);
         var dispatcher = new Dispatcher(); var options = Options();
@@ -294,9 +274,7 @@ public sealed partial class CrossfadeTests
     }
 
     [TestMethod]
-    public Task AdvanceGuardsTest() => AdvanceGuards();
-
-    static async Task AdvanceGuards()
+    public async Task RepeatAndStopModesDoNotQueueSuccessors()
     {
         using var engine = NewEngine(); using var player = new Player(engine);
         var dispatcher = new Dispatcher(); var options = Options();
@@ -306,23 +284,22 @@ public sealed partial class CrossfadeTests
         var tracks = new[] { Track(1), Track(2) };
         sessions.Play(tracks[0], tracks, default);
         await Until(dispatcher, () => engine.Duration is > 0);
-        Check(Field(sessions, "_successorUrl") is null, "Stop-at-end prepared an advancing successor.");
+        Check(!HasSuccessor(engine), "Stop-at-end prepared an advancing successor.");
         audio.EndBehavior = EndBehavior.Advance; player.SetEndBehavior(EndBehavior.Advance);
-        await Until(dispatcher, () => Field(sessions, "_successorUrl") is string);
+        await Until(dispatcher, () => HasSuccessor(engine));
         sessions.ToggleRepeatCurrent();
-        Check(Field(sessions, "_successorUrl") is null && !(bool)Field(engine, "_queuedNext")!, "Repeat retained a successor.");
+        await Until(dispatcher, () => !HasSuccessor(engine));
+        Check(!HasSuccessor(engine) && !(bool)Field(engine, "_queuedNext")!, "Repeat retained a successor.");
         player.HoldAutomaticAdvance(true);
         sessions.ToggleRepeatCurrent();
         await Task.Delay(100); dispatcher.Drain();
         Check(!(bool)Field(engine, "_queuedNext")!, "Sleep hold allowed an advancing successor.");
         player.HoldAutomaticAdvance(false);
-        await Until(dispatcher, () => Field(sessions, "_successorUrl") is string);
+        await Until(dispatcher, () => HasSuccessor(engine));
     }
 
     [TestMethod]
-    public Task FailedPreparationTest() => FailedPreparation();
-
-    static async Task FailedPreparation()
+    public async Task PreparationFailureDoesNotInterruptPlayback()
     {
         using var engine = NewEngine(); using var player = new Player(engine);
         var dispatcher = new Dispatcher(); var options = Options();
@@ -343,29 +320,35 @@ public sealed partial class CrossfadeTests
     }
 
     [TestMethod]
-    public Task StableSuccessorTest() => StableSuccessor();
-
-    static async Task StableSuccessor()
+    public async Task RefreshingSettingsKeepsUnchangedPreparation()
     {
-        using var engine = NewEngine(); using var player = new Player(engine);
+        using var engine = NewEngine();
+        using var player = new Player(engine);
         var dispatcher = new Dispatcher();
+        var options = Options();
         var pending = new TaskCompletionSource<AudioDecryptStream>(TaskCreationOptions.RunContinuationsAsynchronously);
         var calls = 0;
-        using var sessions = new Sessions(new SpotifySettings(), player, dispatcher, (_, _, _) =>
-            Interlocked.Increment(ref calls) == 1 ? Task.FromResult(Audio()) : pending.Task);
-        Configure(player, sessions, Options());
+        CancellationToken preparation = default;
+        using var sessions = new Sessions(new SpotifySettings(), player, dispatcher, (_, _, token) =>
+        {
+            if (Interlocked.Increment(ref calls) == 1) return Task.FromResult(Audio());
+            preparation = token;
+            return pending.Task;
+        });
+        Configure(player, sessions, options);
         var tracks = new[] { Track(1), Track(2) };
         sessions.Play(tracks[0], tracks, default);
         await Until(dispatcher, () => Volatile.Read(ref calls) == 2);
-        var refresh = typeof(Sessions).GetMethod("RefreshSuccessor", BindingFlags.NonPublic | BindingFlags.Instance)!;
-        var cancellation = Field(sessions, "_successorCancellation");
-        refresh.Invoke(sessions, null); refresh.Invoke(sessions, null);
-        Check(ReferenceEquals(cancellation, Field(sessions, "_successorCancellation")) && calls == 2,
-            "Refreshing an unchanged successor restarted its preparation.");
+        player.ConfigurePlaybackEffects(options);
+        player.ConfigurePlaybackEffects(options);
+        Assert.IsFalse(preparation.IsCancellationRequested);
+        Assert.AreEqual(2, calls);
         pending.SetResult(Audio());
-        await Until(dispatcher, () => Field(sessions, "_successorUrl") is string);
-        var url = Field(sessions, "_successorUrl");
-        refresh.Invoke(sessions, null);
-        Check(Equals(url, Field(sessions, "_successorUrl")) && calls == 2, "A prepared successor was discarded unchanged.");
+        await Until(dispatcher, () => HasSuccessor(engine));
+        var url = Mpv(engine).GetProperty("playlist/1/filename");
+        player.ConfigurePlaybackEffects(options);
+        await Until(dispatcher, () => HasSuccessor(engine));
+        Assert.AreEqual(url, Mpv(engine).GetProperty("playlist/1/filename"));
+        Assert.AreEqual(2, calls);
     }
 }

@@ -2,33 +2,32 @@ using LunaPlayer.Configuration.Models;
 
 namespace LunaPlayer.Spotify.Playback;
 
-/// <summary>Prepares one successor and adopts native transitions without reopening their audio.</summary>
 internal sealed partial class Sessions
 {
-    private CancellationTokenSource? _successorCancellation;
-    private Track? _successor;
-    private string? _successorUrl;
+    private Successor? _successor;
     private bool _manualTransition;
-    private int _successorBitrate;
-    private int _successorGeneration;
 
     private void CancelSuccessor()
     {
-        _successorCancellation?.Cancel();
-        _successorCancellation?.Dispose();
-        _successorCancellation = null;
-        _player.ClearSpotifySuccessor(_successorUrl);
-        _successorUrl = null;
+        var successor = _successor;
         _successor = null;
+        successor?.Dispose();
+        _player.ClearSpotifySuccessor(successor?.Url);
     }
 
     private void RefreshSuccessor()
     {
         lock (_navigationLock)
         {
-            // Native playback may have committed a transition before its UI event is delivered.
-            // Adopt that entry before replacing its identity during shuffle or settings changes.
-            if (_active && _player.InSpotifySession) AcceptSpotifyAdvance(prepareNext: false);
+            SynchronizeNavigation();
+            PrepareSuccessor();
+        }
+    }
+
+    private void PrepareSuccessor()
+    {
+        lock (_navigationLock)
+        {
             if (!_active || _ended || !IsLoadedCurrent || _audioSettings?.Crossfade != true || _repeatCurrent
                 || _audioSettings?.EndBehavior != EndBehavior.Advance || _session is not { } session
                 || _current is not { } current) { CancelSuccessor(); return; }
@@ -41,113 +40,106 @@ internal sealed partial class Sessions
             }
             if (!TryTarget(session.Index, 1, out next)) { CancelSuccessor(); return; }
             var track = session.Tracks[next];
-            if (ReferenceEquals(_successor, track) && _successorBitrate == RequestedBitrate
-                && _successorGeneration == CurrentLoadGeneration
-                && (_successorCancellation is not null || _successorUrl is not null)) return;
+            if (_successor is { } pending && ReferenceEquals(pending.Track, track)
+                && pending.Bitrate == RequestedBitrate && pending.Generation == CurrentLoadGeneration) return;
             CancelSuccessor();
-            _successorBitrate = RequestedBitrate;
-            _successorGeneration = CurrentLoadGeneration;
-            _successor = track;
-            var cancellation = new CancellationTokenSource();
-            _successorCancellation = cancellation;
-            var token = cancellation.Token;
-            var generation = CurrentLoadGeneration;
-            var bitrate = RequestedBitrate;
-            _ = Task.Run(async () =>
-            {
-                AudioDecryptStream? audio = null;
-                CancellationTokenRegistration registration = default;
-                try
-                {
-                    audio = await _prepareAudio(track.Uri, bitrate, token).ConfigureAwait(false);
-                    var prepared = audio;
-                    registration = token.UnsafeRegister(static value => ((AudioDecryptStream)value!).Dispose(), prepared);
-                    var pending = registration;
-                    if (OnPlayerThread(() =>
-                    {
-                        pending.Dispose();
-                        lock (_navigationLock)
-                        {
-                            if (token.IsCancellationRequested || !_active || !_player.InSpotifySession
-                                || !ReferenceEquals(_session, session) || !ReferenceEquals(_current, current)
-                                || generation != CurrentLoadGeneration || !ReferenceEquals(_successor, track))
-                            {
-                                prepared.Dispose();
-                                return;
-                            }
-                            try
-                            {
-                                _successorUrl = _player.QueueSpotifyAudio(Link(current), prepared,
-                                    track.Title, Link(track), Math.Clamp(SavedPosition(track), 0,
-                                        track.DurationMs > 0 ? Math.Max(0, track.DurationMs / 1000.0 - 1) : double.MaxValue));
-                                // Registration transfers ownership to the engine. Its protocol adapter
-                                // releases unclaimed entries; mpv closes streams already opened for prefetch.
-                                _successorCancellation = null;
-                                cancellation.Dispose();
-                            }
-                            catch
-                            {
-                                prepared.Dispose();
-                                CancelSuccessor();
-                                // Speculation is best effort; EOF uses the ordinary load/error path.
-                            }
-                        }
-                    }))
-                    {
-                        audio = null;
-                        registration = default;
-                    }
-                }
-                catch (Exception)
-                {
-                    OnPlayerThread(() =>
-                    {
-                        lock (_navigationLock)
-                            if (ReferenceEquals(_successorCancellation, cancellation)) CancelSuccessor();
-                    });
-                    // Cancellation and speculative failures leave the ordinary EOF path intact.
-                }
-                finally
-                {
-                    registration.Dispose();
-                    audio?.Dispose();
-                }
-            });
+            var successor = new Successor(track, RequestedBitrate, CurrentLoadGeneration);
+            _successor = successor;
+            _ = Task.Run(() => PrepareSuccessorAsync(successor, session, current));
         }
     }
 
-    private bool AcceptSpotifyAdvance(bool prepareNext = true)
+    private async Task PrepareSuccessorAsync(Successor successor, Session session, Track current)
     {
-        lock (_navigationLock)
+        AudioDecryptStream? audio = null;
+        CancellationTokenRegistration registration = default;
+        try
         {
-            if (_session is not { } session || _successor is not { } track
-                || _successorUrl is null || !_player.AcceptQueuedAdvance()) return false;
-            // Registration already transferred the stream lifetime to mpv. Clear the
-            // speculative identity before SetCurrent invalidates the outgoing selection.
-            _successorUrl = null;
-            _successor = null;
-            SavePosition(0);
-            session.Index = session.Tracks.FindIndex(item => ReferenceEquals(item, track));
-            SetCurrent(track, playing: true);
-            _manualTransition = false;
-            _loadedUri = track.Uri;
-            _currentLoadSent = true;
-            Navigated?.Invoke(track);
-            if (BeforeTrackEnd?.Invoke() == true)
+            audio = await _prepareAudio(successor.Track.Uri, successor.Bitrate, successor.Token).ConfigureAwait(false);
+            var prepared = audio;
+            // The dispatcher can discard callbacks at shutdown; cancellation must still release
+            // audio whose ownership has not yet reached the engine.
+            registration = successor.Token.UnsafeRegister(static value => ((AudioDecryptStream)value!).Dispose(), prepared);
+            var pending = registration;
+            if (OnPlayerThread(() =>
             {
-                if (_active) FinishCurrent();
-                return true;
+                pending.Dispose();
+                lock (_navigationLock)
+                {
+                    if (successor.Token.IsCancellationRequested || !_active || !_player.InSpotifySession
+                        || !ReferenceEquals(_session, session) || !ReferenceEquals(_current, current)
+                        || successor.Generation != CurrentLoadGeneration || !ReferenceEquals(_successor, successor))
+                    {
+                        prepared.Dispose();
+                        return;
+                    }
+                    try
+                    {
+                        var url = _player.QueueSpotifyAudio(Link(current), prepared,
+                            successor.Track.Title, Link(successor.Track), ResumePosition(successor.Track));
+                        if (url is null) CancelSuccessor();
+                        else successor.Complete(url);
+                    }
+                    catch
+                    {
+                        prepared.Dispose();
+                        CancelSuccessor();
+                        // Preparation is optional. Ordinary loading reports errors if this track
+                        // is later selected or reached at EOF.
+                    }
+                }
+            }))
+            {
+                audio = null;
+                registration = default;
             }
-            if (prepareNext) RefreshSuccessor();
-            return true;
         }
+        catch (Exception)
+        {
+            OnPlayerThread(() =>
+            {
+                lock (_navigationLock)
+                    if (ReferenceEquals(_successor, successor)) CancelSuccessor();
+            });
+            // A cancelled or failed preparation must not interrupt the current track.
+        }
+        finally
+        {
+            registration.Dispose();
+            audio?.Dispose();
+        }
+    }
+
+    private bool AcceptSpotifyAdvance()
+    {
+        if (_session is not { } session || _successor is not { Url: not null } successor
+            || !_player.AcceptQueuedAdvance()) return false;
+        // Detach the registration before SetCurrent cancels preparation. The native decoder
+        // has already started this URL and must retain its audio.
+        successor.TakeUrl();
+        var track = successor.Track;
+        SavePosition(0);
+        session.Index = session.Tracks.FindIndex(item => ReferenceEquals(item, track));
+        SetCurrent(track, playing: true);
+        _manualTransition = false;
+        _loadedUri = track.Uri;
+        _currentLoadSent = true;
+        Navigated?.Invoke(track);
+        if (BeforeTrackEnd?.Invoke() == true && _active) FinishCurrent();
+        return true;
+    }
+
+    private string? TakePreparedSuccessor(Track track)
+    {
+        if (_successor is not { Url: not null } successor || !ReferenceEquals(successor.Track, track)) return null;
+        var url = successor.TakeUrl();
+        CancelSuccessor();
+        return url;
     }
 
     private bool OpenPreparedTrack(Track track, string url)
     {
-        var position = Math.Clamp(SavedPosition(track), 0,
-            track.DurationMs > 0 ? Math.Max(0, track.DurationMs / 1000.0 - 1) : double.MaxValue);
-        if (!_player.OpenPreparedSpotifyAudio(url, track.Title, Link(track), position,
+        if (!_player.OpenPreparedSpotifyAudio(url, track.Title, Link(track), ResumePosition(track),
             paused: !_playRequested, fadeTransition: _manualTransition))
         {
             _player.ClearSpotifySuccessor(url);
@@ -166,7 +158,7 @@ internal sealed partial class Sessions
         _pendingSeek = null;
         if (!_playRequested) _player.Pause();
         NotifyTrackPlaying(uri);
-        RefreshSuccessor();
+        PrepareSuccessor();
     }
 
     private static string Link(Track track) => "https://open.spotify.com/track/" + track.Uri[14..];

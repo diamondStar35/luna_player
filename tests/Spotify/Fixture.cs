@@ -30,7 +30,7 @@ public sealed partial class CrossfadeTests
 
     static void Check(bool value, string message)
     {
-        if (!value) throw new InvalidOperationException(message);
+        Assert.IsTrue(value, message);
     }
 
     static object? Field(object owner, string name) => owner switch
@@ -42,6 +42,8 @@ public sealed partial class CrossfadeTests
     };
 
     static MPV Mpv(Engine engine) => (MPV)FixtureFields.Read(typeof(MpvSession), Field(engine, "_session")!, "_mpv")!;
+
+    static bool HasSuccessor(Engine engine) => Convert.ToInt64(Mpv(engine).GetProperty("playlist/count")) > 1;
 
     static Engine NewEngine() => NativeHost.Create();
 
