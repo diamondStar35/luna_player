@@ -119,7 +119,7 @@ internal sealed class PlaybackPreferences : LunaPlayer.UI.Preferences.Preference
             Tr("The Compatible files mode preserves the original audio format. Always when possible may adapt later files to the first file's output format. Online streams use gapless playback only when the next stream is ready."));
         Help(_crossfade,
             // Translators: Context help for the cross-fading checkbox on Audio > Playback.
-            Tr("Overlaps the end of one audio file with the beginning of the next. Files containing video are excluded. Cross-fading takes precedence over ordinary file-transition fading and works independently of the gapless setting."));
+            Tr("Overlaps the end of one audio file with the beginning of the next, including Spotify tracks. These settings apply to both local files and Spotify. Files containing video are excluded. Cross-fading takes precedence over ordinary file-transition fading and works independently of the gapless setting."));
         Help(_crossfadeInterval,
             // Translators: Context help for the cross-fading duration on Audio > Playback.
             Tr("Sets the overlap from 1 to 30000 milliseconds. The default is 3000. Short files or a stream that is not ready may produce a shorter overlap. Longer overlaps require more decoded audio buffering."));

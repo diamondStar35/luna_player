@@ -12,6 +12,8 @@ internal sealed partial class Sessions : IDisposable
     private readonly Player _player;
     private readonly IApplicationDispatcher _dispatcher;
     private Connection? _connection;
+    private readonly Func<string, int, CancellationToken, Task<AudioDecryptStream>> _openAudio;
+    private readonly Func<string, int, CancellationToken, Task<AudioDecryptStream>> _prepareAudio;
     private CancellationTokenSource? _loadCancellation;
     private SemaphoreSlim? _prepareGate;
     private readonly object _connectionLock = new();
@@ -41,11 +43,18 @@ internal sealed partial class Sessions : IDisposable
     internal Func<bool>? BeforeTrackEnd { get; set; }
 
     internal Sessions(SpotifySettings settings, Player player,
-        IApplicationDispatcher dispatcher)
+        IApplicationDispatcher dispatcher,
+        Func<string, int, CancellationToken, Task<AudioDecryptStream>>? openAudio = null,
+        Func<string, int, CancellationToken, Task<AudioDecryptStream>>? prepareAudio = null)
     {
         _settings = settings;
         _player = player;
         _dispatcher = dispatcher;
+        _openAudio = openAudio ?? ((uri, bitrate, token) =>
+            (_connection ?? throw new InvalidOperationException()).GetAudioAsync(uri, bitrate, token));
+        _prepareAudio = prepareAudio ?? openAudio ?? ((uri, bitrate, token) =>
+            (_connection ?? throw new InvalidOperationException()).GetAudioAsync(uri, bitrate, token, speculative: true));
+        _player.NextPreparationRequested += RefreshSuccessor;
     }
 
     /// <summary>True once a Spotify track is the active source, until it is stopped or replaced. Luna gates all
@@ -76,7 +85,12 @@ internal sealed partial class Sessions : IDisposable
     internal string? CurrentLink => _current is { } track && IsTrack(track.Uri)
         ? "https://open.spotify.com/track/" + track.Uri[14..] : null;
     internal bool IsRepeatCurrentEnabled => _repeatCurrent;
-    internal bool ToggleRepeatCurrent() => _repeatCurrent = !_repeatCurrent;
+    internal bool ToggleRepeatCurrent()
+    {
+        _repeatCurrent = !_repeatCurrent;
+        RefreshSuccessor();
+        return _repeatCurrent;
+    }
     internal double? Duration => IsLoadedCurrent
         ? _player.Duration ?? _clock?.Duration : _clock?.Duration;
     internal double? Elapsed
@@ -276,6 +290,7 @@ internal sealed partial class Sessions : IDisposable
                 // Discard EOF callbacks and page results queued before this explicit seek.
                 Interlocked.Increment(ref _loadGeneration);
                 CancelPageRead();
+                RefreshSuccessor();
                 _player.SeekAbsolute(position);
             }
             else _pendingSeek = position;
@@ -290,6 +305,8 @@ internal sealed partial class Sessions : IDisposable
     private void ClearCurrent()
     {
         CancelNavigationDelay();
+        CancelSuccessor();
+        _manualTransition = false;
         // Invalidate the old track before any asynchronous completion can use its stream.
         _loadCancellation?.Cancel();
         _loadCancellation?.Dispose();
@@ -298,6 +315,7 @@ internal sealed partial class Sessions : IDisposable
         _playRequested = false;
         _ended = false;
         _currentLoadSent = false;
+        _reportedFailure = null;
         _loadedUri = null;
         _pendingSeek = null;
         _current = null;
@@ -327,12 +345,12 @@ internal sealed partial class Sessions : IDisposable
 
     private void PauseLoaded()
     {
-        if (IsLoadedCurrent) _player.Pause();
+        if (IsLoadedCurrent || _manualTransition && _player.InSpotifySession) _player.Pause();
     }
 
     private void PlayLoaded()
     {
-        if (IsLoadedCurrent) _player.Play();
+        if (IsLoadedCurrent || _manualTransition && _player.InSpotifySession) _player.Play();
     }
 
     private bool OnPlayerThread(Action action)
@@ -348,20 +366,22 @@ internal sealed partial class Sessions : IDisposable
 
     private void LoadManaged(string uri, double position)
     {
+        var attempt = ++_loadAttempt;
+        _reportedFailure = null;
         _loadCancellation?.Cancel();
         _loadCancellation?.Dispose();
         var cancellation = new CancellationTokenSource();
         _loadCancellation = cancellation;
         var token = cancellation.Token;
         var generation = CurrentLoadGeneration;
+        var revision = _player.PlaybackRevision;
         _ = Task.Run(async () =>
         {
             AudioDecryptStream? pendingAudio = null;
             CancellationTokenRegistration pendingRegistration = default;
             try
             {
-                var connection = _connection ?? throw new InvalidOperationException();
-                pendingAudio = await connection.GetAudioAsync(uri, RequestedBitrate, token).ConfigureAwait(false);
+                pendingAudio = await _openAudio(uri, RequestedBitrate, token).ConfigureAwait(false);
                 var audio = pendingAudio;
                 // Cancellation must release audio even if wx discards an already-posted callback at exit.
                 pendingRegistration = token.UnsafeRegister(static state => ((AudioDecryptStream)state!).Dispose(), audio);
@@ -369,8 +389,7 @@ internal sealed partial class Sessions : IDisposable
                 if (OnPlayerThread(() =>
                 {
                     registration.Dispose();
-                    if (token.IsCancellationRequested || !_active || !_player.InSpotifySession
-                        || generation != CurrentLoadGeneration || _current?.Uri != uri)
+                    if (!OwnsLoad(uri, generation, attempt, revision, token))
                     {
                         audio.Dispose();
                         return;
@@ -379,20 +398,22 @@ internal sealed partial class Sessions : IDisposable
                     {
                         var startPosition = _pendingSeek ?? position;
                         if (!_player.OpenSpotifyAudio(audio, CurrentTitle ?? string.Empty,
-                            "https://open.spotify.com/track/" + uri[14..], startPosition))
+                            "https://open.spotify.com/track/" + uri[14..], startPosition,
+                            paused: !_playRequested, fadeTransition: _manualTransition))
                         {
-                            CommandFailed?.Invoke(new InvalidDataException());
+                            ReportFailure(new InvalidDataException());
                             return;
                         }
-                        _loadedUri = uri;
-                        _pendingSeek = null;
-                        if (!_playRequested) _player.Pause();
-                        NotifyTrackPlaying(uri);
+                        // Once mpv owns the stream, changing the selected track must not cancel
+                        // its HTTP lifetime while the mixer is still reading outgoing audio.
+                        if (ReferenceEquals(_loadCancellation, cancellation)) _loadCancellation = null;
+                        cancellation.Dispose();
+                        MarkTrackLoaded(uri);
                     }
                     catch (Exception error)
                     {
                         // The player owns successfully opened streams; failed opens dispose their audio.
-                        CommandFailed?.Invoke(error);
+                        ReportFailure(error);
                     }
                 }))
                 {
@@ -408,8 +429,7 @@ internal sealed partial class Sessions : IDisposable
             {
                 OnPlayerThread(() =>
                 {
-                    if (!token.IsCancellationRequested && _active
-                        && generation == CurrentLoadGeneration) CommandFailed?.Invoke(error);
+                    if (OwnsLoad(uri, generation, attempt, revision, token)) ReportFailure(error);
                 });
             }
             finally
@@ -426,6 +446,11 @@ internal sealed partial class Sessions : IDisposable
         // timer can restore local playback here, but that same EOF must never advance the restored file.
         if (!_active || !_player.InSpotifySession || !IsLoadedCurrent
             || generation != CurrentLoadGeneration || _current is not { } track) return;
+        if (reason == EndReason.QueuedAdvance)
+        {
+            AcceptSpotifyAdvance();
+            return;
+        }
         if (reason == EndReason.EndOfFile)
         {
             if (BeforeTrackEnd?.Invoke() == true)
@@ -436,7 +461,7 @@ internal sealed partial class Sessions : IDisposable
             NotifyTrackEnded(track.Uri);
         }
         else if (reason == EndReason.Error)
-            CommandFailed?.Invoke(new InvalidDataException());
+            ReportFailure(new InvalidDataException());
     }
 
     internal static bool IsTrack(string uri) => TrackId.TryParse(uri, out _);
@@ -485,6 +510,7 @@ internal sealed partial class Sessions : IDisposable
             previous = _connection;
             _connection = null;
         }
+        _player.NextPreparationRequested -= RefreshSuccessor;
         Stop(restoreSession: false);
         previous?.Dispose();
         // A canceled preparation still needs to release its managed gate on the worker thread.

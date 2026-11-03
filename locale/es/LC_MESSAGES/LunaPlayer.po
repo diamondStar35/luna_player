@@ -9667,3 +9667,19 @@ msgstr ""
 #~ "Obtiene yt-dlp para la descarga de videos y la resolución opcional de "
 #~ "transmisiones. Las demás funciones de YouTube no requieren este "
 #~ "componente."
+
+#. Translators: Spotify temporarily refused audio-key requests after bounded automatic backoff.
+#: Spotify/Catalog.cs:456
+msgid ""
+"Spotify is temporarily refusing playback requests. Please wait a moment and "
+"try again."
+msgstr ""
+
+#. Translators: Context help for the cross-fading checkbox on Audio > Playback.
+#: UI/Audio/PlaybackPreferences.cs:122
+msgid ""
+"Overlaps the end of one audio file with the beginning of the next, including "
+"Spotify tracks. These settings apply to both local files and Spotify. Files "
+"containing video are excluded. Cross-fading takes precedence over ordinary "
+"file-transition fading and works independently of the gapless setting."
+msgstr ""
