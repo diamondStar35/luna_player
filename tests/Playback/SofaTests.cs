@@ -138,10 +138,13 @@ public sealed class SofaTests
     }
 
     [TestMethod]
-    public void EnabledSpatializationRequiresAStoredFilePath()
+    [DataRow(true)]
+    [DataRow(false)]
+    public void NullStoredSofaPathsAreRejected(bool enabled)
     {
         var settings = new Settings();
-        settings.Audio.SofaEnabled = true;
+        settings.Audio.SofaEnabled = enabled;
+        settings.Audio.SofaFile = null!;
         Assert.ThrowsExactly<JsonException>(() => settings.ValidateStored());
     }
 

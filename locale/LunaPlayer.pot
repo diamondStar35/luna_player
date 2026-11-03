@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-11-03 15:16+0200\n"
+"POT-Creation-Date: 2026-11-03 15:43+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2523,7 +2523,9 @@ msgid "A timer is set. {time} remaining."
 msgstr ""
 
 #. Translators: Spoken if the spatialization shortcut is used before a SOFA path is configured.
+#. Translators: Validation error on the headphone spatialization preferences page when its SOFA path is empty.
 #: Application/Commands/Playback/Spatialization.cs:39
+#: UI/Audio/SofaPreferences.cs:87
 msgid ""
 "Choose a SOFA file in Preferences before enabling headphone spatialization."
 msgstr ""
@@ -4241,17 +4243,17 @@ msgid ""
 msgstr ""
 
 #. Translators: Validation error for SOFA output gain.
-#: UI/Audio/SofaPreferences.cs:87
+#: UI/Audio/SofaPreferences.cs:93
 msgid "Gain must be a number from -20 to 40 dB."
 msgstr ""
 
 #. Translators: Title of the file picker for headphone HRTF data.
-#: UI/Audio/SofaPreferences.cs:121
+#: UI/Audio/SofaPreferences.cs:127
 msgid "Choose a SOFA file"
 msgstr ""
 
 #. Translators: File picker filter. Translate only "SOFA files"; keep the extension and separators unchanged.
-#: UI/Audio/SofaPreferences.cs:123
+#: UI/Audio/SofaPreferences.cs:129
 msgid "SOFA files (*.sofa)|*.sofa"
 msgstr ""
 
