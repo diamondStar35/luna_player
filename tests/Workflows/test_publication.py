@@ -51,7 +51,7 @@ class PublicationTests(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.directory = Path(self.temporary.name)
-        self.metadata = dict(version='0.7.2', sha='a' * 40, changes=['A "quoted" change.'],
+        self.metadata = dict(version='0.7.2', sha='a' * 40, build_id='12345.1', changes=['A "quoted" change.'],
                              archive='Luna_Player-v-0.7.2.zip', installer='Luna_Player-v-0.7.2.exe')
         (self.directory / 'release-metadata.json').write_text(json.dumps(self.metadata))
         assets = self.directory / 'release-assets'
@@ -114,8 +114,12 @@ class PublicationTests(unittest.TestCase):
     def test_existing_nightly_uploads_manifest_last_then_moves_tag(self):
         calls = self.publish()
         uploads = [args for args, _ in calls if args[1:3] == ['release', 'upload']]
-        self.assertEqual(3, len(uploads))
-        self.assertEqual('SHA256SUMS.txt', Path(uploads[-1][4]).name)
+        self.assertEqual(4, len(uploads))
+        self.assertEqual('SHA256SUMS.txt', Path(uploads[-2][4]).name)
+        self.assertEqual('release-metadata.json', Path(uploads[-1][4]).name)
+        manifest = json.loads((self.directory / 'release-metadata.json').read_text())
+        self.assertEqual('12345.1', manifest['build_id'])
+        self.assertIn('Latest Changes', manifest['changes'])
         self.assertTrue(all('--clobber' in args for args in uploads))
         self.assertEqual({'sha': self.metadata['sha'], 'force': True}, calls[-2][1])
         deletes = [args[2] for args, _ in calls if 'DELETE' in args]
@@ -129,6 +133,14 @@ class PublicationTests(unittest.TestCase):
 
     def test_existing_stable_tag_is_untouched(self):
         self.assertEqual(1, len(self.publish('stable')))
+
+    def test_missing_build_identity_does_not_publish_a_nightly(self):
+        self.metadata.pop('build_id')
+        (self.directory / 'release-metadata.json').write_text(json.dumps(self.metadata))
+        remote = GitHub()
+        with self.assertRaisesRegex(ValueError, 'build_id'):
+            publication.publish('nightly', self.directory, 'test/player', run=remote)
+        self.assertFalse(any(args[1:3] == ['release', 'upload'] for args, _ in remote.calls))
 
     def test_new_stable_release_uses_versioned_tag_without_force_updates(self):
         calls = self.publish('stable', existing=False)

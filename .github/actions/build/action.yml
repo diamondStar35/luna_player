@@ -19,7 +19,9 @@ runs:
       env:
         RELEASE_CHANNEL: ${{ inputs.channel }}
     - shell: pwsh
-      run: dotnet publish src/LunaPlayer.csproj --configuration Release --nologo
+      run: dotnet publish src/LunaPlayer.csproj --configuration Release --nologo -p:LunaBuildId=$env:LUNA_BUILD_ID -p:LunaBuildChannel=$env:RELEASE_CHANNEL
+      env:
+        RELEASE_CHANNEL: ${{ inputs.channel }}
     - shell: pwsh
       run: ./scripts/publishing/verify.ps1
     - shell: pwsh

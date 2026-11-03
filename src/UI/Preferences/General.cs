@@ -13,6 +13,7 @@ internal sealed class GeneralPreferences : PreferencesPage
     private readonly Choice _theme;
     private readonly CheckBox _speakNavigation;
     private readonly CheckBox _checkUpdates;
+    private readonly Choice _updateChannel;
     private readonly CheckBox _startMaximized;
     private readonly CheckBox _rememberPosition;
     private readonly CheckBox _saveOnClose;
@@ -54,6 +55,13 @@ internal sealed class GeneralPreferences : PreferencesPage
         _speakNavigation = new CheckBox(panel, label: Tr("Speak file name when navigating (Previous/Next)")) { Checked = settings.SpeakFileOnNavigation };
         // Translators: Tick box on the General settings page: look for a newer version of the player when it starts.
         _checkUpdates = new CheckBox(panel, label: Tr("Check for app updates on startup")) { Checked = settings.CheckUpdatesOnStartup };
+        // Translators: Label for the application release channel list in General preferences.
+        var updateChannelLabel = new StaticText(panel, label: Tr("Updates channel"));
+        _updateChannel = Choice(panel, [
+            // Translators: Application update channel containing tested releases.
+            Tr("Stable"),
+            // Translators: Application update channel containing experimental nightly builds.
+            Tr("Nightly")], (int)settings.UpdateChannel);
         // Translators: Tick box on the General settings page: open the main window maximized on the next launch.
         _startMaximized = new CheckBox(panel, label: Tr("Start maximized")) { Checked = settings.StartMaximized };
         // Translators: Tick box on the General settings page: keep changes such as volume and speed when the player closes.
@@ -109,6 +117,7 @@ internal sealed class GeneralPreferences : PreferencesPage
             flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         sizer.Add(_speakNavigation, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         sizer.Add(_checkUpdates, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
+        AddChoice(sizer, updateChannelLabel, _updateChannel);
         sizer.Add(_startMaximized, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         sizer.Add(_saveOnClose, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         sizer.Add(_openFilesInExistingWindow,
@@ -143,6 +152,9 @@ internal sealed class GeneralPreferences : PreferencesPage
         Help(_checkUpdates,
             // Translators: Help text for the tick box that looks for a newer version of the player when it starts.
             Tr("Checks for a newer Luna release in the background after startup. A prompt appears only when a newer package is ready to download."));
+        Help(_updateChannel,
+            // Translators: Help for the application update channel selector.
+            Tr("Stable provides tested releases. Nightly provides the latest development builds, which may contain bugs or other issues. Applies to manual and startup update checks."));
         Help(_startMaximized,
             // Translators: Help text for the tick box that opens the main window maximized.
             Tr("Opens Luna's main window maximized. Leave this off to use the normal window size. " +
@@ -184,6 +196,13 @@ internal sealed class GeneralPreferences : PreferencesPage
 
     public override void Apply()
     {
+        var channel = (UpdateChannel)Math.Clamp(_updateChannel.SelectedIndex, 0, 1);
+        if (channel == UpdateChannel.Nightly && _settings.UpdateChannel != channel)
+            Messages.Show(
+                // Translators: Warning shown when applying the nightly application update channel.
+                Tr("Nightly builds are less stable than Stable releases and may contain bugs or other issues."),
+                MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, Window);
+        _settings.UpdateChannel = channel;
         // Read only at startup: every window and menu has already been built in the old language, which is
         // what the control's own help tells the user.
         _settings.Language = _languages[Math.Clamp(_language.SelectedIndex, 0, _languages.Length - 1)];
@@ -209,6 +228,7 @@ internal sealed class GeneralPreferences : PreferencesPage
         _rememberPosition.Checked = _settings.RememberLastPosition;
         _speakNavigation.Checked = _settings.SpeakFileOnNavigation;
         _checkUpdates.Checked = _settings.CheckUpdatesOnStartup;
+        _updateChannel.SelectedIndex = (int)_settings.UpdateChannel;
         _startMaximized.Checked = _settings.StartMaximized;
         _saveOnClose.Checked = _settings.SaveOnClose;
         _openFilesInExistingWindow.Checked = _settings.OpenFilesInExistingWindow;

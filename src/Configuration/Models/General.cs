@@ -4,6 +4,7 @@ namespace LunaPlayer.Configuration.Models;
 
 internal enum SpeechVerbosity { Beginner, Advanced }
 internal enum OpenFilesMode { FileOnly, MainFolder, MainAndSubfolders }
+internal enum UpdateChannel { Stable, Nightly }
 /// <summary>Which interface appearance the player asks Windows for. <see cref="SystemDefault"/> follows the
 /// Windows setting; the other two force light or dark regardless. A high-contrast scheme always wins over
 /// this choice. Applied once at startup, so a change takes effect after the player restarts.</summary>
@@ -15,6 +16,8 @@ internal sealed class GeneralSettings
     public bool RememberLastPosition { get; set; }
     public bool SpeakFileOnNavigation { get; set; }
     public bool CheckUpdatesOnStartup { get; set; } = true;
+    [JsonConverter(typeof(JsonStringEnumConverter<UpdateChannel>))]
+    public UpdateChannel UpdateChannel { get; set; } = UpdateChannel.Stable;
     public bool StartMaximized { get; set; }
     public bool SaveOnClose { get; set; } = true;
     public bool OpenFilesInExistingWindow { get; set; } = true;
@@ -57,6 +60,7 @@ internal sealed class GeneralSettings
         RememberLastPosition = source.RememberLastPosition;
         SpeakFileOnNavigation = source.SpeakFileOnNavigation;
         CheckUpdatesOnStartup = source.CheckUpdatesOnStartup;
+        UpdateChannel = source.UpdateChannel;
         StartMaximized = source.StartMaximized;
         SaveOnClose = source.SaveOnClose;
         OpenFilesInExistingWindow = source.OpenFilesInExistingWindow;

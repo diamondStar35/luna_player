@@ -84,8 +84,8 @@ internal sealed class Updates : IDisposable
     {
         try
         {
-            var update = _service.Fetch(token);
-            var newer = AppUpdateService.IsNewer(update.Version, AppInfo.Version);
+            var update = _service.Fetch(token, _settings.General.UpdateChannel);
+            var newer = AppUpdateService.IsUpdateAvailable(update, AppInfo.Version, AppInfo.IsNightly, AppInfo.BuildId);
             return new CheckOutcome(update, newer, !newer || _service.PackageExists(update, token));
         }
         catch (OperationCanceledException)
@@ -136,7 +136,19 @@ internal sealed class Updates : IDisposable
         }
 
         var update = outcome.Update;
-        if (_view.Dialogs.OfferAppUpdate(new LunaPlayer.UI.Updates.AppUpdatePrompt(AppInfo.Version, update.Version, update.Changes)))
+        var availableVersion = update.Version;
+        var currentVersion = AppInfo.Version;
+        if (update.Channel == UpdateChannel.Nightly)
+        {
+            // Translators: Version label for a nightly build. {version} is the release version and {build} identifies the build.
+            availableVersion = TrFormat("{version} (Nightly {build})", update.Version, update.BuildId);
+        }
+        if (AppInfo.IsNightly)
+        {
+            // Translators: Version label for the installed nightly build. {version} is the release version and {build} identifies the build.
+            currentVersion = TrFormat("{version} (Nightly {build})", AppInfo.Version, AppInfo.BuildId);
+        }
+        if (_view.Dialogs.OfferAppUpdate(new LunaPlayer.UI.Updates.AppUpdatePrompt(currentVersion, availableVersion, update.Changes)))
             Download(update);
     }
 

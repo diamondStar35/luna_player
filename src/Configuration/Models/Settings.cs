@@ -71,6 +71,7 @@ internal sealed class Settings
         Require(Enum.IsDefined(General.Verbosity), "general.verbosity");
         Require(Enum.IsDefined(General.OpenFilesMode), "general.openFilesMode");
         Require(Enum.IsDefined(General.Theme), "general.theme");
+        Require(Enum.IsDefined(General.UpdateChannel), "general.updateChannel");
 
         Require(FiniteBetween(Audio.Volume, 0, AudioSettings.MaximumVolume), "audio.volume");
         Require(FiniteBetween(Audio.Speed, AudioSettings.MinimumSpeed, AudioSettings.MaximumSpeed), "audio.speed");

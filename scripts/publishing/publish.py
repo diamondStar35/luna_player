@@ -59,6 +59,14 @@ def publish(channel, directory, repository, run=subprocess.run):
         body = f"### Latest Changes\n{notes}\n\nBuild from commit {metadata['sha']}."
         built = metadata.get('built_at') or datetime.now(timezone.utc).strftime('%Y-%m-%d %H:%M UTC')
         body += f"\n\nNightly build: {built}."
+        # Publish the identity embedded in the binaries only after all packages and checksums.
+        if not metadata.get('build_id'):
+            raise ValueError('Nightly metadata must contain a build_id.')
+        metadata['changes'] = body
+        manifest = directory / 'release-metadata.json'
+        manifest.write_text(json.dumps(metadata), encoding='utf-8')
+        assets.append(manifest)
+        names.append(manifest.name)
         run_id = os.environ.get('GITHUB_RUN_ID')
         if run_id:
             body += f"\n[Build run](https://github.com/{repository}/actions/runs/{run_id})."

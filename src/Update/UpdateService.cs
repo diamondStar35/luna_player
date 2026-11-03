@@ -8,7 +8,11 @@ using LunaPlayer.Configuration.Models;
 
 namespace LunaPlayer.Update;
 
-internal readonly record struct AppUpdateInfo(string Version, string Changes);
+internal readonly record struct AppUpdateInfo(
+    string Version, string Changes, UpdateChannel Channel = UpdateChannel.Stable, string BuildId = "")
+{
+    internal string Tag => Channel == UpdateChannel.Nightly ? "nightly" : $"v{Version}";
+}
 
 internal sealed class UpdateIntegrityException(string message) : Exception(message);
 
@@ -22,20 +26,26 @@ internal sealed class AppUpdateService : IDisposable
     private const string UpdaterExecutable = "Updater.exe";
     private const string TemporaryUpdaterExecutable = "Updater.temp.exe";
 
-    private readonly HttpClient _http = new() { Timeout = Timeout.InfiniteTimeSpan };
+    private readonly HttpClient _http;
 
-    internal AppUpdateService()
-        => _http.DefaultRequestHeaders.UserAgent.Add(
+    internal AppUpdateService(HttpMessageHandler? handler = null)
+    {
+        _http = handler is null ? new HttpClient() : new HttpClient(handler);
+        _http.Timeout = Timeout.InfiniteTimeSpan;
+        _http.DefaultRequestHeaders.UserAgent.Add(
             new ProductInfoHeaderValue(AppInfo.Identifier, AppInfo.Version));
+    }
 
-    internal AppUpdateInfo Fetch(CancellationToken token)
+    internal AppUpdateInfo Fetch(CancellationToken token, UpdateChannel channel = UpdateChannel.Stable)
     {
         using var timeout = CancellationTokenSource.CreateLinkedTokenSource(token);
         timeout.CancelAfter(TimeSpan.FromSeconds(15));
         try
         {
             using var response = _http.Send(
-                new HttpRequestMessage(HttpMethod.Get, InfoUrl), timeout.Token);
+                new HttpRequestMessage(HttpMethod.Get, channel == UpdateChannel.Nightly
+                    ? $"{AppInfo.RepositoryUrl}/releases/download/nightly/release-metadata.json"
+                    : InfoUrl), timeout.Token);
             response.EnsureSuccessStatusCode();
             using var stream = response.Content.ReadAsStream(timeout.Token);
             using var document = JsonDocument.Parse(stream);
@@ -49,17 +59,37 @@ internal sealed class AppUpdateService : IDisposable
             if (version.Length == 0)
                 throw new InvalidDataException("info.json does not contain a version.");
             _ = VersionParts(version);
+            // The version is also used in asset names, so reject path and URL separators.
+            if (version.Any(character => !char.IsAsciiLetterOrDigit(character) && character is not '.' and not '-' and not '_'))
+                throw new InvalidDataException("The update version contains invalid characters.");
+
+            var buildId = string.Empty;
+            if (channel == UpdateChannel.Nightly)
+            {
+                if (!root.TryGetProperty("build_id", out var buildValue)
+                    || buildValue.ValueKind != JsonValueKind.String
+                    || string.IsNullOrWhiteSpace(buildValue.GetString()))
+                    throw new InvalidDataException("The nightly release does not contain a build ID.");
+                buildId = buildValue.GetString()!;
+            }
 
             var changes = root.TryGetProperty("changes", out var changesValue)
                 ? Changes(changesValue)
                 : string.Empty;
-            return new AppUpdateInfo(version, changes);
+            return new AppUpdateInfo(version, changes, channel, buildId);
         }
         catch (OperationCanceledException) when (!token.IsCancellationRequested)
         {
             throw new TimeoutException("The update server did not respond in time.");
         }
     }
+
+    internal static bool IsUpdateAvailable(AppUpdateInfo available, string currentVersion,
+        bool currentIsNightly, string currentBuildId)
+        => available.Channel == UpdateChannel.Nightly
+            ? !currentIsNightly || !string.Equals(available.BuildId, currentBuildId, StringComparison.Ordinal)
+            : IsNewer(available.Version, currentVersion)
+                || (currentIsNightly && !IsNewer(currentVersion, available.Version));
 
     internal static bool IsNewer(string available, string current)
     {
@@ -214,7 +244,7 @@ internal sealed class AppUpdateService : IDisposable
     private static string PackageAddress(AppUpdateInfo update)
     {
         var assetName = PackageName(update);
-        var tag = $"v{update.Version}";
+        var tag = update.Tag;
         return $"{AppInfo.RepositoryUrl}/releases/download/" +
             $"{Uri.EscapeDataString(tag)}/{Uri.EscapeDataString(assetName)}";
     }
@@ -224,7 +254,7 @@ internal sealed class AppUpdateService : IDisposable
 
     private static string ChecksumsAddress(AppUpdateInfo update)
     {
-        var tag = $"v{update.Version}";
+        var tag = update.Tag;
         return $"{AppInfo.RepositoryUrl}/releases/download/" +
             $"{Uri.EscapeDataString(tag)}/{ChecksumsFile}";
     }

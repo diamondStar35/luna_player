@@ -17,6 +17,13 @@ namespace LunaPlayer.Configuration;
 /// </remarks>
 internal static class AppInfo
 {
+    internal static string BuildId { get; } = Metadata("LunaBuildId");
+    internal static bool IsNightly { get; } = Metadata("LunaBuildChannel") == "nightly";
+
+    private static string Metadata(string key) => typeof(AppInfo).Assembly
+        .GetCustomAttributes<AssemblyMetadataAttribute>()
+        .FirstOrDefault(attribute => attribute.Key == key)?.Value ?? string.Empty;
+
     /// <summary>The name shown to the user: window titles, message boxes, the media overlay.</summary>
     internal const string Name = "Luna Player";
 
