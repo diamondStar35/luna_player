@@ -69,7 +69,7 @@ def publish(channel, directory, repository, run=subprocess.run):
         api('git/refs', 'POST', {'ref': 'refs/tags/' + tag, 'sha': metadata['sha']})
     fields = {
         'tag_name': tag,
-        'name': 'Luna Player Nightly' if channel == 'nightly' else 'Luna Player v' + metadata['version'],
+        'name': 'Nightly Build' if channel == 'nightly' else 'Luna Player v' + metadata['version'],
         'body': body, 'prerelease': channel == 'nightly',
         'make_latest': 'false' if channel == 'nightly' else 'true',
     }
