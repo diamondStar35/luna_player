@@ -301,22 +301,40 @@ public sealed partial class CrossfadeTests
     [TestMethod]
     public async Task PreparationFailureDoesNotInterruptPlayback()
     {
-        using var engine = NewEngine(); using var player = new Player(engine);
-        var dispatcher = new Dispatcher(); var options = Options();
-        var first = Track(1); var second = Track(2);
+        using var engine = NewEngine();
+        using var player = new Player(engine);
+        var dispatcher = new Dispatcher();
+        var first = Track(1);
+        var second = Track(2);
         var attempted = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        using var sessions = new Sessions(new SpotifySettings(), player, dispatcher, (uri, _, _) =>
-        {
-            if (uri == first.Uri) return Task.FromResult(Audio());
-            attempted.TrySetResult();
-            throw new IOException("Simulated speculative failure.");
-        });
-        var errors = 0; sessions.CommandFailed += _ => errors++;
-        Configure(player, sessions, options);
+        var failure = new TaskCompletionSource<AudioDecryptStream>(TaskCreationOptions.RunContinuationsAsynchronously);
+        CancellationToken preparation = default;
+        using var sessions = new Sessions(new SpotifySettings(), player, dispatcher,
+            (_, _, _) => Task.FromResult(Audio()), prepareAudio: (_, _, token) =>
+            {
+                preparation = token;
+                attempted.TrySetResult();
+                return failure.Task;
+            });
+        var errors = new List<Exception>();
+        sessions.CommandFailed += errors.Add;
+        Configure(player, sessions, Options());
         sessions.Play(first, [first, second], default);
-        await Until(dispatcher, () => attempted.Task.IsCompleted);
-        await Until(dispatcher, () => engine.Duration is > 0);
-        Check(errors == 0 && sessions.CurrentTrack == first && player.IsPlaying, "Speculative failure interrupted current playback.");
+        // A duration can arrive while startup is still paused. Fail preparation only after
+        // playback advances, then wait for the failure callback to release its preparation.
+        await Until(dispatcher, () => attempted.Task.IsCompleted && !engine.IsLoading
+            && player.IsPlaying && player.Elapsed is > 0.1);
+        var source = player.CurrentSource;
+        var elapsed = player.Elapsed!.Value;
+        failure.SetException(new IOException("Simulated speculative failure."));
+        await Until(dispatcher, () => preparation.IsCancellationRequested);
+
+        Assert.HasCount(0, errors);
+        Assert.AreSame(first, sessions.CurrentTrack);
+        Assert.AreEqual(source, player.CurrentSource);
+        Assert.IsFalse(engine.IsLoading);
+        Assert.IsTrue(player.IsPlaying, "Speculative failure interrupted current playback.");
+        Assert.IsGreaterThanOrEqualTo(elapsed, player.Elapsed!.Value);
     }
 
     [TestMethod]
