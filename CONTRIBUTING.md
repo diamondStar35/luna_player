@@ -147,21 +147,29 @@ TrFormat("Enter file number (1-{count})", _player.Count)
 Names bind values to placeholders, not positions, so a translation is free to reorder them. Two
 `Tr` calls on one line share a single comment, so give each string its own line.
 
-After changing any string, rebuild the template and update the catalogues:
+After changing a string or its translator comment, rebuild the English source template:
 
 ```powershell
 ./scripts/update-pot.ps1
 ```
 
-This needs the GNU gettext tools on `PATH`. It rewrites `locale/LunaPlayer.pot`, merges it into
-every `locale/<language>/LC_MESSAGES/LunaPlayer.po`, and accepts `-Language <code>` to start a new
-catalogue.
+This needs the GNU gettext tools on `PATH`. By default it rewrites only
+`locale/LunaPlayer.pot`; it does not change any language catalogue.
+
+For application changes, include only the English template updates in the pull request. Leave
+language catalogue updates to the translators of those languages. Only include changes to a
+language's `.po` file when you contribute to that language as a translator. Do not add translations
+or merge template changes into catalogues for other languages.
+
+When contributing a translation, use `./scripts/update-pot.ps1 -Language <code>` to merge the
+template into that language's `locale/<language>/LC_MESSAGES/LunaPlayer.po`, creating the catalogue
+if needed. This option updates only the selected language and should only be used by its translators.
 
 Normal builds run `scripts/compile-translations.ps1` to compile every catalogue and fail if a
 translation changes the named placeholders in its source message. The build copies the resulting
 `.mo` files into the matching locale directories in the application output. Run that script directly
-when you only want to compile translations. Commit the editable `.po` and `.pot` sources. Never commit
-compiled binary translation files such as `.mo` files; they are generated build output.
+when you only want to compile translations. Never commit compiled binary translation files such as
+`.mo` files; they are generated build output.
 
 ## Pull request requirements
 
@@ -187,8 +195,18 @@ output.
 
 ## Commits and pull requests
 
-Write commit messages that describe the change and the reason for it. In the pull request
-description, satisfy all requirements above.
+Prefer the existing commit style: a type prefix followed by a colon and a short summary, such as
+`feat:`, `fix:`, `docs:`, `chore:`, `refactor:`, `test:`, `build:`, or `ci:`. When a longer description is
+needed, leave a blank line after the summary and explain the reason for the change or any important
+details:
+
+```text
+fix: preserve the selected Spotify track during transitions
+
+Synchronize native track advancement before calculating a navigation target.
+```
+
+In the pull request description, satisfy all requirements above.
 
 ## Bug reports
 
