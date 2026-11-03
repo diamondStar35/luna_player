@@ -118,6 +118,7 @@ internal sealed partial class PlaybackCoordinator
             _pendingAdvance = null;
             _activeEntryId = _session.PositiveEntryId();
             _activePath = advance.Path;
+            ReleasePendingSpotifyAudio(advance.Path);
             _playbackRange = advance.Range;
             _chapterStopEnd = null;
             _chapterStopCompleted = false;
