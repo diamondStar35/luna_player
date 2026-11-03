@@ -1,0 +1,24 @@
+name: Publish release
+description: Create stable releases or replace the nightly prerelease assets.
+inputs:
+  channel:
+    description: stable or nightly
+    required: true
+  token:
+    description: Release write token
+    required: true
+runs:
+  using: composite
+  steps:
+    - uses: actions/download-artifact@v4
+      with:
+        name: release-assets
+        path: publication
+    - uses: actions/setup-python@v6
+      with:
+        python-version: 3.x
+    - shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.token }}
+        RELEASE_CHANNEL: ${{ inputs.channel }}
+      run: python scripts/publishing/publish.py --channel "$RELEASE_CHANNEL" --directory publication

@@ -1,0 +1,46 @@
+name: Build Release
+description: Validate, publish Release, and package the installer and portable archive.
+inputs:
+  channel:
+    description: stable or nightly
+    required: true
+outputs:
+  publish:
+    description: Whether publication is needed
+    value: ${{ steps.metadata.outputs.publish }}
+runs:
+  using: composite
+  steps:
+    - uses: ./.github/actions/setup
+    - uses: ./.github/actions/validation
+    - shell: pwsh
+      run: ./scripts/publishing/metadata.ps1 -Channel $env:RELEASE_CHANNEL
+      id: metadata
+      env:
+        RELEASE_CHANNEL: ${{ inputs.channel }}
+    - shell: pwsh
+      run: dotnet publish src/LunaPlayer.csproj --configuration Release --nologo
+    - shell: pwsh
+      run: ./scripts/publishing/verify.ps1
+    - shell: pwsh
+      run: ./scripts/publishing/archive.ps1
+      if: steps.metadata.outputs.publish == 'true'
+    - name: Create Installer
+      if: steps.metadata.outputs.publish == 'true'
+      uses: Minionguyjpro/Inno-Setup-Action@v1.2.9
+      with:
+        path: src/LunaPlayer.iss
+        options: /O+
+        install_latest: true
+    - shell: pwsh
+      run: ./scripts/publishing/checksums.ps1
+      if: steps.metadata.outputs.publish == 'true'
+    - if: steps.metadata.outputs.publish == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: release-assets
+        path: |-
+          release-assets/*
+          release-metadata.json
+        if-no-files-found: error
+        retention-days: 7

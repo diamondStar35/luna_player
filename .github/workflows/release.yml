@@ -1,0 +1,43 @@
+name: Release
+'on':
+  push:
+    branches:
+      - main
+permissions:
+  contents: read
+concurrency:
+  group: publish-stable
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: windows-latest
+    timeout-minutes: 40
+    env:
+      TESTINGPLATFORM_TELEMETRY_OPTOUT: '1'
+    outputs:
+      publish: ${{ steps.build.outputs.publish }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          submodules: recursive
+          persist-credentials: false
+      - id: build
+        uses: ./.github/actions/build
+        with:
+          channel: stable
+  publish:
+    needs: build
+    if: github.repository == 'diamondStar35/luna_player' && needs.build.outputs.publish == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: ./.github/actions/publish-release
+        with:
+          channel: stable
+          token: ${{ github.token }}
