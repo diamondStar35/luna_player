@@ -8778,11 +8778,6 @@ msgid ""
 "Percentage: {percent}%"
 msgstr ""
 
-#. Translators: Message shown while the first video of a search is being made ready to play.
-#: YouTube/Playback/Browsing.cs:55
-msgid "Fetching first stream..."
-msgstr ""
-
 #. Translators: Title of the window shown while a YouTube search is running.
 #: YouTube/Playback/Browsing.cs:58
 msgid "Searching YouTube"

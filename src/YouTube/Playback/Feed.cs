@@ -26,6 +26,9 @@ internal sealed partial class Sessions
         private readonly Session _session;
         private bool _closed;
         private bool _loading;
+        /// <summary>The sink pages fetched after the window opened are handed to, or null. Set on the UI
+        /// thread; the sink runs on the UI thread like everything else the window does.</summary>
+        private Action<IReadOnlyList<YouTubeResult>>? _pageSink;
 
         internal Feed(Sessions owner, Session session)
         {
@@ -124,7 +127,73 @@ internal sealed partial class Sessions
                 TaskScheduler.Default);
         }
 
-        public void Close() => _closed = true;
+        public void SetPageSink(Action<IReadOnlyList<YouTubeResult>>? appended)
+        {
+            _pageSink = appended;
+            // Attaching hands over the watching of the rest of the search to this window; the fetch itself
+            // is started here, so the rows arrive while the user is looking at the list.
+            if (appended is not null)
+                Pump();
+        }
+
+        /// <summary>Fetches the rest of what the search asked for, a page at a time, handing each over as it
+        /// lands. The window could not wait for these before opening - each page is a round trip to YouTube -
+        /// so they are fetched while it is up. Pages are chained one at a time rather than fired off together,
+        /// which is both kinder to the source and what keeps each page off the UI thread.</summary>
+        private void Pump()
+        {
+            if (_closed || _session.IsCancelled)
+                return;
+            // Only a search is paged after the window opens; a playlist arrives whole and a channel's tabs
+            // page when the user switches to them.
+            if (_session.Kind is not SessionKind.Search)
+                return;
+            if (_session.Page is not IResultPage page || !page.HasMore)
+                return;
+            var target = _owner._settings.YouTube.SearchResultCount;
+            if (_session.Items.Count >= target)
+                return;
+            var token = _session.Token;
+            _ = Task.Run(() => page.Take(1, token), token).ContinueWith(
+                finished => _owner._dispatcher.Post(() => Pumped(finished, target)),
+                CancellationToken.None,
+                TaskContinuationOptions.None,
+                TaskScheduler.Default);
+        }
+
+        private void Pumped(Task<IReadOnlyList<YouTubeResult>> finished, int target)
+        {
+            // A page that failed is not the end of the search, only the end of this attempt: leaving the
+            // session alone lets the user try again by arrowing onto the last row.
+            if (!finished.IsCompletedSuccessfully)
+                return;
+            var rows = finished.Result;
+            if (rows.Count == 0)
+            {
+                _session.Exhausted = true;
+                if (!_closed)
+                    _pageSink?.Invoke(rows);
+                return;
+            }
+            var start = _session.Items.Count;
+            // Kept on the session before the window is told, the same way a page from RequestMore is: taking
+            // a page consumes the search's continuation, so a page the session dropped could never be asked
+            // for again.
+            _session.Append(rows);
+            _owner.Prefetch(_session, start, OpeningPrefetch);
+            if (!_closed)
+                _pageSink?.Invoke(rows);
+            // Carry on to the next page while the window is up and there is more to fetch. The window going
+            // stops the chain; deciding the user wants more once it has gone is what RequestMore is for.
+            if (!_closed && _session.Items.Count < target)
+                Pump();
+        }
+
+        public void Close()
+        {
+            _closed = true;
+            _pageSink = null;
+        }
 
         public void Dispose() => Close();
 

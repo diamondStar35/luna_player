@@ -19,6 +19,12 @@ namespace LunaPlayer.YouTube.Metadata;
 internal sealed class Client
 {
     /// <summary>Runs a search and returns its first page together with the object that pages the rest.</summary>
+    /// <remarks>
+    /// Only the first batch is taken here. YouTube answers a search in batches of its own choosing, and
+    /// collecting the whole configured count takes one web request per batch, sequentially - so taking it all
+    /// before the caller returns keeps the results window from opening for as long as every batch takes. The
+    /// rest is fetched by the caller: the results feed fills it in while the window is open.
+    /// </remarks>
     /// <param name="filter">The row the user picked in the search dialog's filter, 0-5; see the mapping below.</param>
     internal (IReadOnlyList<YouTubeResult> Items, Page Page) Search(
         string query, int filter, int count, CancellationToken token)
@@ -35,7 +41,9 @@ internal sealed class Client
             _ => new VideosSearch(query, limit: limit),
         };
         var page = new Page(search);
-        return (Wait(page.Take(limit, token)), page);
+        // The first batch only; Take returns as soon as it has rows, however many the batch carries,
+        // and pages fetched afterwards are the caller's to order.
+        return (Wait(page.Take(1, token)), page);
     }
 
     /// <summary>The title of a playlist and every video in it.</summary>
