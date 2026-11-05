@@ -95,7 +95,7 @@ internal sealed partial class Sessions : IDisposable
         _copy = copy;
         _browse = browse;
         _browsing = new Browsing(
-            view, settings, speech, dispatcher, client, backend, cache, favorites, components, Show);
+            view, settings, speech, dispatcher, client, backend, favorites, components, Show);
         _player.NextPreparationRequested += RefreshQueuedSuccessor;
     }
 

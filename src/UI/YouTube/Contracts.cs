@@ -87,6 +87,13 @@ internal interface IYouTubeResultsFeed
     /// thread, and is given an empty list when there is nothing more to come.</summary>
     void RequestMore(Action<IReadOnlyList<YouTubeResult>> appended);
 
+    /// <summary>Sets the sink the rest of the current list's pages are handed to as they arrive, or clears
+    /// it with null. A window attaches its list here when it opens before the search has asked YouTube for
+    /// everything the user asked for: the feed fetches the remaining pages and hands each one over as it
+    /// lands, on the UI thread. Attaching starts the fetch; rows fetched after the window closes still go
+    /// into the session, but are not handed to the sink.</summary>
+    void SetPageSink(Action<IReadOnlyList<YouTubeResult>>? appended);
+
     /// <summary>The window has gone, so a page still in flight should be dropped rather than delivered.
     /// </summary>
     void Close();

@@ -133,6 +133,11 @@ internal sealed class ResultsDialog : IDisposable
         // Bound after the opening tab is chosen above, so selecting it fires no switch of its own.
         if (_notebook is not null)
             _notebook.PageChanged += OnPageChanged;
+        // A search opens on its first page now, with the rest on the wire; hand this window the sink
+        // they arrive on. A channel pages per tab and a playlist arrives whole, so only the plain
+        // single-list window takes this.
+        if (_notebook is null)
+            _feed.SetPageSink(page => Append(_active, page));
         _active.List.Focus();
     }
 
@@ -160,9 +165,13 @@ internal sealed class ResultsDialog : IDisposable
     internal void Refresh(YouTubeResultsPrompt prompt)
     {
         _closed = false;
+        // The old feed may still be pumping the last pages of the previous search; they belong to the
+        // session, not to this window, so the sink is taken off it before the swap.
+        _feed.SetPageSink(null);
         _feed = prompt.Feed;
         _label.Label = prompt.Label;
         Populate(_active, prompt.Results, prompt.SelectedIndex);
+        _feed.SetPageSink(page => Append(_active, page));
         _active.List.Focus();
     }
 
@@ -177,6 +186,7 @@ internal sealed class ResultsDialog : IDisposable
         // Before anything else: a page or a tab already on its way must not be handed to a list that has
         // gone. The flag stops the deferred callbacks, and closing the feed stops any it has not yet made.
         _closed = true;
+        _feed.SetPageSink(null);
         _feed.Close();
         _menu.Dispose();
         _dialog.Dispose();

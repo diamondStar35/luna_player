@@ -17,7 +17,6 @@ internal sealed class Browsing
     private readonly IApplicationDispatcher _dispatcher;
     private readonly Metadata.Client _client;
     private readonly Backend _backend;
-    private readonly ResolveCache _cache;
     private readonly FavoriteStore _favorites;
     private readonly Components.Service _components;
     private readonly Action<Session> _show;
@@ -29,7 +28,6 @@ internal sealed class Browsing
         IApplicationDispatcher dispatcher,
         Metadata.Client client,
         Backend backend,
-        ResolveCache cache,
         FavoriteStore favorites,
         Components.Service components,
         Action<Session> show)
@@ -40,7 +38,6 @@ internal sealed class Browsing
         _dispatcher = dispatcher;
         _client = client;
         _backend = backend;
-        _cache = cache;
         _favorites = favorites;
         _components = components;
         _show = show;
@@ -51,8 +48,6 @@ internal sealed class Browsing
         var videoQuality = (int)_settings.YouTube.VideoQuality;
         var audioQuality = (int)_settings.YouTube.AudioQuality;
         var count = _settings.YouTube.SearchResultCount;
-        // Translators: Message shown while the first video of a search is being made ready to play.
-        var fetching = Tr("Fetching first stream...");
         var prompt = new ProgressPrompt(
             // Translators: Title of the window shown while a YouTube search is running.
             Tr("Searching YouTube"),
@@ -60,7 +55,7 @@ internal sealed class Browsing
             Tr("Searching videos..."),
             update => update.Name) { Proportional = false };
         BackgroundProgress.Start(_view, _dispatcher, prompt,
-            (report, token) => RunSearch(query, filter, count, videoQuality, audioQuality, fetching, report, token),
+            (_, token) => RunSearch(query, filter, count, token),
             found =>
             {
                 if (found.Failure is ResolveFailure.Cancelled)
@@ -213,23 +208,16 @@ internal sealed class Browsing
         string query,
         int filter,
         int count,
-        int videoQuality,
-        int audioQuality,
-        string fetching,
-        Action<ProgressUpdate> report,
         CancellationToken token)
     {
         try
         {
+            // Only the first batch arrives before the window opens; the rest is paged into the open
+            // window by the feed. The first rows are made ready for playback by Sessions.Show, which
+            // prefetches both streams of the opening rows - nothing here needs to wait for yt-dlp.
             var (items, page) = _client.Search(query, filter, count, token);
             if (items.Count == 0)
                 return new SearchResults([], null, ResolveFailure.None, string.Empty);
-            if (items[0].ItemType is YouTubeItemType.Video)
-            {
-                report(new ProgressUpdate(0, 0, fetching));
-                _cache.Prefetch(items[0].Url, items[0], true, audioQuality, token);
-                _ = _cache.Wait(items[0].Url, items[0], false, videoQuality, token, token);
-            }
             return new SearchResults(items, page, ResolveFailure.None, string.Empty);
         }
         catch (Exception failure)
