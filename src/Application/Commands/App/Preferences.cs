@@ -7,6 +7,7 @@ using LunaPlayer.Playback;
 using LunaPlayer.Media;
 using LunaPlayer.YouTube;
 using System.Diagnostics;
+using PlaybackPreferences = LunaPlayer.Application.Preferences.Playback;
 
 namespace LunaPlayer.Application.Commands.App;
 
@@ -27,46 +28,42 @@ internal sealed class Preferences
         LunaPlayer.YouTube.Components.Service youTubeComponents,
         Action spotifyQualityChanged)
     {
-        void ApplyRuntime(Settings source)
+        void ShowAudioFailure(AudioFilter filter)
         {
-            var previousAudio = settings.Audio.Copy();
-            settings.Apply(source);
-            player.TrackPositions(settings.Audio.SaveFilePositions);
-            player.SetAudiobookMode(settings.Audio.AudiobookMode);
-            player.SetEndBehavior(settings.Audio.EndBehavior);
-            player.ConfigurePlaybackEffects(settings.Audio);
-            player.ConfigureSilence(settings.Silence);
-            if (!player.SetNormalization(settings.Audio.NormalizeAudio))
+            if (filter == AudioFilter.Normalization)
                 view.Dialogs.ShowError(
                     // Translators: Shown when the setting that evens out the loudness could not be turned on or off.
                     Tr("Could not apply the audio normalization filter."));
-            if (!player.SetMono(settings.Audio.MonoAudio))
+            if (filter == AudioFilter.Mono)
                 view.Dialogs.ShowError(
                     // Translators: Shown when the setting that mixes both channels into one could not be turned on or off.
                     Tr("Could not apply the mono audio filter."));
-            if (!player.ConfigureSofa(settings.Audio))
-            {
-                settings.Audio.ApplySofa(previousAudio);
+            if (filter == AudioFilter.Spatialization)
                 view.Dialogs.ShowError(
                     // Translators: Shown when headphone spatialization could not load the selected SOFA file or FFmpeg filter.
                     Tr("Could not apply the SOFA headphone spatialization filter. Choose a valid SOFA HRTF file and use an FFmpeg build with libmysofa support."));
-            }
-            settings.Audio.Pitch = player.SetPitch(settings.Audio.Pitch);
-            settings.Audio.Pan = player.SetPan(settings.Audio.Pan);
-            if (!player.SetSilenceRemoval(settings.Silence.Enabled))
+            if (filter == AudioFilter.SilenceRemoval)
                 view.Dialogs.ShowError(
                     // Translators: Shown when the setting that trims the silent parts out could not be turned on or off.
                     Tr("Could not apply the silence removal filter."));
-            settings.Audio.NormalizeAudio = player.IsNormalizationEnabled;
-            settings.Audio.MonoAudio = player.IsMonoEnabled;
-            settings.Silence.Enabled = player.IsSilenceRemovalEnabled;
+        }
+
+        bool ApplyRuntime(Changes changes)
+        {
+            if (!PlaybackPreferences.Apply(settings, changes, player, ShowAudioFailure)) return false;
             // Reconcile the Windows media controls with the newly saved preference.
             player.RefreshState();
-            shortcuts.Apply(settings.Shortcuts.Primary, settings.Shortcuts.Secondary);
-            view.ApplyShortcuts(shortcuts);
-            GlobalShortcutBinder.Apply(view, globalShortcuts, settings, speech: null);
+            if (changes.Contains("shortcuts.primary", "shortcuts.secondary"))
+            {
+                shortcuts.Apply(settings.Shortcuts.Primary, settings.Shortcuts.Secondary);
+                view.ApplyShortcuts(shortcuts);
+            }
+            if (changes.Contains("shortcuts.global"))
+                GlobalShortcutBinder.Apply(view, globalShortcuts, settings, speech: null);
             view.SetSilenceRemovalChecked(player.IsSilenceRemovalEnabled);
             view.SetHeadphoneSpatializationState(player.CanToggleSofa, player.IsSofaEnabled);
+            if (changes.Contains("spotify.audioQuality")) spotifyQualityChanged();
+            return true;
         }
 
         bool OpenSettingsFolder()
@@ -95,36 +92,34 @@ internal sealed class Preferences
         // window, which is what keeps the Preferences window answering for the length of a download.
         void DownloadYouTubeComponents(YtDlpChannel channel) => youTubeComponents.Install(channel);
 
-        var operations = new LunaPlayer.UI.Preferences.PrefsOps(
-            backup.SettingsPath,
-            backup.BookmarksPath,
-            Paths.RootDirectory,
-            destination => backup.ExportSettings(destination, settings),
-            backup.ImportSettings,
-            backup.ResetSettings,
-            backup.ExportBookmarks,
-            backup.ImportBookmarks,
-            () => backup.LastError,
-            OpenSettingsFolder,
-            () => Register(false),
-            () => Register(true),
-            DownloadYouTubeComponents,
-            source =>
-            {
-                ApplyRuntime(source);
-                store.SaveExplicit(settings);
-            });
-
         void OpenPreferences(bool spotifyCredentials)
         {
             var language = settings.General.Language;
-            var spotifyQuality = settings.Spotify.AudioQuality;
+            var baseline = settings.Copy();
+            var operations = new LunaPlayer.UI.Preferences.PrefsOps(
+                backup.SettingsPath,
+                backup.BookmarksPath,
+                Paths.RootDirectory,
+                destination => backup.ExportSettings(destination, settings),
+                backup.ImportSettings,
+                backup.ResetSettings,
+                backup.ExportBookmarks,
+                backup.ImportBookmarks,
+                () => backup.LastError,
+                OpenSettingsFolder,
+                () => Register(false),
+                () => Register(true),
+                DownloadYouTubeComponents,
+                source =>
+                {
+                    ApplyRuntime(new Changes(settings, source, replaceAll: true));
+                    store.SaveExplicit(settings);
+                    // Import and reset take effect immediately, even if this dialog is later canceled.
+                    baseline = settings.Copy();
+                });
             var result = view.Dialogs.EditPreferences(settings, operations, text => speech.SpeakText(text), spotifyCredentials);
             if (result is null) return;
-            ApplyRuntime(result);
-            if (spotifyQuality != settings.Spotify.AudioQuality)
-                spotifyQualityChanged();
-            if (!store.SaveExplicit(settings))
+            if (ApplyRuntime(new Changes(baseline, result)) && !store.SaveExplicit(settings))
                 view.Dialogs.ShowError(
                     // Translators: Shown when the settings the user accepted could not be written to disk.
                     Tr("Could not save settings."));

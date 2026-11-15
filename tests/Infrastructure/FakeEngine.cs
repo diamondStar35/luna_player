@@ -7,6 +7,7 @@ internal sealed class FakeEngine : IEngine
 {
     private readonly Dictionary<string, Delegate?> _events = [];
     internal List<string> Loads { get; } = [];
+    internal List<string> AudioUpdates { get; } = [];
     internal int Stops { get; private set; }
     internal bool Paused { get; private set; }
     internal double Position { get; private set; }
@@ -31,7 +32,7 @@ internal sealed class FakeEngine : IEngine
     public QueuedAdvance? TakeQueuedAdvance() => default;
     public double? PositionFor(string path) { return Position; }
     public void HoldAutomaticAdvance(bool hold) {}
-    public void ConfigurePlaybackEffects(AudioSettings settings) {}
+    public void ConfigurePlaybackEffects(AudioSettings settings) => AudioUpdates.Add(nameof(ConfigurePlaybackEffects));
     public void SetRepeatFile(bool enabled) {}
     public void Stop() { Stops++; }
     public bool TogglePause() { Paused = !Paused; return !Paused; }
@@ -57,10 +58,10 @@ internal sealed class FakeEngine : IEngine
     public double Volume => Loudness;
     public double SetSpeed(double speed) { return Rate = Math.Clamp(speed, 0.5, 4); }
     public double Speed => Rate;
-    public double SetPitch(double semitones) => default;
-    public double Pitch => default;
-    public double SetPan(double pan) => default;
-    public double Pan => default;
+    public double SetPitch(double semitones) { AudioUpdates.Add(nameof(SetPitch)); return Pitch = Math.Clamp(semitones, -12, 12); }
+    public double Pitch { get; private set; }
+    public double SetPan(double pan) { AudioUpdates.Add(nameof(SetPan)); return Pan = Math.Clamp(pan, -100, 100); }
+    public double Pan { get; private set; }
     public IReadOnlyList<AudioDevice> GetAudioDevices() => [];
     public string CurrentAudioDevice => "auto";
     public bool SetAudioDevice(string name) => true;
@@ -70,13 +71,14 @@ internal sealed class FakeEngine : IEngine
     public bool SetSubtitleTrack(int id) => true;
     public bool DisableSubtitles() => true;
     public bool AddSubtitle(string source, string? title, string? language) => true;
-    public bool SetNormalization(bool enabled) => true;
-    public bool SetMono(bool enabled) => true;
+    public bool SetNormalization(bool enabled) { AudioUpdates.Add(nameof(SetNormalization)); return true; }
+    public bool SetMono(bool enabled) { AudioUpdates.Add(nameof(SetMono)); return true; }
     internal string SofaGraph { get; private set; } = string.Empty;
     internal bool RejectSofa { get; set; }
     internal int SofaConfigurations { get; private set; }
     public bool SetSofa(string graph)
     {
+        AudioUpdates.Add(nameof(SetSofa));
         SofaConfigurations++;
         if (RejectSofa && graph.Length > 0)
             return false;
@@ -88,6 +90,7 @@ internal sealed class FakeEngine : IEngine
     internal int SofaDirectionChanges { get; private set; }
     public bool SetSofaDirection(double rotation, double elevation)
     {
+        AudioUpdates.Add(nameof(SetSofaDirection));
         if (RejectSofa) return false;
         SofaRotation = rotation;
         SofaElevation = elevation;
@@ -96,9 +99,9 @@ internal sealed class FakeEngine : IEngine
     }
     public event Action<AudioFilter>? AudioFilterFailed { add => _events[nameof(AudioFilterFailed)] = Delegate.Combine(_events.GetValueOrDefault(nameof(AudioFilterFailed)), value); remove => _events[nameof(AudioFilterFailed)] = Delegate.Remove(_events.GetValueOrDefault(nameof(AudioFilterFailed)), value); }
     internal void FailFilter(AudioFilter filter) => ((Action<AudioFilter>?)_events.GetValueOrDefault(nameof(AudioFilterFailed)))?.Invoke(filter);
-    public bool SetSilenceRemoval(bool enabled, string graph) => true;
+    public bool SetSilenceRemoval(bool enabled, string graph) { AudioUpdates.Add(nameof(SetSilenceRemoval)); return true; }
     public bool SetEqualizer(Preset? preset) => true;
-    public void SetEndBehavior(EndBehavior behavior) {}
+    public void SetEndBehavior(EndBehavior behavior) => AudioUpdates.Add(nameof(SetEndBehavior));
     public string? MediaTitle => default;
     internal Metadata CurrentMetadata { get; set; } = Metadata.None;
     public Metadata GetMetadata() => CurrentMetadata;

@@ -42,6 +42,13 @@ internal sealed class Settings
 
     internal void Apply(Settings source)
     {
+        ApplyValues(source);
+        Validate();
+    }
+
+    // Preferences already validates its pages; shortcut normalization belongs to the UI/save boundary.
+    internal void ApplyValues(Settings source)
+    {
         Version = Math.Max(4, source.Version);
         General.Apply(source.General);
         Audio.Apply(source.Audio);
@@ -54,7 +61,6 @@ internal sealed class Settings
         Discord.Apply(source.Discord);
         Recording.Apply(source.Recording);
         SleepTimer.Apply(source.SleepTimer);
-        Validate();
     }
 
     /// <summary>Rejects malformed persisted settings before normalization can hide the problem.</summary>

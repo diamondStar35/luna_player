@@ -102,10 +102,10 @@ internal sealed class SofaPreferences : LunaPlayer.UI.Preferences.PreferencesPag
         _settings.SofaFile = path;
         // A hidden invalid gain draft must not prevent disabling the effect or overwrite its default.
         _settings.SofaGain = NumberOrDefault(_gain.Value, -20, 40, _settings.SofaGain);
-        _settings.SofaRotation = _rotation.Value;
-        _settings.SofaElevation = _elevation.Value;
-        _settings.SofaRotationStep = _rotationStep.Value;
-        _settings.SofaElevationStep = _elevationStep.Value;
+        _settings.SofaRotation = ReadDegrees(_rotation, _settings.SofaRotation);
+        _settings.SofaElevation = ReadDegrees(_elevation, _settings.SofaElevation);
+        _settings.SofaRotationStep = ReadDegrees(_rotationStep, _settings.SofaRotationStep);
+        _settings.SofaElevationStep = ReadDegrees(_elevationStep, _settings.SofaElevationStep);
     }
 
     public override void Refresh()
@@ -178,6 +178,10 @@ internal sealed class SofaPreferences : LunaPlayer.UI.Preferences.PreferencesPag
 
     // Retain compatibility with saved decimal defaults while presenting integer spin controls.
     private static int WholeDegrees(double value) => (int)Math.Round(value, MidpointRounding.AwayFromZero);
+
+    // An unchanged integer display must not round a fractional default saved by an older version.
+    private static double ReadDegrees(SpinCtrl control, double previous)
+        => control.Value == WholeDegrees(previous) ? previous : control.Value;
 
     private static double NumberOrDefault(string text, double minimum, double maximum, double previous)
         => NumberInRange(text, minimum, maximum) ? double.Parse(text.Trim(), CultureInfo.InvariantCulture) : previous;

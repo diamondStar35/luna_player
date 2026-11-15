@@ -60,6 +60,19 @@ internal sealed partial class Player
         return true;
     }
 
+    internal bool ApplySofaPreferences(AudioSettings previous, AudioSettings edited)
+    {
+        // Only edited defaults replace runtime values; the other session controls remain temporary.
+        var next = _sofa.Copy();
+        if (previous.SofaEnabled != edited.SofaEnabled) next.SofaEnabled = edited.SofaEnabled;
+        if (previous.SofaFile != edited.SofaFile) next.SofaFile = edited.SofaFile;
+        if (previous.SofaGain != edited.SofaGain) next.SofaGain = edited.SofaGain;
+        if (previous.SofaRotation != edited.SofaRotation) next.SofaRotation = edited.SofaRotation;
+        if (previous.SofaElevation != edited.SofaElevation) next.SofaElevation = edited.SofaElevation;
+        if (string.IsNullOrWhiteSpace(next.SofaFile)) next.SofaEnabled = false;
+        return ConfigureSofa(next);
+    }
+
     private bool ChangeSofaDirection(AudioSettings next)
     {
         // Runtime angles never change the filter definition or reload its SOFA dataset.
