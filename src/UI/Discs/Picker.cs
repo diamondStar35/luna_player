@@ -3,7 +3,11 @@ using WxSharp;
 
 namespace LunaPlayer.UI.Discs;
 
-internal sealed record DiscSelection(string Location, DiscFormat Format, int? Title);
+/// <summary>An accepted location and ownership of its running or completed inspection.</summary>
+internal sealed record DiscSelection(string Location, DiscFormat Format, int? Title, Inspection Inspection) : IDisposable
+{
+    public void Dispose() => Inspection.Dispose();
+}
 
 internal sealed class Picker : FileDialogCustomizeHook, IDisposable
 {
@@ -93,7 +97,19 @@ internal sealed class Picker : FileDialogCustomizeHook, IDisposable
             && (DiscFormat)_type!.SelectedIndex == _format;
         int? title = same && _disc is not null && _title!.SelectedIndex > 0
             ? _disc.Titles[_title.SelectedIndex - 1].Index : null;
-        Accepted = new(location, (DiscFormat)_type!.SelectedIndex, title);
+        Accepted?.Dispose();
+        var format = (DiscFormat)_type!.SelectedIndex;
+        Accepted = new(location, format, title, _discovery.Take(location, format));
+    }
+
+    internal DiscSelection? TakeSelection(string path)
+    {
+        var accepted = Accepted;
+        Accepted = null;
+        if (accepted is null || LunaPlayer.Configuration.Paths.AreSame(path, accepted.Location)) return accepted;
+        // A typed location can be accepted without becoming the picker's current selection first.
+        accepted.Dispose();
+        return new(path, accepted.Format, null, _discovery.Take(path, accepted.Format));
     }
     internal static string Describe(DiscException error, DiscFormat? format) => error.Failure switch
     {
@@ -117,5 +133,7 @@ internal sealed class Picker : FileDialogCustomizeHook, IDisposable
     {
         _disposed = true;
         _discovery.Dispose();
+        Accepted?.Dispose();
+        Accepted = null;
     }
 }

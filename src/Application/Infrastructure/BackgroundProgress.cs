@@ -89,7 +89,25 @@ internal static class BackgroundProgress
         Action<TResult> completed,
         Action? finished = null)
     {
-        var job = new Job<TResult>(progress, dispatcher, prompt, work, completed, finished);
+        // Matching the task's token to the worker's token preserves cooperative cancellation.
+        var job = new Job<TResult>(progress, dispatcher, prompt,
+            (update, token) => Task.Run(() => work(update, token), token), completed, finished);
+        Running.Add(job);
+        job.Start();
+    }
+
+    /// <summary>Shows progress for work already running, forwarding cancellation without starting it again.</summary>
+    internal static void Observe<TResult>(
+        IMainView view, IApplicationDispatcher dispatcher, ProgressPrompt prompt,
+        Task<TResult> task, Action cancel, Action<TResult> completed, Action? finished = null)
+        => Observe(view.Dialogs.BeginProgress(prompt.Title, prompt.Starting, prompt.Proportional, prompt.Detailed, prompt.Modal),
+            dispatcher, prompt, task, cancel, completed, finished);
+
+    internal static void Observe<TResult>(
+        LunaPlayer.UI.Contracts.IProgressView progress, IApplicationDispatcher dispatcher, ProgressPrompt prompt,
+        Task<TResult> task, Action cancel, Action<TResult> completed, Action? finished = null)
+    {
+        var job = new Job<TResult>(progress, dispatcher, prompt, (_, _) => task, completed, finished, cancel);
         Running.Add(job);
         job.Start();
     }
@@ -98,6 +116,7 @@ internal static class BackgroundProgress
     {
         private readonly ConcurrentQueue<ProgressUpdate> _updates = new();
         private readonly CancellationTokenSource _cancellation = new();
+        private readonly CancellationTokenRegistration _cancelWork;
         private readonly IApplicationDispatcher _dispatcher;
         private readonly ProgressPrompt _prompt;
         private readonly LunaPlayer.UI.Contracts.IProgressView _progress;
@@ -115,20 +134,18 @@ internal static class BackgroundProgress
             LunaPlayer.UI.Contracts.IProgressView progress,
             IApplicationDispatcher dispatcher,
             ProgressPrompt prompt,
-            Func<Action<ProgressUpdate>, CancellationToken, TResult> work,
+            Func<Action<ProgressUpdate>, CancellationToken, Task<TResult>> work,
             Action<TResult> completed,
-            Action? finished)
+            Action? finished,
+            Action? cancel = null)
         {
             _dispatcher = dispatcher;
             _prompt = prompt;
             _completed = completed;
             _finishedCallback = finished;
             _progress = progress;
-            // The token is given to Task.Run as well as to the job. Without it a job that aborts by throwing
-            // OperationCanceledException leaves the task Faulted rather than Canceled - the exception's token
-            // has to match the task's for .NET to read it as the abort it is - and the fault would then be
-            // rethrown at the user as though something had gone wrong.
-            _task = Task.Run(() => work(_updates.Enqueue, _cancellation.Token), _cancellation.Token);
+            _cancelWork = cancel is null ? default : _cancellation.Token.Register(cancel);
+            _task = work(_updates.Enqueue, _cancellation.Token);
         }
 
         // Started after construction rather than inside it, so the field is set before the first tick can
@@ -191,6 +208,7 @@ internal static class BackgroundProgress
                 // Closed before the result is used, so the job's own window or message box does not open
                 // behind a progress dialog that has finished with.
                 _progress.Dispose();
+                _cancelWork.Dispose();
                 _cancellation.Dispose();
                 Running.Remove(this);
                 _finishedCallback?.Invoke();

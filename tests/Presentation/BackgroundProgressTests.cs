@@ -1,11 +1,77 @@
 using LunaPlayer.Application;
 using LunaPlayer.UI.Contracts;
+using LunaPlayer.Media.Discs;
 
 namespace LunaPlayer.Tests.Presentation;
 
 [TestClass, DoNotParallelize, TestCategory("Unit")]
 public sealed class BackgroundProgressTests
 {
+    [TestMethod]
+    public async Task TransferredInspectionContinuesBehindProgressWithoutAnotherRead()
+    {
+        var dispatcher = new Dispatcher();
+        var progress = new Progress();
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var reads = 0;
+        using var discovery = new Discovery(_ => { }, (path, format, _) =>
+        {
+            Interlocked.Increment(ref reads);
+            started.SetResult();
+            release.Task.GetAwaiter().GetResult();
+            return new DiscInfo(path, format, "id", "Disc", [new Title(0)], 0);
+        });
+        discovery.Request("disc", DiscFormat.Video);
+        await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        using var inspection = discovery.Take("disc", DiscFormat.Video);
+        discovery.Dispose();
+        var finished = false;
+        BackgroundProgress.Observe(progress, dispatcher, Prompt(), inspection.Result, inspection.Cancel,
+            result =>
+            {
+                Assert.IsTrue(progress.Disposed);
+                Assert.IsTrue(dispatcher.TimerDisposed);
+                Assert.AreEqual("Disc", result.Disc!.Name);
+                finished = true;
+            }, inspection.Dispose);
+        Assert.IsFalse(progress.Disposed);
+        Assert.IsFalse(finished);
+        release.SetResult();
+        await Until(dispatcher, () => finished);
+        Assert.AreEqual(1, reads);
+    }
+
+    [TestMethod]
+    [DataRow(false)]
+    [DataRow(true)]
+    public async Task CancellingTransferredInspectionReleasesProgressWithoutOpeningMedia(bool shutdown)
+    {
+        var dispatcher = new Dispatcher();
+        var progress = new Progress();
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var reads = 0;
+        using var inspection = new Inspection(new Request(DiscFormat.Audio, "disc"), read: (request, token) =>
+        {
+            Interlocked.Increment(ref reads);
+            started.SetResult();
+            token.WaitHandle.WaitOne();
+            token.ThrowIfCancellationRequested();
+            throw new InvalidOperationException("The read should have been cancelled.");
+        });
+        await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        var finished = false;
+        BackgroundProgress.Observe(progress, dispatcher, Prompt(), inspection.Result, inspection.Cancel,
+            _ => Assert.Fail("Cancelled disc opening must not replace playback."),
+            () => { inspection.Dispose(); finished = true; });
+        if (shutdown) progress.Dispose(); else progress.UserCancelled = true;
+        await Until(dispatcher, () => finished);
+        Assert.IsTrue(inspection.Result.IsCanceled);
+        Assert.IsTrue(progress.Disposed);
+        Assert.IsTrue(dispatcher.TimerDisposed);
+        Assert.AreEqual(1, reads);
+    }
+
     [TestMethod]
     public async Task CompletionReleasesTheWindowAndTimerBeforeOpeningTheResult()
     {

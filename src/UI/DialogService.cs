@@ -73,7 +73,7 @@ internal sealed class DialogService : IDialogService, IDisposable
         using var hook = new LunaPlayer.UI.Discs.Picker(dialog, _lastDiscFormat);
         if (!dialog.SetCustomizeHook(hook)) throw new PlatformNotSupportedException("DVD dialog customization requires Windows.");
         if (dialog.ShowModal() != StandardId.Ok) return null;
-        var result = hook.Accepted;
+        var result = hook.TakeSelection(dialog.Path);
         if (result is not null) _lastDiscFormat = result.Format;
         return result;
     }

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-11-16 20:18+0200\n"
+"POT-Creation-Date: 2026-11-16 20:01+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -998,18 +998,18 @@ msgid "Unknown"
 msgstr ""
 
 #. Translators: Caption of the progress window while a selected DVD is opened.
-#: Application/Commands/Files/Discs.cs:32
+#: Application/Commands/Files/Discs.cs:39
 msgid "Opening DVD"
 msgstr ""
 
 #. Translators: Progress text while the selected DVD is inspected before playback.
 #. Translators: Status while DVD titles are inspected in the background in the Open DVD picker.
-#: Application/Commands/Files/Discs.cs:34 UI/Discs/Picker.cs:69
+#: Application/Commands/Files/Discs.cs:41 UI/Discs/Picker.cs:73
 msgid "Reading DVD titles..."
 msgstr ""
 
 #. Translators: Error when a DVD title selected in the picker is unavailable or cannot be loaded.
-#: Application/Commands/Files/Discs.cs:55
+#: Application/Commands/Files/Discs.cs:68
 msgid "Could not open the selected DVD title."
 msgstr ""
 
@@ -3495,7 +3495,7 @@ msgstr ""
 
 #. Translators: Fallback name for a numbered DVD program; {number} is the one-based title number.
 #. Translators: A numbered DVD program in the native title choice. {number} is its one-based title number.
-#: Playback/Player/Discs.cs:64 UI/Discs/Picker.cs:83
+#: Playback/Player/Discs.cs:64 UI/Discs/Picker.cs:87
 msgid "Title {number}"
 msgstr ""
 
@@ -4695,68 +4695,68 @@ msgid "JSON playlists (*.json)|*.json"
 msgstr ""
 
 #. Translators: Label of the DVD format choice in the native Open DVD folder picker.
-#: UI/Discs/Picker.cs:30
+#: UI/Discs/Picker.cs:34
 msgid "Disc type"
 msgstr ""
 
 #. Translators: DVD format choice for movie/video discs, including their audio soundtracks.
-#: UI/Discs/Picker.cs:33
+#: UI/Discs/Picker.cs:37
 msgid "DVD-Video"
 msgstr ""
 
 #. Translators: DVD format choice for genuine AUDIO_TS audio discs, not a DVD-Video soundtrack.
-#: UI/Discs/Picker.cs:35
+#: UI/Discs/Picker.cs:39
 msgid "DVD-Audio"
 msgstr ""
 
 #. Translators: Label of the DVD program/title choice in the native Open DVD folder picker.
-#: UI/Discs/Picker.cs:38
+#: UI/Discs/Picker.cs:42
 msgid "Title"
 msgstr ""
 
 #. Translators: Initial status in the Open DVD folder picker, before a disc location is selected.
 #. Translators: Status when the Open DVD picker is at a virtual location such as This PC.
-#: UI/Discs/Picker.cs:42 UI/Discs/Picker.cs:65
+#: UI/Discs/Picker.cs:46 UI/Discs/Picker.cs:69
 msgid "Choose a DVD drive or folder."
 msgstr ""
 
 #. Translators: DVD title choice that lets the player select the longest playable title.
-#: UI/Discs/Picker.cs:47
+#: UI/Discs/Picker.cs:51
 msgid "Automatic"
 msgstr ""
 
 #. Translators: Status after DVD inspection. {count} is the number of playable programs, excluding the disc menu.
-#: UI/Discs/Picker.cs:87
+#: UI/Discs/Picker.cs:91
 msgid "Playable titles: {count}"
 msgstr ""
 
 #. Translators: Open DVD error when DVD-Audio was selected but the disc has no playable audio titles.
-#: UI/Discs/Picker.cs:101
+#: UI/Discs/Picker.cs:117
 msgid "No audio titles were found on the selected DVD-Audio disc."
 msgstr ""
 
 #. Translators: Open DVD error when the DVD-Video structure contains no playable programs.
-#: UI/Discs/Picker.cs:103
+#: UI/Discs/Picker.cs:119
 msgid "No video titles were found on the selected DVD-Video disc."
 msgstr ""
 
 #. Translators: Open DVD error when the chosen location has no valid DVD-Audio structure.
-#: UI/Discs/Picker.cs:107
+#: UI/Discs/Picker.cs:123
 msgid "The selected location does not contain a valid DVD-Audio disc."
 msgstr ""
 
 #. Translators: Open DVD error when the chosen location has no valid DVD-Video structure.
-#: UI/Discs/Picker.cs:109
+#: UI/Discs/Picker.cs:125
 msgid "The selected location does not contain a valid DVD-Video disc."
 msgstr ""
 
 #. Translators: Explorer DVD-open error when the chosen location has neither a valid DVD-Audio nor DVD-Video structure.
-#: UI/Discs/Picker.cs:111
+#: UI/Discs/Picker.cs:127
 msgid "The selected location does not contain a valid DVD disc."
 msgstr ""
 
 #. Translators: Open DVD error when the disc cannot be read or its playback backend fails.
-#: UI/Discs/Picker.cs:114
+#: UI/Discs/Picker.cs:130
 msgid ""
 "Could not read the selected DVD disc. Check that it is accessible and "
 "supported by the playback libraries."

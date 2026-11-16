@@ -44,7 +44,8 @@ internal interface IDialogService
     string? PromptSubtitleUrl();
 
     LunaPlayer.UI.Contracts.FileSelection? ChooseFile(string initialDirectory);
-    /// <summary>Chooses a DVD location, format and optional title using a native folder picker.</summary>
+    /// <summary>Chooses a DVD location, format and optional title using a native folder picker.
+    /// The caller takes ownership of the returned inspection.</summary>
     LunaPlayer.UI.Discs.DiscSelection? ChooseDisc(string initialDirectory);
 
     /// <param name="message">What the window asks for. Empty leaves the system's own wording, which is

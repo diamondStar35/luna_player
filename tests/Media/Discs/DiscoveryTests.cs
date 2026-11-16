@@ -7,6 +7,109 @@ namespace LunaPlayer.Tests.Media.Discs;
 public sealed class DiscoveryTests
 {
     [TestMethod]
+    public async Task AcceptingDuringInspectionTransfersTheReadWithoutCancellingOrRestartingIt()
+    {
+        var posted = new ConcurrentQueue<Action>();
+        using var release = new ManualResetEventSlim();
+        var started = new TaskCompletionSource<CancellationToken>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var reads = 0;
+        using var discovery = new Discovery(posted.Enqueue, (path, format, token) =>
+        {
+            Interlocked.Increment(ref reads);
+            started.SetResult(token);
+            Assert.IsTrue(release.Wait(TimeSpan.FromSeconds(5)));
+            return Info(path, format);
+        });
+        discovery.Completed += _ => Assert.Fail("The accepted inspection must not update its closed picker.");
+        discovery.Request("disc", DiscFormat.Audio);
+        var token = await started.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        using var accepted = discovery.Take("disc", DiscFormat.Audio);
+        discovery.Dispose();
+        Assert.IsFalse(accepted.Result.IsCompleted);
+        Assert.IsFalse(token.IsCancellationRequested);
+        release.Set();
+        var result = await accepted.Result.WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.AreEqual("disc", result.Disc!.Name);
+        Assert.AreEqual(1, reads);
+        while (posted.TryDequeue(out var callback)) callback();
+    }
+
+    [TestMethod]
+    [DataRow(false)]
+    [DataRow(true)]
+    public async Task AcceptingACompletedReadReusesItsResultBeforeTheUiReceivesIt(bool fail)
+    {
+        var posted = new ConcurrentQueue<Action>();
+        var reads = 0;
+        var info = Info("disc", DiscFormat.Video);
+        using var discovery = new Discovery(posted.Enqueue, (_, _, _) =>
+        {
+            Interlocked.Increment(ref reads);
+            return fail ? throw new DiscException(Failure.NoVideoTitles) : info;
+        });
+        discovery.Completed += _ => Assert.Fail("A transferred result must not return to its picker.");
+        discovery.Request("disc", DiscFormat.Video);
+        await WaitFor(() => posted.Count == 1);
+        using var accepted = discovery.Take("DISC", DiscFormat.Video);
+        discovery.Dispose();
+        Assert.IsTrue(accepted.Result.IsCompletedSuccessfully);
+        var result = await accepted.Result;
+        if (fail) Assert.AreEqual(Failure.NoVideoTitles, result.Error!.Failure);
+        else Assert.AreSame(info, result.Disc);
+        Assert.AreEqual(1, reads);
+        while (posted.TryDequeue(out var callback)) callback();
+    }
+
+    [TestMethod]
+    public async Task AcceptingADifferentSelectionStartsOnlyTheAcceptedRead()
+    {
+        var posted = new ConcurrentQueue<Action>();
+        var read = new ConcurrentQueue<string>();
+        using var discovery = new Discovery(posted.Enqueue, (path, format, _) =>
+        {
+            read.Enqueue(path);
+            return Info(path, format);
+        });
+        discovery.Request("old", DiscFormat.Video);
+        await WaitFor(() => posted.Count == 1);
+        using var accepted = discovery.Take("new", DiscFormat.Audio);
+        discovery.Dispose();
+        var result = await accepted.Result.WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.AreEqual(DiscFormat.Audio, result.Disc!.Format);
+        Assert.AreEqual("new", result.Disc.Name);
+        CollectionAssert.AreEqual(new[] { "old", "new" }, read.ToArray());
+    }
+
+    [TestMethod]
+    public async Task AcceptedReadStillWaitsForAnOlderUninterruptibleReadToExit()
+    {
+        var posted = new ConcurrentQueue<Action>();
+        using var release = new ManualResetEventSlim();
+        using var entered = new ManualResetEventSlim();
+        var newRead = false;
+        using var discovery = new Discovery(posted.Enqueue, (path, format, _) =>
+        {
+            if (path == "old")
+            {
+                entered.Set();
+                Assert.IsTrue(release.Wait(TimeSpan.FromSeconds(5)));
+            }
+            else newRead = true;
+            return Info(path, format);
+        });
+        discovery.Request("old", DiscFormat.Audio);
+        await WaitFor(() => entered.IsSet);
+        discovery.Request("new", DiscFormat.Video);
+        using var accepted = discovery.Take("new", DiscFormat.Video);
+        discovery.Dispose();
+        Assert.IsFalse(newRead);
+        release.Set();
+        var result = await accepted.Result.WaitAsync(TimeSpan.FromSeconds(5));
+        Assert.AreEqual("new", result.Disc!.Name);
+        Assert.IsTrue(newRead);
+    }
+
+    [TestMethod]
     public async Task NewSelectionInvalidatesAResultAlreadyQueuedForTheUi()
     {
         var posted = new ConcurrentQueue<Action>();
