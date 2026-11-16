@@ -52,7 +52,7 @@ internal sealed partial class AudioProcessor
             // Removing it first would discard that recovery and initialize the dataset twice.
             if (request.Graph.Length == 0)
                 _session.RemoveFilter($"@{AudioFilters.SofaLabel}");
-            else if (!PrependSofa(request.Graph))
+            else if (!AppendSofa(request.Graph))
             {
                 _sofaRejectedConfiguration = request.Configuration;
                 return false;
@@ -84,10 +84,10 @@ internal sealed partial class AudioProcessor
         return true;
     }
 
-    private bool PrependSofa(string graph)
+    private bool AppendSofa(string graph)
     {
         var length = Encoding.UTF8.GetByteCount(graph);
-        return _session.TryDoNow(mpv => mpv.Command("af", "pre", $"@{AudioFilters.SofaLabel}:lavfi=graph=%{length}%{graph}"));
+        return _session.AddFilter($"@{AudioFilters.SofaLabel}:lavfi=graph=%{length}%{graph}");
     }
 
     private sealed record SofaRequest(string Graph, long Configuration = 0, double? Rotation = null, double? Elevation = null);

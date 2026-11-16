@@ -9,8 +9,8 @@ internal sealed partial class AudioProcessor
     public double SetVolume(double volume)
     {
         _volume = Precision.Normalize(Math.Clamp(volume, 0, AudioSettings.MaximumVolume));
-        // Volume is mpv's continuously adjustable software mixer. Changing a live lavfi gain filter,
-        // even through af-command, can make buffered filters such as dynaudnorm audibly pump or drop out.
+        // The output mixer applies volume after buffered effects, so a volume
+        // change does not wait for normalization's analysis window.
         ApplyVolume();
         return _volume;
     }
@@ -39,32 +39,14 @@ internal sealed partial class AudioProcessor
 
     private bool ApplyPitch(double value)
     {
-        if (value == 0 && !_pitchFilterActive)
-            return true;
-
-        // Keep scaletempo2 in the graph once pitch is used. Letting mpv insert and remove it as pitch
-        // crosses zero changes the audio chain, while Luna's pitch and speed ranges fit its supported range.
-        if (!_pitchFilterActive)
-            _pitchFilterActive = _session.AddFilter("@audiopitch:scaletempo2");
-        if (!_pitchFilterActive)
-            return false;
-
-        // Semitones are logarithmic: twelve semitones double the frequency and twelve negative
-        // semitones halve it. Recompute the derived multiplier from the normalized semitone state so
-        // repeated changes cannot accumulate floating-point drift.
+        // mpv places tempo compensation after the user effects. A user scaletempo2
+        // before lavfi passes speed-adjusted timestamps that lavfi cannot preserve.
         var scale = Math.Pow(2, value / 12);
         return _session.TryDoNow(mpv => mpv.SetProperty("pitch", scale));
     }
 
     public double Pitch => _pitch;
 
-    /// <remarks>
-    /// Rebuilt rather than adjusted through <c>af-command</c>. The command reaches the running filter but
-    /// not the string mpv built it from, and mpv builds the lavfi graph out of that string again whenever
-    /// the audio chain is reinitialized - a seek or a pause is enough - at which point the balance goes
-    /// back to whatever the string still says. Keeping the value nowhere but in the string is the only
-    /// arrangement that survives that, and it is what the equalizer does for the same reason.
-    /// </remarks>
     public double SetPan(double pan)
     {
         var value = Precision.Normalize(Math.Clamp(pan, -100, 100));

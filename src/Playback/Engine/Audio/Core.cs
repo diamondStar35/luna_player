@@ -7,7 +7,6 @@ internal sealed partial class AudioProcessor(MpvSession session)
     private double _volume = 100;
     private double _speed = 1;
     private double _pitch;
-    private bool _pitchFilterActive;
     private double _pan;
     private bool _panFilterActive;
     private bool _normalizationEnabled;

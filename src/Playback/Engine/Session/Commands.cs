@@ -34,6 +34,5 @@ internal sealed partial class MpvSession
     }
     internal void SetFade(double level) => TryDo(mpv => mpv.FadeVolume(level, 0));
 
-    internal bool AddFilter(string filter) => TryDoNow(mpv => mpv.Command("af", "add", filter));
     internal void RemoveFilter(string label) => TryDoNow(mpv => mpv.Command("af", "remove", label));
 }

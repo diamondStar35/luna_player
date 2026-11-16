@@ -9,6 +9,56 @@ namespace LunaPlayer.Tests.Playback;
 public sealed class NativeSofaTests
 {
     [TestMethod]
+    public async Task PitchUsesMpvPostprocessingAfterUserEffects()
+    {
+        NativeHost.Initialize();
+        using var workspace = new Workspace();
+        using var session = new MpvSession(0, new Lock(), new Dictionary<string, object?> { ["ao"] = "null", ["vo"] = "null" });
+        var audio = new AudioProcessor(session);
+        audio.SetNormalization(true);
+        audio.SetSofa(AudioFilters.SofaGraph(new AudioSettings { SofaEnabled = true, SofaFile = SofaFixture.Write(workspace) }));
+        session.TryDo(mpv => mpv.Command("loadfile", NativeHost.Wave(workspace, sampleRate: 48000)));
+        await NativeHost.Until(() => session.ReadDouble("audio-out-params/channel-count") == 2);
+        audio.SetPitch(2);
+        var result = new TaskCompletionSource<(object? Filters, object? Pitch)>(TaskCreationOptions.RunContinuationsAsynchronously);
+        session.TryDo(_ => result.SetResult((session.ReadLiveObject("af"), session.ReadLiveObject("pitch"))));
+        var state = await result.Task.WaitAsync(TimeSpan.FromSeconds(8));
+        CollectionAssert.AreEqual(new[] { "audionormalize", AudioFilters.SofaLabel },
+            ((IEnumerable<object?>)state.Filters!).Cast<IDictionary<string, object?>>()
+                .Select(filter => (string)filter["label"]!).ToArray());
+        Assert.AreEqual(Math.Pow(2, 2.0 / 12), Convert.ToDouble(state.Pitch), 0.000001);
+    }
+
+    [TestMethod]
+    public async Task OtherAudioEffectsStayBeforeSpatializationAndPreserveExistingDefinitions()
+    {
+        NativeHost.Initialize();
+        using var workspace = new Workspace();
+        using var session = new MpvSession(0, new Lock(), new Dictionary<string, object?> { ["ao"] = "null", ["vo"] = "null" });
+        var audio = new AudioProcessor(session);
+        var graph = AudioFilters.SofaGraph(new AudioSettings
+        {
+            SofaEnabled = true, SofaFile = SofaFixture.Write(workspace, "HRTF's [é], test;.sofa"),
+        });
+        audio.SetSofa(graph);
+        session.TryDo(mpv => mpv.Command("af", "pre", "@custom:!lavfi=[volume=0.25]"));
+        audio.SetNormalization(true);
+        audio.SetMono(true);
+        audio.SetPitch(2);
+        audio.SetPan(25);
+        audio.SetSilenceRemoval(true, AudioFilters.SilenceGraph(new SilenceSettings()));
+        var ready = new TaskCompletionSource<object?>(TaskCreationOptions.RunContinuationsAsynchronously);
+        session.TryDo(_ => ready.SetResult(session.ReadLiveObject("af")));
+        var filters = ((IEnumerable<object?>)(await ready.Task.WaitAsync(TimeSpan.FromSeconds(8)))!)
+            .Cast<IDictionary<string, object?>>().ToArray();
+        CollectionAssert.AreEqual(new[] { "custom", "audionormalize", "audiomono", "audiopan", "silenceremove", AudioFilters.SofaLabel },
+            filters.Select(filter => (string)filter["label"]!).ToArray());
+        Assert.AreEqual(false, filters[0]["enabled"]);
+        Assert.AreEqual("volume=0.25", ((IDictionary<string, object?>)filters[0]["params"]!)["graph"]);
+        Assert.AreEqual(graph, ((IDictionary<string, object?>)filters[^1]["params"]!)["graph"]);
+    }
+
+    [TestMethod]
     public async Task SofaRendersStereoAndSurvivesSeekAndReload()
     {
         NativeHost.Initialize();
@@ -27,14 +77,14 @@ public sealed class NativeSofaTests
         var media = NativeHost.Wave(workspace);
         Assert.IsTrue(session.TryDo(mpv => mpv.Command("loadfile", media)));
         await NativeHost.Until(() => session.ReadDouble("audio-out-params/channel-count") == 2);
-        CollectionAssert.AreEqual(new[] { AudioFilters.SofaLabel, "audionormalize" }, FilterLabels(session));
+        CollectionAssert.AreEqual(new[] { "audionormalize", AudioFilters.SofaLabel }, FilterLabels(session));
         Assert.IsTrue(audio.SetSofa(graph));
-        CollectionAssert.AreEqual(new[] { AudioFilters.SofaLabel, "audionormalize" }, FilterLabels(session));
+        CollectionAssert.AreEqual(new[] { "audionormalize", AudioFilters.SofaLabel }, FilterLabels(session));
         settings.SofaGain = -5;
         var replacement = AudioFilters.SofaGraph(settings);
         Assert.IsTrue(audio.SetSofa(replacement));
         await NativeHost.Until(() => FilterDefinition(session) == replacement);
-        CollectionAssert.AreEqual(new[] { AudioFilters.SofaLabel, "audionormalize" }, FilterLabels(session));
+        CollectionAssert.AreEqual(new[] { "audionormalize", AudioFilters.SofaLabel }, FilterLabels(session));
         Assert.IsTrue(session.TryDo(mpv => mpv.Command("seek", "2", "absolute+exact")));
         Assert.IsTrue(session.TrySetProperty("pause", false));
         await NativeHost.Until(() => session.ReadDouble("time-pos") is > 2);
@@ -42,7 +92,7 @@ public sealed class NativeSofaTests
         Assert.IsTrue(session.TryDo(mpv => mpv.Command("loadfile", media)));
         await NativeHost.Until(() => session.ReadDouble("time-pos") is < 0.5
             && session.ReadDouble("audio-out-params/channel-count") == 2);
-        CollectionAssert.AreEqual(new[] { AudioFilters.SofaLabel, "audionormalize" }, FilterLabels(session));
+        CollectionAssert.AreEqual(new[] { "audionormalize", AudioFilters.SofaLabel }, FilterLabels(session));
     }
 
     [TestMethod]
