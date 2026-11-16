@@ -39,6 +39,7 @@
 ; once for a whole selection rather than launching a verb per file.
 #define ConvertLabel "Convert with Luna"
 #define CapabilitiesKey "Software\" + AppIdentifier + "\Capabilities"
+#define AutoPlayKey "Software\Microsoft\Windows\CurrentVersion\Explorer\AutoplayHandlers"
 
 ; The file types the player opens, as Media\MediaLibrary.cs lists them. The entries at the end are written
 ; out by looping over this rather than by hand: there are four registrations per type, and a list kept in
@@ -53,6 +54,13 @@
   ".wv", ".xspf", ".y4m" }
 #define Index 0
 #define Extension ""
+
+#dim DiscKinds[2] { "Video", "Audio" }
+#dim DiscEvents[2] { "PlayDVDMovieOnArrival", "PlayDVDAudioOnArrival" }
+#dim DiscArguments[2] { "--dvd-video", "--dvd-audio" }
+#define DiscIndex 0
+#define DiscProgram ""
+#define DiscHandler ""
 
 [Setup]
 AppId={{7B2F1C4E-5A93-4D18-9C6B-0E5A7F3D82A1}
@@ -99,7 +107,7 @@ ChangesAssociations=yes
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
 [Tasks]
-Name: "associate"; Description: "Open audio and video files with {#AppName}"; GroupDescription: "File associations:"
+Name: "associate"; Description: "Register {#AppName} for media files and DVD discs"; GroupDescription: "File associations:"
 Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
 
 [Files]
@@ -168,6 +176,24 @@ Root: HKCU; Subkey: "Software\Classes\{#Extension}\OpenWithProgids"; ValueType: 
 Root: HKCU; Subkey: "{#CapabilitiesKey}\FileAssociations"; ValueType: string; ValueName: "{#Extension}"; ValueData: "{#ProgId}"; Flags: uninsdeletevalue; Tasks: associate
 #endsub
 #for {Index = 0; Index < DimOf(Extensions); Index++} EmitExtension
+
+; Disc handlers mirror Media\Discs\AutoPlay.cs and remain per-user. The final dot in each command
+; prevents a drive's trailing backslash from escaping the closing quote around its location.
+#sub EmitDisc
+  #define DiscProgram AppIdentifier + ".DVD" + DiscKinds[DiscIndex]
+  #define DiscHandler AppIdentifier + DiscEvents[DiscIndex]
+Root: HKCU; Subkey: "Software\Classes\{#DiscProgram}\DefaultIcon"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"",0"; Flags: uninsdeletekey; Tasks: associate
+Root: HKCU; Subkey: "Software\Classes\{#DiscProgram}\shell\open\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" {#DiscArguments[DiscIndex]} ""%1\."""; Flags: uninsdeletekey; Tasks: associate
+Root: HKCU; Subkey: "Software\Classes\{#DiscProgram}"; Flags: uninsdeletekey; Tasks: associate
+Root: HKCU; Subkey: "{#AutoPlayKey}\Handlers\{#DiscHandler}"; ValueType: string; ValueName: "Action"; ValueData: "Play DVD-{#DiscKinds[DiscIndex]}"; Flags: uninsdeletekey; Tasks: associate
+Root: HKCU; Subkey: "{#AutoPlayKey}\Handlers\{#DiscHandler}"; ValueType: string; ValueName: "Provider"; ValueData: "{#AppName}"; Flags: uninsdeletekey; Tasks: associate
+Root: HKCU; Subkey: "{#AutoPlayKey}\Handlers\{#DiscHandler}"; ValueType: string; ValueName: "DefaultIcon"; ValueData: """{app}\{#AppExeName}"",0"; Flags: uninsdeletekey; Tasks: associate
+Root: HKCU; Subkey: "{#AutoPlayKey}\Handlers\{#DiscHandler}"; ValueType: string; ValueName: "InvokeProgID"; ValueData: "{#DiscProgram}"; Flags: uninsdeletekey; Tasks: associate
+Root: HKCU; Subkey: "{#AutoPlayKey}\Handlers\{#DiscHandler}"; ValueType: string; ValueName: "InvokeVerb"; ValueData: "open"; Flags: uninsdeletekey; Tasks: associate
+Root: HKCU; Subkey: "{#AutoPlayKey}\EventHandlers\{#DiscEvents[DiscIndex]}"; ValueType: string; ValueName: "{#DiscHandler}"; ValueData: ""; Flags: uninsdeletevalue; Tasks: associate
+Root: HKCU; Subkey: "{#CapabilitiesKey}\AutoplayHandlers"; ValueType: string; ValueName: "{#DiscEvents[DiscIndex]}"; ValueData: "{#DiscHandler}"; Flags: uninsdeletevalue; Tasks: associate
+#endsub
+#for {DiscIndex = 0; DiscIndex < DimOf(DiscKinds); DiscIndex++} EmitDisc
 
 [Code]
 function IsUpdateInstall: Boolean;

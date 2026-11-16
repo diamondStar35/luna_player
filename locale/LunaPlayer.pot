@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-11-16 13:07+0200\n"
+"POT-Creation-Date: 2026-11-16 20:14+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -998,18 +998,18 @@ msgid "Unknown"
 msgstr ""
 
 #. Translators: Caption of the progress window while a selected DVD is opened.
-#: Application/Commands/Files/Discs.cs:16
+#: Application/Commands/Files/Discs.cs:32
 msgid "Opening DVD"
 msgstr ""
 
 #. Translators: Progress text while the selected DVD is inspected before playback.
 #. Translators: Status while DVD titles are inspected in the background in the Open DVD picker.
-#: Application/Commands/Files/Discs.cs:18 UI/Discs/Picker.cs:69
+#: Application/Commands/Files/Discs.cs:34 UI/Discs/Picker.cs:69
 msgid "Reading DVD titles..."
 msgstr ""
 
 #. Translators: Error when a DVD title selected in the picker is unavailable or cannot be loaded.
-#: Application/Commands/Files/Discs.cs:39
+#: Application/Commands/Files/Discs.cs:55
 msgid "Could not open the selected DVD title."
 msgstr ""
 
@@ -1230,28 +1230,28 @@ msgstr[1] ""
 #. Translators: Spoken when a launch-time folder holds nothing this player can play.
 #. Translators: Spoken when the chosen folder holds nothing this player can play.
 #. Translators: Spoken when the folder and the folders inside it hold nothing this player can play.
-#: Application/Commands/Files/Files.cs:124
-#: Application/Commands/Files/Files.cs:224
-#: Application/Commands/Files/Files.cs:378
+#: Application/Commands/Files/Files.cs:129
+#: Application/Commands/Files/Files.cs:229
+#: Application/Commands/Files/Files.cs:383
 msgid "No audio files found in that folder."
 msgstr ""
 
 #. Translators: Short announcement when a launch-time folder holds no playable files.
 #. Translators: The short wording spoken when the chosen folder holds nothing this player can play.
 #. Translators: The short wording spoken when a folder holds nothing this player can play.
-#: Application/Commands/Files/Files.cs:126
-#: Application/Commands/Files/Files.cs:226
-#: Application/Commands/Files/Files.cs:380
+#: Application/Commands/Files/Files.cs:131
+#: Application/Commands/Files/Files.cs:231
+#: Application/Commands/Files/Files.cs:385
 msgid "No audio files."
 msgstr ""
 
 #. Translators: Asks the user for the web address of the stream they want to play.
-#: Application/Commands/Files/Files.cs:189
+#: Application/Commands/Files/Files.cs:194
 msgid "Enter link to play."
 msgstr ""
 
 #. Translators: Title of the window that asks for the web address of a stream to play.
-#: Application/Commands/Files/Files.cs:191
+#: Application/Commands/Files/Files.cs:196
 msgid "Open Link"
 msgstr ""
 
@@ -1259,13 +1259,13 @@ msgstr ""
 #. "http" and "https" are the names of the two web protocols and are not translated.
 #. Translators: Shown when a typed YouTube address does not begin with a supported web protocol.
 #. Translators: Shown when a favourite is saved with something that is not a web address.
-#: Application/Commands/Files/Files.cs:201
+#: Application/Commands/Files/Files.cs:206
 #: Application/Commands/YouTube/YouTube.cs:92 Favorites/FavoriteStore.cs:140
 msgid "The link must start with http or https."
 msgstr ""
 
 #. Translators: Shown when the stream at the address typed into Open Link could not be played.
-#: Application/Commands/Files/Files.cs:212
+#: Application/Commands/Files/Files.cs:217
 msgid "Could not open the link."
 msgstr ""
 
@@ -1274,58 +1274,58 @@ msgstr ""
 #. Translators: Spoken after closing a radio session and restoring the original playlist paused.
 #. Translators: Spoken once the current file has been removed from the playlist.
 #. Translators: Short announcement once the current file has been removed from the playlist.
-#: Application/Commands/Files/Files.cs:237
-#: Application/Commands/Files/Files.cs:239
-#: Application/Commands/Files/Files.cs:246
-#: Application/Commands/Files/Files.cs:261
-#: Application/Commands/Files/Files.cs:263
+#: Application/Commands/Files/Files.cs:242
+#: Application/Commands/Files/Files.cs:244
+#: Application/Commands/Files/Files.cs:251
+#: Application/Commands/Files/Files.cs:266
+#: Application/Commands/Files/Files.cs:268
 msgid "File closed."
 msgstr ""
 
 #. Translators: Spoken when the current file could not be taken out of the playlist.
-#: Application/Commands/Files/Files.cs:254
+#: Application/Commands/Files/Files.cs:259
 msgid "Could not close the file."
 msgstr ""
 
 #. Translators: The short wording spoken when a file could not be closed.
 #. Translators: The short wording spoken when the files could not be closed.
-#: Application/Commands/Files/Files.cs:256
-#: Application/Commands/Files/Files.cs:279
+#: Application/Commands/Files/Files.cs:261
+#: Application/Commands/Files/Files.cs:284
 msgid "Close failed."
 msgstr ""
 
 #. Translators: Spoken when the loaded files could not be taken out of the playlist.
-#: Application/Commands/Files/Files.cs:277
+#: Application/Commands/Files/Files.cs:282
 msgid "Could not close files."
 msgstr ""
 
 #. Translators: Spoken once every file has been removed from the playlist.
 #. Translators: Short announcement once every file has been removed from the playlist.
-#: Application/Commands/Files/Files.cs:284
-#: Application/Commands/Files/Files.cs:286
+#: Application/Commands/Files/Files.cs:289
+#: Application/Commands/Files/Files.cs:291
 msgid "All files closed."
 msgstr ""
 
 #. Translators: The short wording spoken when Windows could not be asked to open a folder.
 #. Translators: The short wording spoken when Windows could not show a file's properties.
-#: Application/Commands/Files/Files.cs:294
+#: Application/Commands/Files/Files.cs:299
 #: Application/Commands/Files/Info.cs:35
 msgid "Open failed."
 msgstr ""
 
 #. Translators: Title of the progress window shown while a folder and the folders inside it are being searched for media.
-#: Application/Commands/Files/Files.cs:358
+#: Application/Commands/Files/Files.cs:363
 msgid "Opening files"
 msgstr ""
 
 #. Translators: First message in the progress window, before any file has been found.
-#: Application/Commands/Files/Files.cs:360
+#: Application/Commands/Files/Files.cs:365
 msgid "Loading files from folder and subfolders..."
 msgstr ""
 
 #. Translators: Progress message while a folder is being searched. {found} is how many media files
 #. have been found so far.
-#: Application/Commands/Files/Files.cs:363
+#: Application/Commands/Files/Files.cs:368
 msgid "Opening files... {found} media files found"
 msgstr ""
 
@@ -3425,8 +3425,18 @@ msgstr ""
 
 #. Translators: Shown when the user asks the player to open its file types but the system is not Windows.
 #. Translators: Shown when removing file associations is attempted on a non-Windows system.
-#: Media/Associations.cs:25 Media/Associations.cs:54
+#: Media/Associations.cs:25 Media/Associations.cs:59
 msgid "File associations are available only on Windows."
+msgstr ""
+
+#. Translators: Windows AutoPlay action offered for an inserted DVD-Video disc; Windows appends the player name.
+#: Media/Associations.cs:39
+msgid "Play DVD-Video"
+msgstr ""
+
+#. Translators: Windows AutoPlay action offered for an inserted DVD-Audio disc; Windows appends the player name.
+#: Media/Associations.cs:41
+msgid "Play DVD-Audio"
 msgstr ""
 
 #. Translators: Shown when media conversion fails without a more specific reason.

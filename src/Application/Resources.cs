@@ -81,6 +81,8 @@ internal static class Resources
     /// as soon as the shell has painted, alongside optional services rather than behind them.</summary>
     internal static PreparedLaunch PrepareLaunch(IReadOnlyList<string> arguments, Settings settings)
     {
+        if (LunaPlayer.Media.Discs.Request.FromArguments(arguments) is { } disc)
+            return new PreparedLaunch(false, [], null, null, null, disc);
         var convert = arguments.Any(path => path.Equals("--convert", StringComparison.OrdinalIgnoreCase));
         var paths = new List<string>();
         foreach (var argument in arguments)
@@ -230,7 +232,8 @@ internal sealed record PreparedLaunch(
     IReadOnlyList<string> Paths,
     IReadOnlyList<string>? Files,
     string? PreferredPath,
-    string? SourceFolder);
+    string? SourceFolder,
+    LunaPlayer.Media.Discs.Request? Disc = null);
 
 /// <summary>Owns worker-created services until the application host transfers each one to its final owner.
 /// </summary>

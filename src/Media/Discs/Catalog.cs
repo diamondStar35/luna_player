@@ -8,6 +8,9 @@ namespace LunaPlayer.Media.Discs;
 /// <summary>Disc inspection owns a silent mpv instance and runs entirely on a worker.</summary>
 internal static class Catalog
 {
+    internal static DiscInfo Read(Request request, CancellationToken cancellationToken)
+        => Read(request.Location, request.Format, cancellationToken);
+
     internal static DiscInfo Read(string path, DiscFormat format, CancellationToken cancellationToken)
     {
         var directory = Resolve(path, format);

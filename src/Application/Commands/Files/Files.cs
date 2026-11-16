@@ -112,6 +112,11 @@ internal sealed partial class Files
     /// Falls back to the ordinary path flow for playlists and file-only requests.</summary>
     internal void OpenPrepared(PreparedLaunch launch)
     {
+        if (launch.Disc is { } disc)
+        {
+            OpenDisc(disc);
+            return;
+        }
         if (launch.Files is null)
         {
             OpenPaths(launch.Paths);

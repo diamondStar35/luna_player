@@ -203,7 +203,9 @@ internal sealed partial class Features : IDisposable
 
     internal void OpenPaths(IReadOnlyList<string> paths)
     {
-        if (Resources.IsConvertRequest(paths, out var files))
+        if (LunaPlayer.Media.Discs.Request.FromArguments(paths) is { } disc)
+            _fileActions.OpenDisc(disc);
+        else if (Resources.IsConvertRequest(paths, out var files))
             _tools.OpenFor(files);
         else
             _controller!.OpenPaths(paths);

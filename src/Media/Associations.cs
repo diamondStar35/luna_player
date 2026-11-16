@@ -9,7 +9,7 @@ namespace LunaPlayer.Media;
 internal sealed class FileAssociations
 {
     // This is the same central list used by the open dialog and folder scans. LunaPlayer.iss mirrors it
-    // for install-time machine registration; changing supported formats must update that mirror too.
+    // for install-time registration; changing supported formats must update that mirror too.
     private static IReadOnlyList<string> Extensions => MediaLibrary.SupportedExtensions;
     private const string ProgId = $"{AppInfo.Identifier}.Media";
     private const string AppName = AppInfo.Name;
@@ -34,6 +34,11 @@ internal sealed class FileAssociations
             WriteApplication(alias, command);
             WriteCapabilities();
             foreach (var extension in Extensions) WriteExtension(extension);
+            Discs.AutoPlay.Register(Registry.CurrentUser, executable,
+                // Translators: Windows AutoPlay action offered for an inserted DVD-Video disc; Windows appends the player name.
+                Tr("Play DVD-Video"),
+                // Translators: Windows AutoPlay action offered for an inserted DVD-Audio disc; Windows appends the player name.
+                Tr("Play DVD-Audio"));
             NotifyShell();
             error = string.Empty;
             return true;
@@ -58,6 +63,7 @@ internal sealed class FileAssociations
         {
             var alias = Path.GetFileName(Environment.ProcessPath ?? $"{AppInfo.Identifier}.exe");
             foreach (var extension in Extensions) RemoveExtension(extension);
+            Discs.AutoPlay.Unregister(Registry.CurrentUser);
             Registry.CurrentUser.DeleteSubKeyTree($@"{Classes}\{ProgId}", throwOnMissingSubKey: false);
             Registry.CurrentUser.DeleteSubKeyTree($@"{Classes}\Applications\{alias}", throwOnMissingSubKey: false);
             Registry.CurrentUser.DeleteSubKeyTree(Capabilities, throwOnMissingSubKey: false);
