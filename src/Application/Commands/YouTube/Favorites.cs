@@ -36,40 +36,36 @@ internal sealed class Favorites
         router.Register(ActionId.OpenFavorites, Manage);
     }
 
-    /// <remarks>
-    /// The window is reopened after each change, carrying the id it last dealt with so the list comes back
-    /// on the same row. Opening a favourite successfully is the only thing that closes it for good.
-    /// </remarks>
     private void Manage()
     {
-        var selectedId = string.Empty;
-        while (true)
+        var favorites = List();
+        if (!ReportStoreFailure())
+            _view.Dialogs.ManageFavorites(favorites, HandleRequest);
+    }
+
+    private void HandleRequest(LunaPlayer.UI.YouTube.FavoriteRequest chosen)
+    {
+        var selectedId = chosen.Id;
+        switch (chosen.Action)
         {
-            var favorites = List();
-            if (ReportStoreFailure())
+            case LunaPlayer.UI.YouTube.FavoriteAction.Open:
+                // Stream loading can open its own progress window. Hide the manager first
+                // so that window is owned by the player rather than a hidden Favorites window.
+                _view.Dialogs.CloseFavorites();
+                if (!Open(chosen.Id)) Manage();
                 return;
-            var request = _view.Dialogs.ManageFavorites(favorites, selectedId);
-            if (request is not LunaPlayer.UI.YouTube.FavoriteRequest chosen)
-                return;
-            selectedId = chosen.Id;
-            switch (chosen.Action)
-            {
-                case LunaPlayer.UI.YouTube.FavoriteAction.Open:
-                    if (Open(chosen.Id))
-                        return;
-                    break;
-                case LunaPlayer.UI.YouTube.FavoriteAction.Add:
-                    selectedId = Add() ?? selectedId;
-                    break;
-                case LunaPlayer.UI.YouTube.FavoriteAction.Edit:
-                    Edit(chosen.Id);
-                    break;
-                case LunaPlayer.UI.YouTube.FavoriteAction.Remove:
-                    if (Remove(chosen.Id))
-                        selectedId = string.Empty;
-                    break;
-            }
+            case LunaPlayer.UI.YouTube.FavoriteAction.Add:
+                selectedId = Add() ?? selectedId;
+                break;
+            case LunaPlayer.UI.YouTube.FavoriteAction.Edit:
+                Edit(chosen.Id);
+                break;
+            case LunaPlayer.UI.YouTube.FavoriteAction.Remove:
+                if (Remove(chosen.Id)) selectedId = string.Empty;
+                break;
         }
+        var favorites = List();
+        if (!ReportStoreFailure()) _view.Dialogs.RefreshFavorites(favorites, selectedId);
     }
 
     private IReadOnlyList<LunaPlayer.UI.YouTube.FavoriteListItem> List()

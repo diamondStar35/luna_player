@@ -14,6 +14,7 @@ internal sealed class YouTubeDialogs : IDisposable
     private readonly DialogContext _context;
     private readonly YouTube.DownloadOutcomes _downloadOutcomes;
     private YouTube.ResultsDialog? _youTubeResults;
+    private YouTube.FavoritesDialog? _favorites;
     private Window? _resultsOwner;
     private readonly HashSet<YouTube.DownloadProgressDialog> _downloadProgressDialogs = [];
 
@@ -28,7 +29,15 @@ internal sealed class YouTubeDialogs : IDisposable
 
     public LunaPlayer.UI.YouTube.YouTubeLinkKind? ChooseYouTubeLinkKind() { using var dialog = new YouTube.LinkKindDialog(_context.Parent); return dialog.Show(); }
     public LunaPlayer.UI.YouTube.YouTubeSearchRequest? SearchYouTube(LunaPlayer.UI.YouTube.YouTubeSearchPrompt prompt) { using var dialog = new YouTube.SearchDialog(_context.Parent, _context.Dispatcher, prompt); return dialog.Show(); }
-    public LunaPlayer.UI.YouTube.FavoriteRequest? ManageFavorites(IReadOnlyList<LunaPlayer.UI.YouTube.FavoriteListItem> favorites, string selectedId) { using var dialog = new YouTube.FavoritesDialog(_context.Parent, favorites, selectedId); return dialog.Show(); }
+    public void ManageFavorites(IReadOnlyList<LunaPlayer.UI.YouTube.FavoriteListItem> favorites, Action<LunaPlayer.UI.YouTube.FavoriteRequest> request)
+    {
+        if (_favorites is null) _favorites = new YouTube.FavoritesDialog(favorites, request);
+        else _favorites.Refresh(favorites);
+        _favorites.Show();
+    }
+    public void RefreshFavorites(IReadOnlyList<LunaPlayer.UI.YouTube.FavoriteListItem> favorites, string? selectedId = null)
+        => _favorites?.Refresh(favorites, selectedId);
+    public void CloseFavorites() => _favorites?.Hide();
     public LunaPlayer.UI.YouTube.FavoriteDraft? EditFavorite(string caption, LunaPlayer.UI.YouTube.FavoriteDraft value) { using var dialog = new YouTube.FavoriteEditDialog(_context.Parent, caption, value); return dialog.Show(); }
     public LunaPlayer.UI.YouTube.ResultChoice? ShowYouTubeResults(LunaPlayer.UI.YouTube.YouTubeResultsPrompt prompt)
     {
@@ -94,6 +103,8 @@ internal sealed class YouTubeDialogs : IDisposable
         _downloadOutcomes.Dispose();
         _youTubeResults?.Dispose();
         _youTubeResults = null;
+        _favorites?.Dispose();
+        _favorites = null;
         CloseDownloadProgressWindows();
     }
 }

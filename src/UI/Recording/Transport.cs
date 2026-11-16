@@ -132,7 +132,7 @@ internal sealed partial class MainDialog
     private void OnCharHook(object? sender, KeyEventArgs args)
     {
         if (args.Code == Key.Escape)
-            _dialog.EndModal(StandardId.Cancel);
+            _dialog.Hide();
         else
             args.Skip();
     }

@@ -9,10 +9,20 @@ using Downloads = LunaPlayer.YouTube.Download;
 
 namespace LunaPlayer.UI.Services.Dialogs;
 
-internal sealed class RecordingDialogs(DialogContext context)
+internal sealed class RecordingDialogs(DialogContext context) : IDisposable
 {
     private readonly DialogContext _context = context;
+    private LunaPlayer.UI.Recording.MainDialog? _dialog;
     public void ShowRecording(
         LunaPlayer.Recording.AudioCatalog catalog, LunaPlayer.Recording.RecordingSources sources, LunaPlayer.Recording.RecordingEngine engine)
-    { using var dialog = new LunaPlayer.UI.Recording.MainDialog(_context.Parent, _context.Dispatcher, catalog, sources, engine); dialog.Show(); }
+    {
+        _dialog ??= new LunaPlayer.UI.Recording.MainDialog(_context.Dispatcher, catalog, sources, engine);
+        _dialog.Show();
+    }
+
+    public void Dispose()
+    {
+        _dialog?.Dispose();
+        _dialog = null;
+    }
 }

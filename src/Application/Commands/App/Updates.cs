@@ -19,6 +19,7 @@ internal sealed class Updates : IDisposable
     private readonly AppUpdateService _service = new();
     private readonly CancellationTokenSource _lifetime = new();
     private bool _disposed;
+    private bool _busy;
 
     internal Updates(
         ActionRouter router,
@@ -37,8 +38,9 @@ internal sealed class Updates : IDisposable
     /// <summary>Checks without opening a progress window and says nothing unless an update exists.</summary>
     internal void CheckAtStartup()
     {
-        if (!_settings.General.CheckUpdatesOnStartup || _disposed)
+        if (!_settings.General.CheckUpdatesOnStartup || _disposed || _busy)
             return;
+        _busy = true;
         _ = CheckAtStartupAsync();
     }
 
@@ -47,17 +49,17 @@ internal sealed class Updates : IDisposable
         CheckOutcome outcome;
         try
         {
-            outcome = await Task.Run(() => RunCheck(_lifetime.Token), _lifetime.Token)
+            var token = _lifetime.Token;
+            outcome = await Task.Run(() => RunCheck(token), token)
                 .ConfigureAwait(false);
         }
         catch (OperationCanceledException)
         {
             return;
         }
-        if (!outcome.Newer || !outcome.PackageAvailable || _disposed)
-            return;
         _dispatcher.Post(() =>
         {
+            _busy = false;
             if (!_disposed)
                 ProcessCheck(outcome, showLatest: false);
         });
@@ -65,19 +67,22 @@ internal sealed class Updates : IDisposable
 
     private void CheckNow()
     {
+        if (_disposed || _busy) return;
+        _busy = true;
         var prompt = new ProgressPrompt(
             // Translators: Title of the progress window shown during a manual application update check.
             Tr("Checking for app updates"),
             // Translators: Initial message shown while contacting the application update server.
             Tr("Checking for updates..."),
             // Translators: Status shown while the application update check is still running.
-            _ => Tr("Checking for updates...")) { Proportional = false };
+            _ => Tr("Checking for updates...")) { Proportional = false, Modal = false };
         BackgroundProgress.Start(
             _view,
             _dispatcher,
             prompt,
             (_, token) => RunCheck(token),
-            outcome => ProcessCheck(outcome, showLatest: true));
+            outcome => ProcessCheck(outcome, showLatest: true),
+            () => _busy = false);
     }
 
     private CheckOutcome RunCheck(CancellationToken token)
@@ -100,6 +105,7 @@ internal sealed class Updates : IDisposable
 
     private void ProcessCheck(CheckOutcome outcome, bool showLatest)
     {
+        if (_disposed) return;
         if (outcome.Error.Length > 0)
         {
             if (showLatest)
@@ -142,6 +148,8 @@ internal sealed class Updates : IDisposable
 
     private void Download(AppUpdateInfo update)
     {
+        if (_disposed || _busy) return;
+        _busy = true;
         var empty = new ProgressUpdate(0, 0, string.Empty);
         // Translators: Shown and spoken after an application update has downloaded, while its SHA-256
         // checksum is compared with the checksum published alongside the release.
@@ -162,13 +170,14 @@ internal sealed class Updates : IDisposable
             // Translators: Title of the window shown while a Luna Player update package is downloaded.
             Tr("Downloading update"),
             DownloadStatus(empty),
-            Describe) { Detailed = true };
+            Describe) { Detailed = true, Modal = false };
         BackgroundProgress.Start(
             _view,
             _dispatcher,
             prompt,
             (report, token) => RunDownload(update, verifying, report, token),
-            FinishDownload);
+            FinishDownload,
+            () => _busy = false);
     }
 
     private DownloadOutcome RunDownload(
@@ -201,6 +210,7 @@ internal sealed class Updates : IDisposable
 
     private void FinishDownload(DownloadOutcome outcome)
     {
+        if (_disposed) return;
         if (outcome.Error.Length > 0)
         {
             if (outcome.IntegrityFailure)

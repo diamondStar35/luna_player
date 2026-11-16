@@ -36,6 +36,7 @@ internal sealed class DialogService : IDialogService, IDisposable
     private readonly PreferencesDialogs _preferences;
     private readonly InformationDialogs _information;
     private readonly Frame _frame;
+    private readonly HashSet<LunaPlayer.UI.Controls.ProgressView> _progressWindows = [];
     private bool? _toastNotificationsAvailable;
 
     internal DialogService(
@@ -96,10 +97,21 @@ internal sealed class DialogService : IDialogService, IDisposable
             || !new NotificationMessage(title, message).Show())
             ShowInfo(message);
     }
-    public LunaPlayer.UI.Contracts.IProgressView BeginProgress(string title, string message, bool proportional, bool detailed) => new LunaPlayer.UI.Controls.ProgressView(DialogParent, title, message, proportional, detailed);
+    public LunaPlayer.UI.Contracts.IProgressView BeginProgress(string title, string message, bool proportional, bool detailed, bool modal = true)
+    {
+        var progress = new LunaPlayer.UI.Controls.ProgressView(modal ? DialogParent : null, title, message, proportional, detailed, modal);
+        progress.Closed += closed => _progressWindows.Remove(closed);
+        _progressWindows.Add(progress);
+        return progress;
+    }
 
     /// <summary>Tears down retained dialogs before the main frame that owns them is destroyed.</summary>
-    public void Dispose() { _playlists.Dispose(); _spotify.Dispose(); _radio.Dispose(); _youtube.Dispose(); }
+    public void Dispose()
+    {
+        foreach (var progress in _progressWindows.ToArray()) progress.Dispose();
+        _recording.Dispose();
+        _playlists.Dispose(); _spotify.Dispose(); _radio.Dispose(); _youtube.Dispose();
+    }
     public void EditPlaylist(Document document, Action<string> speak, Func<Document, bool> save, Action saved, bool metadataOnly = false)
         => _playlists.EditPlaylist(document, speak, save, saved, metadataOnly);
     internal bool TryClosePlaylistEditors() => _playlists.TryCloseEditors();
@@ -125,7 +137,9 @@ internal sealed class DialogService : IDialogService, IDisposable
     public bool ConfirmCloseWithDownloads() => _youtube.ConfirmCloseWithDownloads();
     public LunaPlayer.UI.YouTube.YouTubeLinkKind? ChooseYouTubeLinkKind() => _youtube.ChooseYouTubeLinkKind();
     public LunaPlayer.UI.YouTube.YouTubeSearchRequest? SearchYouTube(LunaPlayer.UI.YouTube.YouTubeSearchPrompt prompt) => _youtube.SearchYouTube(prompt);
-    public LunaPlayer.UI.YouTube.FavoriteRequest? ManageFavorites(IReadOnlyList<LunaPlayer.UI.YouTube.FavoriteListItem> favorites, string selectedId) => _youtube.ManageFavorites(favorites, selectedId);
+    public void ManageFavorites(IReadOnlyList<LunaPlayer.UI.YouTube.FavoriteListItem> favorites, Action<LunaPlayer.UI.YouTube.FavoriteRequest> request) => _youtube.ManageFavorites(favorites, request);
+    public void RefreshFavorites(IReadOnlyList<LunaPlayer.UI.YouTube.FavoriteListItem> favorites, string? selectedId = null) => _youtube.RefreshFavorites(favorites, selectedId);
+    public void CloseFavorites() => _youtube.CloseFavorites();
     public LunaPlayer.UI.YouTube.FavoriteDraft? EditFavorite(string caption, LunaPlayer.UI.YouTube.FavoriteDraft value) => _youtube.EditFavorite(caption, value);
     public LunaPlayer.UI.YouTube.ResultChoice? ShowYouTubeResults(LunaPlayer.UI.YouTube.YouTubeResultsPrompt prompt) => _youtube.ShowYouTubeResults(prompt);
     public bool OfferYouTubeComponents() => _youtube.OfferYouTubeComponents();

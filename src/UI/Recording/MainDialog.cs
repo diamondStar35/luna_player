@@ -69,7 +69,6 @@ internal sealed partial class MainDialog : IDisposable
     private bool _busy;
 
     internal MainDialog(
-        Window parent,
         IApplicationDispatcher dispatcher,
         AudioCatalog catalog,
         RecordingSources sources,
@@ -81,10 +80,10 @@ internal sealed partial class MainDialog : IDisposable
         _engine = engine;
         _session = new SessionController(engine, dispatcher);
         _dialog = new Dialog(
-            parent,
+            parent: null,
             // Translators: Title of the window where recording is set up and started.
             title: Tr("Recording"),
-            style: DialogStyle.Default | DialogStyle.ResizeBorder);
+            style: DialogStyle.Default | DialogStyle.ResizeBorder | DialogStyle.NoParent);
 
         // ---- sources ----
         // Translators: Title of the group of the recording window holding what to record from.
@@ -188,8 +187,14 @@ internal sealed partial class MainDialog : IDisposable
         _dialog.SetSizer(sizer);
         _dialog.Fit();
         _dialog.MinSize = new Size(680, 560);
-        _dialog.Center(onParent: true);
+        _dialog.Center(onParent: false);
         _dialog.Bind(WxEvents.CharHook, OnCharHook);
+        close.Click += (_, _) => _dialog.Hide();
+        _dialog.Closing += (_, args) =>
+        {
+            args.Veto();
+            _dialog.Hide();
+        };
 
         Rebuild();
         // The lists are built from the full offered set above; this narrows them to what the chosen
@@ -197,9 +202,21 @@ internal sealed partial class MainDialog : IDisposable
         LoadSupport();
         SyncButtons();
         _list.Focus();
+        _engine.StateChanged += OnRecordingStateChanged;
     }
 
-    internal void Show() => _dialog.ShowModal();
+    internal void Show()
+    {
+        SyncButtons();
+        _dialog.Show();
+        _dialog.Raise();
+        _list.Focus();
+    }
+
+    private void OnRecordingStateChanged() => _dispatcher.Post(() =>
+    {
+        if (!_closed) SyncButtons();
+    });
 
     /// <remarks>
     /// The ids the add menu uses are not released. Putting one on a menu hands the reservation to a
@@ -208,7 +225,9 @@ internal sealed partial class MainDialog : IDisposable
     /// </remarks>
     public void Dispose()
     {
+        if (_closed) return;
         _closed = true;
+        _engine.StateChanged -= OnRecordingStateChanged;
         _addMenu.Dispose();
         _dialog.Dispose();
     }

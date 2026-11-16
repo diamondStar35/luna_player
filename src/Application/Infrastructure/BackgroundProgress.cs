@@ -30,6 +30,9 @@ internal sealed record ProgressPrompt(
     /// way to say "still going" without claiming a figure; its message carries the running count.
     /// </remarks>
     internal bool Proportional { get; init; } = true;
+
+    /// <summary>Whether the operation disables the other application windows.</summary>
+    internal bool Modal { get; init; } = true;
 }
 
 /// <summary>Runs a job that works through a set of files off the UI thread, behind a progress window the user
@@ -67,14 +70,26 @@ internal static class BackgroundProgress
     /// the UI thread once the job has finished, and not at all if the user aborted it.</summary>
     /// <param name="work">The job. It is handed something to report progress to and a token that is set when
     /// the user aborts; it may either return early or throw <see cref="OperationCanceledException"/>.</param>
+    /// <param name="finished">Releases operation state after the window closes, including cancellation.</param>
     internal static void Start<TResult>(
         IMainView view,
         IApplicationDispatcher dispatcher,
         ProgressPrompt prompt,
         Func<Action<ProgressUpdate>, CancellationToken, TResult> work,
-        Action<TResult> completed)
+        Action<TResult> completed,
+        Action? finished = null)
+        => Start(view.Dialogs.BeginProgress(prompt.Title, prompt.Starting, prompt.Proportional, prompt.Detailed, prompt.Modal),
+            dispatcher, prompt, work, completed, finished);
+
+    internal static void Start<TResult>(
+        LunaPlayer.UI.Contracts.IProgressView progress,
+        IApplicationDispatcher dispatcher,
+        ProgressPrompt prompt,
+        Func<Action<ProgressUpdate>, CancellationToken, TResult> work,
+        Action<TResult> completed,
+        Action? finished = null)
     {
-        var job = new Job<TResult>(view, dispatcher, prompt, work, completed);
+        var job = new Job<TResult>(progress, dispatcher, prompt, work, completed, finished);
         Running.Add(job);
         job.Start();
     }
@@ -88,6 +103,7 @@ internal static class BackgroundProgress
         private readonly LunaPlayer.UI.Contracts.IProgressView _progress;
         private readonly Task<TResult> _task;
         private readonly Action<TResult> _completed;
+        private readonly Action? _finishedCallback;
         private IDisposable? _ticker;
         private bool _finished;
         private int _percent;
@@ -96,16 +112,18 @@ internal static class BackgroundProgress
         private int _lastFound = -1;
 
         internal Job(
-            IMainView view,
+            LunaPlayer.UI.Contracts.IProgressView progress,
             IApplicationDispatcher dispatcher,
             ProgressPrompt prompt,
             Func<Action<ProgressUpdate>, CancellationToken, TResult> work,
-            Action<TResult> completed)
+            Action<TResult> completed,
+            Action? finished)
         {
             _dispatcher = dispatcher;
             _prompt = prompt;
             _completed = completed;
-            _progress = view.Dialogs.BeginProgress(prompt.Title, prompt.Starting, prompt.Proportional, prompt.Detailed);
+            _finishedCallback = finished;
+            _progress = progress;
             // The token is given to Task.Run as well as to the job. Without it a job that aborts by throwing
             // OperationCanceledException leaves the task Faulted rather than Canceled - the exception's token
             // has to match the task's for .NET to read it as the abort it is - and the fault would then be
@@ -169,11 +187,14 @@ internal static class BackgroundProgress
             _dispatcher.Post(() =>
             {
                 ticker?.Dispose();
+                var cancelled = _cancellation.IsCancellationRequested || _progress.Cancelled;
                 // Closed before the result is used, so the job's own window or message box does not open
                 // behind a progress dialog that has finished with.
                 _progress.Dispose();
                 _cancellation.Dispose();
                 Running.Remove(this);
+                _finishedCallback?.Invoke();
+                if (cancelled) return;
                 if (_task.IsCompletedSuccessfully)
                 {
                     _completed(_task.Result);

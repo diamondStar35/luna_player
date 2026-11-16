@@ -91,7 +91,7 @@ internal interface IDialogService
     /// window with no bar on it, because a bar that never moves is worse than none.</param>
     /// <param name="detailed">Whether the job reports several lines at a time rather than one. A
     /// detailed window shows them in a read-only text area; the rest get a label.</param>
-    LunaPlayer.UI.Contracts.IProgressView BeginProgress(string title, string message, bool proportional, bool detailed);
+    LunaPlayer.UI.Contracts.IProgressView BeginProgress(string title, string message, bool proportional, bool detailed, bool modal = true);
     void ShowTextInfo(string title, string text);
 
     /// <summary>Shows the text an uploader wrote under a video, in the purpose-built window that can open its
@@ -105,11 +105,13 @@ internal interface IDialogService
     /// <summary>Opens the search window and returns what the user asked to search for, or null when they
     /// closed it without searching.</summary>
     LunaPlayer.UI.YouTube.YouTubeSearchRequest? SearchYouTube(LunaPlayer.UI.YouTube.YouTubeSearchPrompt prompt);
-    LunaPlayer.UI.YouTube.FavoriteRequest? ManageFavorites(IReadOnlyList<LunaPlayer.UI.YouTube.FavoriteListItem> favorites, string selectedId);
+    void ManageFavorites(IReadOnlyList<LunaPlayer.UI.YouTube.FavoriteListItem> favorites, Action<LunaPlayer.UI.YouTube.FavoriteRequest> request);
+    void RefreshFavorites(IReadOnlyList<LunaPlayer.UI.YouTube.FavoriteListItem> favorites, string? selectedId = null);
+    void CloseFavorites();
     LunaPlayer.UI.YouTube.FavoriteDraft? EditFavorite(string caption, LunaPlayer.UI.YouTube.FavoriteDraft value);
 
     /// <summary>Opens the IPTV source manager and returns what the user asked to do with which source, or
-    /// null when they closed it. The manager reopens after add, edit and remove, like the favourites one.
+    /// null when they closed it. The manager reopens after add, edit and remove.
     /// </summary>
     LunaPlayer.UI.Iptv.IptvSourceRequest? ManageIptvSources(IReadOnlyList<LunaPlayer.UI.Iptv.IptvSourceListItem> sources, string selectedId);
 
@@ -145,8 +147,7 @@ internal interface IDialogService
         Downloads.DownloadQueue queue,
         Guid itemId);
 
-    /// <summary>Opens the window where recording is set up and run. It is modal, but closing it does not
-    /// end a recording: the sources and the recorder outlive it.</summary>
+    /// <summary>Shows the modeless recording window. Closing it leaves an active recording running.</summary>
     void ShowRecording(
         LunaPlayer.Recording.AudioCatalog catalog, LunaPlayer.Recording.RecordingSources sources, LunaPlayer.Recording.RecordingEngine engine);
 

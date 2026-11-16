@@ -21,7 +21,7 @@ namespace LunaPlayer.UI.Controls;
 /// the whole reason it works: nothing here blocks that loop, so the button is answered the moment it is
 /// pressed rather than whenever some worker next decides to look.
 ///
-/// Input is kept out of every other window while it runs, this one excepted. Doing it with a window
+/// Modal operations keep input out of every other window while they run. Doing it with a window
 /// disabler rather than a nested
 /// modal loop is what keeps the rule above true: nothing here blocks the event loop, so Cancel is still an
 /// ordinary button press answered the moment it is made.
@@ -37,7 +37,7 @@ internal sealed class ProgressView : LunaPlayer.UI.Contracts.IProgressView
     private readonly TextCtrl? _text;
     private readonly Gauge _gauge;
     private readonly bool _proportional;
-    private readonly IDisposable _elsewhere;
+    private readonly IDisposable? _elsewhere;
     private bool _cancelled;
     private bool _disposed;
 
@@ -45,10 +45,11 @@ internal sealed class ProgressView : LunaPlayer.UI.Contracts.IProgressView
     /// bar that sweeps rather than one pinned at nought, which is the
     /// only honest way to say "still going" without claiming a figure.</param>
     /// <param name="detailed">Whether its reports are several lines rather than one.</param>
-    internal ProgressView(Window parent, string title, string message, bool proportional, bool detailed)
+    internal ProgressView(Window? parent, string title, string message, bool proportional, bool detailed, bool modal = true)
     {
         _proportional = proportional;
-        _dialog = new Dialog(parent, title: title, style: DialogStyle.Default | DialogStyle.ResizeBorder);
+        _dialog = new Dialog(modal ? parent : null, title: title,
+            style: DialogStyle.Default | DialogStyle.ResizeBorder | (modal ? 0 : DialogStyle.NoParent));
         var sizer = new BoxSizer(Orientation.Vertical);
         if (detailed)
         {
@@ -71,7 +72,7 @@ internal sealed class ProgressView : LunaPlayer.UI.Contracts.IProgressView
         _dialog.SetSizer(sizer);
         _dialog.Fit();
         _dialog.MinSize = detailed ? new Size(560, 320) : new Size(420, 160);
-        _dialog.Center(onParent: true);
+        _dialog.Center(onParent: modal);
         // Closing the window means the same as pressing Cancel - and is refused, so the window stays until
         // the job it belongs to has actually stopped. Letting it go would destroy a dialog the timer is
         // still writing to. It is refused by not passing the event on.
@@ -82,16 +83,15 @@ internal sealed class ProgressView : LunaPlayer.UI.Contracts.IProgressView
         };
 
         _dialog.Show();
-        // Everything else is held off while the job runs - this window excepted, so its Cancel button still
-        // answers. This is not cosmetic: without
-        // it the window this was opened from can be closed underneath it, taking the parent of a live
-        // dialog with it while a timer is still writing to it.
-        _elsewhere = Wx.DisableWindows(_dialog);
+        // A modeless operation has no native owner that another window can destroy.
+        if (modal) _elsewhere = Wx.DisableWindows(_dialog);
         // So a screen reader lands on the way out rather than on the bar.
         cancel.Focus();
     }
 
     public bool Cancelled => _cancelled;
+
+    internal event Action<ProgressView>? Closed;
 
     public void Update(int percent, string message)
     {
@@ -118,9 +118,11 @@ internal sealed class ProgressView : LunaPlayer.UI.Contracts.IProgressView
         if (_disposed)
             return;
         _disposed = true;
+        _cancelled = true;
         // Let the rest of the player back in before this window goes, so whatever the job does next - a
         // message box, the window it came from - opens over something that can take the focus.
-        _elsewhere.Dispose();
+        _elsewhere?.Dispose();
         _dialog.Dispose();
+        Closed?.Invoke(this);
     }
 }
