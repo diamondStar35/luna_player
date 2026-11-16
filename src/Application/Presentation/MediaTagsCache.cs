@@ -25,7 +25,8 @@ internal sealed class MediaTagsCache
 
     // A chapter's display title must not replace the book's own title in richer presentations.
     internal MediaTags Original(Player player)
-        => player.InRadioSession ? player.CurrentBroadcast : ForFile(player.CurrentPath);
+        => player.IsDisc ? player.CurrentMetadata.Display with { Title = player.CurrentTitle ?? player.CurrentDisplayName ?? string.Empty }
+            : player.InRadioSession ? player.CurrentBroadcast : ForFile(player.CurrentPath);
 
     private MediaTags ForFile(string? path)
     {

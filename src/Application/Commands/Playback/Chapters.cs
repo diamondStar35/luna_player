@@ -96,6 +96,7 @@ internal sealed class Chapters : IDisposable
 
     private void ToggleMode()
     {
+        if (_player.IsDisc) return;
         _settings.Audio.AudiobookMode = !_player.AudiobookMode;
         _player.SetAudiobookMode(_settings.Audio.AudiobookMode);
         if (!_store.SaveExplicit(_settings))

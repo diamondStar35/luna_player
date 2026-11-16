@@ -24,6 +24,8 @@ internal static class MediaActions
             new(ActionId.OpenLink, Tr("Open a link to a network stream"), new("l", ShortcutModifiers.Control)),
             // Translators: Name of the command that opens every media file in a folder.
             new(ActionId.OpenFolder, Tr("Open all files in a folder"), new("o", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
+            // Translators: Shortcut-preferences action for opening a DVD-Video or DVD-Audio location in a native picker.
+            new(ActionId.OpenDisc, Tr("Open a DVD disc")),
             // Translators: Name of the command that opens the folder holding the current file in Windows Explorer.
             new(ActionId.OpenContainingFolder, Tr("Show the current file in Windows Explorer"), new("f", ShortcutModifiers.Control)),
             // Translators: Name of the command that shows the Windows properties window for the current file.

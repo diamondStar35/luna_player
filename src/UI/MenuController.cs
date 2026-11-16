@@ -171,6 +171,7 @@ internal sealed class MenuController
             if (entries[index].Index == current) _chapterItems[index].Checked = true;
         _chapters.Root.Enabled = entries.Count > 0;
         _chapters.Stop.Checked = stop;
+        _chapters.Audiobook.Enabled = !_discActive;
         _chapters.Previous.Enabled = current is > 0;
         _chapters.Next.Enabled = current is int active && active + 1 < entries.Count;
         _chapters.Audiobook.Checked = audiobook;
@@ -275,6 +276,20 @@ internal sealed class MenuController
             item.Enabled = loaded;
         foreach (var item in _mediaFileItems)
             item.Enabled = loaded;
+    }
+
+    private bool _discActive;
+    internal void SetDiscState(bool active, bool canPrevious, bool canNext)
+    {
+        _discActive = active;
+        if (active)
+        {
+            _menuBar.FindItem(_commandIds[ActionId.PreviousTrack])!.Enabled = canPrevious;
+            _menuBar.FindItem(_commandIds[ActionId.NextTrack])!.Enabled = canNext;
+        }
+        _chapters.Audiobook.Enabled = !active;
+        foreach (var action in new[] { ActionId.SaveCurrentPlaylist, ActionId.ExportPlaylist, ActionId.AddPlaylistFiles, ActionId.AddPlaylistFolder })
+            _menuBar.FindItem(_commandIds[action])!.Enabled = !active;
     }
 
     internal void SetEditState(bool hasLocalFile, bool hasMedia)

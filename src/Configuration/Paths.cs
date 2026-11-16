@@ -73,7 +73,8 @@ internal static partial class Paths
         // A URL is its own key. GetFullPath would resolve it against the working directory and hand back a
         // local path that names nothing - and one that changes if the working directory ever does, which
         // would quietly lose track of a stream that had already been marked.
-        return LinkValidator.IsHttpUrl(text)
+        return LinkValidator.IsHttpUrl(text) || LunaPlayer.Media.Discs.Addressing.IsDisc(text)
+            || text.StartsWith("disc://", StringComparison.OrdinalIgnoreCase)
             ? text.ToLowerInvariant()
             : Absolute(text).ToLowerInvariant();
     }
@@ -91,6 +92,8 @@ internal static partial class Paths
     /// dropped on the window, and a malformed one is an answer rather than a crash.</summary>
     internal static string Absolute(string path)
     {
+        if (LunaPlayer.Media.Discs.Addressing.IsDisc(path)
+            || path.StartsWith("disc://", StringComparison.OrdinalIgnoreCase)) return path;
         try
         {
             return Path.GetFullPath(path);

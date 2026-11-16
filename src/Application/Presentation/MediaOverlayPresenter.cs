@@ -70,8 +70,8 @@ internal sealed class MediaOverlayPresenter : IDisposable
             Album: tags.Album,
             Duration: hasMedia ? _player.Duration : null,
             Position: hasMedia ? _player.Elapsed : null,
-            CanGoNext: hasMedia && (_player.InSession ? _canGoNext() : index >= 0 && index < _player.Count - 1),
-            CanGoPrevious: hasMedia && (_player.InSession ? _canGoPrevious() : index > 0)));
+            CanGoNext: hasMedia && (_player.IsDisc ? _player.CanNavigateDisc(1) : _player.InSession ? _canGoNext() : index >= 0 && index < _player.Count - 1),
+            CanGoPrevious: hasMedia && (_player.IsDisc ? _player.CanNavigateDisc(-1) : _player.InSession ? _canGoPrevious() : index > 0)));
     }
 
     internal bool RequiresTick => _mediaControls.IsAvailable && _player.IsLoaded;

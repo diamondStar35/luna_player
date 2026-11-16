@@ -63,6 +63,7 @@ internal sealed partial class Player
         _playlist.RemoveCurrent();
         if (CurrentPath is null)
         {
+            LeaveDisc();
             CurrentChanged?.Invoke();
             StateChanged?.Invoke();
             return true;
@@ -76,6 +77,7 @@ internal sealed partial class Player
         if (!_playlist.ClearAll())
             return false;
         _playlist.ReplaceSaved(null);
+        LeaveDisc();
         StopEngine();
         CurrentChanged?.Invoke();
         StateChanged?.Invoke();

@@ -14,6 +14,7 @@ internal sealed class MetadataReader(Player player)
         var metadata = player.CurrentMetadata;
         if (!player.IsLoaded || player.CurrentPath is not string path || player.InRadioSession)
             return metadata;
+        if (player.IsDisc) return metadata with { Display = _tags.Original(player) };
         // Local announcements use the same file headers as the media overlay. Empty tags
         // are authoritative, so an outgoing native snapshot cannot supply a missing field.
         if (!Uri.TryCreate(path, UriKind.Absolute, out var address) || address.IsFile)

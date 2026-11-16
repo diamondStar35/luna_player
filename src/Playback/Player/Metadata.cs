@@ -8,6 +8,7 @@ internal sealed partial class Player
     /// name.</summary>
     internal string DisplayName(string path)
     {
+        if (DiscDisplayName(path) is string discName) return discName;
         // mpv loads asynchronously, so the title is not there yet when the file is opened. Re-read it for
         // whatever is playing whenever a name is asked for, and keep it: once a file has been played its
         // title stays available for the playlist, which names entries that are not playing.
@@ -25,6 +26,8 @@ internal sealed partial class Player
     {
         get
         {
+            if (DiscTrackName is string name) return name;
+            if (CurrentPath is string discPath && DiscDisplayName(discPath) is string title) return title;
             if (_playlist.CurrentItem?.Chapter is Chapter chapter)
                 return ChapterTitle(chapter);
             if (CurrentPath is not string path)
@@ -39,7 +42,7 @@ internal sealed partial class Player
     internal string DisplayName(Playlist.PlaylistItem item)
         => item.Chapter is Chapter chapter ? ChapterTitle(chapter) : DisplayName(item.Path);
 
-    internal string? CurrentDisplayName => _playlist.CurrentItem is { } item ? DisplayName(item) : null;
+    internal string? CurrentDisplayName => DiscTrackName ?? (_playlist.CurrentItem is { } item ? DisplayName(item) : null);
 
     internal string? CurrentArtist => CurrentMetadata.Display.Artist;
 
@@ -68,10 +71,10 @@ internal sealed partial class Player
     }
 
     /// <summary>The file name for local media, or the stored title for a network entry.</summary>
-    internal string? CurrentName => _playlist.CurrentItem?.Chapter is Chapter chapter ? ChapterTitle(chapter)
+    internal string? CurrentName => DiscTrackName ?? (_playlist.CurrentItem?.Chapter is Chapter chapter ? ChapterTitle(chapter)
         : CurrentPath is string path
-        ? LinkValidator.IsHttpUrl(path) ? DisplayName(path) : MediaLibrary.DisplayName(path)
-        : null;
+        ? LinkValidator.IsHttpUrl(path) || IsDisc ? DisplayName(path) : MediaLibrary.DisplayName(path)
+        : null);
 
     // mpv only knows a title once the file is loaded, so it is read here and kept per path: the playlist
     // dialog names every entry, not just the one playing.

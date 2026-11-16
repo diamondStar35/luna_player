@@ -253,6 +253,7 @@ internal sealed class MainFrame : IMainView
     public void SetSubtitleControlsEnabled(bool enabled) => Menus.SetSubtitleControlsEnabled(enabled);
 
     public void SetMediaLoaded(bool loaded) => Menus.SetMediaLoaded(loaded);
+    public void SetDiscState(bool active, bool canPrevious, bool canNext) => Menus.SetDiscState(active, canPrevious, canNext);
 
     public void SetEditState(bool hasLocalFile, bool hasMedia) => Menus.SetEditState(hasLocalFile, hasMedia);
 

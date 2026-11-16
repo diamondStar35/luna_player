@@ -11,6 +11,8 @@ internal sealed class FakeEngine : IEngine
     internal int Stops { get; private set; }
     internal bool Paused { get; private set; }
     internal double Position { get; private set; }
+    internal bool DeferSeeks { get; set; }
+    internal List<double> RequestedSeeks { get; } = [];
     internal double Loudness { get; private set; } = 100;
     internal double Rate { get; private set; } = 1;
     public void Dispose() { }
@@ -46,7 +48,7 @@ internal sealed class FakeEngine : IEngine
     public double? Elapsed => Position;
     public double? Remaining => 10d - Position;
     public void SeekRelative(double seconds) { Position += seconds; }
-    public void SeekAbsolute(double seconds) { Position = seconds; }
+    public void SeekAbsolute(double seconds) { RequestedSeeks.Add(seconds); if (!DeferSeeks) Position = seconds; }
     public bool SetLoopStart(double seconds) => true;
     public bool SetLoopEnd(double seconds) => true;
     public bool ClearLoop() => true;

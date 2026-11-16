@@ -45,4 +45,5 @@ internal enum ActionId
     MyPlaylists, CreatePlaylist, SaveCurrentPlaylist, ExportPlaylist, AddPlaylistFiles, AddPlaylistFolder,
     Donate,
     ToggleHeadphoneSpatialization, RotateSofaLeft, RotateSofaRight, SofaElevationUp, SofaElevationDown,
+    OpenDisc,
 }

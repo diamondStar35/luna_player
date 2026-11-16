@@ -60,6 +60,7 @@ internal sealed partial class Files
         router.Register(ActionId.OpenFile, OpenFileFromDialog);
         router.Register(ActionId.OpenLink, OpenLink);
         router.Register(ActionId.OpenFolder, OpenFolderFromDialog);
+        router.Register(ActionId.OpenDisc, OpenDiscFromDialog);
         router.Register(ActionId.OpenContainingFolder, OpenContainingFolder);
         router.Register(ActionId.OpenFileProperties, OpenFileProperties);
         router.Register(ActionId.OpenedFiles, OpenedFiles);

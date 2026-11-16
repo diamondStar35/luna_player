@@ -22,7 +22,8 @@ internal sealed partial class Player
         // Written to the store as well as remembered, so a session that ends in a crash still leaves the
         // position behind for the next launch.
         SavePosition();
-        _suspendedPlaylist = new SuspendedPlaylist(_playlist, _playlist.CurrentPath, SourceElapsed ?? 0, _loaded);
+        _suspendedPlaylist = new SuspendedPlaylist(_playlist, _playlist.CurrentPath, SourceElapsed ?? 0, _loaded, _disc);
+        _disc = null;
         _playlist = new PlaylistState();
         _playlist.SetAudiobookMode(_audiobookMode, 0);
         _loaded = false;
@@ -46,6 +47,7 @@ internal sealed partial class Player
             return;
         _suspendedPlaylist = null;
         _playlist = suspended.Playlist;
+        _disc = suspended.Disc;
         // Reloaded rather than resumed, because the video that played in the meantime replaced it.
         // LoadCurrent raises the two events itself when it succeeds.
         if (suspended.WasLoaded && suspended.Path is not null && LoadCurrent(suspended.Position, paused: true))
@@ -76,5 +78,6 @@ internal sealed partial class Player
     /// </summary>
     /// <param name="WasLoaded">Whether a file was open at all, so an empty player is not sent to reload
     /// nothing.</param>
-    private sealed record SuspendedPlaylist(PlaylistState Playlist, string? Path, double Position, bool WasLoaded);
+    private sealed record SuspendedPlaylist(PlaylistState Playlist, string? Path, double Position, bool WasLoaded,
+        LunaPlayer.Media.Discs.DiscInfo? Disc = null);
 }

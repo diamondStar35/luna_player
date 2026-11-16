@@ -27,6 +27,8 @@ internal static partial class Builder
         fileMenu.Append(commandIds[ActionId.OpenLink], Label(Tr("Open Link..."), ActionId.OpenLink, shortcuts));
         // Translators: File menu item that opens every media file in a folder.
         fileMenu.Append(commandIds[ActionId.OpenFolder], Label(Tr("Open Folder..."), ActionId.OpenFolder, shortcuts));
+        // Translators: File menu item that opens the native folder picker with DVD format and title choices.
+        fileMenu.Append(commandIds[ActionId.OpenDisc], Label(Tr("Open DVD..."), ActionId.OpenDisc, shortcuts));
         // Translators: File menu item that asks for a YouTube address and plays the video or playlist it names.
         fileMenu.Append(commandIds[ActionId.OpenYouTubeLink], Label(Tr("Open YouTube Link..."), ActionId.OpenYouTubeLink, shortcuts));
         foreach (var action in PlaylistActions.All.Where(action => action.Id is ActionId.AddPlaylistFiles or ActionId.AddPlaylistFolder))

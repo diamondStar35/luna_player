@@ -53,10 +53,11 @@ internal sealed class ViewStatePresenter
         var local = !_spotify.HasSession && _player.CurrentPath is string path && File.Exists(path);
         _view.SetMediaLoaded(loaded);
         _view.SetPlaying(_spotify.IsActive ? _spotify.IsPlaying : _player.IsPlaying);
-        _view.SetEditState(local, loaded);
+        _view.SetEditState(local, loaded && !_player.IsDisc);
+        _view.SetDiscState(_player.IsDisc, _player.CanNavigateDisc(-1), _player.CanNavigateDisc(1));
         _view.SetBookmarkState(local);
         _view.SetMarkState(_player.IsCurrentMarked, _player.AreAllMarked);
-        _view.SetMarkedActionsEnabled(loaded && _player.MarkedCount > 0);
+        _view.SetMarkedActionsEnabled(loaded && !_player.IsDisc && _player.MarkedCount > 0);
         // The source rather than the path: a resolved video plays from a signed stream address that is
         // not on a YouTube host at all, and it is the watch page these commands act on. No test for a file
         // being loaded either - with nothing open there is neither a source nor a path.

@@ -56,6 +56,12 @@ internal sealed partial class Player
 
     internal void SavePosition(string? path, double? elapsed)
     {
+        if (_trackPositions && _positions is not null && path is not null && elapsed is double discPosition
+            && DiscPositionKey(path) is string key)
+        {
+            _positions.Set(key, discPosition);
+            return;
+        }
         if (!_trackPositions || _positions is null || path is null || !File.Exists(path)
             || elapsed is not double position)
             return;

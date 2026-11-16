@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-11-16 09:18+0200\n"
+"POT-Creation-Date: 2026-11-16 13:07+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -49,13 +49,13 @@ msgstr ""
 
 #. Translators: Name of the command that plays the next file, here in the list of shortcuts that work while another program is in front.
 #. Translators: Name of the command that plays the file after the current one.
-#: Actions/GlobalActions.cs:24 Actions/MediaActions.cs:80
+#: Actions/GlobalActions.cs:24 Actions/MediaActions.cs:82
 msgid "Play the next file"
 msgstr ""
 
 #. Translators: Name of the command that plays the previous file, here in the list of shortcuts that work while another program is in front.
 #. Translators: Name of the command that plays the file before the current one.
-#: Actions/GlobalActions.cs:26 Actions/MediaActions.cs:78
+#: Actions/GlobalActions.cs:26 Actions/MediaActions.cs:80
 msgid "Play the previous file"
 msgstr ""
 
@@ -104,160 +104,165 @@ msgstr ""
 msgid "Open all files in a folder"
 msgstr ""
 
-#. Translators: Name of the command that opens the folder holding the current file in Windows Explorer.
+#. Translators: Shortcut-preferences action for opening a DVD-Video or DVD-Audio location in a native picker.
 #: Actions/MediaActions.cs:28
+msgid "Open a DVD disc"
+msgstr ""
+
+#. Translators: Name of the command that opens the folder holding the current file in Windows Explorer.
+#: Actions/MediaActions.cs:30
 msgid "Show the current file in Windows Explorer"
 msgstr ""
 
 #. Translators: Name of the command that shows the Windows properties window for the current file.
-#: Actions/MediaActions.cs:30
+#: Actions/MediaActions.cs:32
 msgid "File properties dialog"
 msgstr ""
 
 #. Translators: Name of the command that opens the window listing the files currently loaded in the player.
-#: Actions/MediaActions.cs:32
+#: Actions/MediaActions.cs:34
 msgid "Opened files dialog"
 msgstr ""
 
 #. Translators: Name of the command that removes the current file from the player.
-#: Actions/MediaActions.cs:34
+#: Actions/MediaActions.cs:36
 msgid "Close the current file"
 msgstr ""
 
 #. Translators: Name of the command that removes every loaded file from the player.
 #. Translators: File menu item that removes every loaded file from the player.
-#: Actions/MediaActions.cs:36 UI/Menus/FileMenu.cs:74
+#: Actions/MediaActions.cs:38 UI/Menus/FileMenu.cs:76
 msgid "Close all files"
 msgstr ""
 
 #. Translators: Name of the command that opens the player's settings window.
-#: Actions/MediaActions.cs:38
+#: Actions/MediaActions.cs:40
 msgid "Settings dialog"
 msgstr ""
 
 #. Translators: Name of the command that quits the player.
-#: Actions/MediaActions.cs:40
+#: Actions/MediaActions.cs:42
 msgid "Exit the player"
 msgstr ""
 
 #. Translators: Name of the command that speaks the details of the current file, such as its name and length.
-#: Actions/MediaActions.cs:42
+#: Actions/MediaActions.cs:44
 msgid "Speak information about the current file"
 msgstr ""
 
 #. Translators: Name of the command that speaks the title stored in the current media file.
-#: Actions/MediaActions.cs:44
+#: Actions/MediaActions.cs:46
 msgid "Speak current media title"
 msgstr ""
 
 #. Translators: Shortcut-preferences command that speaks the current file or live radio programme's artist.
-#: Actions/MediaActions.cs:46
+#: Actions/MediaActions.cs:48
 msgid "Speak current artist"
 msgstr ""
 
 #. Translators: Shortcut-preferences command that speaks available tags such as genre, album and station information for the current media.
-#: Actions/MediaActions.cs:48
+#: Actions/MediaActions.cs:50
 msgid "Speak current media metadata"
 msgstr ""
 
 #. Translators: Name of the command that gives the current file a new name on the disk.
-#: Actions/MediaActions.cs:50
+#: Actions/MediaActions.cs:52
 msgid "Rename the current file"
 msgstr ""
 
 #. Translators: Name of the command that deletes the current file from the disk.
-#: Actions/MediaActions.cs:52
+#: Actions/MediaActions.cs:54
 msgid "Delete the current file from the disk"
 msgstr ""
 
 #. Translators: Name of the command that copies the current file to the clipboard.
-#: Actions/MediaActions.cs:54
+#: Actions/MediaActions.cs:56
 msgid "Copy the current file to the clipboard"
 msgstr ""
 
 #. Translators: Name of the command that pastes files copied from Windows Explorer into the player.
-#: Actions/MediaActions.cs:56
+#: Actions/MediaActions.cs:58
 msgid "Paste files from the clipboard"
 msgstr ""
 
 #. Translators: Name of the command that marks or unmarks the current file. Marked files can then be copied, moved or deleted together.
-#: Actions/MediaActions.cs:58
+#: Actions/MediaActions.cs:60
 msgid "Mark or unmark the current file"
 msgstr ""
 
 #. Translators: Name of the command that marks or unmarks every loaded file at once.
-#: Actions/MediaActions.cs:60
+#: Actions/MediaActions.cs:62
 msgid "Mark or unmark all files"
 msgstr ""
 
 #. Translators: Name of the command that unmarks all marked files.
-#: Actions/MediaActions.cs:62
+#: Actions/MediaActions.cs:64
 msgid "Unmark all marked files"
 msgstr ""
 
 #. Translators: Name of the command that speaks how many files are marked.
-#: Actions/MediaActions.cs:64
+#: Actions/MediaActions.cs:66
 msgid "Speak the number of marked files"
 msgstr ""
 
 #. Translators: Name of the command that copies the marked files into a folder the user chooses.
-#: Actions/MediaActions.cs:66
+#: Actions/MediaActions.cs:68
 msgid "Copy the marked files to a folder"
 msgstr ""
 
 #. Translators: Name of the command that moves the marked files into a folder the user chooses.
-#: Actions/MediaActions.cs:68
+#: Actions/MediaActions.cs:70
 msgid "Move the marked files to a folder"
 msgstr ""
 
 #. Translators: Name of the command that copies the marked files to the clipboard.
-#: Actions/MediaActions.cs:70
+#: Actions/MediaActions.cs:72
 msgid "Copy the marked files to the clipboard"
 msgstr ""
 
 #. Translators: Name of the command that deletes the marked files from the disk.
-#: Actions/MediaActions.cs:72
+#: Actions/MediaActions.cs:74
 msgid "Delete the marked files from the disk"
 msgstr ""
 
 #. Translators: Name of the command that saves the position playing has reached as a bookmark.
-#: Actions/MediaActions.cs:74
+#: Actions/MediaActions.cs:76
 msgid "Add a bookmark at the current position"
 msgstr ""
 
 #. Translators: Name of the command that opens the window for renaming and deleting bookmarks.
-#: Actions/MediaActions.cs:76
+#: Actions/MediaActions.cs:78
 msgid "Manage bookmarks dialog"
 msgstr ""
 
 #. Translators: Name of the command that plays the first file in the list.
-#: Actions/MediaActions.cs:82
+#: Actions/MediaActions.cs:84
 msgid "Play the first file in the list"
 msgstr ""
 
 #. Translators: Name of the command that opens the window asking for a file number to jump to.
-#: Actions/MediaActions.cs:84
+#: Actions/MediaActions.cs:86
 msgid "Go to file dialog"
 msgstr ""
 
 #. Translators: Name of the command that plays the last file in the list.
-#: Actions/MediaActions.cs:86
+#: Actions/MediaActions.cs:88
 msgid "Play the last file in the list"
 msgstr ""
 
 #. Translators: Name of the command that turns playing the files in random order on or off.
-#: Actions/MediaActions.cs:88
+#: Actions/MediaActions.cs:90
 msgid "Turn shuffle on or off"
 msgstr ""
 
 #. Translators: Name of the command that turns repeating the current file on or off.
-#: Actions/MediaActions.cs:90
+#: Actions/MediaActions.cs:92
 msgid "Turn repeat file on or off"
 msgstr ""
 
 #. Translators: Name of the command that jumps to one of the ten numbered bookmark slots of the current file.
 #. {number} is the slot, 1 to 10.
-#: Actions/MediaActions.cs:94
+#: Actions/MediaActions.cs:96
 msgid "Jump to bookmark {number}"
 msgstr ""
 
@@ -992,6 +997,22 @@ msgstr ""
 msgid "Unknown"
 msgstr ""
 
+#. Translators: Caption of the progress window while a selected DVD is opened.
+#: Application/Commands/Files/Discs.cs:16
+msgid "Opening DVD"
+msgstr ""
+
+#. Translators: Progress text while the selected DVD is inspected before playback.
+#. Translators: Status while DVD titles are inspected in the background in the Open DVD picker.
+#: Application/Commands/Files/Discs.cs:18 UI/Discs/Picker.cs:69
+msgid "Reading DVD titles..."
+msgstr ""
+
+#. Translators: Error when a DVD title selected in the picker is unavailable or cannot be loaded.
+#: Application/Commands/Files/Discs.cs:39
+msgid "Could not open the selected DVD title."
+msgstr ""
+
 #. Translators: Spoken when the user asks to rename what is playing but it is a stream rather than a file on this computer.
 #: Application/Commands/Files/Edit.cs:39
 msgid "Rename is available only for local files."
@@ -1209,28 +1230,28 @@ msgstr[1] ""
 #. Translators: Spoken when a launch-time folder holds nothing this player can play.
 #. Translators: Spoken when the chosen folder holds nothing this player can play.
 #. Translators: Spoken when the folder and the folders inside it hold nothing this player can play.
-#: Application/Commands/Files/Files.cs:123
-#: Application/Commands/Files/Files.cs:223
-#: Application/Commands/Files/Files.cs:377
+#: Application/Commands/Files/Files.cs:124
+#: Application/Commands/Files/Files.cs:224
+#: Application/Commands/Files/Files.cs:378
 msgid "No audio files found in that folder."
 msgstr ""
 
 #. Translators: Short announcement when a launch-time folder holds no playable files.
 #. Translators: The short wording spoken when the chosen folder holds nothing this player can play.
 #. Translators: The short wording spoken when a folder holds nothing this player can play.
-#: Application/Commands/Files/Files.cs:125
-#: Application/Commands/Files/Files.cs:225
-#: Application/Commands/Files/Files.cs:379
+#: Application/Commands/Files/Files.cs:126
+#: Application/Commands/Files/Files.cs:226
+#: Application/Commands/Files/Files.cs:380
 msgid "No audio files."
 msgstr ""
 
 #. Translators: Asks the user for the web address of the stream they want to play.
-#: Application/Commands/Files/Files.cs:188
+#: Application/Commands/Files/Files.cs:189
 msgid "Enter link to play."
 msgstr ""
 
 #. Translators: Title of the window that asks for the web address of a stream to play.
-#: Application/Commands/Files/Files.cs:190
+#: Application/Commands/Files/Files.cs:191
 msgid "Open Link"
 msgstr ""
 
@@ -1238,13 +1259,13 @@ msgstr ""
 #. "http" and "https" are the names of the two web protocols and are not translated.
 #. Translators: Shown when a typed YouTube address does not begin with a supported web protocol.
 #. Translators: Shown when a favourite is saved with something that is not a web address.
-#: Application/Commands/Files/Files.cs:200
+#: Application/Commands/Files/Files.cs:201
 #: Application/Commands/YouTube/YouTube.cs:92 Favorites/FavoriteStore.cs:140
 msgid "The link must start with http or https."
 msgstr ""
 
 #. Translators: Shown when the stream at the address typed into Open Link could not be played.
-#: Application/Commands/Files/Files.cs:211
+#: Application/Commands/Files/Files.cs:212
 msgid "Could not open the link."
 msgstr ""
 
@@ -1253,58 +1274,58 @@ msgstr ""
 #. Translators: Spoken after closing a radio session and restoring the original playlist paused.
 #. Translators: Spoken once the current file has been removed from the playlist.
 #. Translators: Short announcement once the current file has been removed from the playlist.
-#: Application/Commands/Files/Files.cs:236
-#: Application/Commands/Files/Files.cs:238
-#: Application/Commands/Files/Files.cs:245
-#: Application/Commands/Files/Files.cs:260
-#: Application/Commands/Files/Files.cs:262
+#: Application/Commands/Files/Files.cs:237
+#: Application/Commands/Files/Files.cs:239
+#: Application/Commands/Files/Files.cs:246
+#: Application/Commands/Files/Files.cs:261
+#: Application/Commands/Files/Files.cs:263
 msgid "File closed."
 msgstr ""
 
 #. Translators: Spoken when the current file could not be taken out of the playlist.
-#: Application/Commands/Files/Files.cs:253
+#: Application/Commands/Files/Files.cs:254
 msgid "Could not close the file."
 msgstr ""
 
 #. Translators: The short wording spoken when a file could not be closed.
 #. Translators: The short wording spoken when the files could not be closed.
-#: Application/Commands/Files/Files.cs:255
-#: Application/Commands/Files/Files.cs:278
+#: Application/Commands/Files/Files.cs:256
+#: Application/Commands/Files/Files.cs:279
 msgid "Close failed."
 msgstr ""
 
 #. Translators: Spoken when the loaded files could not be taken out of the playlist.
-#: Application/Commands/Files/Files.cs:276
+#: Application/Commands/Files/Files.cs:277
 msgid "Could not close files."
 msgstr ""
 
 #. Translators: Spoken once every file has been removed from the playlist.
 #. Translators: Short announcement once every file has been removed from the playlist.
-#: Application/Commands/Files/Files.cs:283
-#: Application/Commands/Files/Files.cs:285
+#: Application/Commands/Files/Files.cs:284
+#: Application/Commands/Files/Files.cs:286
 msgid "All files closed."
 msgstr ""
 
 #. Translators: The short wording spoken when Windows could not be asked to open a folder.
 #. Translators: The short wording spoken when Windows could not show a file's properties.
-#: Application/Commands/Files/Files.cs:293
+#: Application/Commands/Files/Files.cs:294
 #: Application/Commands/Files/Info.cs:35
 msgid "Open failed."
 msgstr ""
 
 #. Translators: Title of the progress window shown while a folder and the folders inside it are being searched for media.
-#: Application/Commands/Files/Files.cs:357
+#: Application/Commands/Files/Files.cs:358
 msgid "Opening files"
 msgstr ""
 
 #. Translators: First message in the progress window, before any file has been found.
-#: Application/Commands/Files/Files.cs:359
+#: Application/Commands/Files/Files.cs:360
 msgid "Loading files from folder and subfolders..."
 msgstr ""
 
 #. Translators: Progress message while a folder is being searched. {found} is how many media files
 #. have been found so far.
-#: Application/Commands/Files/Files.cs:362
+#: Application/Commands/Files/Files.cs:363
 msgid "Opening files... {found} media files found"
 msgstr ""
 
@@ -1666,7 +1687,7 @@ msgstr ""
 #. Translators: Shown when an M3U or M3U8 file contains no usable local files or web links.
 #. Translators: Warning when opening a saved playlist yields no playable tracks.
 #: Application/Commands/Files/Playlists.cs:79
-#: Application/Commands/Files/SavedPlaylists.cs:141
+#: Application/Commands/Files/SavedPlaylists.cs:147
 msgid "The playlist contains no playable entries."
 msgstr ""
 
@@ -1711,42 +1732,47 @@ msgid "Could not complete the playlist operation: {error}"
 msgstr ""
 
 #. Translators: Reason shown when a playlist operation cannot complete; describes invalid content or an unsupported operation.
-#: Application/Commands/Files/SavedPlaylists.cs:47
+#: Application/Commands/Files/SavedPlaylists.cs:48
 msgid "Leave the online session before adding playlist entries."
 msgstr ""
 
 #. Translators: Spoken after appending entries to the current playback playlist.
-#: Application/Commands/Files/SavedPlaylists.cs:52
+#: Application/Commands/Files/SavedPlaylists.cs:53
 msgid "Playlist entries added."
 msgstr ""
 
 #. Translators: Validation or file error saving a playlist. {error} is the reason; the editor remains open.
-#: Application/Commands/Files/SavedPlaylists.cs:70
+#: Application/Commands/Files/SavedPlaylists.cs:71
 msgid "Could not save the playlist: {error}"
 msgstr ""
 
 #. Translators: Reason shown when a playlist operation cannot complete; describes invalid content or an unsupported operation.
-#: Application/Commands/Files/SavedPlaylists.cs:77
+#: Application/Commands/Files/SavedPlaylists.cs:79
 msgid "Leave the online session before saving the playlist."
 msgstr ""
 
+#. Translators: Explanation when saving, exporting, or appending playlist files is requested during DVD playback.
+#: Application/Commands/Files/SavedPlaylists.cs:86
+msgid "DVD titles cannot be saved or edited as a file playlist."
+msgstr ""
+
 #. Translators: Success confirmation shown on the main window after a playlist is saved or exported.
-#: Application/Commands/Files/SavedPlaylists.cs:105
+#: Application/Commands/Files/SavedPlaylists.cs:111
 msgid "Playlist saved."
 msgstr ""
 
 #. Translators: Error shown when a playlist selected in the manager has since been removed from storage.
-#: Application/Commands/Files/SavedPlaylists.cs:122
+#: Application/Commands/Files/SavedPlaylists.cs:128
 msgid "This playlist is no longer available."
 msgstr ""
 
 #. Translators: Confirmation before removing a saved playlist from My Playlists.
-#: Application/Commands/Files/SavedPlaylists.cs:130
+#: Application/Commands/Files/SavedPlaylists.cs:136
 msgid "Would you like to remove this playlist?"
 msgstr ""
 
 #. Translators: Success confirmation shown on the main window after a saved playlist is removed.
-#: Application/Commands/Files/SavedPlaylists.cs:134
+#: Application/Commands/Files/SavedPlaylists.cs:140
 msgid "Playlist removed."
 msgstr ""
 
@@ -2035,18 +2061,18 @@ msgid "Chapter-end stop cancelled."
 msgstr ""
 
 #. Translators: Spoken after enabling playback of chapters as individual playlist items.
-#: Application/Commands/Playback/Chapters.cs:105
+#: Application/Commands/Playback/Chapters.cs:106
 msgid "Audiobook mode on."
 msgstr ""
 
 #. Translators: Spoken after returning to playback of complete files.
-#: Application/Commands/Playback/Chapters.cs:107
+#: Application/Commands/Playback/Chapters.cs:108
 msgid "Audiobook mode off."
 msgstr ""
 
 #. Translators: A chapter in Player > Chapters. {number} is its source order, {title} its name,
 #. and {duration} the full chapter length, not its start time or remaining playback time.
-#: Application/Commands/Playback/Chapters.cs:134
+#: Application/Commands/Playback/Chapters.cs:135
 msgid "{number}. {title}: {duration}"
 msgstr ""
 
@@ -2145,7 +2171,7 @@ msgstr ""
 #. Translators: Button that holds a recording where it is.
 #: Application/Commands/Playback/Playback.cs:126
 #: Application/Commands/Playback/Playback.cs:154 UI/MainFrame.cs:191
-#: UI/MenuController.cs:316 UI/Menus/RecordingMenu.cs:23
+#: UI/MenuController.cs:331 UI/Menus/RecordingMenu.cs:23
 #: UI/Playback/SleepTimerDialog.cs:80 UI/Recording/MainDialog.cs:175
 #: UI/Recording/Transport.cs:115
 msgid "Pause"
@@ -2164,14 +2190,14 @@ msgstr ""
 #. Translators: Spoken when full-screen mode is turned off.
 #. Translators: Spoken when full-screen mode ends on its own because the video stopped playing.
 #: Application/Commands/Playback/Playback.cs:259
-#: Application/Presentation/ViewStatePresenter.cs:79
+#: Application/Presentation/ViewStatePresenter.cs:80
 msgid "Full-screen mode off."
 msgstr ""
 
 #. Translators: The short advanced-verbosity wording spoken when full-screen mode is turned off.
 #. Translators: Short announcement when full-screen mode ends because the video stopped.
 #: Application/Commands/Playback/Playback.cs:261
-#: Application/Presentation/ViewStatePresenter.cs:81
+#: Application/Presentation/ViewStatePresenter.cs:82
 msgid "Full-screen off"
 msgstr ""
 
@@ -3447,6 +3473,22 @@ msgstr ""
 msgid "Chapter {number}"
 msgstr ""
 
+#. Translators: Fallback name for a DVD-Audio song without metadata. {number} is its one-based track number.
+#: Playback/Player/Discs.cs:15
+msgid "Track {number}"
+msgstr ""
+
+#. Translators: Fallback name for a numbered DVD program; {number} is the one-based title number.
+#. Translators: A numbered DVD program in the native title choice. {number} is its one-based title number.
+#: Playback/Player/Discs.cs:64 UI/Discs/Picker.cs:83
+msgid "Title {number}"
+msgstr ""
+
+#. Translators: DVD display name; {disc} is the disc's name and {title} identifies its selected program.
+#: Playback/Player/Discs.cs:67
+msgid "{disc} - {title}"
+msgstr ""
+
 #. Translators: Error shown when a radio directory request or a local radio-library operation fails. {reason} is the diagnostic detail.
 #: Radio/Catalog.cs:226
 msgid ""
@@ -4627,9 +4669,77 @@ msgstr ""
 msgid "The details could not be copied. They are in the file named above."
 msgstr ""
 
+#. Translators: Title of the native folder picker for DVD-Video and DVD-Audio playback.
+#: UI/DialogService.cs:72
+msgid "Open DVD"
+msgstr ""
+
 #. Translators: Extra Open File filter for Luna playlist documents; keep JSON and the wildcard unchanged.
-#: UI/DialogService.cs:70
+#: UI/DialogService.cs:84
 msgid "JSON playlists (*.json)|*.json"
+msgstr ""
+
+#. Translators: Label of the DVD format choice in the native Open DVD folder picker.
+#: UI/Discs/Picker.cs:30
+msgid "Disc type"
+msgstr ""
+
+#. Translators: DVD format choice for movie/video discs, including their audio soundtracks.
+#: UI/Discs/Picker.cs:33
+msgid "DVD-Video"
+msgstr ""
+
+#. Translators: DVD format choice for genuine AUDIO_TS audio discs, not a DVD-Video soundtrack.
+#: UI/Discs/Picker.cs:35
+msgid "DVD-Audio"
+msgstr ""
+
+#. Translators: Label of the DVD program/title choice in the native Open DVD folder picker.
+#: UI/Discs/Picker.cs:38
+msgid "Title"
+msgstr ""
+
+#. Translators: Initial status in the Open DVD folder picker, before a disc location is selected.
+#. Translators: Status when the Open DVD picker is at a virtual location such as This PC.
+#: UI/Discs/Picker.cs:42 UI/Discs/Picker.cs:65
+msgid "Choose a DVD drive or folder."
+msgstr ""
+
+#. Translators: DVD title choice that lets the player select the longest playable title.
+#: UI/Discs/Picker.cs:47
+msgid "Automatic"
+msgstr ""
+
+#. Translators: Status after DVD inspection. {count} is the number of playable programs, excluding the disc menu.
+#: UI/Discs/Picker.cs:87
+msgid "Playable titles: {count}"
+msgstr ""
+
+#. Translators: Open DVD error when DVD-Audio was selected but the disc has no playable audio titles.
+#: UI/Discs/Picker.cs:101
+msgid "No audio titles were found on the selected DVD-Audio disc."
+msgstr ""
+
+#. Translators: Open DVD error when the DVD-Video structure contains no playable programs.
+#: UI/Discs/Picker.cs:103
+msgid "No video titles were found on the selected DVD-Video disc."
+msgstr ""
+
+#. Translators: Open DVD error when the chosen location has no valid DVD-Audio structure.
+#: UI/Discs/Picker.cs:106
+msgid "The selected location does not contain a valid DVD-Audio disc."
+msgstr ""
+
+#. Translators: Open DVD error when the chosen location has no valid DVD-Video structure.
+#: UI/Discs/Picker.cs:108
+msgid "The selected location does not contain a valid DVD-Video disc."
+msgstr ""
+
+#. Translators: Open DVD error when the disc cannot be read or its playback backend fails.
+#: UI/Discs/Picker.cs:110
+msgid ""
+"Could not read the selected DVD disc. Check that it is accessible and "
+"supported by the playback libraries."
 msgstr ""
 
 #. Translators: Label of the list for choosing which preset a preset being edited starts out from.
@@ -4951,7 +5061,7 @@ msgstr ""
 #. Translators: File menu submenu for creating, managing and saving named playlists.
 #. Translators: Option in the Spotify search filter to show playlists.
 #. Translators: A channel browser tab: the playlists the channel publishes.
-#: UI/Iptv/SourceEditDialog.cs:183 UI/Menus/FileMenu.cs:60
+#: UI/Iptv/SourceEditDialog.cs:183 UI/Menus/FileMenu.cs:62
 #: UI/Spotify/BrowserDialog.cs:107 YouTube/Client/Channels.cs:36
 msgid "Playlists"
 msgstr ""
@@ -5019,7 +5129,7 @@ msgstr ""
 
 #. Translators: Recording menu item that starts a paused recording again.
 #. Translators: Button that starts a paused recording again.
-#: UI/MenuController.cs:314 UI/Recording/Transport.cs:113
+#: UI/MenuController.cs:329 UI/Recording/Transport.cs:113
 msgid "Resume"
 msgstr ""
 
@@ -5149,98 +5259,103 @@ msgstr ""
 msgid "Open Folder..."
 msgstr ""
 
-#. Translators: File menu item that asks for a YouTube address and plays the video or playlist it names.
+#. Translators: File menu item that opens the native folder picker with DVD format and title choices.
 #: UI/Menus/FileMenu.cs:31
+msgid "Open DVD..."
+msgstr ""
+
+#. Translators: File menu item that asks for a YouTube address and plays the video or playlist it names.
+#: UI/Menus/FileMenu.cs:33
 msgid "Open YouTube Link..."
 msgstr ""
 
 #. Translators: File menu item that asks what to look for on YouTube and lists what it finds.
-#: UI/Menus/FileMenu.cs:35
+#: UI/Menus/FileMenu.cs:37
 msgid "Search YouTube..."
 msgstr ""
 
 #. Translators: File menu item that lists the YouTube links and streams the user has saved.
-#: UI/Menus/FileMenu.cs:37
+#: UI/Menus/FileMenu.cs:39
 msgid "Favorite videos..."
 msgstr ""
 
 #. Translators: Submenu of the File menu's Recents submenu listing the files opened recently.
-#: UI/Menus/FileMenu.cs:49
+#: UI/Menus/FileMenu.cs:51
 msgid "Recent files"
 msgstr ""
 
 #. Translators: Submenu of the File menu's Recents submenu listing the folders opened recently.
-#: UI/Menus/FileMenu.cs:51
+#: UI/Menus/FileMenu.cs:53
 msgid "Recent folders"
 msgstr ""
 
 #. Translators: Submenu of the File menu's Recents submenu listing the playlists opened recently.
-#: UI/Menus/FileMenu.cs:53
+#: UI/Menus/FileMenu.cs:55
 msgid "Recent playlists"
 msgstr ""
 
 #. Translators: File menu submenu holding the recently opened files, folders and playlists.
-#: UI/Menus/FileMenu.cs:55
+#: UI/Menus/FileMenu.cs:57
 msgid "Recents"
 msgstr ""
 
 #. Translators: File menu item that shows the folder holding the current file in Windows Explorer.
-#: UI/Menus/FileMenu.cs:66
+#: UI/Menus/FileMenu.cs:68
 msgid "Open Containing Folder"
 msgstr ""
 
 #. Translators: File menu item that shows the Windows properties window for the current file.
-#: UI/Menus/FileMenu.cs:68
+#: UI/Menus/FileMenu.cs:70
 msgid "File properties..."
 msgstr ""
 
 #. Translators: File menu item that lists the files currently loaded in the player.
-#: UI/Menus/FileMenu.cs:70
+#: UI/Menus/FileMenu.cs:72
 msgid "Opened Files..."
 msgstr ""
 
 #. Translators: File menu item that removes the current file from the player.
-#: UI/Menus/FileMenu.cs:72
+#: UI/Menus/FileMenu.cs:74
 msgid "Close File"
 msgstr ""
 
 #. Translators: File menu item that opens the player's settings window.
-#: UI/Menus/FileMenu.cs:76
+#: UI/Menus/FileMenu.cs:78
 msgid "Preferences..."
 msgstr ""
 
 #. Translators: File menu item that quits the player.
-#: UI/Menus/FileMenu.cs:79
+#: UI/Menus/FileMenu.cs:81
 msgid "Exit"
 msgstr ""
 
 #. Translators: Shown in the Recent files submenu when no files have been opened yet.
-#: UI/Menus/FileMenu.cs:101
+#: UI/Menus/FileMenu.cs:103
 msgid "No recent files"
 msgstr ""
 
 #. Translators: Recent files submenu item that empties the list of recently opened files.
-#: UI/Menus/FileMenu.cs:103
+#: UI/Menus/FileMenu.cs:105
 msgid "Clear recent files"
 msgstr ""
 
 #. Translators: Shown in the Recent folders submenu when no folders have been opened yet.
-#: UI/Menus/FileMenu.cs:106
+#: UI/Menus/FileMenu.cs:108
 msgid "No recent folders"
 msgstr ""
 
 #. Translators: Recent folders submenu item that empties the list of recently opened folders.
-#: UI/Menus/FileMenu.cs:108
+#: UI/Menus/FileMenu.cs:110
 msgid "Clear recent folders"
 msgstr ""
 
 #. Translators: Shown in the Recent playlists submenu when no playlists have been opened yet.
-#: UI/Menus/FileMenu.cs:111
+#: UI/Menus/FileMenu.cs:113
 msgid "No recent playlists"
 msgstr ""
 
 #. Translators: Recent playlists submenu item that empties the list of recently opened playlists.
-#: UI/Menus/FileMenu.cs:113
+#: UI/Menus/FileMenu.cs:115
 msgid "Clear recent playlists"
 msgstr ""
 

@@ -38,6 +38,7 @@ internal sealed class DialogService : IDialogService, IDisposable
     private readonly Frame _frame;
     private readonly HashSet<LunaPlayer.UI.Controls.ProgressView> _progressWindows = [];
     private bool? _toastNotificationsAvailable;
+    private LunaPlayer.Media.Discs.DiscFormat _lastDiscFormat;
 
     internal DialogService(
         Frame frame, IApplicationDispatcher dispatcher,
@@ -63,6 +64,19 @@ internal sealed class DialogService : IDialogService, IDisposable
     }
 
     private Window DialogParent => Wx.GetActiveWindow() ?? _frame;
+
+    public LunaPlayer.UI.Discs.DiscSelection? ChooseDisc(string initialDirectory)
+    {
+        using var dialog = new DirDialog(DialogParent,
+            // Translators: Title of the native folder picker for DVD-Video and DVD-Audio playback.
+            message: Tr("Open DVD"), defaultPath: initialDirectory, style: DirDialogStyle.DirMustExist);
+        using var hook = new LunaPlayer.UI.Discs.Picker(dialog, _lastDiscFormat);
+        if (!dialog.SetCustomizeHook(hook)) throw new PlatformNotSupportedException("DVD dialog customization requires Windows.");
+        if (dialog.ShowModal() != StandardId.Ok) return null;
+        var result = hook.Accepted;
+        if (result is not null) _lastDiscFormat = result.Format;
+        return result;
+    }
 
     public LunaPlayer.UI.Contracts.FileSelection? ChooseFile(string initialDirectory)
     {

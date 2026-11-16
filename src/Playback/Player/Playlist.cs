@@ -10,6 +10,7 @@ internal sealed partial class Player
     {
         LeaveSession();
         SavePosition();
+        LeaveDisc();
         return _playlist.OpenFile(path, startPosition) && LoadCurrent();
     }
 
@@ -17,6 +18,7 @@ internal sealed partial class Player
     {
         LeaveSession();
         SavePosition();
+        LeaveDisc();
         return _playlist.OpenFiles(files, preferredPath, startPosition) && LoadCurrent();
     }
 
@@ -26,6 +28,7 @@ internal sealed partial class Player
     {
         LeaveSession();
         SavePosition();
+        LeaveDisc();
         if (!_playlist.OpenFiles(entries.Select(static entry => entry.Location)))
             return false;
         foreach (var entry in entries)
@@ -48,6 +51,7 @@ internal sealed partial class Player
         // in. Only a list of YouTube videos gets a temporary session playlist of its own.
         LeaveSession();
         SavePosition();
+        LeaveDisc();
         if (!_playlist.Append(url, jump: true))
             return false;
         Describe(url, title, source, audioFile, audioOnly);
@@ -102,24 +106,28 @@ internal sealed partial class Player
 
     internal bool Next(bool wrap)
     {
+        if (DiscChapterNavigation) return MoveDiscChapter(1, wrap);
         SavePosition();
         return _playlist.MoveNext(wrap) && LoadCurrent(fadeTransition: true);
     }
 
     internal bool Previous(bool wrap)
     {
+        if (DiscChapterNavigation) return MoveDiscChapter(-1, wrap);
         SavePosition();
         return _playlist.MovePrevious(wrap) && LoadCurrent(fadeTransition: true);
     }
 
     internal bool First()
     {
+        if (DiscChapterNavigation) return CurrentChapters.Count > 1 && GoToChapter(0);
         SavePosition();
         return _playlist.GoToFirst() && LoadCurrent(fadeTransition: true);
     }
 
     internal bool Last()
     {
+        if (DiscChapterNavigation) return CurrentChapters.Count > 1 && GoToChapter(CurrentChapters.Count - 1);
         SavePosition();
         return _playlist.GoToLast() && LoadCurrent(fadeTransition: true);
     }
@@ -170,6 +178,7 @@ internal sealed partial class Player
 
     private bool LoadCurrent(double? startPosition, bool paused, bool fadeTransition = false)
     {
+        _pendingDiscChapter = null;
         Interlocked.Increment(ref _playbackRevision);
         _queuedSessionStream = null;
         var path = _playlist.CurrentPath;
@@ -179,6 +188,8 @@ internal sealed partial class Player
             startPosition = chapter.Start;
         if (!startPosition.HasValue && _trackPositions && _positions is not null && File.Exists(path))
             startPosition = _positions.Get(path);
+        if (!startPosition.HasValue && _trackPositions && _positions is not null && DiscPositionKey(path) is string key)
+            startPosition = _positions.Get(key);
         // A replacement load supplies its own end-behaviour options. Restoring them on the outgoing file
         // can turn a completed selection's artificial EOF into another playlist advance before loadfile.
         _engine.ClearSelectionRange(restoreEndBehavior: false);
@@ -283,6 +294,8 @@ internal sealed partial class Player
         double? start = next.Chapter?.Start;
         if (start is null && _trackPositions && _positions is not null && File.Exists(path))
             start = _positions.Get(path);
+        if (start is null && _trackPositions && _positions is not null && DiscPositionKey(path) is string key)
+            start = _positions.Get(key);
         _engine.QueueNext(path, start, _playlist.GetAudioFile(path), _playlist.GetAudioOnly(path),
             RangeFor(next), next.Id);
     }

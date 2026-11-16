@@ -12,12 +12,12 @@ internal sealed partial class Player
     private double? _armedChapterEnd;
     private double _requestedSourcePosition;
 
-    internal bool AudiobookMode => _audiobookMode;
+    internal bool AudiobookMode => _audiobookMode && !IsDisc;
     internal bool StopAtChapterEnd => _stopAtChapterEnd;
     internal double? SourceElapsed => _chapterStopHeld ? _chapterStopPosition
         : _engine.IsLoading ? _requestedSourcePosition : _engine.Elapsed;
     internal IReadOnlyList<Chapter> CurrentChapters => _loaded ? _playlist.ChaptersFor(CurrentPath) : [];
-    internal Chapter? CurrentChapter => _playlist.CurrentItem?.Chapter
+    internal Chapter? CurrentChapter => PendingDiscChapter ?? _playlist.CurrentItem?.Chapter
         ?? Media.Chapters.At(CurrentChapters, _chapterStopHeld ? Math.Max(0, _chapterStopPosition - 0.001) : SourceElapsed ?? 0);
 
     internal static string ChapterTitle(Chapter chapter)
@@ -45,9 +45,10 @@ internal sealed partial class Player
         var position = SourceElapsed ?? 0;
         var paused = IsPaused;
         _audiobookMode = enabled;
-        _playlist.SetAudiobookMode(enabled, position);
+        _playlist.SetAudiobookMode(enabled && !IsDisc, position);
         if (_suspendedPlaylist is { } suspended)
-            suspended.Playlist.SetAudiobookMode(enabled, suspended.Position);
+            suspended.Playlist.SetAudiobookMode(enabled && suspended.Disc is null, suspended.Position);
+        if (IsDisc) { StateChanged?.Invoke(); return; }
         if (_loaded)
             LoadCurrent(position, paused);
         else
@@ -89,7 +90,7 @@ internal sealed partial class Player
             return false;
         var start = chapters[index].Start;
         SavePosition();
-        if (!_audiobookMode && !_chapterStopHeld)
+        if (!AudiobookMode && !_chapterStopHeld && !_engine.EndReached)
         {
             // A chapter marker is a seek within the same file in normal mode. Preserve its selected
             // audio and subtitles, while releasing any selection that would pull playback back again.
@@ -101,7 +102,7 @@ internal sealed partial class Player
             PrepareNext();
             return true;
         }
-        if (_audiobookMode && !_playlist.GoToChapter(index))
+        if (AudiobookMode && !_playlist.GoToChapter(index))
             return false;
         return LoadCurrent(start, paused: IsPaused, fadeTransition: true);
     }
@@ -111,7 +112,7 @@ internal sealed partial class Player
     internal void SeekSourcePosition(double position)
     {
         var chapter = Media.Chapters.At(CurrentChapters, position);
-        if (_audiobookMode && chapter is not null && chapter != _playlist.CurrentItem?.Chapter)
+        if (AudiobookMode && chapter is not null && chapter != _playlist.CurrentItem?.Chapter)
         {
             SavePosition();
             if (_playlist.GoToChapter(chapter.Index))
@@ -153,7 +154,7 @@ internal sealed partial class Player
     private void ResumeAfterChapterStop()
     {
         SavePosition();
-        if (_audiobookMode)
+        if (AudiobookMode)
         {
             var next = (_playlist.CurrentItem?.Chapter?.Index ?? -1) + 1;
             if (_playlist.GoToChapter(next))

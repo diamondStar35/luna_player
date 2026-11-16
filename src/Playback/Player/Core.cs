@@ -102,6 +102,7 @@ internal sealed partial class Player : IDisposable
     /// extension-based guess otherwise.</summary>
     internal MediaKind CurrentKind => CurrentPath is not { } path
         ? MediaKind.Audio
+        : IsDiscAudio ? MediaKind.Audio
         : _loaded ? (_engine.HasVideo ? MediaKind.Video : MediaKind.Audio) : MediaLibrary.KindOf(path);
 
     internal double? Duration => _loaded ? _playlist.CurrentItem?.Chapter?.Duration ?? _engine.Duration : null;

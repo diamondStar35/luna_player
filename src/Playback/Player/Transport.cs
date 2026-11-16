@@ -72,6 +72,7 @@ internal sealed partial class Player
     {
         Interlocked.Increment(ref _playbackRevision);
         var source = ToSourceTime(seconds);
+        RememberDiscSeek(source);
         _requestedSourcePosition = source;
         if (_chapterStopHeld)
         {

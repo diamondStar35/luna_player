@@ -43,6 +43,7 @@ internal sealed class SavedPlaylists
     private void Append(IReadOnlyList<SavedEntry> entries)
     {
         if (entries.Count == 0) return;
+        if (_player.IsDisc) throw DiscPlaylistUnavailable();
         // Translators: Reason shown when a playlist operation cannot complete; describes invalid content or an unsupported operation.
         if (_player.InSession) throw new InvalidDataException(Tr("Leave the online session before adding playlist entries."));
         var resolved = DocumentResolver.Resolve(entries);
@@ -73,12 +74,17 @@ internal sealed class SavedPlaylists
     }
     private void SaveCurrent(bool export)
     {
+        if (_player.IsDisc) throw DiscPlaylistUnavailable();
         // Translators: Reason shown when a playlist operation cannot complete; describes invalid content or an unsupported operation.
         if (_player.InSession) throw new InvalidDataException(Tr("Leave the online session before saving the playlist."));
         var document = new Document { Entries = _player.SnapshotSaved().ToList() };
         if (export) Export(document);
         else Edit(document, metadataOnly: true);
     }
+    private static InvalidDataException DiscPlaylistUnavailable()
+        // Translators: Explanation when saving, exporting, or appending playlist files is requested during DVD playback.
+        => new(Tr("DVD titles cannot be saved or edited as a file playlist."));
+
     private void Export(Document document)
     {
         if (_view.Dialogs.ChoosePlaylistDestination() is not string path) return;

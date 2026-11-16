@@ -40,6 +40,7 @@ internal interface IMenuState
     void SetChapterState(IReadOnlyList<LunaPlayer.UI.Menus.ChapterMenuEntry> entries, int? current, bool stop, bool audiobook);
 
     void SetMediaLoaded(bool loaded);
+    void SetDiscState(bool active, bool canPrevious, bool canNext);
     void SetShuffleChecked(bool isChecked);
     void SetRepeatFileChecked(bool isChecked);
     void SetSilenceRemovalChecked(bool isChecked);
