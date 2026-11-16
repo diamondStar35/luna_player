@@ -275,6 +275,10 @@ internal sealed partial class GlobalShortcuts : IDisposable
             if (_disposed)
                 return;
         }
+        // Check at dispatch time, including Luna's dialogs, because focus can change after a key is queued.
+        if (GetWindowThreadProcessId(GetForegroundWindow(), out var processId) == 0
+            || processId == (uint)Environment.ProcessId)
+            return;
         Pressed?.Invoke(action);
     }
 
@@ -327,6 +331,12 @@ internal sealed partial class GlobalShortcuts : IDisposable
 
     [LibraryImport("user32.dll")]
     private static partial nint CallNextHookEx(nint hook, int code, nint message, nint data);
+
+    [LibraryImport("user32.dll")]
+    private static partial nint GetForegroundWindow();
+
+    [LibraryImport("user32.dll")]
+    private static partial uint GetWindowThreadProcessId(nint window, out uint processId);
 
     [LibraryImport("user32.dll", SetLastError = true)]
     private static partial int GetMessageW(out NativeMessage message, nint window, uint minimum, uint maximum);
