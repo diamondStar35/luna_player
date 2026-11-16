@@ -53,9 +53,9 @@ internal sealed class Preferences
             if (!PlaybackPreferences.Apply(settings, changes, player, ShowAudioFailure)) return false;
             // Reconcile the Windows media controls with the newly saved preference.
             player.RefreshState();
-            if (changes.Contains("shortcuts.primary", "shortcuts.secondary"))
+            if (changes.Contains("shortcuts.primary", "shortcuts.secondary", "shortcuts.disableSecondary"))
             {
-                shortcuts.Apply(settings.Shortcuts.Primary, settings.Shortcuts.Secondary);
+                shortcuts.Apply(settings.Shortcuts.Primary, settings.Shortcuts.Secondary, settings.Shortcuts.DisableSecondary);
                 view.ApplyShortcuts(shortcuts);
             }
             if (changes.Contains("shortcuts.global"))

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-11-03 19:34+0200\n"
+"POT-Creation-Date: 2026-11-16 09:18+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -815,7 +815,7 @@ msgstr ""
 
 #. Translators: Reports a background failure of headphone spatialization on the main window.
 #. Translators: Shown when headphone spatialization could not load the selected SOFA file or FFmpeg filter.
-#: Application/AudioFailures.cs:15 Application/Commands/App/Preferences.cs:52
+#: Application/AudioFailures.cs:15 Application/Commands/App/Preferences.cs:44
 msgid ""
 "Could not apply the SOFA headphone spatialization filter. Choose a valid "
 "SOFA HRTF file and use an FFmpeg build with libmysofa support."
@@ -852,27 +852,27 @@ msgid "Windows did not start an application for this item."
 msgstr ""
 
 #. Translators: Shown when the setting that evens out the loudness could not be turned on or off.
-#: Application/Commands/App/Preferences.cs:42
+#: Application/Commands/App/Preferences.cs:36
 msgid "Could not apply the audio normalization filter."
 msgstr ""
 
 #. Translators: Shown when the setting that mixes both channels into one could not be turned on or off.
-#: Application/Commands/App/Preferences.cs:46
+#: Application/Commands/App/Preferences.cs:40
 msgid "Could not apply the mono audio filter."
 msgstr ""
 
 #. Translators: Shown when the setting that trims the silent parts out could not be turned on or off.
-#: Application/Commands/App/Preferences.cs:59
+#: Application/Commands/App/Preferences.cs:48
 msgid "Could not apply the silence removal filter."
 msgstr ""
 
 #. Translators: Shown when the settings the user accepted could not be written to disk.
-#: Application/Commands/App/Preferences.cs:130
+#: Application/Commands/App/Preferences.cs:125
 msgid "Could not save settings."
 msgstr ""
 
 #. Translators: Shown after the user picks a different language, because the player only reads it when it starts.
-#: Application/Commands/App/Preferences.cs:137
+#: Application/Commands/App/Preferences.cs:132
 msgid "Please restart the app for language changes to take effect."
 msgstr ""
 
@@ -892,7 +892,7 @@ msgstr ""
 #. Translators: Title of a warning or confirmation message box.
 #: Application/Commands/App/Tools.cs:69
 #: Application/Commands/Playback/SelectionSaving.cs:152
-#: UI/Services/Messages.cs:25
+#: UI/Services/Messages.cs:26
 msgid "Warning"
 msgstr ""
 
@@ -903,20 +903,20 @@ msgstr[0] ""
 msgstr[1] ""
 
 #. Translators: Title of the progress window shown during a manual application update check.
-#: Application/Commands/App/Updates.cs:70
+#: Application/Commands/App/Updates.cs:74
 msgid "Checking for app updates"
 msgstr ""
 
 #. Translators: Initial message shown while contacting the application update server.
 #. Translators: Status shown while the application update check is still running.
-#: Application/Commands/App/Updates.cs:72
-#: Application/Commands/App/Updates.cs:74
+#: Application/Commands/App/Updates.cs:76
+#: Application/Commands/App/Updates.cs:78
 msgid "Checking for updates..."
 msgstr ""
 
 #. Translators: Shown when a manual application update check fails. {reason} is the
 #. network or data error reported by the system.
-#: Application/Commands/App/Updates.cs:110
+#: Application/Commands/App/Updates.cs:116
 msgid ""
 "Could not check for updates.\n"
 "\n"
@@ -924,18 +924,18 @@ msgid ""
 msgstr ""
 
 #. Translators: Shown after a manual check finds no newer Luna Player release.
-#: Application/Commands/App/Updates.cs:119
+#: Application/Commands/App/Updates.cs:125
 msgid "You are using the latest version."
 msgstr ""
 
 #. Translators: Title of the message shown when no newer application release exists.
-#: Application/Commands/App/Updates.cs:121
+#: Application/Commands/App/Updates.cs:127
 msgid "No update"
 msgstr ""
 
 #. Translators: Shown when info.json announces a newer application release before its
 #. installer, portable archive, or checksum file has finished being published.
-#: Application/Commands/App/Updates.cs:133
+#: Application/Commands/App/Updates.cs:139
 msgid ""
 "A new version has been announced, but its download is not available yet. "
 "Please try again later."
@@ -943,18 +943,18 @@ msgstr ""
 
 #. Translators: Shown and spoken after an application update has downloaded, while its SHA-256
 #. checksum is compared with the checksum published alongside the release.
-#: Application/Commands/App/Updates.cs:148
+#: Application/Commands/App/Updates.cs:156
 msgid "Verifying integrity..."
 msgstr ""
 
 #. Translators: Title of the window shown while a Luna Player update package is downloaded.
-#: Application/Commands/App/Updates.cs:163
+#: Application/Commands/App/Updates.cs:171
 msgid "Downloading update"
 msgstr ""
 
 #. Translators: Shown when an application's downloaded update does not match the
 #. SHA-256 checksum published with the release, or that checksum cannot be obtained.
-#: Application/Commands/App/Updates.cs:211
+#: Application/Commands/App/Updates.cs:221
 msgid ""
 "The downloaded update failed its integrity check. This may indicate "
 "malicious activity on the network or an internet problem. The updater was "
@@ -963,7 +963,7 @@ msgstr ""
 
 #. Translators: Shown when the application update package cannot be downloaded. {reason}
 #. is the network or file error reported by the system.
-#: Application/Commands/App/Updates.cs:218
+#: Application/Commands/App/Updates.cs:228
 msgid ""
 "Could not download update.\n"
 "\n"
@@ -972,14 +972,14 @@ msgstr ""
 
 #. Translators: Shown when the downloaded update cannot be handed to Updater.exe. {reason}
 #. is the error reported by the system.
-#: Application/Commands/App/Updates.cs:231
+#: Application/Commands/App/Updates.cs:241
 msgid ""
 "Could not start the updater.\n"
 "\n"
 "{reason}"
 msgstr ""
 
-#: Application/Commands/App/Updates.cs:243
+#: Application/Commands/App/Updates.cs:253
 msgid ""
 "Total size: {total}\n"
 "Downloaded: {downloaded}\n"
@@ -988,7 +988,7 @@ msgstr ""
 
 #. Translators: Stands in for a file size the download server did not state.
 #. Translators: Stands in for a file size the download did not state.
-#: Application/Commands/App/Updates.cs:253 YouTube/Components/Service.cs:309
+#: Application/Commands/App/Updates.cs:263 YouTube/Components/Service.cs:309
 msgid "Unknown"
 msgstr ""
 
@@ -2146,7 +2146,7 @@ msgstr ""
 #: Application/Commands/Playback/Playback.cs:126
 #: Application/Commands/Playback/Playback.cs:154 UI/MainFrame.cs:191
 #: UI/MenuController.cs:316 UI/Menus/RecordingMenu.cs:23
-#: UI/Playback/SleepTimerDialog.cs:80 UI/Recording/MainDialog.cs:172
+#: UI/Playback/SleepTimerDialog.cs:80 UI/Recording/MainDialog.cs:175
 #: UI/Recording/Transport.cs:115
 msgid "Pause"
 msgstr ""
@@ -2729,7 +2729,7 @@ msgstr ""
 #. Translators: The entry in a device list that means whichever microphone Windows is currently set
 #. to use, rather than one particular microphone.
 #: Application/Commands/Recording/Recording.cs:214
-#: UI/Recording/SourceDialog.cs:126
+#: UI/Recording/SourceDialog.cs:141
 msgid "Default input device"
 msgstr ""
 
@@ -2795,7 +2795,7 @@ msgid "This is not a valid YouTube video link: {link}"
 msgstr ""
 
 #. Translators: Shown when the address saved as a plain stream could not be played.
-#: Application/Commands/YouTube/Favorites.cs:90
+#: Application/Commands/YouTube/Favorites.cs:91
 msgid "Could not open stream link."
 msgstr ""
 
@@ -2811,7 +2811,7 @@ msgstr ""
 
 #. Translators: Asks the user to confirm removing one saved link. {name} is what it is called and
 #. {kind} is what sort of thing it points at.
-#: Application/Commands/YouTube/Favorites.cs:146
+#: Application/Commands/YouTube/Favorites.cs:148
 msgid "Remove favorite '{name}' ({kind})?"
 msgstr ""
 
@@ -4133,7 +4133,7 @@ msgstr ""
 #. Translators: Button that opens a file picker to choose a cookie file by hand.
 #: UI/Audio/SofaPreferences.cs:34 UI/Conversion/MainDialog.cs:177
 #: UI/Iptv/SourceEditDialog.cs:73 UI/Preferences/Recording.cs:72
-#: UI/Recording/MainDialog.cs:151 UI/Selections/SaveDialog.cs:47
+#: UI/Recording/MainDialog.cs:154 UI/Selections/SaveDialog.cs:47
 #: UI/YouTube/DownloadDialog.cs:97 UI/YouTube/DownloadPreferences.cs:66
 #: UI/YouTube/GeneralPreferences.cs:90
 msgid "Browse..."
@@ -4263,9 +4263,9 @@ msgstr ""
 #: UI/Iptv/ChannelBrowserDialog.cs:79 UI/Iptv/SourceEditDialog.cs:57
 #: UI/Iptv/SourcesDialog.cs:29 UI/Playlists/EditorDialog.cs:47
 #: UI/Playlists/EditorDialog.cs:58 UI/Playlists/ManagerDialog.cs:28
-#: UI/Radio/BrowserDialog.cs:108 UI/Recording/SourceDialog.cs:50
-#: UI/Selections/SaveDialog.cs:36 UI/YouTube/FavoriteEditDialog.cs:27
-#: UI/YouTube/FavoritesDialog.cs:29
+#: UI/Radio/BrowserDialog.cs:108 UI/Recording/SourceDialog.cs:55
+#: UI/Selections/SaveDialog.cs:36 UI/YouTube/FavoriteEditDialog.cs:29
+#: UI/YouTube/FavoritesDialog.cs:31
 msgid "Name"
 msgstr ""
 
@@ -4315,9 +4315,9 @@ msgstr ""
 #: UI/Equalizer/PresetsDialog.cs:57 UI/Help/TextDialog.cs:19
 #: UI/Iptv/ChannelBrowserDialog.cs:121 UI/Iptv/SourcesDialog.cs:62
 #: UI/Playlists/ManagerDialog.cs:43 UI/Radio/BrowserDialog.cs:134
-#: UI/Radio/DetailsDialog.cs:55 UI/Recording/MainDialog.cs:174
+#: UI/Radio/DetailsDialog.cs:55 UI/Recording/MainDialog.cs:177
 #: UI/Spotify/BrowserDialog.cs:149 UI/YouTube/DescriptionDialog.cs:53
-#: UI/YouTube/DownloadQueueDialog.cs:69 UI/YouTube/FavoritesDialog.cs:62
+#: UI/YouTube/DownloadQueueDialog.cs:69 UI/YouTube/FavoritesDialog.cs:47
 #: UI/YouTube/ResultsDialog.cs:110 UI/YouTube/SearchDialog.cs:85
 msgid "Close"
 msgstr ""
@@ -4336,7 +4336,7 @@ msgstr ""
 #. Translators: The button that stops a running download. It asks for confirmation first.
 #. Translators: Closes the link-entry window without adding anything.
 #. Translators: The button that closes a window and leaves everything as it was.
-#: UI/Controls/ProgressView.cs:66 UI/Conversion/ProgressDialog.cs:85
+#: UI/Controls/ProgressView.cs:67 UI/Conversion/ProgressDialog.cs:85
 #: UI/Equalizer/EditDialog.cs:101 UI/Playback/SleepTimerDialog.cs:166
 #: UI/Playback/TimeDialog.cs:73 UI/Playlists/EditorDialog.cs:88
 #: UI/Playlists/OpenedFilesDialog.cs:51 UI/Radio/FiltersDialog.cs:79
@@ -4354,7 +4354,7 @@ msgstr ""
 
 #. Translators: Title of the group holding the list of files to be converted and its buttons.
 #. Translators: Title of the group of the recording window holding what to record from.
-#: UI/Conversion/MainDialog.cs:102 UI/Recording/MainDialog.cs:91
+#: UI/Conversion/MainDialog.cs:102 UI/Recording/MainDialog.cs:94
 msgid "Sources"
 msgstr ""
 
@@ -4389,7 +4389,7 @@ msgstr ""
 #. Translators: Label of the list that chooses the sample rate the converted files are written at.
 #. Translators: Label of the list that chooses how many times a second a recording is sampled.
 #: UI/Conversion/MainDialog.cs:122 UI/Preferences/Recording.cs:56
-#: UI/Recording/MainDialog.cs:135
+#: UI/Recording/MainDialog.cs:138
 msgid "Sample rate"
 msgstr ""
 
@@ -4411,7 +4411,7 @@ msgstr ""
 #. Translators: Search filter: return channels rather than videos.
 #. Translators: A channel browser tab: other channels this one features.
 #: UI/Conversion/MainDialog.cs:130 UI/Preferences/Recording.cs:59
-#: UI/Recording/MainDialog.cs:138 UI/YouTube/SearchDialog.cs:76
+#: UI/Recording/MainDialog.cs:141 UI/YouTube/SearchDialog.cs:76
 #: YouTube/Client/Channels.cs:40
 msgid "Channels"
 msgstr ""
@@ -4419,16 +4419,16 @@ msgstr ""
 #. Translators: The one-channel choice in the converter's channels list.
 #. Translators: One of the channel counts a recording can be made in: one channel.
 #: UI/Conversion/MainDialog.cs:135 UI/Preferences/Recording.cs:62
-#: UI/Preferences/Recording.cs:196 UI/Recording/MainDialog.cs:141
-#: UI/Recording/Options.cs:69
+#: UI/Preferences/Recording.cs:196 UI/Recording/MainDialog.cs:144
+#: UI/Recording/Options.cs:70
 msgid "Mono"
 msgstr ""
 
 #. Translators: The two-channel choice in the converter's channels list.
 #. Translators: One of the channel counts a recording can be made in: two channels.
 #: UI/Conversion/MainDialog.cs:137 UI/Preferences/Recording.cs:64
-#: UI/Preferences/Recording.cs:198 UI/Recording/MainDialog.cs:143
-#: UI/Recording/Options.cs:71
+#: UI/Preferences/Recording.cs:198 UI/Recording/MainDialog.cs:146
+#: UI/Recording/Options.cs:72
 msgid "Stereo"
 msgstr ""
 
@@ -4628,7 +4628,7 @@ msgid "The details could not be copied. They are in the file named above."
 msgstr ""
 
 #. Translators: Extra Open File filter for Luna playlist documents; keep JSON and the wildcard unchanged.
-#: UI/DialogService.cs:69
+#: UI/DialogService.cs:70
 msgid "JSON playlists (*.json)|*.json"
 msgstr ""
 
@@ -4707,7 +4707,7 @@ msgstr ""
 #. Translators: Button that changes the recording source chosen in the list.
 #. Translators: Button that changes a saved link. The three dots mean it opens a window to change it in.
 #: UI/Equalizer/PresetsDialog.cs:51 UI/Iptv/SourcesDialog.cs:57
-#: UI/Recording/MainDialog.cs:96 UI/YouTube/FavoritesDialog.cs:57
+#: UI/Recording/MainDialog.cs:99 UI/YouTube/FavoritesDialog.cs:42
 msgid "Edit..."
 msgstr ""
 
@@ -4776,7 +4776,7 @@ msgstr ""
 
 #. Translators: Title used for a window of read-only text when the caller supplies none.
 #. Translators: Title of an informational message box.
-#: UI/Help/TextDialog.cs:13 UI/Services/Messages.cs:31
+#: UI/Help/TextDialog.cs:13 UI/Services/Messages.cs:32
 msgid "Information"
 msgstr ""
 
@@ -4892,7 +4892,7 @@ msgstr ""
 #. Translators: Label of the list saying what kind of thing a saved link points at.
 #. Translators: Heading of the favourites list column saying what kind of thing each saved link points at.
 #: UI/Iptv/SourceEditDialog.cs:61 UI/Iptv/SourcesDialog.cs:31
-#: UI/YouTube/FavoriteEditDialog.cs:30 UI/YouTube/FavoritesDialog.cs:31
+#: UI/YouTube/FavoriteEditDialog.cs:32 UI/YouTube/FavoritesDialog.cs:33
 msgid "Type"
 msgstr ""
 
@@ -4970,7 +4970,7 @@ msgstr ""
 #. Translators: Playlist manager button opening the selected playlist for playback.
 #. Translators: Button that plays the saved link chosen in the list.
 #: UI/Iptv/SourcesDialog.cs:53 UI/Playlists/ManagerDialog.cs:33
-#: UI/YouTube/FavoritesDialog.cs:53
+#: UI/YouTube/FavoritesDialog.cs:38
 msgid "Open"
 msgstr ""
 
@@ -4979,15 +4979,15 @@ msgstr ""
 #. Translators: Opens a box where one or more YouTube links can be added to the queue.
 #. Translators: Button that saves a new link. The three dots mean it opens a window to type it in.
 #: UI/Iptv/SourcesDialog.cs:55 UI/Playlists/EditorDialog.cs:67
-#: UI/YouTube/DownloadQueueDialog.cs:60 UI/YouTube/FavoritesDialog.cs:55
+#: UI/YouTube/DownloadQueueDialog.cs:60 UI/YouTube/FavoritesDialog.cs:40
 msgid "Add..."
 msgstr ""
 
 #. Translators: Button that removes a saved IPTV source. The three dots mean it asks first.
 #. Translators: Button that removes the recording source chosen in the list. It asks first.
 #. Translators: Button that removes a saved link. The three dots mean it asks first.
-#: UI/Iptv/SourcesDialog.cs:59 UI/Recording/MainDialog.cs:98
-#: UI/YouTube/FavoritesDialog.cs:59
+#: UI/Iptv/SourcesDialog.cs:59 UI/Recording/MainDialog.cs:101
+#: UI/YouTube/FavoritesDialog.cs:44
 msgid "Remove..."
 msgstr ""
 
@@ -5069,7 +5069,7 @@ msgstr ""
 #. Translators: Title of the window where recording is set up and started.
 #. Translators: Title of the messages shown about recording.
 #: UI/Menus/Builder.cs:91 UI/Preferences/MainDialog.cs:66
-#: UI/Recording/MainDialog.cs:86 UI/Recording/MainDialog.cs:218
+#: UI/Recording/MainDialog.cs:89 UI/Recording/MainDialog.cs:248
 msgid "Recording"
 msgstr ""
 
@@ -6403,7 +6403,7 @@ msgstr ""
 
 #. Translators: Name of the settings category for the key combinations that work while another program is in front.
 #. Translators: Heading above the list of shortcuts that work while another program is in front.
-#: UI/Preferences/MainDialog.cs:70 UI/Preferences/Shortcut.cs:54
+#: UI/Preferences/MainDialog.cs:70 UI/Preferences/Shortcut.cs:55
 msgid "Global Shortcuts"
 msgstr ""
 
@@ -6508,107 +6508,121 @@ msgid "Choose a folder for recordings."
 msgstr ""
 
 #. Translators: Title of the window that asks where recordings should be saved.
-#: UI/Preferences/Recording.cs:255 UI/Recording/Options.cs:136
+#: UI/Preferences/Recording.cs:255 UI/Recording/Options.cs:140
 msgid "Select the folder for recordings"
 msgstr ""
 
 #. Translators: A sample rate, as shown in a list. {value} is a number such as 44100.
-#: UI/Preferences/Recording.cs:280 UI/Recording/Options.cs:193
+#: UI/Preferences/Recording.cs:280 UI/Recording/Options.cs:206
 msgid "{value} Hz"
 msgstr ""
 
 #. Translators: A bitrate, as shown in a list. {value} is a number such as 192.
-#: UI/Preferences/Recording.cs:283 UI/Recording/Options.cs:196
+#: UI/Preferences/Recording.cs:283 UI/Recording/Options.cs:209
 msgid "{value} kbps"
 msgstr ""
 
 #. Translators: Spoken description of the Keyboard shortcuts settings page, read when the page is opened.
-#: UI/Preferences/Shortcut.cs:40
+#: UI/Preferences/Shortcut.cs:41
 msgid ""
 "Keyboard shortcuts. Select an action, then edit its primary or secondary "
 "local shortcut."
 msgstr ""
 
 #. Translators: Spoken description of the Global shortcuts settings page, read when the page is opened.
-#: UI/Preferences/Shortcut.cs:42
+#: UI/Preferences/Shortcut.cs:43
 msgid ""
 "System-wide shortcuts. Select an action, then edit the combination that "
 "triggers it from any application."
 msgstr ""
 
 #. Translators: Heading above the list of shortcuts that work while the player is the program in front.
-#: UI/Preferences/Shortcut.cs:52
+#: UI/Preferences/Shortcut.cs:53
 msgid "Local Shortcuts"
 msgstr ""
 
 #. Translators: Heading of the shortcut list column naming each command.
-#: UI/Preferences/Shortcut.cs:57
+#: UI/Preferences/Shortcut.cs:58
 msgid "Action"
 msgstr ""
 
 #. Translators: Heading of the shortcut list column holding the first key combination of each command.
-#: UI/Preferences/Shortcut.cs:60
+#: UI/Preferences/Shortcut.cs:61
 msgid "Primary Shortcut"
 msgstr ""
 
 #. Translators: Heading of the shortcut list column holding the key combination of each command, on the page
 #. where a command has only one.
-#: UI/Preferences/Shortcut.cs:63
+#: UI/Preferences/Shortcut.cs:64
 msgid "Shortcut"
 msgstr ""
 
 #. Translators: Heading of the shortcut list column holding the second, alternative key combination of each command.
-#: UI/Preferences/Shortcut.cs:66
+#: UI/Preferences/Shortcut.cs:67
 msgid "Secondary Shortcut"
 msgstr ""
 
+#. Translators: Checkbox below the Local Shortcuts list in Preferences; stop handling each action's alternative key combination.
+#: UI/Preferences/Shortcut.cs:71
+msgid "Disable secondary shortcuts"
+msgstr ""
+
+#. Translators: F1 help for the Disable secondary shortcuts checkbox on the Local Shortcuts preferences page.
+#: UI/Preferences/Shortcut.cs:73
+msgid ""
+"Disables the alternative shortcuts in the Secondary Shortcut column so those "
+"keys keep their normal behavior in the interface. Primary and global "
+"shortcuts remain active. Your secondary shortcut assignments are kept and "
+"become active again when you clear this checkbox."
+msgstr ""
+
 #. Translators: Button that changes the first key combination of the chosen command.
-#: UI/Preferences/Shortcut.cs:69
+#: UI/Preferences/Shortcut.cs:77
 msgid "Edit Primary Shortcut"
 msgstr ""
 
 #. Translators: Button that changes the key combination of the chosen command, on the page where a command has only one.
-#: UI/Preferences/Shortcut.cs:71
+#: UI/Preferences/Shortcut.cs:79
 msgid "Edit Shortcut"
 msgstr ""
 
 #. Translators: Button that changes the second, alternative key combination of the chosen command.
-#: UI/Preferences/Shortcut.cs:73
+#: UI/Preferences/Shortcut.cs:81
 msgid "Edit Secondary Shortcut"
 msgstr ""
 
 #. Translators: Button that puts every shortcut on this page back to the combination the player came with.
-#: UI/Preferences/Shortcut.cs:75
+#: UI/Preferences/Shortcut.cs:83
 msgid "Reset to Defaults"
 msgstr ""
 
 #. Translators: Shown when the combination the user pressed is already used by another command.
-#: UI/Preferences/Shortcut.cs:146
+#: UI/Preferences/Shortcut.cs:159
 msgid "That shortcut is already assigned to another action."
 msgstr ""
 
 #. Translators: Asks the user to confirm putting every shortcut on this page back to the combination the player came with.
-#: UI/Preferences/Shortcut.cs:183
+#: UI/Preferences/Shortcut.cs:196
 msgid "Reset all shortcuts to defaults?"
 msgstr ""
 
 #. Translators: Title of the window that waits for a combination that will work while another program is in front.
-#: UI/Preferences/Shortcut.cs:269
+#: UI/Preferences/Shortcut.cs:285
 msgid "Set Global Shortcut"
 msgstr ""
 
 #. Translators: Title of the small window that waits for the user to press the combination they want.
-#: UI/Preferences/Shortcut.cs:271
+#: UI/Preferences/Shortcut.cs:287
 msgid "Set Shortcut"
 msgstr ""
 
 #. Translators: Message in the window that waits for a system-wide key combination. Escape is the name of the key that closes it.
-#: UI/Preferences/Shortcut.cs:274
+#: UI/Preferences/Shortcut.cs:290
 msgid "Press the desired global shortcut. Escape cancels."
 msgstr ""
 
 #. Translators: Message in the window that waits for a key combination. Escape is the name of the key that closes it.
-#: UI/Preferences/Shortcut.cs:276
+#: UI/Preferences/Shortcut.cs:292
 msgid "Press the desired shortcut. Escape cancels."
 msgstr ""
 
@@ -6945,7 +6959,7 @@ msgstr ""
 
 #. Translators: Column heading for a radio stream's bitrate in kilobits per second.
 #. Translators: Label of the list that chooses how much room a second of compressed audio may take.
-#: UI/Radio/BrowserDialog.cs:116 UI/Recording/MainDialog.cs:145
+#: UI/Radio/BrowserDialog.cs:116 UI/Recording/MainDialog.cs:148
 msgid "Bitrate"
 msgstr ""
 
@@ -7246,83 +7260,83 @@ msgstr ""
 
 #. Translators: Button that adds a recording source. It opens a menu of the kinds that can be added.
 #. Translators: Confirms adding the entered links to the download queue.
-#: UI/Recording/MainDialog.cs:94 UI/YouTube/DownloadQueueDialog.cs:375
+#: UI/Recording/MainDialog.cs:97 UI/YouTube/DownloadQueueDialog.cs:375
 msgid "Add"
 msgstr ""
 
 #. Translators: Label of the slider that sets how loud the chosen recording source is in the mix.
-#: UI/Recording/MainDialog.cs:111
+#: UI/Recording/MainDialog.cs:114
 msgid "Volume for selected source"
 msgstr ""
 
 #. Translators: Title of the group of the recording window holding how a recording is written.
-#: UI/Recording/MainDialog.cs:130
+#: UI/Recording/MainDialog.cs:133
 msgid "Recording settings"
 msgstr ""
 
 #. Translators: Label of the list that chooses what a recording is saved as.
 #. Translators: Label of the combo box choosing the media format for saved selections.
-#: UI/Recording/MainDialog.cs:132 UI/Selections/SaveDialog.cs:50
+#: UI/Recording/MainDialog.cs:135 UI/Selections/SaveDialog.cs:50
 msgid "Format"
 msgstr ""
 
 #. Translators: Label of the box holding the folder recordings are saved into.
 #. Translators: Label of the read-only folder box in the save-selection-points dialog.
-#: UI/Recording/MainDialog.cs:148 UI/Selections/SaveDialog.cs:40
+#: UI/Recording/MainDialog.cs:151 UI/Selections/SaveDialog.cs:40
 msgid "Folder"
 msgstr ""
 
 #. Translators: Button that begins recording, and ends it when pressed a second time.
 #. Translators: Button that begins recording.
 #. Translators: Starts every unfinished item in the download queue.
-#: UI/Recording/MainDialog.cs:170 UI/Recording/Transport.cs:107
+#: UI/Recording/MainDialog.cs:173 UI/Recording/Transport.cs:107
 #: UI/YouTube/DownloadQueueDialog.cs:63
 msgid "Start"
 msgstr ""
 
 #. Translators: Label of the list that chooses which program a recording source captures.
 #. Translators: The name a newly added program source is given until the user changes it.
-#: UI/Recording/SourceDialog.cs:54 UI/Recording/Sources.cs:142
+#: UI/Recording/SourceDialog.cs:59 UI/Recording/Sources.cs:149
 msgid "Program"
 msgstr ""
 
 #. Translators: Label of the list that chooses which device a recording source captures.
-#: UI/Recording/SourceDialog.cs:56
+#: UI/Recording/SourceDialog.cs:61
 msgid "Device"
 msgstr ""
 
 #. Translators: Shown in a list while what belongs in it is still being looked up.
 #. Translators: Spoken while another tab of a YouTube channel is being loaded.
 #. Translators: The short wording spoken while a channel tab is being loaded.
-#: UI/Recording/SourceDialog.cs:61 YouTube/Playback/Feed.cs:166
+#: UI/Recording/SourceDialog.cs:66 YouTube/Playback/Feed.cs:166
 #: YouTube/Playback/Feed.cs:168
 msgid "Loading..."
 msgstr ""
 
 #. Translators: Label of the slider that sets how loud one recording source is in the mix.
-#: UI/Recording/SourceDialog.cs:66
+#: UI/Recording/SourceDialog.cs:71
 msgid "Volume"
 msgstr ""
 
 #. Translators: Tick box on the recording source window. Ticked, the source records every
 #. program except the chosen one rather than the chosen one itself.
-#: UI/Recording/SourceDialog.cs:83
+#: UI/Recording/SourceDialog.cs:88
 msgid "Capture everything except this application"
 msgstr ""
 
 #. Translators: The entry in a device list that means whichever speakers Windows is currently set to
 #. use, rather than one particular set.
-#: UI/Recording/SourceDialog.cs:129
+#: UI/Recording/SourceDialog.cs:144
 msgid "Default output device"
 msgstr ""
 
 #. Translators: Shown in the list of programs when no program has an audio session to capture.
-#: UI/Recording/SourceDialog.cs:173
+#: UI/Recording/SourceDialog.cs:188
 msgid "No programs are using sound"
 msgstr ""
 
 #. Translators: Title of the messages shown about a recording source.
-#: UI/Recording/SourceDialog.cs:219
+#: UI/Recording/SourceDialog.cs:235
 msgid "Recording source"
 msgstr ""
 
@@ -7350,47 +7364,47 @@ msgid ""
 msgstr ""
 
 #. Translators: Asks the user to confirm removing a recording source. {name} is what they called it.
-#: UI/Recording/Sources.cs:128
+#: UI/Recording/Sources.cs:135
 msgid "Remove the source '{name}'?"
 msgstr ""
 
 #. Translators: The name a newly added microphone source is given until the user changes it.
-#: UI/Recording/Sources.cs:138
+#: UI/Recording/Sources.cs:145
 msgid "Microphone"
 msgstr ""
 
 #. Translators: The name a newly added speaker-output source is given until the user changes it.
-#: UI/Recording/Sources.cs:140
+#: UI/Recording/Sources.cs:147
 msgid "System output"
 msgstr ""
 
 #. Translators: Title of the window for adding a microphone or line-in as a recording source.
-#: UI/Recording/Sources.cs:148
+#: UI/Recording/Sources.cs:155
 msgid "Add input device"
 msgstr ""
 
 #. Translators: Title of the window for adding a speaker's output as a recording source.
-#: UI/Recording/Sources.cs:150
+#: UI/Recording/Sources.cs:157
 msgid "Add system output"
 msgstr ""
 
 #. Translators: Title of the window for adding one program's sound as a recording source.
-#: UI/Recording/Sources.cs:152
+#: UI/Recording/Sources.cs:159
 msgid "Add program"
 msgstr ""
 
 #. Translators: Title of the window for changing a microphone or line-in recording source.
-#: UI/Recording/Sources.cs:158
+#: UI/Recording/Sources.cs:165
 msgid "Edit input device"
 msgstr ""
 
 #. Translators: Title of the window for changing a speaker-output recording source.
-#: UI/Recording/Sources.cs:160
+#: UI/Recording/Sources.cs:167
 msgid "Edit system output"
 msgstr ""
 
 #. Translators: Title of the window for changing a program recording source.
-#: UI/Recording/Sources.cs:162
+#: UI/Recording/Sources.cs:169
 msgid "Edit program"
 msgstr ""
 
@@ -7552,12 +7566,12 @@ msgid "Opus audio (*.opus)"
 msgstr ""
 
 #. Translators: Title of a message box confirming that an operation completed successfully.
-#: UI/Services/Messages.cs:10
+#: UI/Services/Messages.cs:11
 msgid "Success"
 msgstr ""
 
 #. Translators: Title of a message box reporting an error.
-#: UI/Services/Messages.cs:20
+#: UI/Services/Messages.cs:21
 msgid "Error"
 msgstr ""
 
@@ -8349,12 +8363,12 @@ msgstr ""
 
 #. Translators: Label of the box holding the address a saved link points at.
 #. Translators: Heading of the favourites list column holding the address of each saved link.
-#: UI/YouTube/FavoriteEditDialog.cs:36 UI/YouTube/FavoritesDialog.cs:33
+#: UI/YouTube/FavoriteEditDialog.cs:38 UI/YouTube/FavoritesDialog.cs:35
 msgid "Link"
 msgstr ""
 
 #. Translators: Title of the window listing the YouTube links and streams the user has saved.
-#: UI/YouTube/FavoritesDialog.cs:25
+#: UI/YouTube/FavoritesDialog.cs:27
 msgid "Favorite videos"
 msgstr ""
 

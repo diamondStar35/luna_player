@@ -13,6 +13,64 @@ public sealed class ShortcutTests
     private static readonly Shortcut AltRight = new("r", ShortcutModifiers.Alt);
 
     [TestMethod]
+    public void SecondaryShortcutsAreEnabledForExistingSettings()
+    {
+        var settings = JsonSerializer.Deserialize("{}", SettingsJsonContext.Default.Settings)!;
+        Assert.IsFalse(settings.Shortcuts.DisableSecondary);
+        var shortcuts = new ShortcutManager([new(ActionId.PlayPause, "Play", new("space"), new("enter"))]);
+        shortcuts.Apply(settings.Shortcuts.Primary, settings.Shortcuts.Secondary, settings.Shortcuts.DisableSecondary);
+        Assert.HasCount(2, shortcuts.GetBindings());
+        Assert.IsTrue(shortcuts.GetBindings().Any(binding => binding.Slot == ShortcutSlot.Secondary));
+    }
+
+    [TestMethod]
+    [DataRow(false)]
+    [DataRow(true)]
+    public void DisablingSecondaryShortcutsOnlyRemovesTheirActiveBindings(bool customize)
+    {
+        var primary = new Shortcut("space");
+        var secondary = customize ? new Shortcut("p", ShortcutModifiers.Alt) : new Shortcut("enter");
+        var shortcuts = new ShortcutManager([new(ActionId.PlayPause, "Play", primary, new("enter"))]);
+        var overrides = new Dictionary<ActionId, Shortcut>();
+        if (customize) overrides[ActionId.PlayPause] = secondary;
+
+        shortcuts.Apply(new Dictionary<ActionId, Shortcut>(), overrides, disableSecondary: true);
+
+        var bindings = shortcuts.GetBindings();
+        Assert.HasCount(1, bindings);
+        Assert.AreEqual(new ShortcutBinding(ActionId.PlayPause, ShortcutSlot.Primary, primary), bindings[0]);
+        Assert.AreEqual(secondary, shortcuts.Get(ActionId.PlayPause, ShortcutSlot.Secondary));
+        CollectionAssert.AreEquivalent(overrides.ToArray(), shortcuts.SecondaryOverrides().ToArray());
+
+        shortcuts.Apply(shortcuts.PrimaryOverrides(), shortcuts.SecondaryOverrides(), disableSecondary: false);
+
+        Assert.HasCount(2, shortcuts.GetBindings());
+        Assert.IsTrue(shortcuts.GetBindings().Contains(new(ActionId.PlayPause, ShortcutSlot.Secondary, secondary)));
+    }
+
+    [TestMethod]
+    public void DisabledSecondaryPreferenceSurvivesSavingCopyingAndApplying()
+    {
+        var settings = new Settings();
+        settings.Shortcuts.DisableSecondary = true;
+        settings.Shortcuts.Secondary[ActionId.PlayPause] = AltLeft;
+        settings.Shortcuts.Global[ActionId.PlayPause] = AltRight;
+        var copy = settings.Copy();
+        settings.Shortcuts.DisableSecondary = false;
+        var saved = JsonSerializer.Serialize(copy, SettingsJsonContext.Default.Settings);
+        var restored = JsonSerializer.Deserialize(saved, SettingsJsonContext.Default.Settings)!;
+        restored.ValidateStored();
+        settings.ApplyValues(restored);
+
+        Assert.IsTrue(settings.Shortcuts.DisableSecondary);
+        Assert.AreEqual(AltLeft, settings.Shortcuts.Secondary[ActionId.PlayPause]);
+        Assert.AreEqual(AltRight, settings.Shortcuts.Global[ActionId.PlayPause]);
+        var globals = new ShortcutManager([new(ActionId.PlayPause, "Play", new("space"))]);
+        globals.Apply(settings.Shortcuts.Global, new Dictionary<ActionId, Shortcut>());
+        Assert.AreEqual(AltRight, globals.GetBindings().Single().Shortcut);
+    }
+
+    [TestMethod]
     public void RetiredBindingsDoNotInvalidateOtherSettings()
     {
         const string json = """

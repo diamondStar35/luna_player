@@ -75,9 +75,9 @@ internal static class MediaActions
             // Translators: Name of the command that opens the window for renaming and deleting bookmarks.
             new(ActionId.ManageBookmarks, Tr("Manage bookmarks dialog"), new("m", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
             // Translators: Name of the command that plays the file before the current one.
-            new(ActionId.PreviousTrack, Tr("Play the previous file"), new("tab", ShortcutModifiers.Shift), new("page_up")),
+            new(ActionId.PreviousTrack, Tr("Play the previous file"), new("page_up"), new("tab", ShortcutModifiers.Shift)),
             // Translators: Name of the command that plays the file after the current one.
-            new(ActionId.NextTrack, Tr("Play the next file"), new("tab"), new("page_down")),
+            new(ActionId.NextTrack, Tr("Play the next file"), new("page_down"), new("tab")),
             // Translators: Name of the command that plays the first file in the list.
             new(ActionId.FirstTrack, Tr("Play the first file in the list"), new("home", ShortcutModifiers.Control)),
             // Translators: Name of the command that opens the window asking for a file number to jump to.

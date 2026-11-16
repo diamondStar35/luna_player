@@ -69,6 +69,7 @@ internal sealed class ShortcutManager
     private readonly Dictionary<ActionId, Shortcut> _defaultSecondary = [];
     private readonly Dictionary<ActionId, Shortcut> _primary = [];
     private readonly Dictionary<ActionId, Shortcut> _secondary = [];
+    private bool _disableSecondary;
 
     internal ShortcutManager(IEnumerable<ActionDefinition> actions)
     {
@@ -102,12 +103,15 @@ internal sealed class ShortcutManager
         var bindings = new List<ShortcutBinding>(_primary.Count + _secondary.Count);
         foreach (var pair in _primary)
             bindings.Add(new ShortcutBinding(pair.Key, ShortcutSlot.Primary, pair.Value));
-        foreach (var pair in _secondary)
-            bindings.Add(new ShortcutBinding(pair.Key, ShortcutSlot.Secondary, pair.Value));
+        // Keep assignments intact, but leave disabled secondary keys out of the wx accelerator table.
+        if (!_disableSecondary)
+            foreach (var pair in _secondary)
+                bindings.Add(new ShortcutBinding(pair.Key, ShortcutSlot.Secondary, pair.Value));
         return bindings;
     }
 
-    internal void Apply(IReadOnlyDictionary<ActionId, Shortcut> primary, IReadOnlyDictionary<ActionId, Shortcut> secondary)
+    internal void Apply(IReadOnlyDictionary<ActionId, Shortcut> primary, IReadOnlyDictionary<ActionId, Shortcut> secondary,
+        bool disableSecondary = false)
     {
         // Resolve all requested assignments together: a key freed by a later action (or the
         // other slot) must already be available to an earlier action, including shortcut swaps.
@@ -141,6 +145,7 @@ internal sealed class ShortcutManager
         _secondary.Clear();
         foreach (var pair in effective)
             (pair.Key.Slot == ShortcutSlot.Primary ? _primary : _secondary)[pair.Key.Action] = pair.Value;
+        _disableSecondary = disableSecondary;
     }
 
     internal Dictionary<ActionId, Shortcut> PrimaryOverrides()

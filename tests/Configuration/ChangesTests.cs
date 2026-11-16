@@ -81,6 +81,22 @@ public sealed class ChangesTests
     }
 
     [TestMethod]
+    public void DisablingSecondaryShortcutsDoesNotReplaceBindings()
+    {
+        var settings = new Settings();
+        var edited = settings.Copy();
+        edited.Shortcuts.DisableSecondary = true;
+        var changes = new Changes(settings, edited);
+        settings.Shortcuts.Secondary[ActionId.PlayPause] = new("p", ShortcutModifiers.Alt);
+
+        Assert.IsTrue(changes.Contains("shortcuts.disableSecondary"));
+        Assert.IsFalse(changes.Contains("shortcuts.primary", "shortcuts.secondary", "shortcuts.global"));
+        Assert.IsTrue(changes.ApplyTo(settings));
+        Assert.IsTrue(settings.Shortcuts.DisableSecondary);
+        Assert.AreEqual(new Shortcut("p", ShortcutModifiers.Alt), settings.Shortcuts.Secondary[ActionId.PlayPause]);
+    }
+
+    [TestMethod]
     public void CollectionOrderDoesNotCountAsAnEdit()
     {
         var before = new Settings();

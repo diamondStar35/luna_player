@@ -5,6 +5,7 @@ namespace LunaPlayer.Configuration.Models;
 
 internal sealed class ShortcutSettings
 {
+    public bool DisableSecondary { get; set; }
     [JsonConverter(typeof(ShortcutOverrides))]
     public Dictionary<ActionId, Shortcut> Primary { get; set; } = [];
     [JsonConverter(typeof(ShortcutOverrides))]
@@ -15,12 +16,14 @@ internal sealed class ShortcutSettings
     public Dictionary<ActionId, Shortcut> Global { get; set; } = [];
     internal ShortcutSettings Copy() => new()
     {
+        DisableSecondary = DisableSecondary,
         Primary = new(Primary),
         Secondary = new(Secondary),
         Global = new(Global),
     };
     internal void Apply(ShortcutSettings source)
     {
+        DisableSecondary = source.DisableSecondary;
         Primary = new(source.Primary);
         Secondary = new(source.Secondary);
         Global = new(source.Global);

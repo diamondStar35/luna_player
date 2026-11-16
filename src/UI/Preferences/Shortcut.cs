@@ -27,6 +27,7 @@ internal sealed class ShortcutPreferences : PreferencesPage
     private readonly Dictionary<ActionId, Shortcut> _primary = [];
     private readonly Dictionary<ActionId, Shortcut> _secondary = [];
     private readonly ListCtrl _list;
+    private readonly CheckBox? _disableSecondary;
     private readonly Button _editPrimary;
     private readonly Button? _editSecondary;
     private readonly Button _reset;
@@ -64,6 +65,13 @@ internal sealed class ShortcutPreferences : PreferencesPage
         if (HasSecondary)
             // Translators: Heading of the shortcut list column holding the second, alternative key combination of each command.
             _list.InsertColumn(2, Tr("Secondary Shortcut"), 135);
+        if (HasSecondary)
+        {
+            // Translators: Checkbox below the Local Shortcuts list in Preferences; stop handling each action's alternative key combination.
+            _disableSecondary = new CheckBox(panel, label: Tr("Disable secondary shortcuts"));
+            // Translators: F1 help for the Disable secondary shortcuts checkbox on the Local Shortcuts preferences page.
+            Help(_disableSecondary, Tr("Disables the alternative shortcuts in the Secondary Shortcut column so those keys keep their normal behavior in the interface. Primary and global shortcuts remain active. Your secondary shortcut assignments are kept and become active again when you clear this checkbox."));
+        }
         _editPrimary = new Button(panel, label: HasSecondary
             // Translators: Button that changes the first key combination of the chosen command.
             ? Tr("Edit Primary Shortcut")
@@ -82,12 +90,16 @@ internal sealed class ShortcutPreferences : PreferencesPage
         var sizer = new BoxSizer(Orientation.Vertical);
         sizer.Add(heading, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderTop, border: 8);
         sizer.Add(_list, proportion: 1, flags: SizerFlags.All | SizerFlags.Expand, border: 8);
+        if (_disableSecondary is not null)
+            sizer.Add(_disableSecondary, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         sizer.Add(buttons, flags: SizerFlags.BorderLeft | SizerFlags.BorderRight | SizerFlags.BorderBottom, border: 8);
         panel.SetSizer(sizer);
 
         _list.ItemSelected += (_, _) => UpdateButtons();
         _list.ItemDeselected += (_, _) => UpdateButtons();
         _list.ItemActivated += (_, _) => Edit(ShortcutSlot.Primary);
+        if (_disableSecondary is not null)
+            _disableSecondary.Toggled += (_, _) => UpdateButtons();
         _editPrimary.Click += (_, _) => Edit(ShortcutSlot.Primary);
         if (_editSecondary is not null)
             _editSecondary.Click += (_, _) => Edit(ShortcutSlot.Secondary);
@@ -97,14 +109,13 @@ internal sealed class ShortcutPreferences : PreferencesPage
 
     private bool HasSecondary => _scope == ShortcutScope.Local;
 
-    public override string GetContextHelp(Window? focused) => string.Empty;
-
     public override void Apply()
     {
         if (_scope == ShortcutScope.Local)
         {
             _settings.Primary = Overrides(_primary, primary: true);
             _settings.Secondary = Overrides(_secondary, primary: false);
+            _settings.DisableSecondary = _disableSecondary!.Checked;
         }
         else
         {
@@ -114,6 +125,8 @@ internal sealed class ShortcutPreferences : PreferencesPage
 
     public override void Refresh()
     {
+        if (_disableSecondary is not null)
+            _disableSecondary.Checked = _settings.DisableSecondary;
         _primary.Clear();
         _secondary.Clear();
         foreach (var action in _actions)
@@ -183,6 +196,8 @@ internal sealed class ShortcutPreferences : PreferencesPage
             Tr("Reset all shortcuts to defaults?"),
             MessageBoxStyle.YesNo | MessageBoxStyle.IconQuestion, Window) != MessageBoxStyle.Yes) return;
         // Only the working copy is cleared; the stored overrides are rewritten from it in Apply.
+        if (_disableSecondary is not null)
+            _disableSecondary.Checked = false;
         _primary.Clear();
         _secondary.Clear();
         foreach (var action in _actions)
@@ -226,7 +241,8 @@ internal sealed class ShortcutPreferences : PreferencesPage
     /// added to an action that has none by default, or one taken away. This is what "Reset to Defaults" has to
     /// offer to undo, so it decides whether that button is available.</summary>
     private bool HasChangesFromDefaults()
-        => _actions.Any(action => Current(_primary, action.Id) != action.PrimaryShortcut)
+        => _disableSecondary?.Checked == true
+            || _actions.Any(action => Current(_primary, action.Id) != action.PrimaryShortcut)
             || (HasSecondary && _actions.Any(action => Current(_secondary, action.Id) != action.SecondaryShortcut));
 
     private static Shortcut? Current(IReadOnlyDictionary<ActionId, Shortcut> values, ActionId action)

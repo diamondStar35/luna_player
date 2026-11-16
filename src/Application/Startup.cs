@@ -207,7 +207,7 @@ internal sealed class Startup : IDisposable
         {
             var settings = _settings!.Settings;
             _shortcuts = new ShortcutManager(ActionRegistry.All);
-            _shortcuts.Apply(settings.Shortcuts.Primary, settings.Shortcuts.Secondary);
+            _shortcuts.Apply(settings.Shortcuts.Primary, settings.Shortcuts.Secondary, settings.Shortcuts.DisableSecondary);
             _globalShortcuts = new ShortcutManager(GlobalActions.All);
             _window = window;
             _view.Initialize(_shortcuts, ActionRegistry.All, _dispatcher, window.Catalog,
