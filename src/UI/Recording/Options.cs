@@ -1,5 +1,6 @@
 using LunaPlayer.Application;
 using LunaPlayer.Recording;
+using LunaPlayer.UI.Services;
 using WxSharp;
 
 namespace LunaPlayer.UI.Recording;
@@ -130,14 +131,26 @@ internal sealed partial class MainDialog
 
     private void Browse()
     {
-        using var dialog = new DirDialog(
-            _dialog,
-            // Translators: Title of the window that asks where recordings should be saved.
-            message: Tr("Select the folder for recordings"),
-            defaultPath: _folder.Value,
-            style: DirDialogStyle.DirMustExist);
-        if (dialog.ShowModal() == StandardId.Ok)
-            _folder.Value = dialog.Path;
+        if (_choosingFolder) return;
+        _choosingFolder = true;
+        try
+        {
+            using var picker = new FolderDialog(_dialog,
+                // Translators: Title of the window that asks where recordings should be saved.
+                Tr("Select the folder for recordings"), _folder.Value);
+            _folderSelection = picker;
+            var path = picker.Show();
+            if (!_closed && path is not null) _folder.Value = path;
+        }
+        catch (Exception failure)
+        {
+            if (!_closed) Messages.Show(failure.Message, MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog, ownerOnly: true);
+        }
+        finally
+        {
+            _folderSelection = null;
+            _choosingFolder = false;
+        }
     }
 
     private RecordingOptions Options() => new(

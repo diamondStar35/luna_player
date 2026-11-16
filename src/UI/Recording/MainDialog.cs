@@ -1,5 +1,6 @@
 using LunaPlayer.Application;
 using LunaPlayer.Recording;
+using LunaPlayer.UI.Services;
 using WxSharp;
 
 namespace LunaPlayer.UI.Recording;
@@ -24,6 +25,9 @@ internal sealed partial class MainDialog : IDisposable
     private readonly AudioCatalog _catalog;
     private readonly RecordingSources _sources;
     private readonly RecordingEngine _engine;
+    private SourceDialog? _sourceEditor;
+    private FolderDialog? _folderSelection;
+    private bool _choosingFolder;
     private readonly ListBox _list;
     private readonly Button _add;
     private readonly Button _edit;
@@ -207,6 +211,8 @@ internal sealed partial class MainDialog : IDisposable
 
     internal void Show()
     {
+        if (_sourceEditor is not null) { _sourceEditor.Activate(); return; }
+        if (_choosingFolder || !_dialog.Enabled) return;
         SyncButtons();
         _dialog.Show();
         _dialog.Raise();
@@ -216,6 +222,7 @@ internal sealed partial class MainDialog : IDisposable
     private void OnRecordingStateChanged() => _dispatcher.Post(() =>
     {
         if (!_closed) SyncButtons();
+        _sourceEditor?.SyncState();
     });
 
     /// <remarks>
@@ -227,6 +234,10 @@ internal sealed partial class MainDialog : IDisposable
     {
         if (_closed) return;
         _closed = true;
+        _sourceEditor?.Dispose();
+        _sourceEditor = null;
+        _folderSelection?.Dispose();
+        _folderSelection = null;
         _engine.StateChanged -= OnRecordingStateChanged;
         _addMenu.Dispose();
         _dialog.Dispose();

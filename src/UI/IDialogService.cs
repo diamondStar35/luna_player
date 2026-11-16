@@ -49,7 +49,7 @@ internal interface IDialogService
     /// what the callers that are choosing "a folder" and nothing more particular want.</param>
     string? ChooseFolder(string initialDirectory, string message = "");
     string? PromptText(string message, string caption, string value = "");
-    bool Confirm(string message);
+    bool Confirm(string message, bool ownerOnly = false);
     /// <summary>Warns that closing will cancel unfinished queue jobs.</summary>
     bool ConfirmCloseWithDownloads();
     void ShowInfo(string message);
@@ -58,7 +58,7 @@ internal interface IDialogService
     /// <summary>Shows a success confirmation owned by the main window.</summary>
     void ShowMainSuccess(string message);
     void ShowWarning(string message);
-    void ShowError(string message);
+    void ShowError(string message, bool ownerOnly = false);
     /// <summary>Shows an error box owned by the main window, even if another modeless window is active.</summary>
     void ShowMainError(string message);
     /// <summary>Shows a non-modal operating-system notification associated with the main window.</summary>
@@ -108,7 +108,7 @@ internal interface IDialogService
     void ManageFavorites(IReadOnlyList<LunaPlayer.UI.YouTube.FavoriteListItem> favorites, Action<LunaPlayer.UI.YouTube.FavoriteRequest> request);
     void RefreshFavorites(IReadOnlyList<LunaPlayer.UI.YouTube.FavoriteListItem> favorites, string? selectedId = null);
     void CloseFavorites();
-    LunaPlayer.UI.YouTube.FavoriteDraft? EditFavorite(string caption, LunaPlayer.UI.YouTube.FavoriteDraft value);
+    void EditFavorite(string caption, LunaPlayer.UI.YouTube.FavoriteDraft value, Action<LunaPlayer.UI.YouTube.FavoriteDraft?> completed);
 
     /// <summary>Opens the IPTV source manager and returns what the user asked to do with which source, or
     /// null when they closed it. The manager reopens after add, edit and remove.

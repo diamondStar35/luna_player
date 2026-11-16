@@ -15,6 +15,7 @@ internal sealed class YouTubeDialogs : IDisposable
     private readonly YouTube.DownloadOutcomes _downloadOutcomes;
     private YouTube.ResultsDialog? _youTubeResults;
     private YouTube.FavoritesDialog? _favorites;
+    private YouTube.FavoriteEditDialog? _favoriteEditor;
     private Window? _resultsOwner;
     private readonly HashSet<YouTube.DownloadProgressDialog> _downloadProgressDialogs = [];
 
@@ -31,6 +32,7 @@ internal sealed class YouTubeDialogs : IDisposable
     public LunaPlayer.UI.YouTube.YouTubeSearchRequest? SearchYouTube(LunaPlayer.UI.YouTube.YouTubeSearchPrompt prompt) { using var dialog = new YouTube.SearchDialog(_context.Parent, _context.Dispatcher, prompt); return dialog.Show(); }
     public void ManageFavorites(IReadOnlyList<LunaPlayer.UI.YouTube.FavoriteListItem> favorites, Action<LunaPlayer.UI.YouTube.FavoriteRequest> request)
     {
+        if (_favoriteEditor is not null) { _favoriteEditor.Activate(); return; }
         if (_favorites is null) _favorites = new YouTube.FavoritesDialog(favorites, request);
         else _favorites.Refresh(favorites);
         _favorites.Show();
@@ -38,7 +40,18 @@ internal sealed class YouTubeDialogs : IDisposable
     public void RefreshFavorites(IReadOnlyList<LunaPlayer.UI.YouTube.FavoriteListItem> favorites, string? selectedId = null)
         => _favorites?.Refresh(favorites, selectedId);
     public void CloseFavorites() => _favorites?.Hide();
-    public LunaPlayer.UI.YouTube.FavoriteDraft? EditFavorite(string caption, LunaPlayer.UI.YouTube.FavoriteDraft value) { using var dialog = new YouTube.FavoriteEditDialog(_context.Parent, caption, value); return dialog.Show(); }
+    public void EditFavorite(string caption, LunaPlayer.UI.YouTube.FavoriteDraft value, Action<LunaPlayer.UI.YouTube.FavoriteDraft?> completed)
+    {
+        if (_favoriteEditor is not null) { _favoriteEditor.Activate(); return; }
+        var dialog = new YouTube.FavoriteEditDialog(_context.Parent, caption, value);
+        _favoriteEditor = dialog;
+        dialog.Show(result =>
+        {
+            _favoriteEditor = null;
+            dialog.Dispose();
+            completed(result);
+        });
+    }
     public LunaPlayer.UI.YouTube.ResultChoice? ShowYouTubeResults(LunaPlayer.UI.YouTube.YouTubeResultsPrompt prompt)
     {
         // A channel's tabbed browser has a different control structure, so it is still built per open.
@@ -103,6 +116,8 @@ internal sealed class YouTubeDialogs : IDisposable
         _downloadOutcomes.Dispose();
         _youTubeResults?.Dispose();
         _youTubeResults = null;
+        _favoriteEditor?.Dispose();
+        _favoriteEditor = null;
         _favorites?.Dispose();
         _favorites = null;
         CloseDownloadProgressWindows();

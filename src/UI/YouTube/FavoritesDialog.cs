@@ -77,6 +77,7 @@ internal sealed class FavoritesDialog : IDisposable
 
     internal void Show()
     {
+        if (!_dialog.Enabled) return;
         _dialog.Show();
         _dialog.Raise();
         _list.Focus();

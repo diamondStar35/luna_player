@@ -95,15 +95,11 @@ internal sealed partial class MainDialog
             Messages.Show(
                 // Translators: Shown when capturing one program's sound is asked for on a version of
                 // Windows that cannot do it. Capturing a device still works.
-                Tr("This version of Windows cannot capture a single program. Windows 10 version 2004 or later is needed for that; recording from a device still works."), MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
+                Tr("This version of Windows cannot capture a single program. Windows 10 version 2004 or later is needed for that; recording from a device still works."), MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog, ownerOnly: true);
             return;
         }
         var source = new RecordingSource { Kind = kind, Name = DefaultName(kind) };
-        using var dialog = new SourceDialog(_dialog, _dispatcher, _catalog, AddCaption(kind), source);
-        if (dialog.Show() is not RecordingSource added)
-            return;
-        _sources.Add(added);
-        Rebuild(added.Id);
+        EditSource(AddCaption(kind), source, added => _sources.Add(added));
     }
 
     private void EditSelected()
@@ -111,12 +107,23 @@ internal sealed partial class MainDialog
         if (Selected() is not RecordingSource source)
             return;
         // A copy, so backing out of the window leaves the source as it was.
-        using var dialog = new SourceDialog(
-            _dialog, _dispatcher, _catalog, EditCaption(source.Kind), source.Copy());
-        if (dialog.Show() is not RecordingSource edited)
-            return;
-        _sources.Update(edited);
-        Rebuild(edited.Id);
+        EditSource(EditCaption(source.Kind), source.Copy(), edited => _sources.Update(edited));
+    }
+
+    private void EditSource(string caption, RecordingSource source, Action<RecordingSource> save)
+    {
+        if (_sourceEditor is not null) { _sourceEditor.Activate(); return; }
+        var dialog = new SourceDialog(_dialog, _dispatcher, _catalog, caption, source,
+            () => _engine.State is RecordingState.Idle);
+        _sourceEditor = dialog;
+        dialog.Show(edited =>
+        {
+            _sourceEditor = null;
+            dialog.Dispose();
+            if (_closed || edited is null) return;
+            save(edited);
+            Rebuild(edited.Id);
+        });
     }
 
     private void RemoveSelected()
@@ -126,7 +133,7 @@ internal sealed partial class MainDialog
         if (Messages.Show(
             // Translators: Asks the user to confirm removing a recording source. {name} is what they called it.
             TrFormat("Remove the source '{name}'?", source.Name),
-            MessageBoxStyle.YesNo | MessageBoxStyle.IconQuestion, _dialog) != MessageBoxStyle.Yes)
+            MessageBoxStyle.YesNo | MessageBoxStyle.IconQuestion, _dialog, ownerOnly: true) != MessageBoxStyle.Yes)
             return;
         _sources.Remove(source.Id);
         Rebuild();

@@ -78,12 +78,12 @@ internal sealed class DialogService : IDialogService, IDisposable
     }
     public string? PromptText(string message, string caption, string value = "")
     { using var dialog = new TextEntryDialog(DialogParent, message, caption, value); return dialog.ShowModal() == StandardId.Ok ? dialog.Value : null; }
-    public bool Confirm(string message) => Messages.Show(message, MessageBoxStyle.YesNo | MessageBoxStyle.IconWarning, DialogParent) == MessageBoxStyle.Yes;
+    public bool Confirm(string message, bool ownerOnly = false) => Messages.Show(message, MessageBoxStyle.YesNo | MessageBoxStyle.IconWarning, DialogParent, ownerOnly) == MessageBoxStyle.Yes;
     public void ShowInfo(string message) => Messages.Show(message, MessageBoxStyle.Ok | MessageBoxStyle.IconInformation, DialogParent);
     public void ShowMainInfo(string message) => Messages.Show(message, MessageBoxStyle.Ok | MessageBoxStyle.IconInformation, _frame);
     public void ShowMainSuccess(string message) => Messages.Success(message, _frame);
     public void ShowWarning(string message) => Messages.Show(message, MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, DialogParent);
-    public void ShowError(string message) => Messages.Show(message, MessageBoxStyle.Ok | MessageBoxStyle.IconError, DialogParent);
+    public void ShowError(string message, bool ownerOnly = false) => Messages.Show(message, MessageBoxStyle.Ok | MessageBoxStyle.IconError, DialogParent, ownerOnly);
     public void ShowMainError(string message) => Messages.Show(message, MessageBoxStyle.Ok | MessageBoxStyle.IconError, _frame);
     public void ShowNotification(string title, string message)
     {
@@ -140,7 +140,7 @@ internal sealed class DialogService : IDialogService, IDisposable
     public void ManageFavorites(IReadOnlyList<LunaPlayer.UI.YouTube.FavoriteListItem> favorites, Action<LunaPlayer.UI.YouTube.FavoriteRequest> request) => _youtube.ManageFavorites(favorites, request);
     public void RefreshFavorites(IReadOnlyList<LunaPlayer.UI.YouTube.FavoriteListItem> favorites, string? selectedId = null) => _youtube.RefreshFavorites(favorites, selectedId);
     public void CloseFavorites() => _youtube.CloseFavorites();
-    public LunaPlayer.UI.YouTube.FavoriteDraft? EditFavorite(string caption, LunaPlayer.UI.YouTube.FavoriteDraft value) => _youtube.EditFavorite(caption, value);
+    public void EditFavorite(string caption, LunaPlayer.UI.YouTube.FavoriteDraft value, Action<LunaPlayer.UI.YouTube.FavoriteDraft?> completed) => _youtube.EditFavorite(caption, value, completed);
     public LunaPlayer.UI.YouTube.ResultChoice? ShowYouTubeResults(LunaPlayer.UI.YouTube.YouTubeResultsPrompt prompt) => _youtube.ShowYouTubeResults(prompt);
     public bool OfferYouTubeComponents() => _youtube.OfferYouTubeComponents();
     public Downloads.OptionsResult? ShowDownloadOptions(Downloads.Request defaults) => _youtube.ShowDownloadOptions(defaults);

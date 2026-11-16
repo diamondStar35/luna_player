@@ -30,7 +30,7 @@ internal sealed partial class MainDialog
         {
             Messages.Show(
                 // Translators: Shown when recording was started with nothing set up to record from.
-                Tr("Add at least one source before recording."), MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
+                Tr("Add at least one source before recording."), MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog, ownerOnly: true);
             return;
         }
         // Kept, so the settings are still here the next time the window is opened in this session.
@@ -50,7 +50,7 @@ internal sealed partial class MainDialog
         if (!outcome.Success)
         {
             Messages.Show(RecordingSources.Describe(outcome.Failure, outcome.Detail),
-                MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
+                MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog, ownerOnly: true);
             return;
         }
         if (failures.Count > 0)
@@ -59,7 +59,7 @@ internal sealed partial class MainDialog
                 // Translators: Shown when recording started but some sources would not open. {names} is a
                 // list of what the user called them, separated by commas.
                 TrFormat("Recording started, but these sources could not be opened: {names}",
-                    string.Join(", ", failures)), MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
+                    string.Join(", ", failures)), MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog, ownerOnly: true);
         }
     }
 
@@ -86,7 +86,7 @@ internal sealed partial class MainDialog
         SyncButtons();
         if (!outcome.Success)
             Messages.Show(RecordingSources.Describe(outcome.Failure, outcome.Detail),
-                MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog);
+                MessageBoxStyle.Ok | MessageBoxStyle.IconError, _dialog, ownerOnly: true);
     }
 
     /// <summary>Puts every control into the state the recorder is in.</summary>

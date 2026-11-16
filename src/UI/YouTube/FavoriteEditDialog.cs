@@ -19,10 +19,12 @@ internal sealed class FavoriteEditDialog : IDisposable
     private readonly TextCtrl _name;
     private readonly Choice _kind;
     private readonly TextCtrl _link;
+    private readonly OwnedDialog _lifetime;
 
     internal FavoriteEditDialog(Window parent, string caption, FavoriteDraft value)
     {
         _dialog = new Dialog(parent, title: caption, style: DialogStyle.Default | DialogStyle.ResizeBorder);
+        _lifetime = new OwnedDialog(_dialog, parent);
         // Translators: Label of the box holding what a saved link is called.
         var nameLabel = new StaticText(_dialog, label: Tr("Name"));
         _name = new TextCtrl(_dialog, value: value.Name);
@@ -56,10 +58,16 @@ internal sealed class FavoriteEditDialog : IDisposable
         _name.Focus();
     }
 
-    internal FavoriteDraft? Show()
-        => _dialog.ShowModal() == StandardId.Ok ? Current() : null;
+    internal void Show(Action<FavoriteDraft?> completed)
+    {
+        _lifetime.Closed += accepted => completed(accepted ? Current() : null);
+        _lifetime.Show();
+        _name.Focus();
+    }
 
-    public void Dispose() => _dialog.Dispose();
+    internal void Activate() { if (_lifetime.Activate()) _name.Focus(); }
+
+    public void Dispose() => _lifetime.Dispose();
 
     private FavoriteDraft Current()
         => new(_name.Value.Trim(), Kinds[Math.Max(0, _kind.SelectedIndex)], _link.Value.Trim());
@@ -70,10 +78,10 @@ internal sealed class FavoriteEditDialog : IDisposable
         if (!FavoriteStore.Validate(draft.Name, draft.Kind, draft.Link, out var error))
         {
             Messages.Show(error,
-                MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
+                MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog, ownerOnly: true);
             return;
         }
-        _dialog.EndModal(StandardId.Ok);
+        _lifetime.Complete(true);
     }
 
     /// <summary>One row of the form: the label centred against its box, the box taking the width.</summary>

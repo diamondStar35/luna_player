@@ -23,6 +23,8 @@ internal sealed class SourceDialog : IDisposable
     private readonly IApplicationDispatcher _dispatcher;
     private readonly AudioCatalog _catalog;
     private readonly RecordingSource _source;
+    private readonly OwnedDialog _lifetime;
+    private readonly Func<bool> _canSave;
     private readonly TextCtrl _name;
     private readonly Choice _target;
     private readonly CheckBox? _others;
@@ -39,12 +41,15 @@ internal sealed class SourceDialog : IDisposable
         IApplicationDispatcher dispatcher,
         AudioCatalog catalog,
         string caption,
-        RecordingSource source)
+        RecordingSource source,
+        Func<bool> canSave)
     {
         _dispatcher = dispatcher;
         _catalog = catalog;
         _source = source;
+        _canSave = canSave;
         _dialog = new Dialog(parent, title: caption, style: DialogStyle.Default | DialogStyle.ResizeBorder);
+        _lifetime = new OwnedDialog(_dialog, parent);
 
         // Translators: Label of the box holding what the user calls a recording source.
         var nameLabel = new StaticText(_dialog, label: Tr("Name"));
@@ -104,16 +109,26 @@ internal sealed class SourceDialog : IDisposable
         Load();
     }
 
-    /// <summary>The edited source, or null when the user backed out.</summary>
-    internal RecordingSource? Show()
-        => _dialog.ShowModal() == StandardId.Ok ? _source : null;
+    internal void Show(Action<RecordingSource?> completed)
+    {
+        _lifetime.Closed += accepted => completed(accepted ? _source : null);
+        _lifetime.Show();
+        _name.Focus();
+    }
+
+    internal void Activate() { if (_lifetime.Activate()) _name.Focus(); }
+
+    internal void SyncState()
+    {
+        if (!_closed && _dialog.FindWindow(StandardId.Ok) is { } accept) accept.Enabled = _canSave();
+    }
 
     public void Dispose()
     {
         // Set before the window goes, so a list that arrives late is dropped rather than written into a
         // control that is no longer there.
         _closed = true;
-        _dialog.Dispose();
+        _lifetime.Dispose();
     }
 
     /// <summary>Fetches whatever belongs in the list, off the UI thread, and fills it in when it arrives.
@@ -182,6 +197,7 @@ internal sealed class SourceDialog : IDisposable
     /// <summary>Reads the controls back into the source and closes, unless something is missing.</summary>
     private void OnAccept(object? sender, CommandEventArgs args)
     {
+        if (!_canSave()) return;
         _source.Name = _name.Value.Trim();
         _source.Volume = _volume.Value;
         if (_others is not null)
@@ -202,10 +218,10 @@ internal sealed class SourceDialog : IDisposable
         if (!RecordingSources.Validate(_source, out var error))
         {
             // Kept open, so nothing typed is lost to a missing name.
-            Messages.Show(error, MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog);
+            Messages.Show(error, MessageBoxStyle.Ok | MessageBoxStyle.IconWarning, _dialog, ownerOnly: true);
             return;
         }
-        _dialog.EndModal(StandardId.Ok);
+        _lifetime.Complete(true);
     }
 
     private static void Add(FlexGridSizer form, StaticText label, Window control)

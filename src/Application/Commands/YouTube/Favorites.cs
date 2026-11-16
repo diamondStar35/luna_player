@@ -55,15 +55,20 @@ internal sealed class Favorites
                 if (!Open(chosen.Id)) Manage();
                 return;
             case LunaPlayer.UI.YouTube.FavoriteAction.Add:
-                selectedId = Add() ?? selectedId;
-                break;
+                Add();
+                return;
             case LunaPlayer.UI.YouTube.FavoriteAction.Edit:
                 Edit(chosen.Id);
-                break;
+                return;
             case LunaPlayer.UI.YouTube.FavoriteAction.Remove:
                 if (Remove(chosen.Id)) selectedId = string.Empty;
                 break;
         }
+        Refresh(selectedId);
+    }
+
+    private void Refresh(string selectedId)
+    {
         var favorites = List();
         if (!ReportStoreFailure()) _view.Dialogs.RefreshFavorites(favorites, selectedId);
     }
@@ -83,7 +88,7 @@ internal sealed class Favorites
                 return true;
             _view.Dialogs.ShowError(
                 // Translators: Shown when the address saved as a plain stream could not be played.
-                Tr("Could not open stream link."));
+                Tr("Could not open stream link."), ownerOnly: true);
             return false;
         }
         // Opening reports for itself, in its own words and its own progress window, so there is nothing
@@ -102,34 +107,35 @@ internal sealed class Favorites
         _ => LinkKind.Video,
     };
 
-    /// <summary>The id of what was saved, or null when nothing was.</summary>
-    private string? Add()
+    private void Add()
     {
-        var draft = _view.Dialogs.EditFavorite(
+        _view.Dialogs.EditFavorite(
             // Translators: Title of the window for saving a new link.
             Tr("Add favorite"),
-            new LunaPlayer.UI.YouTube.FavoriteDraft(string.Empty, FavoriteKind.Video, string.Empty));
-        if (draft is not LunaPlayer.UI.YouTube.FavoriteDraft value)
-            return null;
-        var added = _store.Add(value.Name, value.Kind, value.Link);
-        if (added is not null)
-            return added.Id;
-        ReportStoreFailure();
-        return null;
+            new LunaPlayer.UI.YouTube.FavoriteDraft(string.Empty, FavoriteKind.Video, string.Empty),
+            draft =>
+            {
+                if (draft is not LunaPlayer.UI.YouTube.FavoriteDraft value) return;
+                var added = _store.Add(value.Name, value.Kind, value.Link);
+                if (added is not null) Refresh(added.Id);
+                else ReportStoreFailure();
+            });
     }
 
     private void Edit(string id)
     {
         if (_store.Get(id) is not Favorite favorite)
             return;
-        var draft = _view.Dialogs.EditFavorite(
+        _view.Dialogs.EditFavorite(
             // Translators: Title of the window for changing a link already saved.
             Tr("Edit favorite"),
-            new LunaPlayer.UI.YouTube.FavoriteDraft(favorite.Name, favorite.Kind, favorite.Link));
-        if (draft is not LunaPlayer.UI.YouTube.FavoriteDraft value)
-            return;
-        if (!_store.Update(id, value.Name, value.Kind, value.Link))
-            ReportStoreFailure();
+            new LunaPlayer.UI.YouTube.FavoriteDraft(favorite.Name, favorite.Kind, favorite.Link),
+            draft =>
+            {
+                if (draft is not LunaPlayer.UI.YouTube.FavoriteDraft value) return;
+                if (!_store.Update(id, value.Name, value.Kind, value.Link)) ReportStoreFailure();
+                Refresh(id);
+            });
     }
 
     private bool Remove(string id)
@@ -139,7 +145,7 @@ internal sealed class Favorites
         if (!_view.Dialogs.Confirm(
             // Translators: Asks the user to confirm removing one saved link. {name} is what it is called and
             // {kind} is what sort of thing it points at.
-            TrFormat("Remove favorite '{name}' ({kind})?", favorite.Name, FavoriteStore.Describe(favorite.Kind))))
+            TrFormat("Remove favorite '{name}' ({kind})?", favorite.Name, FavoriteStore.Describe(favorite.Kind)), ownerOnly: true))
             return false;
         if (_store.Delete(id))
             return true;
@@ -153,7 +159,7 @@ internal sealed class Favorites
         if (_store.LastError.Length == 0)
             return false;
         _view.Dialogs.ShowError(
-            _store.LastError);
+            _store.LastError, ownerOnly: true);
         return true;
     }
 }
