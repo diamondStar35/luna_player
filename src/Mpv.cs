@@ -988,6 +988,11 @@ namespace MpvNet
         public IReadOnlyDictionary<string, object?> AsDict() => AsDictionary();
     }
 
+    public sealed class MpvStartFileEvent
+    {
+        public long PlaylistEntryId { get; internal set; }
+    }
+
     public sealed class MpvEndFileEvent
     {
         public MpvEndFileReason Reason { get; internal set; }
@@ -2404,6 +2409,9 @@ namespace MpvNet
                             Text = Native.Decode(l.Text, Native.LazyDecode),
                         };
                         break;
+                    case MpvEventId.StartFile:
+                        data = new MpvStartFileEvent { PlaylistEntryId = Marshal.ReadInt64(e.Data) };
+                        break;
                     case MpvEventId.EndFile:
                         var f = Marshal.PtrToStructure<NativeEventEndFile>(e.Data);
                         data = new MpvEndFileEvent
@@ -2553,21 +2561,19 @@ namespace MpvNet
         public void FadeSeek(double target, double duration, bool absolute = false)
             => Command("fade-seek", target, duration, absolute ? "absolute" : "relative");
 
-        /// <summary>Replaces the file with a native PCM overlap. Configure audio-crossfade-buffer
-        /// before playback to reserve outgoing audio. The result reports captured seconds; insufficient
-        /// buffering or unsupported outputs fall back to ordinary loading.</summary>
+        /// <summary>Replaces the file with a native PCM overlap prepared on demand.
+        /// The result reports retained seconds; source readiness can shorten the overlap.</summary>
         public object? CrossfadeLoadFile(string path, double duration, bool equalPower = false)
             => NodeCommand("crossfade-loadfile", path, duration, equalPower ? "equal-power" : "linear");
 
         /// <summary>Queues a native file overlap with per-file options without waiting for the decoder.</summary>
         public void CrossfadeLoadFileAsync(string path, double duration, bool equalPower = false,
-            IDictionary<string, object?>? options = null)
-            => CommandAsync(0, "crossfade-loadfile", path, duration,
+            IDictionary<string, object?>? options = null, ulong replyUserData = 0)
+            => CommandAsync(replyUserData, "crossfade-loadfile", path, duration,
                 equalPower ? "equal-power" : "linear", EncodeOptions(options));
 
         /// <summary>Configures native automatic playlist cross-fading in seconds. Zero disables it.
-        /// Set before loading; mpv reserves PCM, prepares queued successors and advances the playlist.
-        /// The client supplies playlist entries but does not schedule transition timers.</summary>
+        /// mpv prepares the outgoing tail at the transition and advances to the queued successor.</summary>
         public void SetAutomaticCrossfade(double duration, bool equalPower = false)
         {
             SetProperty("audio-crossfade-curve", equalPower ? "equal-power" : "linear");
@@ -3335,17 +3341,18 @@ namespace MpvNet
         // The same as LoadFile but issued through mpv_command_async: it returns the instant the request is
         // queued, without waiting for mpv's core to accept or start it, so the caller's thread - the UI
         // thread, here - is never blocked by a slow stream opening. Load failures still arrive as the usual
-        // end-file/error events. The event thread still drains the completion reply with replyUserData 0.
+        // end-file/error events. A reply ID can correlate the resulting playlist entry with its request.
         public void LoadFileAsync(
             string filename,
             string mode = "replace",
-            IDictionary<string, object?>? options = null
+            IDictionary<string, object?>? options = null,
+            ulong replyUserData = 0
         )
         {
             if (CommandTakes("loadfile", "index"))
-                CommandAsync(0, "loadfile", filename, mode, -1, EncodeOptions(options));
+                CommandAsync(replyUserData, "loadfile", filename, mode, -1, EncodeOptions(options));
             else
-                CommandAsync(0, "loadfile", filename, mode, EncodeOptions(options));
+                CommandAsync(replyUserData, "loadfile", filename, mode, EncodeOptions(options));
         }
 
         public void LoadList(string playlist, string mode = "replace")

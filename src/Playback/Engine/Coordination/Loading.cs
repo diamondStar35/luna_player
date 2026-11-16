@@ -24,6 +24,9 @@ internal sealed partial class PlaybackCoordinator
         var overlap = fadeTransition && _crossfade && _crossfadeManual && _loaded && !IsPaused
             && !_awaitingLoadRestart && !_replacementMuted && !_currentUsesAudioFile && audioFile is null && CurrentIsAudio();
         var generation = ++_loadGeneration;
+        _nativeLoads.Clear();
+        _nativeEntries.Clear();
+        _queuedEntry = null;
         ++_queueGeneration;
         _loadingSourceEntryId = _session.PositiveEntryId();
         _loadingFileSeen = false;
@@ -112,6 +115,7 @@ internal sealed partial class PlaybackCoordinator
             _nextRequest = null;
             _queuedNext = false;
             _queuedSourceEntryId = null;
+            _queuedEntry = null;
             _session.TryDo(static mpv => mpv.CommandAsync(0, "playlist-clear"));
         }
     }
@@ -165,6 +169,7 @@ internal sealed partial class PlaybackCoordinator
         // the first part of the file. Native crossfades keep their continuous output path.
         var options = LoadOptions(request, paused: !crossfade || paused);
         var generation = _loadGeneration;
+        var command = RegisterNativeLoad(request, append: false);
         var muted = _fadeInOnRestart;
         var loaded = _session.TryDo(mpv =>
         {
@@ -178,9 +183,9 @@ internal sealed partial class PlaybackCoordinator
             mpv.SetPropertyAsync(0, "audio-files",
                 request.AudioFile is null ? Array.Empty<string>() : new[] { request.AudioFile });
             if (crossfade)
-                mpv.CrossfadeLoadFileAsync(request.Path, _crossfadeMilliseconds / 1000.0, _crossfadeEqualPower, options);
+                mpv.CrossfadeLoadFileAsync(request.Path, _crossfadeMilliseconds / 1000.0, _crossfadeEqualPower, options, command);
             else
-                mpv.LoadFileAsync(request.Path, "replace", options);
+                mpv.LoadFileAsync(request.Path, "replace", options, command);
         });
         _loaded = loaded;
         _currentUsesAudioFile = request.AudioFile is not null;
@@ -196,10 +201,11 @@ internal sealed partial class PlaybackCoordinator
         if (_nextRequest is not LoadRequest request)
             return false;
         var options = LoadOptions(request, paused: false);
+        var command = RegisterNativeLoad(request, append: true);
         var appended = _session.TryDo(mpv =>
         {
             mpv.CommandAsync(0, "playlist-clear");
-            mpv.LoadFileAsync(request.Path, "append", options);
+            mpv.LoadFileAsync(request.Path, "append", options, command);
         });
         _queuedNext = appended;
         return appended;

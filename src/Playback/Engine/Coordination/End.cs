@@ -7,13 +7,20 @@ internal sealed partial class PlaybackCoordinator
     private void HandleEndFile(MpvEvent mpvEvent)
     {
         lock (_loadSync)
+        {
             HandleEndFileCore(mpvEvent);
+            if (mpvEvent.Data is MpvEndFileEvent ended)
+                _nativeEntries.Remove(ended.PlaylistEntryId);
+        }
     }
 
     private void HandleEndFileCore(MpvEvent mpvEvent)
     {
         if (_disposed || mpvEvent.Data is not MpvEndFileEvent endFile)
             return;
+        if (endFile.Reason == MpvEndFileReason.Error && _pendingAdvance is { } incoming
+            && incoming.Id == endFile.PlaylistEntryId)
+            CompleteNativeAdvance(incoming);
         if (_awaitingLoadRestart && _loadingEntryId.HasValue && endFile.PlaylistEntryId > 0
             && endFile.PlaylistEntryId != _loadingEntryId.Value)
             return;
@@ -92,14 +99,14 @@ internal sealed partial class PlaybackCoordinator
             if (reason == EndReason.EndOfFile && _queuedNext
                 && _queuedSourceEntryId.HasValue
                 && (endFile.PlaylistEntryId <= 0 || _queuedSourceEntryId.Value == endFile.PlaylistEntryId)
-                && (_session.ReadInt64("playlist-count") ?? 0) > 1
-                && _nextRequest is LoadRequest next)
+                && _queuedEntry is { } next)
             {
                 _pendingAdvance = next;
                 _pendingSourcePosition = _lastPosition;
                 _queuedNext = false;
                 _queuedSourceEntryId = null;
                 _nextRequest = null;
+                _queuedEntry = null;
                 // Native queued transitions own the overlap or uninterrupted output. An additional
                 // file-start envelope would fade the incoming file a second time.
                 _fadeInOnRestart = false;

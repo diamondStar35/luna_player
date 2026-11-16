@@ -31,13 +31,12 @@ internal sealed partial class PlaybackCoordinator
     {
         lock (_loadSync)
         {
-            if (_disposed || !_awaitingLoadRestart || !Paths.AreSame(_session.ReadString("path"), _loadingPath))
+            if (_disposed || !_awaitingLoadRestart || _startedEntry is not { } entry
+                || entry.Generation != _loadGeneration || entry.Id != _loadingEntryId)
                 return;
-            var entryId = _session.PositiveEntryId();
-            if (_loadingSourceEntryId.HasValue && entryId == _loadingSourceEntryId)
+            if (_loadingSourceEntryId == entry.Id)
                 return;
             _loadingFileSeen = true;
-            _loadingEntryId = entryId;
         }
     }
 
@@ -54,8 +53,8 @@ internal sealed partial class PlaybackCoordinator
         _audio.ReplaySofaDirection();
         // Chapters share a path. A queued restart from an outgoing seek is not proof that the new
         // chapter loaded: wait for that replacement's FILE_LOADED and native entry identity first.
-        if (_awaitingLoadRestart && _loadingFileSeen && Paths.AreSame(_session.ReadString("path"), _loadingPath)
-            && (!_loadingEntryId.HasValue || _session.PositiveEntryId() == _loadingEntryId))
+        if (_awaitingLoadRestart && _loadingFileSeen && _startedEntry is { } loaded
+            && loaded.Id == _loadingEntryId && loaded.Generation == _loadGeneration)
         {
             _awaitingLoadRestart = false;
             _loadingPath = null;
@@ -64,14 +63,14 @@ internal sealed partial class PlaybackCoordinator
             if (!_fadeInOnRestart) _loadingPaused = null;
             _loadingSourceEntryId = null;
             _lastPosition = null;
-            _activeEntryId = _session.PositiveEntryId();
-            _activePath = _session.ReadString("path");
+            _activeEntryId = loaded.Id;
+            _activePath = loaded.Request.Path;
             // Initial tags may arrive before playback-restart, while reads still reject the outgoing
             // entry's metadata. Refresh again now that the new stream's tags can be read safely.
             MetadataChanged?.Invoke();
             ChaptersChanged?.Invoke();
             if (_queuedNext)
-                _queuedSourceEntryId = _session.PositiveEntryId();
+                _queuedSourceEntryId = loaded.Id;
             if (_crossfade && _nextRequest is LoadRequest next)
                 PrepareAudioSuccessor(next);
         }
@@ -112,20 +111,8 @@ internal sealed partial class PlaybackCoordinator
                     _audio.CompleteEqualizerLoad();
             });
         }
-        if (_pendingAdvance is LoadRequest advance
-            && Paths.AreSame(_session.ReadString("path"), advance.Path))
-        {
-            _pendingAdvance = null;
-            _activeEntryId = _session.PositiveEntryId();
-            _activePath = advance.Path;
-            ReleasePendingSpotifyAudio(advance.Path);
-            _playbackRange = advance.Range;
-            _chapterStopEnd = null;
-            _chapterStopCompleted = false;
-            _lastPosition = null;
-            _completedAdvance = new QueuedAdvance(advance.Path, _pendingSourcePosition, advance.ItemId);
-            Ended?.Invoke(EndReason.QueuedAdvance);
-        }
+        if (_pendingAdvance is { } incoming && _startedEntry?.Id == incoming.Id)
+            CompleteNativeAdvance(incoming);
     }
 
     private void HandlePositionChange(string _, object? value)

@@ -98,6 +98,25 @@ public sealed class NativeEngineTests
         Assert.AreEqual("second", advance!.Value.ItemId);
     }
     [TestMethod]
+    public async Task MissingGaplessSuccessorReportsItsOwnFailure()
+    {
+        using var workspace = new Workspace(); using var engine = NativeHost.Create();
+        var ends = new ConcurrentQueue<EndReason>();
+        engine.Ended += ends.Enqueue;
+        engine.ConfigurePlaybackEffects(new AudioSettings { GaplessPlayback = GaplessPlaybackMode.AlwaysWhenPossible });
+        engine.Load(NativeHost.Wave(workspace), paused: true, itemId: "first");
+        await NativeHost.Until(() => !engine.IsLoading && engine.Duration is > 0);
+        var missing = Path.Combine(workspace.Root, "missing.mp3");
+        Assert.IsTrue(engine.QueueNext(missing, itemId: "missing"));
+        engine.SeekAbsolute(9.8); engine.Play();
+        await NativeHost.Until(() => ends.Contains(EndReason.Error));
+        CollectionAssert.AreEqual(new[] { EndReason.QueuedAdvance, EndReason.Error }, ends.ToArray());
+        var advance = engine.TakeQueuedAdvance();
+        Assert.IsNotNull(advance);
+        Assert.AreEqual("missing", advance.Value.ItemId);
+        Assert.AreEqual(missing, advance.Value.Path);
+    }
+    [TestMethod]
     public void DisposeIsIdempotent()
     {
         var engine = NativeHost.Create(); engine.Dispose(); engine.Dispose();

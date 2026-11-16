@@ -53,7 +53,7 @@ internal sealed partial class PlaybackCoordinator : IEngine
     private long? _activeEntryId;
     private string? _activePath;
     private double? _lastPosition;
-    private LoadRequest? _pendingAdvance;
+    private NativeEntry? _pendingAdvance;
     private double? _pendingSourcePosition;
     private QueuedAdvance? _completedAdvance;
     private bool _crossfade;
@@ -97,6 +97,8 @@ internal sealed partial class PlaybackCoordinator : IEngine
         _metadata = new MetadataDiscovery(_session, HandleMetadataChange);
         _session.SetPropertySafely("network-timeout", 10);
         _session.OnEvent(HandleEndFile, MpvEventId.EndFile);
+        _session.OnEvent(HandleNativeLoadReply, MpvEventId.CommandReply);
+        _session.OnEvent(HandleStartFile, MpvEventId.StartFile);
         _session.OnEvent(HandlePlaybackRestart, MpvEventId.PlaybackRestart);
         _session.OnEvent(HandleFileLoaded, MpvEventId.FileLoaded);
         _session.ObserveProperty("time-pos", HandlePositionChange);
