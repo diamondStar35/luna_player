@@ -1,6 +1,6 @@
 # Luna Player User Guide
 
-Luna Player is a keyboard-friendly audio and video player for Windows. It plays local media, network streams, YouTube and IPTV; reads subtitles aloud; downloads and converts media; records audio; and provides file management, bookmarks, speech announcements, and configurable local and system-wide shortcuts.
+Luna Player is a keyboard-friendly audio and video player for Windows. It plays local media, DVD-Video and DVD-Audio discs, network streams, YouTube, Spotify, internet radio and IPTV; reads subtitles aloud; downloads and converts media; records audio; and provides file management, bookmarks, speech announcements, and configurable local and system-wide shortcuts.
 
 This guide describes the current version of Luna Player. Menu names and shortcuts below use the English interface and the default shortcut configuration.
 
@@ -79,9 +79,11 @@ To play a local file:
 4. Press <kbd>Left</kbd> or <kbd>Right</kbd> to seek.
 5. Press <kbd>Up</kbd> or <kbd>Down</kbd> to change the volume.
 
-To play every supported file in a folder, press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd> and choose the folder. Use <kbd>Tab</kbd> and <kbd>Shift</kbd>+<kbd>Tab</kbd> to move between loaded items.
+To play every supported file in a folder, press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd> and choose the folder. Use <kbd>Page Down</kbd> and <kbd>Page Up</kbd> to move between loaded items.
 
 To play a YouTube video, press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Y</kbd> and enter its address. To search instead, press <kbd>Ctrl</kbd>+<kbd>Y</kbd>.
+
+To find an internet radio station, press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>. To open Spotify, press <kbd>Alt</kbd>+<kbd>S</kbd>; follow the account setup in the [Spotify section](#13-spotify) before playing your first track.
 
 ## 4. Opening media
 
@@ -104,6 +106,18 @@ When several files are sent to Luna together and **Open the file only** is selec
 Choose **File > Open Folder...** or press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>O</kbd>.
 
 With either of the first two file-opening modes, Luna loads supported media directly inside the chosen folder. With the subfolder mode, it scans recursively. Inaccessible and system folders are skipped during a recursive scan.
+
+### Opening a DVD
+
+Choose **File > Open DVD...**. In the folder picker, select the DVD drive or a folder containing a disc's `VIDEO_TS` or `AUDIO_TS` directory. You can also select that directory itself. Use **Disc type** to choose **DVD-Video** or **DVD-Audio**. DVD-Video plays a video's soundtrack as well as its picture; DVD-Audio is the separate audio-disc format, not another name for the soundtrack of a video DVD.
+
+Luna reads the disc's playable titles in the background. A title is a separate programme on the disc, such as a film, an extra, or a group of music tracks. Leave **Title** at **Automatic** to use the longest playable title, or select a particular title when several are available. Choose **Open** to begin playback. If inspection has already finished, playback opens without an opening progress window. Otherwise, **Opening DVD** shows the progress of the inspection already in progress; it does not start reading the disc again.
+
+When a disc has several titles, Previous and Next move between titles. When there is only one playable title, they move between its chapters instead. You can also use **Player > Chapters** and the chapter shortcuts to navigate within a title. Disc menus are not displayed; use the title and chapter lists to reach the content directly.
+
+Luna reports an error if the location does not contain the selected disc format or has no playable titles. If DVD-Audio produces a message about missing audio titles, try DVD-Video only if the disc is a video DVD. Some DVD-Audio discs also contain a separate DVD-Video area, whose content can differ from the audio area.
+
+The installer and **Register file extensions** command also register DVD AutoPlay actions. Windows can offer Luna when a DVD is inserted and as **Play DVD with Luna Player** in Explorer. Choose Luna in Windows' AutoPlay settings if you want it to handle disc insertion automatically. Opening a disc from Explorer detects its type, preferring the DVD-Audio area when both formats are present, and shows **Opening DVD** while reading it. These registrations apply to DVDs; Blu-ray discs and audio CDs are not covered by this feature.
 
 ### Opening a network stream
 
@@ -338,6 +352,8 @@ M4B audiobooks open like other audio files. **Player > Chapters** lists the curr
 
 Check **Player > Chapters > Audiobook mode** to treat chapters as individual playlist items. Luna remembers this choice. Enabling or disabling it keeps the same listening position and pause state.
 
+Files without chapters use ordinary playback even when audiobook mode is enabled. You do not need to turn the mode off before opening music or another file without chapters.
+
 In audiobook mode, the opened-files list expands each book into its chapters; files without chapters remain single items. Previous/next file commands, shuffle, repeat, end-of-file behavior, and end-of-track sleep timers apply to the active chapter. Elapsed, remaining, and total time refer to that chapter. Seeking backward stops at its beginning; reaching its end, including by seeking, follows the configured end behavior. A-B loops and selection points stay within the chapter, and selecting a different chapter clears them. Automatic chapter announcements follow **Speak file name when navigating (Previous/Next)**.
 
 Bookmarks and remembered listening positions belong to the whole book. A bookmark in another chapter selects that chapter and its saved position. Copying, renaming, deleting, marking, or closing a chapter acts on its complete source book, including all its chapter entries.
@@ -346,12 +362,14 @@ Bookmarks and remembered listening positions belong to the whole book. A bookmar
 
 ### Previous, next, first, and last
 
-- <kbd>Shift</kbd>+<kbd>Tab</kbd> or <kbd>Page Up</kbd> plays the previous item.
-- <kbd>Tab</kbd> or <kbd>Page Down</kbd> plays the next item.
+- <kbd>Page Up</kbd> plays the previous item. <kbd>Shift</kbd>+<kbd>Tab</kbd> is its secondary shortcut.
+- <kbd>Page Down</kbd> plays the next item. <kbd>Tab</kbd> is its secondary shortcut.
 - <kbd>Ctrl</kbd>+<kbd>Home</kbd> plays the first item.
 - <kbd>Ctrl</kbd>+<kbd>End</kbd> plays the last item.
 
 If **Wrap to top for multiple files** is enabled, Next on the last item returns to the first and Previous on the first returns to the last. Automatic advance follows the same rule.
+
+You can turn off secondary shortcuts in **Preferences > Keyboard Shortcuts**. This lets <kbd>Tab</kbd> and <kbd>Shift</kbd>+<kbd>Tab</kbd> move between controls in the main window while <kbd>Page Down</kbd> and <kbd>Page Up</kbd> continue to change tracks.
 
 ### Going to a file number
 
@@ -436,12 +454,71 @@ Use small changes and test them on representative material. The filter affects p
 
 ### Normalization, limiting, and mono
 
-The Audio Preferences page contains two additional filters:
+The **Preferences > Audio > Playback** page contains two additional filters:
 
 - **Enable dynamic normalize and limiter** evens out changing loudness and restrains peaks to reduce clipping.
 - **Play audio as Mono** combines the left and right channels into one mono output.
 
 Neither option changes the source file.
+
+### Headphone spatialization
+
+Headphone spatialization makes the audio channels sound like virtual speakers around your head. It uses a head-related transfer function, or HRTF: measurements of how sound from different directions reaches a listener's ears. Listen with headphones to hear the effect. This changes the sound during playback and does not alter the original media file.
+
+#### Downloading an HRTF dataset
+
+**Luna Player does not ship with any HRTF datasets.** Download a compatible `.sofa` file separately and keep it in a folder where it will remain available. SOFA is the file format used to store the measurements; choose a file containing `SimpleFreeFieldHRIR` responses for headphone listening.
+
+SADIE D1 is a useful starting point and is also provided in Steam Audio's HRTF files. The following links download SOFA files directly:
+
+| Dataset | Download and use |
+| --- | --- |
+| SADIE D1 | [Download sadie_d1.sofa from Steam Audio](https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/data/hrtf/sadie_d1.sofa). Start here if you do not already have a preferred HRTF. |
+| SADIE H12 | [Download sadie_h12.sofa from Steam Audio](https://raw.githubusercontent.com/ValveSoftware/steam-audio/master/core/data/hrtf/sadie_h12.sofa). An alternative set of measurements to compare with D1. |
+| SADIE D2 | [Download D2 from the SOFA database](https://sofacoustics.org/data/database/sadie/D2_48K_24bit_256tap_FIR_SOFA.sofa). Another alternative if D1 does not give you convincing directions. |
+
+You can find more measurements in the [SADIE database](https://www.york.ac.uk/sadie-project/database.html) and the [SOFA dataset collection](https://sofacoustics.org/data/database/). Download the `.sofa` file itself rather than saving the web page describing it. If your browser opens the file instead of saving it, use its save command or the link's **Save link as** command and keep the `.sofa` extension.
+
+There is no single dataset that sounds best for everyone. Compare a few with the same familiar recording and similar volume, listening for clear left/right, front/back and above/below positions. A larger download or a higher measurement sample rate does not by itself make a dataset a better match for your ears.
+
+#### Setting up spatialization
+
+1. Open **Preferences > Audio > Headphone spatialization**.
+2. Select **Enable headphone spatialization** to reveal the other controls.
+3. Choose **Browse...** and select the downloaded `.sofa` file.
+4. Set the gain, starting angles and shortcut steps as needed, then choose **OK**.
+
+Spatialization is off by default. If you want it off at startup but available from the Player menu, select a file and configure the defaults, then clear **Enable headphone spatialization** before choosing OK. The other fields become hidden while the checkbox is cleared, but their values are kept.
+
+| Setting | Purpose |
+| --- | --- |
+| Gain (dB) | Output adjustment from -20 to 40 dB, initially 0. Lower it if the result is too loud or distorted. Decimal values are accepted. |
+| Rotation (degrees) | Starting horizontal angle, from -360 to 360, initially 0. Positive values turn right; negative values turn left. |
+| Elevation (degrees) | Starting vertical angle, from -90 to 90, initially 0. Positive values raise the sound; negative values lower it. |
+| Rotation step (degrees) | Change made by each rotation command, from 1 to 90 degrees. The default is 5. |
+| Elevation step (degrees) | Change made by each elevation command, from 1 to 90 degrees. The default is 5. |
+
+Rotation, elevation and their steps use whole-degree spin controls. Gain uses a text field, so you can enter a decimal adjustment.
+
+#### Changing direction during playback
+
+Use **Player > Headphone Spatialization** or these default shortcuts:
+
+| Command | Default shortcut | Effect |
+| --- | --- | --- |
+| Enable Headphone Spatialization | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd> | Turns the effect on or off for this session. Unavailable until a SOFA path is configured in Preferences. |
+| Rotate Left | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Left</kbd> | Subtracts the rotation step. |
+| Rotate Right | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Right</kbd> | Adds the rotation step. |
+| Raise Elevation | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Up</kbd> | Adds the elevation step. |
+| Lower Elevation | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Down</kbd> | Subtracts the elevation step. |
+
+Direction commands are available while spatialization is enabled. Rotation wraps around a full circle: one default step left from 0 becomes 355 degrees. Elevation stops at -90 degrees, directly below you, and 90 degrees, directly above you. Near those vertical positions, changing rotation may make little audible difference. To hear movement around your head more clearly, return elevation towards 0.
+
+Luna announces each change. For example, Beginner verbosity says “Rotation 270 degrees” and Advanced says “270 degrees.” These changes last for the current session and do not replace the defaults in Preferences. Saving unrelated preferences keeps the temporary enabled state and angles. Changing the spatialization defaults applies the edited settings; switching the effect off and on from the Player menu keeps the current session angles.
+
+Pausing, seeking and moving between files preserve your spatialization settings. Enabling or disabling the effect can cause a brief interruption while the audio processing changes, and loading a large dataset can take longer. Direction changes do not require choosing the file again.
+
+Leave **Play audio as Mono** off to preserve the stereo cues created by the effect. Turn spatialization off when listening through speakers or to audio that is already binaural. Keep the SOFA file at the selected path: Luna does not copy it into its settings folder or include it in a settings backup. If it is moved or deleted, choose its new location in Preferences. If the effect cannot be applied, Luna reports an error and turns it off for the current session.
 
 ### Equalizer
 
@@ -655,7 +732,7 @@ If you close Luna while the queue still has unfinished items, Luna asks whether 
 
 Favorites save links, while bookmarks save positions inside local files. Open favorites with **File > Favorite videos...** or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd>.
 
-The Favorites dialog can open, add, edit, or remove entries. Each entry has a name, link, and type:
+The Favorites window can open, add, edit, or remove entries. You can keep using the main player while it is open. Adding or editing an entry temporarily disables Favorites until you finish that dialog, while the main player remains usable. Each entry has a name, link, and type:
 
 - **Video** requires a YouTube video link.
 - **Playlist** requires a YouTube playlist link.
@@ -678,7 +755,83 @@ Use **Help > Updates > Update YouTube components** to update an installed yt-dlp
 
 Some age-restricted, members-only, or verification-protected videos require browser cookies. You can choose a Netscape-format cookie file or use **Import from Firefox** so Luna reads the current Firefox cookies for each request. These choices are mutually exclusive, and the read-only cookie status reports which source is active. Treat exported cookie files as private account data.
 
-## 13. Recording audio
+## 13. Spotify
+
+Choose **Tools > Spotify...** or press <kbd>Alt</kbd>+<kbd>S</kbd> to browse Spotify. You can search for songs, artists and playlists, open your library, and play a selected track. **Browsing Spotify in Luna Player requires a Spotify Premium account.** You also need an internet connection and Spotify authorization.
+
+### Configuring your Spotify app
+
+Spotify's browsing features require the Client ID of your own developer app. If it has not been configured, opening Spotify offers **Go to Preferences**.
+
+1. Open the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard) and sign in.
+2. Create an app, enter its name and description, and select **Web API**.
+3. Add `http://127.0.0.1:43891/callback/` to its **Redirect URIs**. Copy it exactly, including the port and final slash.
+4. Save the app and copy its **Client ID**.
+5. In Luna, open **Preferences > Spotify**, paste the Client ID, and choose **OK**. Do not paste the Client Secret.
+
+Spotify sets the account and access requirements for developer apps. Its current [development-mode requirements](https://developer.spotify.com/documentation/web-api/concepts/quota-modes) require the app owner to have Spotify Premium. If you use a different account to sign in, that account must also be allowed to use the app in the dashboard. Some playlists and other content may remain unavailable to development-mode apps.
+
+### Signing in and playing a track
+
+Open the Spotify browser and choose **Sign in to Spotify**. Your default web browser opens Spotify's authorization page. Sign in to the account you want to browse, approve access, and return to Luna when the browser confirms that you can do so.
+
+The Spotify browser has three tabs:
+
+- **Home** contains **Your top tracks**, **Recently played**, and available mixes or radio collections from your library. It is not a copy of every recommendation shown in Spotify's own application.
+- **Search** lets you enter a query and choose **All**, **Songs**, **Artists**, or **Playlists** in **Filter by**. Activate **Search**, or choose a previous query from **Recent searches**.
+- **Library** lists your playlists and **Liked songs**. Select a collection and choose **Open selection** to see its tracks.
+
+In search results, select a song to play it, or open an artist or playlist to browse its tracks. In a track list, select a song and choose **Play** or press <kbd>Enter</kbd>. More results or tracks load as you reach the end of a list. **Back** or <kbd>Escape</kbd> returns from a results or track window to the browser.
+
+The first playback may open a second browser sign-in. This authorizes the audio connection separately from the Home, Search and Library connection. Complete it and return to Luna; Luna keeps the saved authorization for later sessions. You do not need to start Spotify Desktop to play the selected track.
+
+Choosing a track returns you to the main player. Previous and Next move through the selected collection or song results, loading further tracks when available. Open Spotify again with <kbd>Alt</kbd>+<kbd>S</kbd> to choose something else. Use **Refresh** to reload your library after changing it in Spotify. **Sign out** disconnects the account and its playback authorization and stops an active Spotify session.
+
+### Audio quality and transitions
+
+In **Preferences > Spotify > Audio quality**, choose **Normal (96 kbps)**, **High (160 kbps)**, or **Very high (320 kbps)**. Very high is the default. Changing quality during playback reloads the current track at its current position.
+
+Spotify supports Luna's gapless and cross-fading settings under **Preferences > Audio > Playback**. Enable **Enable cross-fading for audio files** to overlap tracks, and enable **Enable cross-fading during manual navigation** if you also want overlaps when choosing Previous or Next. The next track must be ready in time; a slow connection or unavailable track can prevent a seamless transition. See [Cross-fading](#cross-fading) for duration and curve settings.
+
+Spotify collections belong to Spotify. Browsing them does not copy them into **My Playlists**, and Luna's local playlist editor does not edit your Spotify library.
+
+## 14. Radio browser
+
+Choose **Tools > Radio browser...** or press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> to find internet radio stations through the public [Radio Browser directory](https://www.radio-browser.info/). You do not need an account.
+
+### Finding and playing a station
+
+Use the **Categories** tree to choose what to browse, then move to the **Stations** list. Its columns show the station's name, country, language, codec and bitrate.
+
+- **Global stations** searches across the directory.
+- **Favorites** contains stations you saved in Luna.
+- **Recently played** contains your local listening history.
+- **Discover** contains **Most played**, **Trending**, **Most voted**, **Recently clicked** and **Recently updated** lists. These rankings refer to activity in the public directory, not just your own listening.
+- **Countries** lets you browse by country and region. **Languages**, **Genres and tags**, and **Formats** offer other ways to narrow the station list.
+
+Expand a category to load its choices. To search, enter a name or term in **Search** and activate the Search button or press <kbd>Enter</kbd> in the field. Select a station category, such as Global stations or a particular language, before searching to narrow its stations. Use **Clear search** to remove the current query. Additional entries load as you move towards the end of a list.
+
+Select a station and choose **Play** or press <kbd>Enter</kbd> in the station list. The browser closes and the station plays in the main window. Previous and Next move through the station list you selected, rather than through unrelated local files. Reopen the radio browser to select a different category or station.
+
+Press <kbd>I</kbd> in the main window to hear the broadcast title and <kbd>Shift</kbd>+<kbd>I</kbd> for the artist when the station supplies them. A live station may not provide a duration, seeking or complete track information. The station name and the current song information are separate: a broadcaster can keep playing even when it sends no artist or title.
+
+### Filtering stations
+
+Choose **Filters…** to restrict the results. Under **Apply to**, choose **This category** for a local restriction or **All categories** for a global one. Category restrictions are combined with global restrictions, so a station must satisfy both.
+
+You can filter by a two-letter **Country code**, **Region**, **Language**, comma-separated **Tags**, **Codec**, and minimum or maximum bitrate. A bitrate of 0 means there is no limit at that end of the range. **Only working stations** hides stations whose last directory check failed; it is enabled by default. **HTTPS only** excludes ordinary HTTP streams. Choose **Apply** to use the displayed values, **Reset** to restore the displayed filter defaults, or **Cancel** to leave them unchanged.
+
+If a category appears empty, clear its search and check both its category filters and the filters for all categories. A station marked working can still be temporarily offline or unavailable from your location.
+
+### Favorites, details and station actions
+
+With a station selected, press <kbd>Ctrl</kbd>+<kbd>Space</kbd> to add it to or remove it from Favorites. You can also use the station list's context menu. These favorites are kept in Luna's radio library, separately from **File > Favorite videos...**.
+
+Choose **Station details** or press <kbd>Shift</kbd>+<kbd>Enter</kbd> to read the directory's information about the station. The context menu also offers **Open website**, **Copy stream URL**, **Copy station name**, and **Vote for station**. The website and stream URL are different: the website is the station's home page, while the stream URL points to its audio.
+
+Use **Refresh** to reload the current view. **Clear history…** asks before removing your local Recently played history; it does not remove favorites or change the public directory.
+
+## 15. Recording audio
 
 Luna can record microphones and other inputs, everything played through an output device, or the audio of a particular program. Multiple sources can be mixed into one recording with separate volume levels.
 
@@ -690,7 +843,7 @@ A rising tone confirms that recording is starting. A falling tone confirms that 
 
 ### Opening the recording interface
 
-Choose **Recording > Open the recording interface...** or press <kbd>Alt</kbd>+<kbd>R</kbd>. The window has a source list, source controls, output settings, and Start/Pause controls.
+Choose **Recording > Open the recording interface...** or press <kbd>Alt</kbd>+<kbd>R</kbd>. The window has a source list, source controls, output settings, and Start/Pause controls. It leaves the main player usable. Source and output dialogs belong to the recording window and do not block playback controls in the main window.
 
 Closing this window does not stop an active recording. Recording belongs to the application and continues until you use Stop, <kbd>F8</kbd>, or exit Luna.
 
@@ -737,7 +890,7 @@ If only some sources can be opened, Luna starts with the available sources and l
 
 Choose **Recording > Open recordings folder** to open the active destination. The default folder is `Documents\Luna Player\Recordings`.
 
-## 14. IPTV
+## 16. IPTV
 
 IPTV sources and channels are under **Tools > IPTV**. Luna supports extended M3U or M3U8 playlists from a file or web address, Xtream Codes accounts, and Stalker portals.
 
@@ -755,7 +908,7 @@ Open a source from the manager, or choose **Tools > IPTV > Browse channels...** 
 
 Press <kbd>Enter</kbd> on a selected row or activate **Play** to open it. When programme-guide information is available, press <kbd>Ctrl</kbd>+<kbd>I</kbd> to hear what is showing now and what follows. Press <kbd>F1</kbd> in the channel browser for a spoken summary of its controls.
 
-## 15. Media converter
+## 17. Media converter
 
 Choose **Tools > Media converter...** to convert one or more media files to an audio format. Add individual files or add a folder; adding a folder includes supported media in its subfolders. Duplicate paths are ignored.
 
@@ -767,7 +920,7 @@ Set **Maximum simultaneous conversions** to control how many files run at once. 
 
 The progress window reports the current file, its percentage, the number of remaining files, total percentage, and estimated time. You can cancel the remaining work. When conversion ends, Luna reports complete success or lists the files that failed and why.
 
-## 16. Sleep timer
+## 18. Sleep timer
 
 Choose **Tools > Sleep timer > Set timer...** or press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>. A timer can fire after a chosen duration or at the end of the current track. Choose whether it pauses playback or stops and unloads the current item.
 
@@ -781,9 +934,9 @@ Enable **Fade the volume out before firing** to lower the volume during the fina
 
 The last timer choices are remembered, but an active countdown does not survive closing Luna.
 
-## 17. Preferences reference
+## 19. Preferences reference
 
-Open Preferences with **File > Preferences...** or <kbd>Ctrl</kbd>+<kbd>P</kbd>. Select a page in the category tree. Press OK to validate and apply all pages, or Cancel to discard unaccepted changes.
+Open Preferences with **File > Preferences...** or <kbd>Ctrl</kbd>+<kbd>P</kbd>. Select a page in the category tree. Choose OK to save and apply the settings you changed, or Cancel to discard unaccepted changes. Unchanged settings are not reapplied, so saving an unrelated preference does not reset temporary playback adjustments such as headphone spatialization.
 
 Press <kbd>F1</kbd> while a setting has focus to hear a detailed explanation of that setting.
 
@@ -834,41 +987,15 @@ Import replaces the corresponding collection; it does not merge entries. Keep ex
 | Enable dynamic normalize and limiter | Evens loudness and restrains peaks. |
 | Play audio as Mono | Mixes left and right channels into mono. |
 
-#### Headphone spatialization with SOFA files
+#### Headphone spatialization defaults
 
-Open **Preferences > Audio > Headphone spatialization** and select **Enable headphone spatialization** to reveal its settings. Choose **Browse...**, select a local `.sofa` HRTF file, configure the defaults, then press OK. Spatialization is off by default; all other controls on this page are hidden while its Enable checkbox is cleared. You can configure a file and defaults, then clear Enable before saving if you prefer to turn spatialization on only from the Player menu.
+This page selects the SOFA dataset and the default enabled state, gain, rotation, elevation and direction steps. Luna does not include a dataset. See [Headphone spatialization](#headphone-spatialization) in the audio-processing section for direct downloads, setup instructions and playback shortcuts.
 
-Luna uses FFmpeg's libmysofa-backed `sofalizer` filter to render virtual speakers as stereo sound for headphones. Use a SOFA file containing `SimpleFreeFieldHRIR` head-related impulse responses, not a media file. The bundled FFmpeg includes the required filter; a replacement build must include libmysofa and support changing SOFA rotation and elevation during playback.
+#### Fades and gapless playback
 
-- **Gain (dB):** -20 to 40, with a default of 0. Reduce it if the result is too loud or clips.
-- **Rotation (degrees):** Default horizontal angle of the virtual speakers, from -360 to 360, initially 0. Positive values turn right; negative values turn left.
-- **Elevation (degrees):** Default vertical angle of the virtual speakers, from -90 to 90, initially 0.
-- **Rotation step (degrees):** Amount changed by each rotation command, from 1 to 90. The default is 5.
-- **Elevation step (degrees):** Amount changed by each elevation command, from 1 to 90. The default is 5.
+Under **Audio > Playback**, the volume-fading options control the start and end of files, pausing and resuming, and seeking. **Volume fading interval (milliseconds)** sets the ordinary fade duration; 0 disables these fades. **Enable volume fading during seeking** uses the separate **Seek fading interval (milliseconds)**, from 1 to 10000. Fading lowers the sound around an operation; it does not overlap two tracks.
 
-Rotation, elevation and their steps use whole-degree spin controls. Gain remains a text field that accepts decimals. Older decimal angle or step defaults are rounded to the nearest whole degree when this page is saved.
-
-The **Player > Headphone Spatialization** submenu is beside **Pan**:
-
-| Command | Default shortcut | Effect |
-| --- | --- | --- |
-| Enable Headphone Spatialization | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>H</kbd> | Toggles spatialization for this session. Unavailable until a SOFA path is configured in Preferences. |
-| Rotate Left | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Left</kbd> | Subtracts the rotation step. |
-| Rotate Right | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Right</kbd> | Adds the rotation step. |
-| Raise Elevation | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Up</kbd> | Adds the elevation step. |
-| Lower Elevation | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Down</kbd> | Subtracts the elevation step. |
-
-Rotation and elevation commands are available while spatialization is enabled. Rotation wraps around the listener: one default step left from 0 becomes 355 degrees. Elevation stops at -90 degrees directly below you or 90 degrees directly above you, while its step can be as large as 90 degrees. Each successful change is announced: for example, Beginner verbosity says “Rotation 270 degrees” and Advanced says “270 degrees.” Elevation follows the same pattern.
-
-These menu and shortcut changes last for the current session and do not overwrite saved defaults, even when other settings are saved. The initial enabled state, rotation, and elevation come from Preferences. Applying preferences reloads those defaults; toggling spatialization off and on from the menu retains the current session angles.
-
-Pausing preserves the spatialization settings and the audio history needed for a smooth resume. Seeking and reloading clear audio left over from the previous playback position while keeping the current settings. Compatible reloads reuse the prepared filter; a change in audio format can require it to be prepared again. Direction changes requested during a seek take effect when playback is ready.
-
-Spatialization is applied before normalization, mono mixing, and balance adjustment. Leave **Play audio as Mono** off to preserve its stereo cues. Disable spatialization for speakers or recordings that are already binaural. The filter remains active across file changes and seeks.
-
-The SOFA file stays at its chosen path and is not included in settings backups. If it becomes unavailable, select it again or turn spatialization off. Luna passes the file to FFmpeg without loading a separate copy for validation. If FFmpeg cannot apply the filter, Luna reports an error and turns spatialization off for the current session.
-
-On Windows, libmysofa may not open a SOFA path containing non-ASCII characters. If a valid file cannot be opened, move it to a folder and filename using only ASCII characters and select it again.
+**Gapless playback mode** controls whether Luna keeps the audio output open between tracks. **Disabled** uses ordinary file changes. **Compatible files** preserves the original audio format and joins tracks when their formats are compatible. **Always when possible** can adapt later tracks to the first track's output format so playback can continue through that output. Choose Compatible files if you want to preserve each track's format. Online playback also requires the next stream to be ready in time. See [Spotify](#13-spotify) for playback from a Spotify collection.
 
 #### Cross-fading
 
@@ -876,7 +1003,7 @@ Under **Audio > Playback**, select **Enable cross-fading for audio files** to ov
 
 Set **Cross-fading duration (milliseconds)** from 1 to 30000; the default is 3000, or three seconds. Choose **Equal-power** for an even perceived loudness during the overlap, or **Linear** for a constant rate of gain change. Equal-power can produce higher peaks.
 
-Select **Enable cross-fading during manual navigation** to use overlaps when moving between audio files yourself, including Previous, Next and file-number commands. This option is off by default. Navigation while paused uses an ordinary file change.
+Select **Enable cross-fading during manual navigation** to use overlaps when moving between audio files yourself, including Previous, Next and file-number commands. This option is off by default. Navigation while paused uses an ordinary file change. The same cross-fading settings also apply to Spotify tracks.
 
 Cross-fading works independently of the gapless setting and takes precedence over ordinary file-start and file-end fades during an overlap. Active selections, A-B loops, repeat-file mode and end-of-track sleep timers prevent automatic transitions. Online audio uses an overlap only when the next stream is ready; short files or late streams may shorten it. Longer durations require more decoded audio buffering.
 
@@ -906,6 +1033,10 @@ See [Silence removal and audio processing](#8-silence-removal-and-audio-processi
 | yt-dlp update channel | Chooses Stable, Nightly, or Master. |
 | Check for yt-dlp updates on startup | Performs a quiet component check after launch. |
 | Download YouTube components | Installs or refreshes yt-dlp and supporting tools. |
+
+### Spotify
+
+Set your developer app's **Client ID** and the preferred **Audio quality** here. The page includes the exact redirect URI to register and instructions for getting the Client ID. See [Spotify](#13-spotify) for account setup, signing in, browsing and playback.
 
 ### Discord Rich Presence
 
@@ -940,8 +1071,8 @@ paused.
 
 YouTube uses the video's thumbnail. Spotify uses album artwork, and radio uses the station's image,
 when available. Local files and books use Luna's application icon. Artwork labels contain the artist
-or channel name without an added "By" prefix or application version. Listening cards show that name
-below the title. YouTube video uses **Watching YouTube on Luna**, while audio-only playback uses
+or channel name without an added "By" prefix or application version. Listening cards show a separate **By artist** credit
+below the title when an artist is available. YouTube video uses **Watching YouTube on Luna**, while audio-only playback uses
 **Listening to YouTube on Luna**. Video playback keeps its thumbnail and **Watch on YouTube** button.
 YouTube's Watching card uses **Luna Player** as its heading, changing to **[Paused]: Luna Player** when
 paused. The video title appears below the heading. The artwork label contains the plain artist or
@@ -990,17 +1121,19 @@ This page lists every action that can run while Luna's main window has focus. Ea
 3. Press the desired combination. Press <kbd>Escape</kbd> to cancel capture.
 4. Press OK in Preferences to apply the changes.
 
+Immediately after the shortcut list, **Disable secondary shortcuts** turns off every assignment in the Secondary Shortcut column. The keys then keep their normal interface behavior; for example, Tab and Shift+Tab can move focus instead of changing tracks. Primary and global shortcuts are unaffected. Your secondary assignments are kept and become active again when you clear the checkbox and choose OK. Page Up and Page Down are the primary Previous and Next shortcuts.
+
 Luna rejects a combination already assigned to another action in the same shortcut set. Local shortcuts can use printable keys, navigation keys, function keys F1 through F24, and Ctrl, Shift, or Alt modifiers. Use **Reset to Defaults** to restore the complete local shortcut page after confirmation.
 
 ### Global Shortcuts
 
-Global shortcuts work while another application has focus. They are intentionally limited to playback, navigation, volume, and recording commands that are useful outside Luna.
+Global shortcuts work while another application has focus, whether Luna is minimized or simply behind another window after Alt+Tab. They do not run while Luna or one of its dialogs has focus; use local shortcuts there. Global commands are limited to playback, navigation, volume, and recording actions that are useful outside Luna.
 
-Select an action, activate **Edit Shortcut**, and press the desired combination. Global shortcuts can also use the Windows key. Windows may refuse a shortcut already reserved by the operating system or another application; Luna reports shortcuts it could not register.
+Select an action, activate **Edit Shortcut**, and press the desired combination. Global shortcuts can also use the Windows key. Luna passes these combinations on to Windows, so an operating-system shortcut with the same keys can still perform its own action. Choose a different combination if this causes an unwanted side effect.
 
 Global shortcuts are separate from local shortcuts. Changing one does not change the other.
 
-## 18. Application updates
+## 20. Application updates
 
 ### Checking manually
 
@@ -1016,14 +1149,14 @@ Enable **Check for app updates on startup** for a silent background check. It di
 
 ### Installing a downloaded update
 
-The download window shows total size, downloaded size, percentage, and a Cancel button. After a successful download, Luna starts its small updater helper and closes:
+The download window shows total size, downloaded size, percentage, and a Cancel button. It leaves the main player usable, so you can pause, stop or change playback while waiting. After a successful download, Luna starts its small updater helper and closes:
 
 - An installed copy starts the update installer. Its installation progress remains visible, and Luna opens when installation completes.
 - A portable copy replaces the extracted application files and opens the updated player.
 
 Do not start another Luna process while the update is being applied.
 
-## 19. Help and release information
+## 21. Help and release information
 
 - **Help > User guide** or <kbd>F1</kbd> opens the installed guide that matches Luna's interface language. If no matching regional or base-language guide is installed, Luna opens the English guide.
 - **Help > About** shows a description, version, copyright information, and a link to the project website.
@@ -1031,7 +1164,7 @@ Do not start another Luna process while the update is being applied.
 
 The user guide is installed as local HTML and does not require an internet connection. Release notes and the project website do require one.
 
-## 20. Settings and user data
+## 22. Settings and user data
 
 Luna stores user data under `%APPDATA%\Luna Player`:
 
@@ -1045,6 +1178,10 @@ Luna stores user data under `%APPDATA%\Luna Player`:
 | `iptv-sources.json` | Saved IPTV sources, with account fields protected for the current Windows user |
 | `recents.json` | Recently opened files, folders, and playlists |
 | `Playlists/` | Named JSON playlists, including descriptions and folder references |
+| `radio.json` | Favorite radio stations and local radio listening history |
+| `spotify-preview-searches.txt` | Recent Spotify search queries |
+| `spotify-token.dat` | Spotify browsing authorization, protected for the current Windows user |
+| `spotify-playback-credentials.dat` | Spotify playback authorization, protected for the current Windows user |
 
 Use **Preferences > Backup and restore > Open user settings folder** to open the exact folder rather than typing the path.
 
@@ -1052,7 +1189,7 @@ Do not edit these files while Luna is running. Use the export and import control
 
 If `settings.json` cannot be read or contains invalid values, Luna starts with defaults, shows the reason, and protects the existing file from being overwritten. Import a valid settings backup or use **Reset settings** to replace it deliberately. Invalid bookmarks, favorites, equalizer presets, IPTV sources, and recents are also reported instead of being silently replaced.
 
-## 21. Complete default shortcut reference
+## 23. Complete default shortcut reference
 
 These are the factory defaults. Your current bindings may differ after customization. The authoritative list for your installation is under **Preferences > Keyboard Shortcuts** and **Global Shortcuts**.
 
@@ -1061,6 +1198,7 @@ These are the factory defaults. Your current bindings may differ after customiza
 | Action | Primary shortcut | Secondary shortcut |
 | --- | --- | --- |
 | Open files | <kbd>Ctrl</kbd>+<kbd>O</kbd> | — |
+| Open a DVD disc | None | — |
 | Add files to the current list | <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>F</kbd> | — |
 | Add a folder to the current list | <kbd>Ctrl</kbd>+<kbd>Alt</kbd>+<kbd>D</kbd> | — |
 | Open a network stream link | <kbd>Ctrl</kbd>+<kbd>L</kbd> | — |
@@ -1079,8 +1217,8 @@ These are the factory defaults. Your current bindings may differ after customiza
 
 | Action | Primary shortcut | Secondary shortcut |
 | --- | --- | --- |
-| Previous file | <kbd>Shift</kbd>+<kbd>Tab</kbd> | <kbd>Page Up</kbd> |
-| Next file | <kbd>Tab</kbd> | <kbd>Page Down</kbd> |
+| Previous file | <kbd>Page Up</kbd> | <kbd>Shift</kbd>+<kbd>Tab</kbd> |
+| Next file | <kbd>Page Down</kbd> | <kbd>Tab</kbd> |
 | First file | <kbd>Ctrl</kbd>+<kbd>Home</kbd> | — |
 | Go to file number | <kbd>Ctrl</kbd>+<kbd>G</kbd> | — |
 | Last file | <kbd>Ctrl</kbd>+<kbd>End</kbd> | — |
@@ -1211,7 +1349,7 @@ These are the factory defaults. Your current bindings may differ after customiza
 | Jump to bookmark slots 1–9 | <kbd>Alt</kbd>+<kbd>1</kbd> through <kbd>Alt</kbd>+<kbd>9</kbd> |
 | Jump to bookmark slot 10 | <kbd>Alt</kbd>+<kbd>0</kbd> |
 
-### YouTube, tools, recording, updates, and help
+### Online services, tools, recording, updates, and help
 
 | Action | Shortcut |
 | --- | --- |
@@ -1227,6 +1365,9 @@ These are the factory defaults. Your current bindings may differ after customiza
 | Open current video in browser | None |
 | Open current video's channel in browser | None |
 | Browse current video's channel in Luna | None |
+| Open radio browser | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> |
+| Open Spotify browser | <kbd>Alt</kbd>+<kbd>S</kbd> |
+| Spotify preferences | None |
 | Open media converter | None |
 | Manage IPTV sources | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>I</kbd> |
 | Browse IPTV channels | None |
@@ -1246,7 +1387,7 @@ These are the factory defaults. Your current bindings may differ after customiza
 
 ### Default global shortcuts
 
-These commands work system-wide when Luna is running, even if another program has focus.
+These commands work while another application has focus, including when Luna is minimized. They are ignored while Luna or one of its dialogs has focus.
 
 | Action | Global shortcut |
 | --- | --- |
@@ -1261,7 +1402,7 @@ These commands work system-wide when Luna is running, even if another program ha
 | Pause or resume recording | <kbd>Win</kbd>+<kbd>Alt</kbd>+<kbd>F7</kbd> |
 | Stop recording | <kbd>Win</kbd>+<kbd>Alt</kbd>+<kbd>F8</kbd> |
 
-## 22. Supported formats
+## 24. Supported formats
 
 Luna filters file and folder selection using the following extensions. Playback is handled by mpv, so other formats supported by that engine may also play when opened directly.
 
@@ -1271,7 +1412,9 @@ Luna filters file and folder selection using the following extensions. Playback 
 
 **Playlists:** M3U and M3U8, including HLS streams, and local Luna JSON playlists with descriptions and folder references.
 
-## 23. Troubleshooting
+**Discs:** DVD-Video and DVD-Audio through **File > Open DVD...**, DVD AutoPlay, or Explorer's DVD play action. Disc menus, Blu-ray discs and audio CDs are not supported by this disc-opening feature.
+
+## 25. Troubleshooting
 
 ### A file or folder opens fewer items than expected
 
@@ -1303,6 +1446,24 @@ Choosing **Minimize to queue** deliberately transfers the visible progress to **
 
 Programme information appears only when the provider supplies it or the source has a matching XMLTV EPG address. Channel identifiers in the guide must match the source's identifiers. Playback can still work when no programme guide is available.
 
+### Spotify will not sign in or load a collection
+
+Check the Client ID under **Preferences > Spotify** and the redirect URI in your developer app. The URI must be exactly `http://127.0.0.1:43891/callback/`, including the final slash. Follow both browser authorizations if Luna asks: browsing and audio playback sign in separately. If an authorization has expired, sign in again.
+
+If Spotify refuses a playlist or collection, check that your account can access it and is allowed to use your developer app. Development-mode apps cannot access every kind of Spotify content. If Luna reports a request limit, wait for the indicated time before retrying; repeatedly refreshing does not remove the limit. A collection that cannot load because Spotify restricts it cannot be made available by changing Luna's audio quality.
+
+### A radio station does not play or has no track information
+
+Try **Refresh** in the radio browser and select another station. The public directory's last successful check does not guarantee that a stream is available now or in your region. If no stations appear, clear the search and inspect both category and global filters. **Only working stations** and **HTTPS only** can exclude stations you expected to find.
+
+Not every station sends song titles or artists. Missing or unchanged broadcast information does not necessarily mean playback has stopped. Use **Station details** to inspect the directory entry, or **Open website** from the station's context menu to check the broadcaster's own site.
+
+### Headphone spatialization cannot open a dataset
+
+Download a `.sofa` dataset from the links in [Headphone spatialization](#headphone-spatialization), then select the file itself in Preferences. A saved HTML page, compressed archive, or ordinary audio file is not an HRTF dataset. Keep the selected file in place; settings backups do not contain it. If a valid dataset cannot be opened from a path containing non-ASCII characters, try a folder and filename using plain English letters and select it again.
+
+To compare directions, listen through headphones, turn off **Play audio as Mono**, and start at an elevation near 0 degrees. Lower the gain if the sound distorts. If front/back or height cues are unconvincing, try another dataset rather than assuming that a larger file will sound better for you.
+
 ### Recording cannot find a program
 
 Program capture requires Windows 10 version 2004 or later. The program must also have an active Windows audio session. Start playback in that program, reopen the source dialog, and choose it from the refreshed list.
@@ -1313,7 +1474,7 @@ Luna can continue when at least one source opens. Read the warning listing faile
 
 ### A global shortcut does not work
 
-Open **Preferences > Global Shortcuts** and apply the binding again. Windows does not allow two applications to register the same global combination. Choose another combination if Luna reports that one or more shortcuts could not be registered.
+Global shortcuts are active only while another application has focus. Switch to another application with Alt+Tab or minimize Luna, then use the shortcut. While Luna or one of its dialogs has focus, use the local shortcuts instead. Check the binding under **Preferences > Global Shortcuts**. If the same combination also performs a Windows action, assign different keys; Luna does not suppress the operating system's handling of these combinations.
 
 ### Settings will not save after a startup error
 
@@ -1327,7 +1488,7 @@ An invalid storage file is preserved rather than silently replaced. Open the use
 
 The installed guide should be at `docs\<language-code>\user-guide.html` beside the executable. Re-extract the complete portable archive or repair/reinstall the application if the `docs` folder is missing. Luna falls back from a regional language to its base language and then to English.
 
-## 24. Publisher and licensing
+## 26. Publisher and licensing
 
 Luna Player is published by **Diamond Star**.
 
@@ -1339,7 +1500,7 @@ Luna Player also uses separately licensed third-party components, including mpv,
 
 The license summary in this guide is provided for convenience. `LICENSE.txt`, `NOTICE.txt`, and the files in the `licenses` folder contain the authoritative terms and attributions. In the source repository, the corresponding top-level files are named `LICENSE` and `NOTICE`.
 
-## 25. Contact and support
+## 27. Contact and support
 
 Luna Player is developed and published by Diamond Star. You can use the following channels:
 
