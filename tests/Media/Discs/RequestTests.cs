@@ -9,6 +9,16 @@ namespace LunaPlayer.Tests.Media.Discs;
 public sealed class RequestTests
 {
     [TestMethod]
+    public void ExplorerDiscLaunchKeepsTheFormatAutomatic()
+    {
+        var launch = Resources.PrepareLaunch(["--dvd", @"F:\"], new Settings());
+        Assert.IsNotNull(launch.Disc);
+        Assert.IsNull(launch.Disc.Format);
+        Assert.AreEqual(@"F:\", launch.Disc.Location);
+        Assert.IsNull(launch.Files);
+    }
+
+    [TestMethod]
     [DataRow("--dvd-video", 0)]
     [DataRow("--dvd-audio", 1)]
     public void DiscLaunchBypassesOrdinaryFolderCollection(string argument, int format)

@@ -95,17 +95,21 @@ internal sealed class Picker : FileDialogCustomizeHook, IDisposable
             ? _disc.Titles[_title.SelectedIndex - 1].Index : null;
         Accepted = new(location, (DiscFormat)_type!.SelectedIndex, title);
     }
-    internal static string Describe(DiscException error, DiscFormat format) => error.Failure switch
+    internal static string Describe(DiscException error, DiscFormat? format) => error.Failure switch
     {
         // Translators: Open DVD error when DVD-Audio was selected but the disc has no playable audio titles.
         Failure.NoAudioTitles => Tr("No audio titles were found on the selected DVD-Audio disc."),
         // Translators: Open DVD error when the DVD-Video structure contains no playable programs.
         Failure.NoVideoTitles => Tr("No video titles were found on the selected DVD-Video disc."),
-        Failure.InvalidDisc => format == DiscFormat.Audio
+        Failure.InvalidDisc => format switch
+        {
             // Translators: Open DVD error when the chosen location has no valid DVD-Audio structure.
-            ? Tr("The selected location does not contain a valid DVD-Audio disc.")
+            DiscFormat.Audio => Tr("The selected location does not contain a valid DVD-Audio disc."),
             // Translators: Open DVD error when the chosen location has no valid DVD-Video structure.
-            : Tr("The selected location does not contain a valid DVD-Video disc."),
+            DiscFormat.Video => Tr("The selected location does not contain a valid DVD-Video disc."),
+            // Translators: Explorer DVD-open error when the chosen location has neither a valid DVD-Audio nor DVD-Video structure.
+            _ => Tr("The selected location does not contain a valid DVD disc."),
+        },
         // Translators: Open DVD error when the disc cannot be read or its playback backend fails.
         _ => Tr("Could not read the selected DVD disc. Check that it is accessible and supported by the playback libraries."),
     };

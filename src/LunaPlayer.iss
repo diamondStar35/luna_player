@@ -195,6 +195,11 @@ Root: HKCU; Subkey: "{#CapabilitiesKey}\AutoplayHandlers"; ValueType: string; Va
 #endsub
 #for {DiscIndex = 0; DiscIndex < DimOf(DiscKinds); DiscIndex++} EmitDisc
 
+; The DVD class is used when Explorer opens a disc directly, separately from disc-insertion events.
+Root: HKCU; Subkey: "Software\Classes\DVD\shell\play_with_luna"; ValueType: string; ValueName: ""; ValueData: "Play DVD with {#AppName}"; Flags: uninsdeletekey; Tasks: associate
+Root: HKCU; Subkey: "Software\Classes\DVD\shell\play_with_luna"; ValueType: string; ValueName: "Icon"; ValueData: """{app}\{#AppExeName}"",0"; Flags: uninsdeletekey; Tasks: associate
+Root: HKCU; Subkey: "Software\Classes\DVD\shell\play_with_luna\command"; ValueType: string; ValueName: ""; ValueData: """{app}\{#AppExeName}"" --dvd ""%1\."""; Flags: uninsdeletekey; Tasks: associate
+
 [Code]
 function IsUpdateInstall: Boolean;
 var

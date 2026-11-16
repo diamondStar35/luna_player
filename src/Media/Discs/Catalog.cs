@@ -9,7 +9,18 @@ namespace LunaPlayer.Media.Discs;
 internal static class Catalog
 {
     internal static DiscInfo Read(Request request, CancellationToken cancellationToken)
-        => Read(request.Location, request.Format, cancellationToken);
+        => Read(request.Location, request.Format ?? Detect(request.Location), cancellationToken);
+
+    /// <summary>Prefer genuine DVD-Audio content over a disc's optional DVD-Video compatibility area.</summary>
+    internal static DiscFormat Detect(string path)
+    {
+        try { Resolve(path, DiscFormat.Audio); return DiscFormat.Audio; }
+        catch (DiscException error) when (error.Failure is Failure.InvalidDisc or Failure.NoAudioTitles)
+        {
+            Resolve(path, DiscFormat.Video);
+            return DiscFormat.Video;
+        }
+    }
 
     internal static DiscInfo Read(string path, DiscFormat format, CancellationToken cancellationToken)
     {

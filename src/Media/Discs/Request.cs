@@ -2,8 +2,9 @@ using LunaPlayer.Configuration;
 
 namespace LunaPlayer.Media.Discs;
 
-internal sealed record Request(DiscFormat Format, string Location)
+internal sealed record Request(DiscFormat? Format, string Location)
 {
+    internal const string Argument = "--dvd";
     internal const string VideoArgument = "--dvd-video";
     internal const string AudioArgument = "--dvd-audio";
 
@@ -15,8 +16,9 @@ internal sealed record Request(DiscFormat Format, string Location)
         {
             var value = arguments[index];
             var audio = value.Equals(AudioArgument, StringComparison.OrdinalIgnoreCase);
-            if (!audio && !value.Equals(VideoArgument, StringComparison.OrdinalIgnoreCase)) continue;
-            var format = audio ? DiscFormat.Audio : DiscFormat.Video;
+            var automatic = value.Equals(Argument, StringComparison.OrdinalIgnoreCase);
+            if (!automatic && !audio && !value.Equals(VideoArgument, StringComparison.OrdinalIgnoreCase)) continue;
+            DiscFormat? format = automatic ? null : audio ? DiscFormat.Audio : DiscFormat.Video;
             if (index != 0 || arguments.Count != 2) return new(format, string.Empty);
             var location = arguments[1].Trim().Trim('"');
             if (location.Length == 0 || location.StartsWith("--", StringComparison.Ordinal))

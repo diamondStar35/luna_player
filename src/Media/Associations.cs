@@ -39,6 +39,9 @@ internal sealed class FileAssociations
                 Tr("Play DVD-Video"),
                 // Translators: Windows AutoPlay action offered for an inserted DVD-Audio disc; Windows appends the player name.
                 Tr("Play DVD-Audio"));
+            Discs.Association.Register(Registry.CurrentUser, executable,
+                // Translators: Explorer DVD context-menu action. {player} is the application name; the DVD's audio or video format is detected automatically.
+                TrFormat("Play DVD with {player}", AppInfo.Name));
             NotifyShell();
             error = string.Empty;
             return true;
@@ -64,6 +67,7 @@ internal sealed class FileAssociations
             var alias = Path.GetFileName(Environment.ProcessPath ?? $"{AppInfo.Identifier}.exe");
             foreach (var extension in Extensions) RemoveExtension(extension);
             Discs.AutoPlay.Unregister(Registry.CurrentUser);
+            Discs.Association.Unregister(Registry.CurrentUser);
             Registry.CurrentUser.DeleteSubKeyTree($@"{Classes}\{ProgId}", throwOnMissingSubKey: false);
             Registry.CurrentUser.DeleteSubKeyTree($@"{Classes}\Applications\{alias}", throwOnMissingSubKey: false);
             Registry.CurrentUser.DeleteSubKeyTree(Capabilities, throwOnMissingSubKey: false);

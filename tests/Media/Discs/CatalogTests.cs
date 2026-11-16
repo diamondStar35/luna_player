@@ -9,6 +9,34 @@ namespace LunaPlayer.Tests.Media.Discs;
 public sealed class CatalogTests
 {
     [TestMethod]
+    public void AutomaticOpeningPrefersAudioOnADualFormatDisc()
+    {
+        using var workspace = new Workspace();
+        workspace.File("VIDEO_TS/VIDEO_TS.IFO", "DVDVIDEO-VMG");
+        workspace.File("AUDIO_TS/AUDIO_TS.IFO", "DVDAUDIO-AMG");
+        Assert.AreEqual(DiscFormat.Audio, Catalog.Detect(workspace.Root));
+        Assert.AreEqual(DiscFormat.Audio, Catalog.Detect(Path.Combine(workspace.Root, "AUDIO_TS")));
+    }
+
+    [TestMethod]
+    public void AutomaticOpeningUsesVideoWhenNoValidAudioAreaExists()
+    {
+        using var workspace = new Workspace();
+        workspace.File("VIDEO_TS/VIDEO_TS.IFO", "DVDVIDEO-VMG");
+        Directory.CreateDirectory(Path.Combine(workspace.Root, "AUDIO_TS"));
+        Assert.AreEqual(DiscFormat.Video, Catalog.Detect(workspace.Root));
+        workspace.File("AUDIO_TS/AUDIO_TS.IFO", "invalid header");
+        Assert.AreEqual(DiscFormat.Video, Catalog.Detect(workspace.Root));
+    }
+
+    [TestMethod]
+    public void AutomaticOpeningRejectsAnOrdinaryFolder()
+    {
+        using var workspace = new Workspace();
+        Assert.AreEqual(Failure.InvalidDisc, Assert.Throws<DiscException>(() => Catalog.Detect(workspace.Root)).Failure);
+    }
+
+    [TestMethod]
     [DataRow(0, "VIDEO_TS", "DVDVIDEO-VMG")]
     [DataRow(1, "AUDIO_TS", "DVDAUDIO-AMG")]
     public void ResolvesDiscRootAndItsContentDirectory(int format, string zone, string header)

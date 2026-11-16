@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-11-16 20:14+0200\n"
+"POT-Creation-Date: 2026-11-16 20:18+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -3425,7 +3425,7 @@ msgstr ""
 
 #. Translators: Shown when the user asks the player to open its file types but the system is not Windows.
 #. Translators: Shown when removing file associations is attempted on a non-Windows system.
-#: Media/Associations.cs:25 Media/Associations.cs:59
+#: Media/Associations.cs:25 Media/Associations.cs:62
 msgid "File associations are available only on Windows."
 msgstr ""
 
@@ -3437,6 +3437,11 @@ msgstr ""
 #. Translators: Windows AutoPlay action offered for an inserted DVD-Audio disc; Windows appends the player name.
 #: Media/Associations.cs:41
 msgid "Play DVD-Audio"
+msgstr ""
+
+#. Translators: Explorer DVD context-menu action. {player} is the application name; the DVD's audio or video format is detected automatically.
+#: Media/Associations.cs:44
+msgid "Play DVD with {player}"
 msgstr ""
 
 #. Translators: Shown when media conversion fails without a more specific reason.
@@ -4736,17 +4741,22 @@ msgid "No video titles were found on the selected DVD-Video disc."
 msgstr ""
 
 #. Translators: Open DVD error when the chosen location has no valid DVD-Audio structure.
-#: UI/Discs/Picker.cs:106
+#: UI/Discs/Picker.cs:107
 msgid "The selected location does not contain a valid DVD-Audio disc."
 msgstr ""
 
 #. Translators: Open DVD error when the chosen location has no valid DVD-Video structure.
-#: UI/Discs/Picker.cs:108
+#: UI/Discs/Picker.cs:109
 msgid "The selected location does not contain a valid DVD-Video disc."
 msgstr ""
 
+#. Translators: Explorer DVD-open error when the chosen location has neither a valid DVD-Audio nor DVD-Video structure.
+#: UI/Discs/Picker.cs:111
+msgid "The selected location does not contain a valid DVD disc."
+msgstr ""
+
 #. Translators: Open DVD error when the disc cannot be read or its playback backend fails.
-#: UI/Discs/Picker.cs:110
+#: UI/Discs/Picker.cs:114
 msgid ""
 "Could not read the selected DVD disc. Check that it is accessible and "
 "supported by the playback libraries."
