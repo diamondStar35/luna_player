@@ -161,7 +161,10 @@ public sealed partial class CrossfadeTests
         if (paused) sessions.Pause();
         ready.SetResult();
 
-        await Until(dispatcher, () => !engine.IsLoading && player.CurrentSource == sessions.CurrentLink);
+        // Decoder readiness precedes the queued resume/fade. Pause state is part of the
+        // asynchronous navigation result and must settle before checking that result.
+        await Until(dispatcher, () => !engine.IsLoading && player.CurrentSource == sessions.CurrentLink
+            && player.IsPaused == paused);
         Assert.AreSame(tracks[2], sessions.CurrentTrack);
         Assert.AreEqual(2, sessions.CurrentIndex);
         Assert.AreEqual(paused, player.IsPaused);
