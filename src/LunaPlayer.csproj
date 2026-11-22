@@ -74,6 +74,7 @@
     <Compile Include="Radio\**\*.cs" />
     <Compile Include="Recording\**\*.cs" />
     <Compile Include="Spotify\**\*.cs" />
+    <Compile Include="Subsonic\**\*.cs" />
     <Compile Include="Update\**\*.cs" />
     <Compile Include="UI\**\*.cs" />
     <Compile Include="YouTube\**\*.cs" />
