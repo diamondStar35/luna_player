@@ -17,7 +17,8 @@ internal sealed class OpenedFilesDialog : IDisposable
 
     /// <param name="count">How many files are loaded.</param>
     /// <param name="nameAt">The name to show for one row, asked for only as the row is drawn.</param>
-    internal OpenedFilesDialog(Window parent, int count, Func<int, string> nameAt, int selectedIndex)
+    internal OpenedFilesDialog(Window parent, int count, Func<int, string> nameAt, int selectedIndex,
+        Func<int, OpenedFileMenu?>? context = null)
     {
         _nameAt = nameAt;
         _count = count;
@@ -53,6 +54,25 @@ internal sealed class OpenedFilesDialog : IDisposable
         information.Click += (_, _) => End(OpenedFilesAction.Information);
         jump.Click += (_, _) => End(OpenedFilesAction.Jump);
         _list.ItemActivated += (_, _) => End(OpenedFilesAction.Jump);
+        if (context is not null)
+            _list.Bind(WxEvents.ContextMenu, (_, _) =>
+            {
+                var selected = _list.SelectedIndex;
+                if (selected < 0 || selected >= _filtered.Count || context(_filtered[(int)selected]) is not { } actions) return;
+                using var menu = new Menu();
+                var commands = new Dictionary<int, OpenedFilesAction>();
+                void Add(OpenedFilesAction action, string label)
+                {
+                    var id = IdManager.NewId(); menu.Append(id, label); commands[id] = action;
+                }
+                Add(OpenedFilesAction.Rate, actions.Rating);
+                if (actions.IsFavorite != true) Add(OpenedFilesAction.Favorite, actions.Favorite);
+                if (actions.IsFavorite != false) Add(OpenedFilesAction.Unfavorite, actions.Unfavorite);
+                void Selected(object? sender, CommandEventArgs args) { if (commands.TryGetValue(args.Id, out var action)) End(action); }
+                _dialog.MenuCommand += Selected;
+                try { _list.PopupMenu(menu); }
+                finally { _dialog.MenuCommand -= Selected; }
+            });
         _search.TextChanged += (_, _) => Rebuild();
 
         var buttons = new BoxSizer(Orientation.Horizontal);

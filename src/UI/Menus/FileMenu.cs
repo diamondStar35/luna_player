@@ -13,7 +13,7 @@ internal static partial class Builder
         Menu RecentFoldersMenu,
         Menu RecentPlaylistsMenu,
         IReadOnlyList<MenuItem> LocalFileItems,
-        IReadOnlyList<MenuItem> MediaFileItems);
+        IReadOnlyList<MenuItem> MediaFileItems, IReadOnlyList<MenuItem> DownloadItems);
 
     private static FileMenuParts BuildFileMenu(
         IReadOnlyDictionary<ActionId, int> commandIds,
@@ -70,6 +70,13 @@ internal static partial class Builder
         Add(fileMenu, localFileItems, commandIds, shortcuts, ActionId.OpenFileProperties, Tr("File properties..."));
         // Translators: File menu item that lists the files currently loaded in the player.
         Add(fileMenu, mediaFileItems, commandIds, shortcuts, ActionId.OpenedFiles, Tr("Opened Files..."));
+        var downloadItems = new List<MenuItem>();
+        // Translators: File menu command opening download options for the current online media file.
+        Add(fileMenu, downloadItems, commandIds, shortcuts, ActionId.VideoDownload, Tr("Download..."));
+        // Translators: File menu command saving the current online media file using its provider's saved download settings.
+        Add(fileMenu, downloadItems, commandIds, shortcuts, ActionId.VideoDirectDownload, Tr("Direct download"));
+        // Translators: File menu command adding the current online media file to the download queue.
+        Add(fileMenu, downloadItems, commandIds, shortcuts, ActionId.AddToDownloadQueue, Tr("Add to download queue"));
         // Translators: File menu item that removes the current file from the player.
         Add(fileMenu, mediaFileItems, commandIds, shortcuts, ActionId.CloseFile, Tr("Close File"));
         // Translators: File menu item that removes every loaded file from the player.
@@ -79,7 +86,7 @@ internal static partial class Builder
         fileMenu.AppendSeparator();
         // Translators: File menu item that quits the player.
         fileMenu.Append(commandIds[ActionId.Exit], Tr("Exit"));
-        return new FileMenuParts(fileMenu, recentCommands, recentFilesMenu, recentFoldersMenu, recentPlaylistsMenu, localFileItems, mediaFileItems);
+        return new FileMenuParts(fileMenu, recentCommands, recentFilesMenu, recentFoldersMenu, recentPlaylistsMenu, localFileItems, mediaFileItems, downloadItems);
     }
 
     internal static void FillRecentsMenus(

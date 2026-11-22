@@ -62,9 +62,6 @@ internal sealed partial class YouTube
         _downloadQueue = downloadQueue;
         router.Register(ActionId.OpenYouTubeLink, OpenLink);
         router.Register(ActionId.SearchYouTube, Search);
-        router.Register(ActionId.VideoDirectDownload, DirectDownload);
-        router.Register(ActionId.VideoDownload, Download);
-        router.Register(ActionId.AddToDownloadQueue, AddCurrentToDownloadQueue);
         router.Register(ActionId.OpenDownloadQueue, OpenDownloadQueue);
         router.Register(ActionId.VideoDescription, ShowDescription);
         router.Register(ActionId.VideoCopyLink, CopyLink);

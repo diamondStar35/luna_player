@@ -14,12 +14,15 @@ internal sealed class ShortcutSettings
     /// because the same action can hold a local and a global binding at once.</summary>
     [JsonConverter(typeof(ShortcutOverrides))]
     public Dictionary<ActionId, Shortcut> Global { get; set; } = [];
+    [JsonConverter(typeof(ShortcutOverrides))]
+    public Dictionary<ActionId, Shortcut> MusicServers { get; set; } = [];
     internal ShortcutSettings Copy() => new()
     {
         DisableSecondary = DisableSecondary,
         Primary = new(Primary),
         Secondary = new(Secondary),
         Global = new(Global),
+        MusicServers = new(MusicServers),
     };
     internal void Apply(ShortcutSettings source)
     {
@@ -27,5 +30,6 @@ internal sealed class ShortcutSettings
         Primary = new(source.Primary);
         Secondary = new(source.Secondary);
         Global = new(source.Global);
+        MusicServers = new(source.MusicServers);
     }
 }

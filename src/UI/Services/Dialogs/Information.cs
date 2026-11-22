@@ -16,5 +16,7 @@ internal sealed class InformationDialogs(DialogContext context)
     public bool OfferAppUpdate(LunaPlayer.UI.Updates.AppUpdatePrompt prompt) { using var dialog = new LunaPlayer.UI.Updates.UpdateDialog(_context.Parent, prompt); return dialog.Show(); }
     public LunaPlayer.UI.Bookmarks.BookmarkManagementRequest? ManageBookmarks(IReadOnlyList<LunaPlayer.UI.Bookmarks.BookmarkListItem> bookmarks) { using var dialog = new LunaPlayer.UI.Bookmarks.ManagerDialog(_context.Parent, bookmarks); return dialog.Show(); }
     public LunaPlayer.UI.Playlists.OpenedFilesRequest? ChooseOpenedFile(int count, Func<int, string> nameAt, int selectedIndex) { using var dialog = new LunaPlayer.UI.Playlists.OpenedFilesDialog(_context.Parent, count, nameAt, selectedIndex); return dialog.Show(); }
+    public LunaPlayer.UI.Playlists.OpenedFilesRequest? ChooseOpenedFile(int count, Func<int, string> nameAt, int selectedIndex, Func<int, LunaPlayer.UI.Playlists.OpenedFileMenu?> context)
+    { using var dialog = new LunaPlayer.UI.Playlists.OpenedFilesDialog(_context.Parent, count, nameAt, selectedIndex, context); return dialog.Show(); }
     public void ShowTextInfo(string title, string text) { using var dialog = new LunaPlayer.UI.Help.TextDialog(_context.Parent, title, text); dialog.Show(); }
 }

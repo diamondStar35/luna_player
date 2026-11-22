@@ -14,15 +14,17 @@ internal sealed class ViewStatePresenter
     private readonly ISpeechOutput _speech;
     private readonly LunaPlayer.Spotify.Playback.Sessions _spotify;
     private readonly PlaybackSessions _sessions;
+    private readonly LunaPlayer.Subsonic.Servers.Metadata _serverMetadata;
 
     internal ViewStatePresenter(IMainView view, Player player, ISpeechOutput speech, PlaybackSessions sessions,
-        LunaPlayer.Spotify.Playback.Sessions spotify)
+        LunaPlayer.Spotify.Playback.Sessions spotify, LunaPlayer.Subsonic.Servers.Metadata serverMetadata)
     {
         _view = view;
         _player = player;
         _speech = speech;
         _spotify = spotify;
         _sessions = sessions;
+        _serverMetadata = serverMetadata;
     }
 
     /// <summary>The starting state, before anything is open.</summary>
@@ -32,6 +34,7 @@ internal sealed class ViewStatePresenter
         _view.SetPlaying(false);
         _view.SetEditState(false, false);
         _view.SetBookmarkState(false);
+        _view.SetMusicServerState(false); _view.SetDownloadState(false);
         _view.SetMarkState(false, false);
         _view.SetMarkedActionsEnabled(false);
         _view.SetVideoOptionsEnabled(false);
@@ -56,6 +59,11 @@ internal sealed class ViewStatePresenter
         _view.SetEditState(local, loaded && !_player.IsDisc);
         _view.SetDiscState(_player.IsDisc, _player.CanNavigateDisc(-1), _player.CanNavigateDisc(1));
         _view.SetBookmarkState(local);
+        var server = LunaPlayer.Subsonic.Playback.Reference.Parse(_player.CurrentPath);
+        var song = server is null ? null : _serverMetadata.Get(server.ServerId, server.Id);
+        _view.SetMusicServerState(_player.IsLoaded && server is { Kind: LunaPlayer.Subsonic.Playback.MediaKind.Song },
+            song is null ? null : !string.IsNullOrEmpty(song.Starred));
+        _view.SetDownloadState(LunaPlayer.Downloads.Source.Resolve(_player.CurrentPath, _player.CurrentSource, _player.InRadioSession) != LunaPlayer.Downloads.SourceKind.None);
         _view.SetMarkState(_player.IsCurrentMarked, _player.AreAllMarked);
         _view.SetMarkedActionsEnabled(loaded && !_player.IsDisc && _player.MarkedCount > 0);
         // The source rather than the path: a resolved video plays from a signed stream address that is

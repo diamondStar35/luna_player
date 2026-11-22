@@ -147,6 +147,7 @@ internal sealed partial class Features : IDisposable
         youTubeActions = new Commands.YouTube.YouTube(
             router, _view, player, _settings, speech, clipboard, youTube, sessions, components, _dispatcher,
             downloadQueue);
+        _ = new Commands.Files.Downloads(router, _player, _view, _speech, downloadQueue, youTubeActions);
         _ = new Commands.YouTube.Favorites(router, _view, player, speech, favorites, sessions);
         _ = new Commands.YouTube.Playlist(router, _view, player, _settings, speech, playbackSessions);
         _ = new Commands.App.Preferences(router, _view, _settings, _settingsStore,
@@ -165,6 +166,7 @@ internal sealed partial class Features : IDisposable
         var sleepTimer = new SleepTimer(_dispatcher, player, speech, _spotifyPlayback, CancelPendingSpotifyStart);
         _sleepTimer = sleepTimer;
         _ = new Sleep(router, _view, player, sleepTimer, _settings, _settingsStore);
+        BindMusicServers(router, downloadQueue);
         router.EnsureComplete(ActionRegistry.All);
         var controller = new ApplicationController(
             _view,
@@ -180,7 +182,8 @@ internal sealed partial class Features : IDisposable
             sleepTimer,
             speech,
             mediaControls,
-            _spotifyPlayback);
+            _spotifyPlayback,
+            _musicConnections!.Metadata);
         _controller = controller;
         // After the controller, which sets the rest of the audio state up from the same settings.
         equalizer.Restore();
@@ -266,7 +269,11 @@ internal sealed partial class Features : IDisposable
         _recorder?.Dispose();
         _sessions?.Dispose();
         _resolveCache?.Dispose();
+        _musicSynchronization?.Dispose();
+        _musicMetadata?.Dispose();
+        _player.MediaResolutionFailed -= OnMusicResolutionFailed;
         _downloadQueue?.Dispose();
+        _musicConnections?.Dispose();
         _appUpdates?.Dispose();
         _player.Dispose();
         // Disposing speech sends a global stop command after focus has already moved to another app.

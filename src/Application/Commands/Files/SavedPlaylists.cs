@@ -99,6 +99,15 @@ internal sealed class SavedPlaylists
         }
         else
         {
+            var privateCount = document.Entries.Count(x => x.Kind == EntryKind.ServerMedia);
+            if (privateCount > 0)
+            {
+                // Translators: Warning before M3U export omits private server tracks. {count} is the number omitted.
+                if (!_view.Dialogs.Confirm(TrFormat("This export will omit {count} music-server items. Continue?", privateCount))) return;
+                document = document.Copy();
+                document.Entries.RemoveAll(x => x.Kind == EntryKind.ServerMedia);
+                if (document.Entries.Count == 0) return;
+            }
             var resolved = DocumentResolver.Resolve(document.Entries);
             Report(resolved);
             DocumentWriter.Export(document, path, resolved);

@@ -18,6 +18,10 @@ internal sealed class MenuController
     private readonly List<MenuItem> _localFileItems = [];
     private readonly List<MenuItem> _markedItems = [];
     private readonly List<MenuItem> _videoItems = [];
+    private readonly IReadOnlyList<MenuItem> _downloadItems;
+    private readonly IReadOnlyList<MenuItem> _serverSongItems;
+    private readonly MenuItem? _addBookmarkItem;
+    private bool _localBookmarks;
     private readonly List<MenuItem> _audioTrackItems = [];
     private readonly List<MenuItem> _localEditItems = [];
     private readonly List<MenuItem> _bookmarkItems = [];
@@ -79,6 +83,7 @@ internal sealed class MenuController
         _localFileItems.AddRange(menu.LocalFileItems);
         _markedItems.AddRange(menu.MarkedItems);
         _videoItems.AddRange(menu.VideoItems);
+        _downloadItems = menu.DownloadItems; _serverSongItems = menu.ServerSongItems; _addBookmarkItem = menu.AddBookmarkItem;
         _audioTrackItems.AddRange(menu.AudioTrackItems);
         _localEditItems.AddRange(menu.LocalEditItems);
         _bookmarkItems.AddRange(menu.BookmarkItems);
@@ -304,9 +309,22 @@ internal sealed class MenuController
 
     internal void SetBookmarkState(bool enabled)
     {
+        _localBookmarks = enabled;
         foreach (var item in _bookmarkItems)
             item.Enabled = enabled;
         _menuBar.EnableTop(_bookmarksMenuIndex, enabled);
+    }
+
+    internal void SetDownloadState(bool enabled)
+    { foreach (var item in _downloadItems) item.Enabled = enabled; }
+
+    internal void SetMusicServerState(bool enabled, bool? favorite = null)
+    {
+        foreach (var item in _serverSongItems) item.Enabled = enabled;
+        _menuBar.FindItem(_commandIds[ActionId.CurrentServerFavorite])!.Enabled = enabled && favorite == false;
+        _menuBar.FindItem(_commandIds[ActionId.CurrentServerUnfavorite])!.Enabled = enabled && favorite == true;
+        if (_addBookmarkItem is not null) _addBookmarkItem.Enabled = _localBookmarks || enabled;
+        _menuBar.EnableTop(_bookmarksMenuIndex, _localBookmarks || enabled);
     }
 
     internal void SetMarkState(bool currentMarked, bool allMarked)

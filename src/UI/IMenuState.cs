@@ -57,6 +57,8 @@ internal interface IMenuState
 
     void SetEditState(bool hasLocalFile, bool hasMedia);
     void SetBookmarkState(bool enabled);
+    void SetMusicServerState(bool enabled, bool? favorite = null) { }
+    void SetDownloadState(bool enabled) { }
     void SetMarkState(bool currentMarked, bool allMarked);
     void SetMarkedActionsEnabled(bool enabled);
     void SetVideoOptionsEnabled(bool enabled);

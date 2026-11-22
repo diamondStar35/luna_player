@@ -55,7 +55,8 @@ internal sealed partial class ApplicationController : IDisposable
         SleepTimer sleepTimer,
         ISpeechOutput speech,
         SystemMediaControls mediaControls,
-        LunaPlayer.Spotify.Playback.Sessions spotify)
+        LunaPlayer.Spotify.Playback.Sessions spotify,
+        LunaPlayer.Subsonic.Servers.Metadata serverMetadata)
     {
         _view = view;
         _player = player;
@@ -73,7 +74,7 @@ internal sealed partial class ApplicationController : IDisposable
         _selectionPath = player.CurrentPath;
         _selectionItemId = player.CurrentItemId;
         _selectionPlaylistIndex = player.CurrentIndex;
-        _viewState = new ViewStatePresenter(view, player, speech, sessions, spotify);
+        _viewState = new ViewStatePresenter(view, player, speech, sessions, spotify, serverMetadata);
         _title = new WindowTitlePresenter(view, player, settings, _tags, spotify);
         _overlay = new MediaOverlayPresenter(
             player,

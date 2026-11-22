@@ -1,3 +1,4 @@
+using LunaPlayer.Playback;
 using LunaPlayer.Actions;
 using LunaPlayer.Application;
 using LunaPlayer.Configuration;
@@ -6,7 +7,7 @@ using LunaPlayer.Equalizer;
 using LunaPlayer.Iptv;
 using LunaPlayer.UI.Equalizer;
 using LunaPlayer.YouTube;
-using Downloads = LunaPlayer.YouTube.Download;
+using SharedDownloads = LunaPlayer.Downloads;
 
 namespace LunaPlayer.UI;
 
@@ -14,6 +15,17 @@ namespace LunaPlayer.UI;
 /// <see cref="DialogService"/>, which is the only part of the UI coupled to the concrete dialog classes.</summary>
 internal interface IDialogService
 {
+    void ShowMusicServers(LunaPlayer.Subsonic.Servers.Connections connections, Player player, LunaPlayer.Downloads.DownloadQueue downloads,
+        Action showQueue, Action<string> speak, ShortcutSettings shortcuts) { }
+    string? ChooseDownloadDestination(string fileName) => null;
+    void RefreshMusicServers() { }
+    void MusicServerContentChanged(Guid server) { }
+    void MusicServerStatus(Guid server, Exception? error) { }
+    void ConfigureMusicServerItems(LunaPlayer.Subsonic.Servers.Connections connections, Player player,
+        LunaPlayer.Downloads.DownloadQueue downloads, Action<string> speak) { }
+    void ActOnServerSong(string path, LunaPlayer.UI.Subsonic.SongAction action, double? position = null) { }
+    void EditServerItem(string path, LunaPlayer.UI.Playlists.OpenedFilesAction action) { }
+
     /// <summary>Opens an editor without blocking other windows. A failed save keeps the draft open;
     /// saved runs after the editor closes following a successful save.</summary>
     void EditPlaylist(LunaPlayer.Playlist.Document document, Action<string> speak,
@@ -89,6 +101,8 @@ internal interface IDialogService
     /// over up front, so a playlist of any size opens at once.</summary>
     /// <param name="nameAt">The name to show for one row, called only as that row is drawn.</param>
     LunaPlayer.UI.Playlists.OpenedFilesRequest? ChooseOpenedFile(int count, Func<int, string> nameAt, int selectedIndex);
+    LunaPlayer.UI.Playlists.OpenedFilesRequest? ChooseOpenedFile(int count, Func<int, string> nameAt, int selectedIndex, IReadOnlyList<string> paths)
+        => ChooseOpenedFile(count, nameAt, selectedIndex);
 
     /// <param name="proportional">Whether the job can say how far through it is. A job that cannot gets a
     /// window with no bar on it, because a bar that never moves is worse than none.</param>
@@ -137,17 +151,17 @@ internal interface IDialogService
     bool OfferYouTubeComponents();
 
     /// <summary>Opens the download dialog prefilled from <paramref name="defaults"/>; null if cancelled.</summary>
-    Downloads.OptionsResult? ShowDownloadOptions(Downloads.Request defaults);
+    LunaPlayer.YouTube.Download.OptionsResult? ShowDownloadOptions(LunaPlayer.YouTube.Download.Request defaults);
 
     /// <summary>Opens the download queue until the user closes it. Downloads continue after it closes.</summary>
     void ShowDownloadQueue(
-        LunaPlayer.Downloads.DownloadQueue queue,
+        SharedDownloads.DownloadQueue queue,
         Func<IReadOnlyList<string>, string?> addLinks,
         Action start);
 
     /// <summary>Shows a modeless progress window for a download already owned by the queue.</summary>
     void ShowDownloadProgress(
-        LunaPlayer.Downloads.DownloadQueue queue,
+        SharedDownloads.DownloadQueue queue,
         Guid itemId);
 
     /// <summary>Shows the modeless recording window. Closing it leaves an active recording running.</summary>

@@ -43,7 +43,12 @@ internal sealed record MainMenuComponents(
     MenuItem StartRecordingItem,
     MenuItem PauseRecordingItem,
     MenuItem StopRecordingItem,
-    ChapterMenuComponents Chapters);
+    ChapterMenuComponents Chapters)
+{
+    internal IReadOnlyList<MenuItem> DownloadItems { get; init; } = [];
+    internal IReadOnlyList<MenuItem> ServerSongItems { get; init; } = [];
+    internal MenuItem? AddBookmarkItem { get; init; }
+}
 /// <summary>Assembles the menu bar from one builder per top-level menu (see Menus/). Holds the shared Build
 /// orchestrator and the Add/Label helpers; each menu lives in its own file.</summary>
 internal static partial class Builder
@@ -91,7 +96,7 @@ internal static partial class Builder
         menuBar.Append(recording.Menu, Tr("Recording"));
         // Safe after the indexed menus above: nothing counts the tools or help menus by position.
         // Translators: Name of the Tools menu in the menu bar, holding the media converter.
-        menuBar.Append(tools, Tr("Tools"));
+        menuBar.Append(tools.Menu, Tr("Tools"));
         // Translators: Name of the Help menu in the menu bar.
         menuBar.Append(help, Tr("Help"));
         return new MainMenuComponents(
@@ -103,7 +108,9 @@ internal static partial class Builder
             player.SubtitleRememberItem, file.RecentCommands, file.RecentFilesMenu, file.RecentFoldersMenu,
             file.RecentPlaylistsMenu, player.EqualizerCommands, player.EqualizerItems, player.EqualizerMenu,
             edit.MarkCurrentItem, edit.MarkAllItem, player.ShuffleItem, player.RepeatItem, player.SilenceItem,
-            player.SofaItem, player.SofaAngleItems, player.FullScreenItem, recording.StartItem, recording.PauseItem, recording.StopItem, player.Chapters);
+            player.SofaItem, player.SofaAngleItems, player.FullScreenItem, recording.StartItem, recording.PauseItem, recording.StopItem, player.Chapters)
+        { DownloadItems = file.DownloadItems, ServerSongItems = tools.ServerSongItems,
+            AddBookmarkItem = bookmarks.Items.First(item => item.Id == commandIds[ActionId.AddBookmark]) };
     }
 
     /// <summary>Appends an action item (labelled with its shortcut) and records it for group enable/disable.</summary>

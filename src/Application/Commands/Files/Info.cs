@@ -90,12 +90,17 @@ internal sealed partial class Files
         var files = _player.Items.ToArray();
         var request = _view.Dialogs.ChooseOpenedFile(files.Length,
             index => index >= 0 && index < files.Length ? _player.DisplayName(files[index]) : string.Empty,
-            selected);
+            selected, files.Select(item => item.Path).ToArray());
         if (request is null)
             return;
         if (request.Value.Action == LunaPlayer.UI.Playlists.OpenedFilesAction.Jump)
         {
             _player.GoToItem(files[request.Value.SelectedIndex]);
+            return;
+        }
+        if (request.Value.Action != LunaPlayer.UI.Playlists.OpenedFilesAction.Information)
+        {
+            _view.Dialogs.EditServerItem(files[request.Value.SelectedIndex].Path, request.Value.Action);
             return;
         }
         ShowPlaylistInformation(() => ShowOpenedFiles(request.Value.SelectedIndex));

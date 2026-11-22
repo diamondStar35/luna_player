@@ -8,14 +8,51 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-11-16 20:01+0200\n"
+"POT-Creation-Date: 2026-11-23 00:57+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=INTEGER; plural=EXPRESSION;\n"
+
+#. Translators: Tools > Music servers command for adding the currently playing server song to favorites.
+#. Translators: Radio station context-menu action saving a station.
+#. Translators: Radio station context-menu action saving the selected station locally.
+#. Translators: Add to favorites. Used in the music-server browser navigation and result list.
+#. Translators: Context menu item in the results list that saves the chosen video to the favourites.
+#: Actions/CurrentServerActions.cs:8 UI/Radio/Actions.cs:91
+#: UI/Radio/BrowserDialog.cs:154 UI/Subsonic/Text/Browsing.cs:100
+#: UI/YouTube/ResultsDialog.cs:399 UI/YouTube/ResultsDialog.cs:420
+msgid "Add to favorites"
+msgstr ""
+
+#. Translators: Tools > Music servers command for removing the currently playing server song from favorites.
+#. Translators: Radio station context-menu action removing a saved station.
+#. Translators: Remove from favorites. Used in the music-server browser navigation and result list.
+#. Translators: Context menu item in the results list that takes the chosen video back out of the favourites.
+#: Actions/CurrentServerActions.cs:10 UI/Radio/Actions.cs:89
+#: UI/Subsonic/Text/Browsing.cs:103 UI/YouTube/ResultsDialog.cs:418
+msgid "Remove from favorites"
+msgstr ""
+
+#. Translators: Tools > Music servers command opening the rating dialog for the current song.
+#. Translators: Context-menu action that opens the radio-button song-rating dialog in Music servers.
+#: Actions/CurrentServerActions.cs:12 UI/Subsonic/Text/Browsing.cs:106
+msgid "Set rating..."
+msgstr ""
+
+#. Translators: Tools > Music servers command showing the lyrics of the current song.
+#: Actions/CurrentServerActions.cs:14
+msgid "Song lyrics..."
+msgstr ""
+
+#. Translators: Tools > Music servers command showing the current song's server metadata and audio quality.
+#: Actions/CurrentServerActions.cs:16
+msgid "Song details..."
+msgstr ""
 
 #. Translators: Name of the command that starts or pauses playing, here in the list of shortcuts that work while another program is in front.
 #. Translators: Name of the command that starts playing, or pauses playing, in the shortcuts list.
@@ -49,13 +86,13 @@ msgstr ""
 
 #. Translators: Name of the command that plays the next file, here in the list of shortcuts that work while another program is in front.
 #. Translators: Name of the command that plays the file after the current one.
-#: Actions/GlobalActions.cs:24 Actions/MediaActions.cs:82
+#: Actions/GlobalActions.cs:24 Actions/MediaActions.cs:88
 msgid "Play the next file"
 msgstr ""
 
 #. Translators: Name of the command that plays the previous file, here in the list of shortcuts that work while another program is in front.
 #. Translators: Name of the command that plays the file before the current one.
-#: Actions/GlobalActions.cs:26 Actions/MediaActions.cs:80
+#: Actions/GlobalActions.cs:26 Actions/MediaActions.cs:86
 msgid "Play the previous file"
 msgstr ""
 
@@ -89,181 +126,266 @@ msgstr ""
 msgid "Browse IPTV channels"
 msgstr ""
 
-#. Translators: Name of the command that opens one or more media files, in the shortcuts list.
+#. Translators: Shortcut for saving the current online file with its provider's default options.
 #: Actions/MediaActions.cs:22
+msgid "Direct download of the current file"
+msgstr ""
+
+#. Translators: Shortcut for opening download options for the current online file.
+#: Actions/MediaActions.cs:24
+msgid "Download the current file..."
+msgstr ""
+
+#. Translators: Shortcut for adding the current online file to the download queue.
+#: Actions/MediaActions.cs:26
+msgid "Add the current file to the download queue"
+msgstr ""
+
+#. Translators: Name of the command that opens one or more media files, in the shortcuts list.
+#: Actions/MediaActions.cs:28
 msgid "Open files"
 msgstr ""
 
 #. Translators: Name of the command that plays a network stream from a link.
-#: Actions/MediaActions.cs:24
+#: Actions/MediaActions.cs:30
 msgid "Open a link to a network stream"
 msgstr ""
 
 #. Translators: Name of the command that opens every media file in a folder.
-#: Actions/MediaActions.cs:26
+#: Actions/MediaActions.cs:32
 msgid "Open all files in a folder"
 msgstr ""
 
 #. Translators: Shortcut-preferences action for opening a DVD-Video or DVD-Audio location in a native picker.
-#: Actions/MediaActions.cs:28
+#: Actions/MediaActions.cs:34
 msgid "Open a DVD disc"
 msgstr ""
 
 #. Translators: Name of the command that opens the folder holding the current file in Windows Explorer.
-#: Actions/MediaActions.cs:30
+#: Actions/MediaActions.cs:36
 msgid "Show the current file in Windows Explorer"
 msgstr ""
 
 #. Translators: Name of the command that shows the Windows properties window for the current file.
-#: Actions/MediaActions.cs:32
+#: Actions/MediaActions.cs:38
 msgid "File properties dialog"
 msgstr ""
 
 #. Translators: Name of the command that opens the window listing the files currently loaded in the player.
-#: Actions/MediaActions.cs:34
+#: Actions/MediaActions.cs:40
 msgid "Opened files dialog"
 msgstr ""
 
 #. Translators: Name of the command that removes the current file from the player.
-#: Actions/MediaActions.cs:36
+#: Actions/MediaActions.cs:42
 msgid "Close the current file"
 msgstr ""
 
 #. Translators: Name of the command that removes every loaded file from the player.
 #. Translators: File menu item that removes every loaded file from the player.
-#: Actions/MediaActions.cs:38 UI/Menus/FileMenu.cs:76
+#: Actions/MediaActions.cs:44 UI/Menus/FileMenu.cs:83
 msgid "Close all files"
 msgstr ""
 
 #. Translators: Name of the command that opens the player's settings window.
-#: Actions/MediaActions.cs:40
+#: Actions/MediaActions.cs:46
 msgid "Settings dialog"
 msgstr ""
 
 #. Translators: Name of the command that quits the player.
-#: Actions/MediaActions.cs:42
+#: Actions/MediaActions.cs:48
 msgid "Exit the player"
 msgstr ""
 
 #. Translators: Name of the command that speaks the details of the current file, such as its name and length.
-#: Actions/MediaActions.cs:44
+#: Actions/MediaActions.cs:50
 msgid "Speak information about the current file"
 msgstr ""
 
 #. Translators: Name of the command that speaks the title stored in the current media file.
-#: Actions/MediaActions.cs:46
+#: Actions/MediaActions.cs:52
 msgid "Speak current media title"
 msgstr ""
 
 #. Translators: Shortcut-preferences command that speaks the current file or live radio programme's artist.
-#: Actions/MediaActions.cs:48
+#: Actions/MediaActions.cs:54
 msgid "Speak current artist"
 msgstr ""
 
 #. Translators: Shortcut-preferences command that speaks available tags such as genre, album and station information for the current media.
-#: Actions/MediaActions.cs:50
+#: Actions/MediaActions.cs:56
 msgid "Speak current media metadata"
 msgstr ""
 
 #. Translators: Name of the command that gives the current file a new name on the disk.
-#: Actions/MediaActions.cs:52
+#: Actions/MediaActions.cs:58
 msgid "Rename the current file"
 msgstr ""
 
 #. Translators: Name of the command that deletes the current file from the disk.
-#: Actions/MediaActions.cs:54
+#: Actions/MediaActions.cs:60
 msgid "Delete the current file from the disk"
 msgstr ""
 
 #. Translators: Name of the command that copies the current file to the clipboard.
-#: Actions/MediaActions.cs:56
+#: Actions/MediaActions.cs:62
 msgid "Copy the current file to the clipboard"
 msgstr ""
 
 #. Translators: Name of the command that pastes files copied from Windows Explorer into the player.
-#: Actions/MediaActions.cs:58
+#: Actions/MediaActions.cs:64
 msgid "Paste files from the clipboard"
 msgstr ""
 
 #. Translators: Name of the command that marks or unmarks the current file. Marked files can then be copied, moved or deleted together.
-#: Actions/MediaActions.cs:60
+#: Actions/MediaActions.cs:66
 msgid "Mark or unmark the current file"
 msgstr ""
 
 #. Translators: Name of the command that marks or unmarks every loaded file at once.
-#: Actions/MediaActions.cs:62
+#: Actions/MediaActions.cs:68
 msgid "Mark or unmark all files"
 msgstr ""
 
 #. Translators: Name of the command that unmarks all marked files.
-#: Actions/MediaActions.cs:64
+#: Actions/MediaActions.cs:70
 msgid "Unmark all marked files"
 msgstr ""
 
 #. Translators: Name of the command that speaks how many files are marked.
-#: Actions/MediaActions.cs:66
+#: Actions/MediaActions.cs:72
 msgid "Speak the number of marked files"
 msgstr ""
 
 #. Translators: Name of the command that copies the marked files into a folder the user chooses.
-#: Actions/MediaActions.cs:68
+#: Actions/MediaActions.cs:74
 msgid "Copy the marked files to a folder"
 msgstr ""
 
 #. Translators: Name of the command that moves the marked files into a folder the user chooses.
-#: Actions/MediaActions.cs:70
+#: Actions/MediaActions.cs:76
 msgid "Move the marked files to a folder"
 msgstr ""
 
 #. Translators: Name of the command that copies the marked files to the clipboard.
-#: Actions/MediaActions.cs:72
+#: Actions/MediaActions.cs:78
 msgid "Copy the marked files to the clipboard"
 msgstr ""
 
 #. Translators: Name of the command that deletes the marked files from the disk.
-#: Actions/MediaActions.cs:74
+#: Actions/MediaActions.cs:80
 msgid "Delete the marked files from the disk"
 msgstr ""
 
 #. Translators: Name of the command that saves the position playing has reached as a bookmark.
-#: Actions/MediaActions.cs:76
+#: Actions/MediaActions.cs:82
 msgid "Add a bookmark at the current position"
 msgstr ""
 
 #. Translators: Name of the command that opens the window for renaming and deleting bookmarks.
-#: Actions/MediaActions.cs:78
+#: Actions/MediaActions.cs:84
 msgid "Manage bookmarks dialog"
 msgstr ""
 
 #. Translators: Name of the command that plays the first file in the list.
-#: Actions/MediaActions.cs:84
+#: Actions/MediaActions.cs:90
 msgid "Play the first file in the list"
 msgstr ""
 
 #. Translators: Name of the command that opens the window asking for a file number to jump to.
-#: Actions/MediaActions.cs:86
+#: Actions/MediaActions.cs:92
 msgid "Go to file dialog"
 msgstr ""
 
 #. Translators: Name of the command that plays the last file in the list.
-#: Actions/MediaActions.cs:88
+#: Actions/MediaActions.cs:94
 msgid "Play the last file in the list"
 msgstr ""
 
 #. Translators: Name of the command that turns playing the files in random order on or off.
-#: Actions/MediaActions.cs:90
+#: Actions/MediaActions.cs:96
 msgid "Turn shuffle on or off"
 msgstr ""
 
 #. Translators: Name of the command that turns repeating the current file on or off.
-#: Actions/MediaActions.cs:92
+#: Actions/MediaActions.cs:98
 msgid "Turn repeat file on or off"
 msgstr ""
 
 #. Translators: Name of the command that jumps to one of the ten numbered bookmark slots of the current file.
 #. {number} is the slot, 1 to 10.
-#: Actions/MediaActions.cs:96
+#: Actions/MediaActions.cs:102
 msgid "Jump to bookmark {number}"
+msgstr ""
+
+#. Translators: Browser shortcut that opens selected collections or plays individual songs.
+#: Actions/MusicServerActions.cs:9
+msgid "Open collections or play selected songs"
+msgstr ""
+
+#. Translators: Browser shortcut showing details for a song, or playing an album or artist collection.
+#: Actions/MusicServerActions.cs:11
+msgid "Song details or play selected collections"
+msgstr ""
+
+#. Translators: Browser shortcut opening the rating dialog for selected server songs.
+#: Actions/MusicServerActions.cs:13
+msgid "Set song rating"
+msgstr ""
+
+#. Translators: Browser shortcut showing lyrics for the selected song.
+#: Actions/MusicServerActions.cs:15
+msgid "Song lyrics"
+msgstr ""
+
+#. Translators: Browser shortcut bookmarking the current playback position on the selected server.
+#: Actions/MusicServerActions.cs:17
+msgid "Bookmark current position"
+msgstr ""
+
+#. Translators: Browser shortcut creating a saved playlist on the selected server.
+#: Actions/MusicServerActions.cs:19
+msgid "Create server playlist"
+msgstr ""
+
+#. Translators: Shortcut preference for appending selected server items to Luna's current playback list without starting playback.
+#: Actions/MusicServerActions.cs:21
+msgid "Add selected server items to current playlist"
+msgstr ""
+
+#. Translators: Shortcut preference for downloading selected music-server files with saved options.
+#: Actions/MusicServerActions.cs:23
+msgid "Direct download of selected server items"
+msgstr ""
+
+#. Translators: Shortcut preference for opening download options for selected server files.
+#: Actions/MusicServerActions.cs:25
+msgid "Download options for selected server items"
+msgstr ""
+
+#. Translators: Shortcut preference for adding selected server files to Luna's shared download queue.
+#: Actions/MusicServerActions.cs:27
+msgid "Queue selected server downloads"
+msgstr ""
+
+#. Translators: Shortcut preference for focusing the music-server search field.
+#: Actions/MusicServerActions.cs:29
+msgid "Focus server search"
+msgstr ""
+
+#. Translators: Shortcut preference for refreshing the current music-server browsing location.
+#: Actions/MusicServerActions.cs:31
+msgid "Refresh server items"
+msgstr ""
+
+#. Translators: Shortcut preference for going back in the music-server browser.
+#: Actions/MusicServerActions.cs:33
+msgid "Back in server browser"
+msgstr ""
+
+#. Translators: Shortcut preference for opening Luna's shared download queue from the server browser.
+#: Actions/MusicServerActions.cs:35
+msgid "Open download queue from server browser"
 msgstr ""
 
 #. Translators: One of the amounts a single seek can move by, offered in the seek step list and spoken when it is chosen.
@@ -726,8 +848,13 @@ msgstr ""
 msgid "Open the Spotify browser"
 msgstr ""
 
-#. Translators: Command opening the Spotify account and audio-quality page in Preferences. Keep Spotify unchanged.
+#. Translators: Command opening the Navidrome, Subsonic and OpenSubsonic music-server browser.
 #: Actions/Registry.cs:48
+msgid "Open music servers"
+msgstr ""
+
+#. Translators: Command opening the Spotify account and audio-quality page in Preferences. Keep Spotify unchanged.
+#: Actions/Registry.cs:50
 msgid "Spotify preferences"
 msgstr ""
 
@@ -763,58 +890,45 @@ msgid "Favorite videos dialog"
 msgstr ""
 
 #. Translators: Name of the command that opens the YouTube download queue window.
-#. Translators: Tools menu item that opens the YouTube download queue.
-#: Actions/YouTubeActions.cs:23 UI/Menus/ToolsMenu.cs:21
+#. Translators: Tools menu item that opens the download queue shared by online media providers.
+#. Translators: Download queue. Used in music-server original-file download options.
+#: Actions/YouTubeActions.cs:23 UI/Menus/ToolsMenu.cs:31
+#: UI/Subsonic/Text/Downloads.cs:28
 msgid "Download queue..."
 msgstr ""
 
-#. Translators: Name of the command that adds the active YouTube video to the download queue.
-#: Actions/YouTubeActions.cs:26
-msgid "Add the current video to the download queue"
-msgstr ""
-
-#. Translators: Name of the command that saves the video being played straight to disk with the saved
-#. download settings, without asking.
-#: Actions/YouTubeActions.cs:30
-msgid "Direct download of the current video"
-msgstr ""
-
-#. Translators: Name of the command that opens the download window to choose how the video being
-#. played is saved.
-#: Actions/YouTubeActions.cs:33
-msgid "Download the current video..."
-msgstr ""
-
 #. Translators: Name of the command that shows the text the uploader wrote under the video.
-#: Actions/YouTubeActions.cs:36
+#: Actions/YouTubeActions.cs:26
 msgid "Show the video description"
 msgstr ""
 
 #. Translators: Name of the command that copies the address of the video being played.
-#: Actions/YouTubeActions.cs:38
+#: Actions/YouTubeActions.cs:28
 msgid "Copy the video link"
 msgstr ""
 
 #. Translators: Name of the command that opens the video being played in the web browser.
-#: Actions/YouTubeActions.cs:41
+#: Actions/YouTubeActions.cs:31
 msgid "Open the current video in browser"
 msgstr ""
 
 #. Translators: Name of the command that opens the channel of the video being played in the web browser.
-#: Actions/YouTubeActions.cs:43
+#: Actions/YouTubeActions.cs:33
 msgid "Open the channel in browser"
 msgstr ""
 
 #. Translators: Name of the command that opens the channel of the video being played inside the player.
 #. Translators: Item in the Video options menu that opens the channel of the video being played inside the player.
-#: Actions/YouTubeActions.cs:45 UI/Menus/VideoMenu.cs:30
+#. Translators: Context menu item in the results list that opens the channel that published the video inside the player.
+#: Actions/YouTubeActions.cs:35 UI/Menus/VideoMenu.cs:24
+#: UI/YouTube/ResultsDialog.cs:394
 msgid "Go to channel"
 msgstr ""
 
 #. Translators: Name of the command that fetches a newer yt-dlp. "yt-dlp" is a program name and is
 #. not translated.
 #. Translators: Help menu item that fetches a newer yt-dlp. "YouTube" is a service name.
-#: Actions/YouTubeActions.cs:48 UI/Menus/HelpMenu.cs:15
+#: Actions/YouTubeActions.cs:38 UI/Menus/HelpMenu.cs:15
 msgid "Update YouTube components"
 msgstr ""
 
@@ -897,7 +1011,7 @@ msgstr ""
 #. Translators: Title of a warning or confirmation message box.
 #: Application/Commands/App/Tools.cs:69
 #: Application/Commands/Playback/SelectionSaving.cs:152
-#: UI/Services/Messages.cs:26
+#: UI/Services/Messages.cs:28
 msgid "Warning"
 msgstr ""
 
@@ -1013,6 +1127,12 @@ msgstr ""
 msgid "Could not open the selected DVD title."
 msgstr ""
 
+#. Translators: Short confirmation after adding the current online file to the download queue.
+#. Translators: Short spoken confirmation after adding music-server files to the download queue.
+#: Application/Commands/Files/Downloads.cs:36 UI/Subsonic/Text/Downloads.cs:25
+msgid "Added to download queue."
+msgstr ""
+
 #. Translators: Spoken when the user asks to rename what is playing but it is a stream rather than a file on this computer.
 #: Application/Commands/Files/Edit.cs:39
 msgid "Rename is available only for local files."
@@ -1108,7 +1228,7 @@ msgstr ""
 #. Translators: The short wording spoken once the marked files have been copied into the chosen folder.
 #. Translators: The short wording spoken once the address of a video has been copied.
 #: Application/Commands/Files/Edit.cs:119
-#: Application/Commands/Files/Info.cs:198
+#: Application/Commands/Files/Info.cs:203
 #: Application/Commands/Files/MarkedFiles.cs:73
 #: Application/Commands/Files/MarkedFiles.cs:160
 #: Application/Commands/YouTube/CurrentVideo.cs:99
@@ -1120,7 +1240,7 @@ msgstr ""
 #. Translators: Short announcement after copying marked files to the clipboard fails.
 #. Translators: The short wording spoken when the address of a video could not be copied.
 #: Application/Commands/Files/Edit.cs:121
-#: Application/Commands/Files/Info.cs:200
+#: Application/Commands/Files/Info.cs:205
 #: Application/Commands/Files/MarkedFiles.cs:75
 #: Application/Commands/YouTube/CurrentVideo.cs:105
 msgid "Copy failed."
@@ -1260,7 +1380,7 @@ msgstr ""
 #. Translators: Shown when a typed YouTube address does not begin with a supported web protocol.
 #. Translators: Shown when a favourite is saved with something that is not a web address.
 #: Application/Commands/Files/Files.cs:206
-#: Application/Commands/YouTube/YouTube.cs:92 Favorites/FavoriteStore.cs:140
+#: Application/Commands/YouTube/YouTube.cs:89 Favorites/FavoriteStore.cs:140
 msgid "The link must start with http or https."
 msgstr ""
 
@@ -1351,8 +1471,7 @@ msgstr ""
 
 #. Translators: Title of the information dialog for the current Spotify queue.
 #. Translators: Title of the window listing details of every file in the playlist.
-#: Application/Commands/Files/Info.cs:73
-#: Application/Commands/Files/Info.cs:127
+#: Application/Commands/Files/Info.cs:73 Application/Commands/Files/Info.cs:132
 msgid "Playlist Info"
 msgstr ""
 
@@ -1363,168 +1482,167 @@ msgstr ""
 
 #. Translators: Line in the Spotify queue information dialog. {value} is the formatted combined playing time.
 #. Translators: The playlist summary. {value} is a duration as hours:minutes:seconds.
-#: Application/Commands/Files/Info.cs:77
-#: Application/Commands/Files/Info.cs:140
+#: Application/Commands/Files/Info.cs:77 Application/Commands/Files/Info.cs:145
 msgid "Total duration: {value}"
 msgstr ""
 
 #. Translators: Title of the progress window shown while details of every file in the playlist are being read.
-#: Application/Commands/Files/Info.cs:108
+#: Application/Commands/Files/Info.cs:113
 msgid "Loading playlist info"
 msgstr ""
 
 #. Translators: First message in the progress window, shown before the first file has been read.
-#: Application/Commands/Files/Info.cs:110
+#: Application/Commands/Files/Info.cs:115
 msgid "Preparing..."
 msgstr ""
 
 #. Translators: Progress message naming the file being read right now. {name} is the file name.
-#: Application/Commands/Files/Info.cs:112
+#: Application/Commands/Files/Info.cs:117
 msgid "Reading: {name}"
 msgstr ""
 
 #. Translators: The playlist summary. {count} is how many files are loaded.
-#: Application/Commands/Files/Info.cs:136
+#: Application/Commands/Files/Info.cs:141
 msgid "Number of files: {count}"
 msgstr ""
 
 #. Translators: The playlist summary. {value} is a size such as "12.5 MB".
-#: Application/Commands/Files/Info.cs:138
+#: Application/Commands/Files/Info.cs:143
 msgid "Total size: {value}"
 msgstr ""
 
 #. Translators: The playlist summary: how much of the whole playlist has already played.
-#: Application/Commands/Files/Info.cs:142
+#: Application/Commands/Files/Info.cs:147
 msgid "Elapsed: {value}"
 msgstr ""
 
 #. Translators: The playlist summary: how much of the whole playlist is left to play.
-#: Application/Commands/Files/Info.cs:144
+#: Application/Commands/Files/Info.cs:149
 msgid "Remaining: {value}"
 msgstr ""
 
 #. Translators: Spoken confirmation after copying a Spotify track's public web address.
-#: Application/Commands/Files/Info.cs:191
+#: Application/Commands/Files/Info.cs:196
 msgid "Track link copied to clipboard."
 msgstr ""
 
 #. Translators: Spoken confirmation after copying the current file's location.
-#: Application/Commands/Files/Info.cs:193
+#: Application/Commands/Files/Info.cs:198
 msgid "File path copied to clipboard."
 msgstr ""
 
 #. Translators: Spoken when the full location of the current file could not be copied to the clipboard.
 #. Translators: Spoken when a radio station name or stream URL could not be copied.
-#: Application/Commands/Files/Info.cs:195 UI/Radio/Actions.cs:121
+#: Application/Commands/Files/Info.cs:200 UI/Radio/Actions.cs:121
 msgid "Unable to copy to clipboard."
 msgstr ""
 
 #. Translators: Line spoken by Ctrl+Alt+I identifying the radio station. {station} is its name from the stream or radio directory.
-#: Application/Commands/Files/Info.cs:223
+#: Application/Commands/Files/Info.cs:228
 msgid "Station: {station}"
 msgstr ""
 
 #. Translators: Line spoken by Ctrl+Alt+I. {title} is the current file or radio programme title.
-#: Application/Commands/Files/Info.cs:227
+#: Application/Commands/Files/Info.cs:232
 msgid "Title: {title}"
 msgstr ""
 
 #. Translators: Line spoken by Ctrl+Alt+I. {artist} is the performer named by the current media or radio broadcast.
-#: Application/Commands/Files/Info.cs:230
+#: Application/Commands/Files/Info.cs:235
 msgid "Artist: {artist}"
 msgstr ""
 
 #. Translators: Line spoken by Ctrl+Alt+I. {album} is the album named in the current media's metadata.
-#: Application/Commands/Files/Info.cs:233
+#: Application/Commands/Files/Info.cs:238
 msgid "Album: {album}"
 msgstr ""
 
 #. Translators: Line spoken by Ctrl+Alt+I. {artist} is the album artist, which can differ from the current track's performer.
-#: Application/Commands/Files/Info.cs:236
+#: Application/Commands/Files/Info.cs:241
 msgid "Album artist: {artist}"
 msgstr ""
 
 #. Translators: Line spoken by Ctrl+Alt+I. {genre} is the genre supplied by the file or radio stream.
-#: Application/Commands/Files/Info.cs:239
+#: Application/Commands/Files/Info.cs:244
 msgid "Genre: {genre}"
 msgstr ""
 
 #. Translators: Line spoken by Ctrl+Alt+I. {description} is a description or comment supplied by the current media or radio station.
-#: Application/Commands/Files/Info.cs:242
+#: Application/Commands/Files/Info.cs:247
 msgid "Description: {description}"
 msgstr ""
 
 #. Translators: Line spoken by Ctrl+Alt+I. {date} is the release or recording date exactly as supplied by the media.
-#: Application/Commands/Files/Info.cs:245
+#: Application/Commands/Files/Info.cs:250
 msgid "Date: {date}"
 msgstr ""
 
 #. Translators: Line spoken by Ctrl+Alt+I. {number} is the track's number within its album.
-#: Application/Commands/Files/Info.cs:248
+#: Application/Commands/Files/Info.cs:253
 msgid "Track number: {number}"
 msgstr ""
 
 #. Translators: Line spoken by Ctrl+Alt+I. {number} is the disc number within a multi-disc album.
-#: Application/Commands/Files/Info.cs:251
+#: Application/Commands/Files/Info.cs:256
 msgid "Disc number: {number}"
 msgstr ""
 
 #. Translators: Line spoken by Ctrl+Alt+I. {composer} is the composer named in the media's metadata.
-#: Application/Commands/Files/Info.cs:254
+#: Application/Commands/Files/Info.cs:259
 msgid "Composer: {composer}"
 msgstr ""
 
 #. Translators: Line spoken by Ctrl+Alt+I. {language} is the language name or code supplied by the current media.
-#: Application/Commands/Files/Info.cs:257
+#: Application/Commands/Files/Info.cs:262
 msgid "Language: {language}"
 msgstr ""
 
 #. Translators: Line spoken by Ctrl+Alt+I. {publisher} is the publisher or organization named by the current media.
-#: Application/Commands/Files/Info.cs:260
+#: Application/Commands/Files/Info.cs:265
 msgid "Publisher: {publisher}"
 msgstr ""
 
 #. Translators: Line spoken by Ctrl+Alt+I. {copyright} is the media's copyright notice.
-#: Application/Commands/Files/Info.cs:263
+#: Application/Commands/Files/Info.cs:268
 msgid "Copyright: {copyright}"
 msgstr ""
 
 #. Translators: Line spoken by Ctrl+Alt+I. {url} is the website supplied by the media or radio station.
 #. Translators: Radio station details. {url} is the station's website.
-#: Application/Commands/Files/Info.cs:266 UI/Radio/DetailsDialog.cs:33
+#: Application/Commands/Files/Info.cs:271 UI/Radio/DetailsDialog.cs:33
 msgid "Website: {url}"
 msgstr ""
 
 #. Translators: Line spoken by Ctrl+Alt+I. {bitrate} is the radio stream's advertised bitrate in kilobits per second. Keep kbps as the bitrate unit.
 #. Translators: Radio station details. {bitrate} is the bitrate in kilobits per second.
-#: Application/Commands/Files/Info.cs:269 UI/Radio/DetailsDialog.cs:29
+#: Application/Commands/Files/Info.cs:274 UI/Radio/DetailsDialog.cs:29
 msgid "Bitrate: {bitrate} kbps"
 msgstr ""
 
 #. Translators: Spoken by Ctrl+Alt+I when the current media provides no metadata to announce.
-#: Application/Commands/Files/Info.cs:272
+#: Application/Commands/Files/Info.cs:277
 msgid "No metadata is available."
 msgstr ""
 
 #. Translators: Spoken by Shift+I when the current file or radio broadcast provides no artist information.
-#: Application/Commands/Files/Info.cs:283
+#: Application/Commands/Files/Info.cs:288
 msgid "Unknown artist."
 msgstr ""
 
 #. Translators: Spoken by I when the live radio station supplies no programme title.
-#: Application/Commands/Files/Info.cs:301
+#: Application/Commands/Files/Info.cs:306
 msgid "The current radio broadcast has no title."
 msgstr ""
 
 #. Translators: Short announcement by I when the live radio station supplies no programme title.
 #. Translators: Short announcement when the current media file contains no title metadata.
-#: Application/Commands/Files/Info.cs:303
-#: Application/Commands/Files/Info.cs:309
+#: Application/Commands/Files/Info.cs:308
+#: Application/Commands/Files/Info.cs:314
 msgid "No title."
 msgstr ""
 
 #. Translators: Spoken when the current media file contains no title metadata.
-#: Application/Commands/Files/Info.cs:307
+#: Application/Commands/Files/Info.cs:312
 msgid "The current file has no title."
 msgstr ""
 
@@ -1687,7 +1805,7 @@ msgstr ""
 #. Translators: Shown when an M3U or M3U8 file contains no usable local files or web links.
 #. Translators: Warning when opening a saved playlist yields no playable tracks.
 #: Application/Commands/Files/Playlists.cs:79
-#: Application/Commands/Files/SavedPlaylists.cs:147
+#: Application/Commands/Files/SavedPlaylists.cs:156
 msgid "The playlist contains no playable entries."
 msgstr ""
 
@@ -1756,23 +1874,28 @@ msgstr ""
 msgid "DVD titles cannot be saved or edited as a file playlist."
 msgstr ""
 
+#. Translators: Warning before M3U export omits private server tracks. {count} is the number omitted.
+#: Application/Commands/Files/SavedPlaylists.cs:106
+msgid "This export will omit {count} music-server items. Continue?"
+msgstr ""
+
 #. Translators: Success confirmation shown on the main window after a playlist is saved or exported.
-#: Application/Commands/Files/SavedPlaylists.cs:111
+#: Application/Commands/Files/SavedPlaylists.cs:120
 msgid "Playlist saved."
 msgstr ""
 
 #. Translators: Error shown when a playlist selected in the manager has since been removed from storage.
-#: Application/Commands/Files/SavedPlaylists.cs:128
+#: Application/Commands/Files/SavedPlaylists.cs:137
 msgid "This playlist is no longer available."
 msgstr ""
 
 #. Translators: Confirmation before removing a saved playlist from My Playlists.
-#: Application/Commands/Files/SavedPlaylists.cs:136
+#: Application/Commands/Files/SavedPlaylists.cs:145
 msgid "Would you like to remove this playlist?"
 msgstr ""
 
 #. Translators: Success confirmation shown on the main window after a saved playlist is removed.
-#: Application/Commands/Files/SavedPlaylists.cs:140
+#: Application/Commands/Files/SavedPlaylists.cs:149
 msgid "Playlist removed."
 msgstr ""
 
@@ -1869,8 +1992,10 @@ msgstr ""
 #. Translators: The short wording spoken when a time the user asked for is not known.
 #. Translators: Short announcement when playback progress cannot be calculated.
 #. Translators: Radio Browser's latest check did not find the station available.
+#. Translators: Item status when a music-server track is missing or not downloaded yet.
 #: Application/Commands/MediaGuard.cs:108
 #: Application/Commands/Playback/Playback.cs:303 UI/Radio/DetailsDialog.cs:43
+#: UI/Subsonic/Text/Metadata.cs:28
 msgid "Unavailable"
 msgstr ""
 
@@ -1906,7 +2031,9 @@ msgid "Audio Track"
 msgstr ""
 
 #. Translators: The short stand-in name for an audio track with no title, in advanced verbosity.
+#. Translators: Track. Used in the music-server browser navigation and result list.
 #: Application/Commands/Playback/AudioTracks.cs:92
+#: UI/Subsonic/Text/Browsing.cs:55
 msgid "Track"
 msgstr ""
 
@@ -1937,80 +2064,80 @@ msgstr ""
 
 #. Translators: The name a new bookmark is given unless the user types another one. {time} is the point in the
 #. file the bookmark was made at, such as 00:01:20.
-#: Application/Commands/Playback/Bookmarks.cs:43
+#: Application/Commands/Playback/Bookmarks.cs:48
 msgid "Bookmark {time}"
 msgstr ""
 
 #. Translators: Asks the user what the new bookmark should be called.
-#: Application/Commands/Playback/Bookmarks.cs:46
+#: Application/Commands/Playback/Bookmarks.cs:51
 msgid "Enter bookmark name"
 msgstr ""
 
 #. Translators: Title of the dialog used to name a new bookmark.
 #. Translators: Bookmarks menu item that saves the current position in the file as a bookmark.
-#: Application/Commands/Playback/Bookmarks.cs:48 UI/Menus/BookmarksMenu.cs:16
+#: Application/Commands/Playback/Bookmarks.cs:53 UI/Menus/BookmarksMenu.cs:16
 msgid "Add a new bookmark"
 msgstr ""
 
 #. Translators: Shown when the user confirms a bookmark name without typing anything.
-#: Application/Commands/Playback/Bookmarks.cs:56
-#: Application/Commands/Playback/Bookmarks.cs:142
+#: Application/Commands/Playback/Bookmarks.cs:61
+#: Application/Commands/Playback/Bookmarks.cs:147
 msgid "Bookmark name cannot be empty."
 msgstr ""
 
 #. Translators: Shown once a bookmark has been made. {name} is what it is called and {time} the point in the
 #. file it was made at, such as 00:01:20.
-#: Application/Commands/Playback/Bookmarks.cs:67
+#: Application/Commands/Playback/Bookmarks.cs:72
 msgid "Bookmark '{name}' added at {time}."
 msgstr ""
 
 #. Translators: Shown when the user opens the bookmark list but the current file has none.
-#: Application/Commands/Playback/Bookmarks.cs:84
+#: Application/Commands/Playback/Bookmarks.cs:89
 msgid "No bookmarks found for the current file."
 msgstr ""
 
 #. Translators: Asks the user to confirm removing one bookmark. {name} is what the bookmark is called.
-#: Application/Commands/Playback/Bookmarks.cs:104
+#: Application/Commands/Playback/Bookmarks.cs:109
 msgid "Delete bookmark '{name}'?"
 msgstr ""
 
 #. Translators: Shown once the last bookmark of the current file has been removed.
-#: Application/Commands/Playback/Bookmarks.cs:119
+#: Application/Commands/Playback/Bookmarks.cs:124
 msgid "All bookmarks for this file were removed."
 msgstr ""
 
 #. Translators: Asks the user for the new name of a bookmark they are renaming.
-#: Application/Commands/Playback/Bookmarks.cs:132
+#: Application/Commands/Playback/Bookmarks.cs:137
 msgid "Edit bookmark name"
 msgstr ""
 
 #. Translators: Title of the dialog used to rename an existing bookmark.
 #. Translators: Title of the window used to manage bookmarks for the current file.
 #. Translators: Bookmarks menu item that opens the window for renaming and deleting bookmarks.
-#: Application/Commands/Playback/Bookmarks.cs:134
+#: Application/Commands/Playback/Bookmarks.cs:139
 #: UI/Bookmarks/ManagerDialog.cs:17 UI/Menus/BookmarksMenu.cs:18
 msgid "Manage bookmarks"
 msgstr ""
 
 #. Translators: Spoken when the user asks for one of the ten numbered bookmark slots but nothing is saved
 #. in it. {slot} is the slot number, 1 to 10.
-#: Application/Commands/Playback/Bookmarks.cs:160
+#: Application/Commands/Playback/Bookmarks.cs:165
 msgid "No bookmark in slot {slot}."
 msgstr ""
 
 #. Translators: The short wording spoken when a numbered bookmark slot is empty. {slot} is the slot number, 1 to 10.
-#: Application/Commands/Playback/Bookmarks.cs:162
+#: Application/Commands/Playback/Bookmarks.cs:167
 msgid "No bookmark {slot}."
 msgstr ""
 
 #. Translators: Spoken once playing has moved to a bookmark. {name} is what the bookmark is called.
-#: Application/Commands/Playback/Bookmarks.cs:177
+#: Application/Commands/Playback/Bookmarks.cs:182
 msgid "Jumped to bookmark {name}."
 msgstr ""
 
 #. Translators: The short wording spoken once playing has moved to a bookmark. {name} is what the bookmark is
 #. called and {time} the point in the file it sits at, such as 00:01:20.
-#: Application/Commands/Playback/Bookmarks.cs:180
+#: Application/Commands/Playback/Bookmarks.cs:185
 msgid "Jumped to '{name}' at {time}."
 msgstr ""
 
@@ -2018,7 +2145,7 @@ msgstr ""
 #. Translators: Warning when the Spotify track duration is not yet available for seeking.
 #. Translators: Shown when the player cannot determine the current file's duration.
 #. Translators: Shown when the player cannot offer exact time fields for the current item.
-#: Application/Commands/Playback/Bookmarks.cs:191
+#: Application/Commands/Playback/Bookmarks.cs:196
 #: Application/Commands/Playback/Playback.cs:220
 #: Application/Commands/Playback/Playback.cs:231
 #: Application/Commands/Playback/SelectionPoints.cs:206
@@ -2026,7 +2153,7 @@ msgid "Time is not available for the current file."
 msgstr ""
 
 #. Translators: The short wording spoken when the player cannot tell where playing has got to.
-#: Application/Commands/Playback/Bookmarks.cs:193
+#: Application/Commands/Playback/Bookmarks.cs:198
 msgid "Time unavailable."
 msgstr ""
 
@@ -2151,13 +2278,15 @@ msgstr ""
 #. Translators: Button playing the selected radio station.
 #. Translators: Radio station context-menu action that starts playback.
 #. Translators: Button in a Spotify collection window that plays the selected track.
+#. Translators: Play. Used in the music-server browser and its child dialogs.
 #. Translators: Button that plays the video chosen in the list of results.
 #: Application/Commands/Playback/Playback.cs:124
 #: Application/Commands/Playback/Playback.cs:143
 #: Application/Commands/Playback/Playback.cs:152
 #: UI/Iptv/ChannelBrowserDialog.cs:118 UI/MainFrame.cs:101 UI/MainFrame.cs:193
 #: UI/Radio/BrowserDialog.cs:120 UI/Radio/BrowserDialog.cs:148
-#: UI/Spotify/TracksDialog.cs:50 UI/YouTube/ResultsDialog.cs:198
+#: UI/Spotify/TracksDialog.cs:50 UI/Subsonic/Text/Shared.cs:22
+#: UI/YouTube/ResultsDialog.cs:198
 msgid "Play"
 msgstr ""
 
@@ -2171,7 +2300,7 @@ msgstr ""
 #. Translators: Button that holds a recording where it is.
 #: Application/Commands/Playback/Playback.cs:126
 #: Application/Commands/Playback/Playback.cs:154 UI/MainFrame.cs:191
-#: UI/MenuController.cs:331 UI/Menus/RecordingMenu.cs:23
+#: UI/MenuController.cs:349 UI/Menus/RecordingMenu.cs:23
 #: UI/Playback/SleepTimerDialog.cs:80 UI/Recording/MainDialog.cs:175
 #: UI/Recording/Transport.cs:115
 msgid "Pause"
@@ -2190,14 +2319,14 @@ msgstr ""
 #. Translators: Spoken when full-screen mode is turned off.
 #. Translators: Spoken when full-screen mode ends on its own because the video stopped playing.
 #: Application/Commands/Playback/Playback.cs:259
-#: Application/Presentation/ViewStatePresenter.cs:80
+#: Application/Presentation/ViewStatePresenter.cs:88
 msgid "Full-screen mode off."
 msgstr ""
 
 #. Translators: The short advanced-verbosity wording spoken when full-screen mode is turned off.
 #. Translators: Short announcement when full-screen mode ends because the video stopped.
 #: Application/Commands/Playback/Playback.cs:261
-#: Application/Presentation/ViewStatePresenter.cs:82
+#: Application/Presentation/ViewStatePresenter.cs:90
 msgid "Full-screen off"
 msgstr ""
 
@@ -2483,7 +2612,7 @@ msgstr ""
 #. Translators: How far the download has got. {percent} is a whole number.
 #: Application/Commands/Playback/SelectionSaving.cs:77
 #: UI/Conversion/ProgressDialog.cs:156
-#: UI/YouTube/DownloadProgressDialog.cs:161
+#: UI/Downloads/DownloadProgressDialog.cs:162
 msgid "Percentage: {percent}%"
 msgstr ""
 
@@ -2697,8 +2826,7 @@ msgstr ""
 
 #. Translators: Shown when recording started but some sources would not open. {names} is a
 #. list of what the user called them, separated by commas.
-#: Application/Commands/Recording/Recording.cs:116
-#: UI/Recording/Transport.cs:61
+#: Application/Commands/Recording/Recording.cs:116 UI/Recording/Transport.cs:61
 msgid "Recording started, but these sources could not be opened: {names}"
 msgstr ""
 
@@ -2810,13 +2938,13 @@ msgstr ""
 
 #. Translators: Spoken after a video has been put in the download queue.
 #. Translators: Short announcement after a video has been put in the download queue.
-#: Application/Commands/YouTube/Download.cs:61
-#: Application/Commands/YouTube/Download.cs:63
+#: Application/Commands/YouTube/Download.cs:68
+#: Application/Commands/YouTube/Download.cs:70
 msgid "Added to download queue"
 msgstr ""
 
 #. Translators: Shown when the queue's multi-link box contains a non-video YouTube address.
-#: Application/Commands/YouTube/Download.cs:77
+#: Application/Commands/YouTube/Download.cs:84
 msgid "This is not a valid YouTube video link: {link}"
 msgstr ""
 
@@ -2910,53 +3038,53 @@ msgid "Repeat off"
 msgstr ""
 
 #. Translators: Asks the user for the address of the YouTube video or playlist they want to play.
-#: Application/Commands/YouTube/YouTube.cs:81
+#: Application/Commands/YouTube/YouTube.cs:78
 msgid "Enter a YouTube video or playlist link."
 msgstr ""
 
 #. Translators: Title of the window that asks for a YouTube address.
 #. Translators: Title of the window asking whether to play the video or open the playlist.
-#: Application/Commands/YouTube/YouTube.cs:83 UI/YouTube/LinkKindDialog.cs:20
+#: Application/Commands/YouTube/YouTube.cs:80 UI/YouTube/LinkKindDialog.cs:20
 msgid "Open YouTube Link"
 msgstr ""
 
 #. Translators: Shown when the address typed into Open YouTube Link is a web address but not a YouTube one.
-#: Application/Commands/YouTube/YouTube.cs:99
+#: Application/Commands/YouTube/YouTube.cs:96
 msgid "This is not a valid YouTube link."
 msgstr ""
 
 #. Translators: Shown when the address names a whole YouTube channel, which this window cannot open.
-#: Application/Commands/YouTube/YouTube.cs:106
+#: Application/Commands/YouTube/YouTube.cs:103
 msgid "Channel links are not supported here."
 msgstr ""
 
 #. Translators: Spoken when the list of search suggestions appears under the YouTube search box.
-#: Application/Commands/YouTube/YouTube.cs:177
+#: Application/Commands/YouTube/YouTube.cs:174
 msgid "Search suggestions shown"
 msgstr ""
 
 #. Translators: The short wording spoken when search suggestions appear.
-#: Application/Commands/YouTube/YouTube.cs:179
+#: Application/Commands/YouTube/YouTube.cs:176
 msgid "Suggestions shown"
 msgstr ""
 
 #. Translators: Spoken when a command that only works on a YouTube video is used on something else.
-#: Application/Commands/YouTube/YouTube.cs:199
+#: Application/Commands/YouTube/YouTube.cs:196
 msgid "No YouTube video is active."
 msgstr ""
 
 #. Translators: The short wording spoken when a YouTube command is used on something that is not one.
-#: Application/Commands/YouTube/YouTube.cs:201
+#: Application/Commands/YouTube/YouTube.cs:198
 msgid "No YouTube video."
 msgstr ""
 
 #. Translators: Spoken when the one-time chapter-end stop pauses playback.
-#: Application/Controller.cs:288
+#: Application/Controller.cs:290
 msgid "Playback paused at the end of the chapter."
 msgstr ""
 
 #. Translators: Brief announcement after pausing at a chapter boundary.
-#: Application/Controller.cs:290
+#: Application/Controller.cs:292
 msgid "Chapter ended. Paused."
 msgstr ""
 
@@ -2971,7 +3099,7 @@ msgid "All items in the download queue have completed."
 msgstr ""
 
 #. Translators: Shown when settings could not be read. {error} is the underlying file or data error.
-#: Application/Features.cs:195
+#: Application/Features.cs:198
 msgid ""
 "The settings file could not be loaded. Default settings will be used, and "
 "the existing file will not be overwritten. Import a valid settings file or "
@@ -3061,6 +3189,14 @@ msgstr ""
 #. Translators: Short announcement when no sleep timer is set.
 #: Application/Infrastructure/SleepTimer.cs:283
 msgid "No sleep timer"
+msgstr ""
+
+#. Translators: Error opening music from a saved server. {details} is the server or connection failure.
+#: Application/MusicServers.cs:57
+msgid ""
+"The music-server item could not be opened.\n"
+"\n"
+"{details}"
 msgstr ""
 
 #. Translators: Main window title during Spotify playback. {title} is the artist and track; {app} is the program name.
@@ -3291,9 +3427,8 @@ msgstr ""
 #. Translators: The kind of a saved favourite: a single YouTube video.
 #. Translators: One of the download types: save the picture, with its sound, as a video file.
 #. Translators: One of the YouTube download types: save the picture and sound as a video file.
-#. Translators: First column in the download queue, holding a video title or a manually entered link.
 #: Favorites/FavoriteStore.cs:174 UI/YouTube/DownloadDialog.cs:64
-#: UI/YouTube/DownloadPreferences.cs:73 UI/YouTube/DownloadQueueDialog.cs:49
+#: UI/YouTube/DownloadPreferences.cs:73
 msgid "Video"
 msgstr ""
 
@@ -3699,7 +3834,9 @@ msgstr ""
 #. Translators: Collection type on Spotify Home, containing listening history.
 #. Translators: Radio tree category containing this user's recently played stations.
 #. Translators: Collection name on the Spotify Home tab for listening history.
+#. Translators: Recently played. Used in the music-server browser navigation and result list.
 #: Spotify/Catalog.cs:32 UI/Radio/Navigation.cs:23 UI/Spotify/Browsing.cs:167
+#: UI/Subsonic/Text/Browsing.cs:88
 msgid "Recently played"
 msgstr ""
 
@@ -3709,12 +3846,14 @@ msgid "Mix"
 msgstr ""
 
 #. Translators: Type of a collection of related tracks in the Spotify browser.
-#: Spotify/Catalog.cs:36
+#. Translators: Radio. Used in the music-server browser's information and advanced commands.
+#: Spotify/Catalog.cs:36 UI/Subsonic/Text/Advanced.cs:13
 msgid "Radio"
 msgstr ""
 
 #. Translators: Type of a musician or group result in Spotify search.
-#: Spotify/Catalog.cs:38
+#. Translators: Artist. Used in the music-server browser and its child dialogs.
+#: Spotify/Catalog.cs:38 UI/Subsonic/Text/Shared.cs:10
 msgid "Artist"
 msgstr ""
 
@@ -4185,14 +4324,15 @@ msgstr ""
 #. Translators: Button beside the file box that opens a dialog to choose a playlist file.
 #. Translators: Button that opens a window for choosing the folder recordings are saved into.
 #. Translators: Button that opens a folder picker for selection files.
+#. Translators: Browse. Used in music-server original-file download options.
 #. Translators: Button that opens a folder picker to choose where the download is saved.
 #. Translators: Button on the YouTube download settings page that opens a folder picker.
 #. Translators: Button that opens a file picker to choose a cookie file by hand.
 #: UI/Audio/SofaPreferences.cs:34 UI/Conversion/MainDialog.cs:177
 #: UI/Iptv/SourceEditDialog.cs:73 UI/Preferences/Recording.cs:72
 #: UI/Recording/MainDialog.cs:154 UI/Selections/SaveDialog.cs:47
-#: UI/YouTube/DownloadDialog.cs:97 UI/YouTube/DownloadPreferences.cs:66
-#: UI/YouTube/GeneralPreferences.cs:90
+#: UI/Subsonic/Text/Downloads.cs:10 UI/YouTube/DownloadDialog.cs:97
+#: UI/YouTube/DownloadPreferences.cs:66 UI/YouTube/GeneralPreferences.cs:90
 msgid "Browse..."
 msgstr ""
 
@@ -4314,6 +4454,7 @@ msgstr ""
 #. Translators: Column heading for a radio station's name.
 #. Translators: Label of the box holding what the user calls a recording source.
 #. Translators: Label of the name placed before each number in selection file names.
+#. Translators: Name. Used in the music-server browser and its child dialogs.
 #. Translators: Label of the box holding what a saved link is called.
 #. Translators: Heading of the favourites list column holding what each saved link is called.
 #: UI/Bookmarks/ManagerDialog.cs:20 UI/Equalizer/EditDialog.cs:72
@@ -4321,13 +4462,14 @@ msgstr ""
 #: UI/Iptv/SourcesDialog.cs:29 UI/Playlists/EditorDialog.cs:47
 #: UI/Playlists/EditorDialog.cs:58 UI/Playlists/ManagerDialog.cs:28
 #: UI/Radio/BrowserDialog.cs:108 UI/Recording/SourceDialog.cs:55
-#: UI/Selections/SaveDialog.cs:36 UI/YouTube/FavoriteEditDialog.cs:29
-#: UI/YouTube/FavoritesDialog.cs:31
+#: UI/Selections/SaveDialog.cs:36 UI/Subsonic/Text/Shared.cs:7
+#: UI/YouTube/FavoriteEditDialog.cs:29 UI/YouTube/FavoritesDialog.cs:31
 msgid "Name"
 msgstr ""
 
 #. Translators: Heading of the bookmark list column holding the point in the file each bookmark sits at.
-#: UI/Bookmarks/ManagerDialog.cs:22
+#. Translators: Position. Used in the music-server browser's information and advanced commands.
+#: UI/Bookmarks/ManagerDialog.cs:22 UI/Subsonic/Text/Advanced.cs:55
 msgid "Position"
 msgstr ""
 
@@ -4339,7 +4481,7 @@ msgstr ""
 #. Translators: Button that renames the chosen bookmark.
 #. Translators: Name of the Edit menu in the menu bar.
 #. Translators: Playlist manager button editing the selected saved playlist.
-#: UI/Bookmarks/ManagerDialog.cs:38 UI/Menus/Builder.cs:72
+#: UI/Bookmarks/ManagerDialog.cs:38 UI/Menus/Builder.cs:77
 #: UI/Playlists/ManagerDialog.cs:35
 msgid "Edit"
 msgstr ""
@@ -4356,6 +4498,7 @@ msgstr ""
 #. Translators: Button that closes the media converter without converting anything.
 #. Translators: Button that closes the media conversion report.
 #. Translators: The button that closes a window.
+#. Translators: Closes the queue window. Active downloads continue in the background.
 #. Translators: Button that closes a window when there is nothing to accept or cancel.
 #. Translators: Button that closes a read-only information window.
 #. Translators: The button that closes a window.
@@ -4364,23 +4507,26 @@ msgstr ""
 #. Translators: Button closing the radio station details window.
 #. Translators: The button that closes a window.
 #. Translators: Button that closes the Spotify browser.
-#. Translators: The button that closes a window.
-#. Translators: Closes the queue window. Active downloads continue in the background.
+#. Translators: Close. Used in the music-server browser and its child dialogs.
 #. Translators: The button that closes a window.
 #: UI/Bookmarks/ManagerDialog.cs:43 UI/Conversion/MainDialog.cs:219
 #: UI/Conversion/ReportDialog.cs:24 UI/Diagnostics/CrashDialog.cs:49
-#: UI/Equalizer/PresetsDialog.cs:57 UI/Help/TextDialog.cs:19
-#: UI/Iptv/ChannelBrowserDialog.cs:121 UI/Iptv/SourcesDialog.cs:62
-#: UI/Playlists/ManagerDialog.cs:43 UI/Radio/BrowserDialog.cs:134
-#: UI/Radio/DetailsDialog.cs:55 UI/Recording/MainDialog.cs:177
-#: UI/Spotify/BrowserDialog.cs:149 UI/YouTube/DescriptionDialog.cs:53
-#: UI/YouTube/DownloadQueueDialog.cs:69 UI/YouTube/FavoritesDialog.cs:47
-#: UI/YouTube/ResultsDialog.cs:110 UI/YouTube/SearchDialog.cs:85
+#: UI/Downloads/DownloadQueueDialog.cs:69 UI/Equalizer/PresetsDialog.cs:57
+#: UI/Help/TextDialog.cs:19 UI/Iptv/ChannelBrowserDialog.cs:121
+#: UI/Iptv/SourcesDialog.cs:62 UI/Playlists/ManagerDialog.cs:43
+#: UI/Radio/BrowserDialog.cs:134 UI/Radio/DetailsDialog.cs:55
+#: UI/Recording/MainDialog.cs:177 UI/Spotify/BrowserDialog.cs:149
+#: UI/Subsonic/Text/Shared.cs:31 UI/YouTube/DescriptionDialog.cs:53
+#: UI/YouTube/FavoritesDialog.cs:47 UI/YouTube/ResultsDialog.cs:110
+#: UI/YouTube/SearchDialog.cs:85
 msgid "Close"
 msgstr ""
 
 #. Translators: The button that stops a job that is running behind a progress window.
 #. Translators: The button that stops a running conversion. It asks for confirmation first.
+#. Translators: Dismisses the close warning and keeps Luna and its downloads running.
+#. Translators: The button that stops a running download. It asks for confirmation first.
+#. Translators: Closes the link-entry window without adding anything.
 #. Translators: The button that closes a window and leaves everything as it was.
 #. Translators: Playlist editor button discarding changes.
 #. Translators: Button that closes the Opened Files window without taking action.
@@ -4388,19 +4534,18 @@ msgstr ""
 #. Translators: Button that closes the save-selection-points dialog without saving anything.
 #. Translators: Button that closes a selection time dialog without changing anything.
 #. Translators: Button that dismisses the Spotify credentials prompt.
-#. Translators: The button that closes a window and leaves everything as it was.
-#. Translators: Dismisses the close warning and keeps Luna and its downloads running.
-#. Translators: The button that stops a running download. It asks for confirmation first.
-#. Translators: Closes the link-entry window without adding anything.
+#. Translators: Cancel. Used in the music-server browser and its child dialogs.
 #. Translators: The button that closes a window and leaves everything as it was.
 #: UI/Controls/ProgressView.cs:67 UI/Conversion/ProgressDialog.cs:85
-#: UI/Equalizer/EditDialog.cs:101 UI/Playback/SleepTimerDialog.cs:166
-#: UI/Playback/TimeDialog.cs:73 UI/Playlists/EditorDialog.cs:88
-#: UI/Playlists/OpenedFilesDialog.cs:51 UI/Radio/FiltersDialog.cs:79
-#: UI/Selections/SaveDialog.cs:82 UI/Selections/TimeDialog.cs:62
-#: UI/Spotify/CredentialsPrompt.cs:19 UI/YouTube/DownloadDialog.cs:134
-#: UI/YouTube/DownloadExitDialog.cs:22 UI/YouTube/DownloadProgressDialog.cs:61
-#: UI/YouTube/DownloadQueueDialog.cs:379 UI/YouTube/LinkKindDialog.cs:33
+#: UI/Downloads/DownloadExitDialog.cs:22
+#: UI/Downloads/DownloadProgressDialog.cs:61
+#: UI/Downloads/DownloadQueueDialog.cs:373 UI/Equalizer/EditDialog.cs:101
+#: UI/Playback/SleepTimerDialog.cs:166 UI/Playback/TimeDialog.cs:73
+#: UI/Playlists/EditorDialog.cs:88 UI/Playlists/OpenedFilesDialog.cs:52
+#: UI/Radio/FiltersDialog.cs:79 UI/Selections/SaveDialog.cs:82
+#: UI/Selections/TimeDialog.cs:62 UI/Spotify/CredentialsPrompt.cs:19
+#: UI/Subsonic/Text/Shared.cs:46 UI/YouTube/DownloadDialog.cs:134
+#: UI/YouTube/LinkKindDialog.cs:33
 msgid "Cancel"
 msgstr ""
 
@@ -4428,8 +4573,9 @@ msgstr ""
 #. Translators: Button on the media converter that takes the selected files back out of the list.
 #. Translators: Playlist editor button removing selected entries without deleting media files.
 #. Translators: Playlist manager button removing the selected saved playlist.
+#. Translators: Remove. Used in the music-server browser and its child dialogs.
 #: UI/Conversion/MainDialog.cs:112 UI/Playlists/EditorDialog.cs:69
-#: UI/Playlists/ManagerDialog.cs:39
+#: UI/Playlists/ManagerDialog.cs:39 UI/Subsonic/Text/Shared.cs:40
 msgid "Remove"
 msgstr ""
 
@@ -4445,8 +4591,9 @@ msgstr ""
 
 #. Translators: Label of the list that chooses the sample rate the converted files are written at.
 #. Translators: Label of the list that chooses how many times a second a recording is sampled.
+#. Translators: Sort-by choice for the source file's audio sample rate in Music servers.
 #: UI/Conversion/MainDialog.cs:122 UI/Preferences/Recording.cs:56
-#: UI/Recording/MainDialog.cs:138
+#: UI/Recording/MainDialog.cs:138 UI/Subsonic/Text/Metadata.cs:13
 msgid "Sample rate"
 msgstr ""
 
@@ -4490,7 +4637,8 @@ msgid "Stereo"
 msgstr ""
 
 #. Translators: Label of the list that chooses the audio quality (bitrate) of the converted files.
-#: UI/Conversion/MainDialog.cs:139
+#. Translators: Music-server track column describing the original file's audio format.
+#: UI/Conversion/MainDialog.cs:139 UI/Subsonic/Text/Metadata.cs:10
 msgid "Quality"
 msgstr ""
 
@@ -4594,8 +4742,8 @@ msgstr ""
 #. not yet worth making.
 #. Translators: Estimated time left for all unfinished queue items.
 #: UI/Conversion/ProgressDialog.cs:161
-#: UI/YouTube/DownloadProgressDialog.cs:166
-#: UI/YouTube/DownloadQueueDialog.cs:305
+#: UI/Downloads/DownloadProgressDialog.cs:167
+#: UI/Downloads/DownloadQueueDialog.cs:299
 msgid "Estimated time left: {time}"
 msgstr ""
 
@@ -4605,15 +4753,16 @@ msgstr ""
 #. Translators: Shown for queue speed before enough data exists to measure it.
 #. Translators: Shown for queue time remaining before enough data exists to calculate it.
 #: UI/Conversion/ProgressDialog.cs:165
-#: UI/YouTube/DownloadProgressDialog.cs:150
-#: UI/YouTube/DownloadProgressDialog.cs:154
-#: UI/YouTube/DownloadQueueDialog.cs:289 UI/YouTube/DownloadQueueDialog.cs:293
+#: UI/Downloads/DownloadProgressDialog.cs:151
+#: UI/Downloads/DownloadProgressDialog.cs:155
+#: UI/Downloads/DownloadQueueDialog.cs:283
+#: UI/Downloads/DownloadQueueDialog.cs:287
 msgid "calculating…"
 msgstr ""
 
 #. Translators: How far the whole batch has got. {percent} is a whole number.
 #. Translators: Aggregate progress through all videos in the download queue.
-#: UI/Conversion/ProgressDialog.cs:167 UI/YouTube/DownloadQueueDialog.cs:301
+#: UI/Conversion/ProgressDialog.cs:167 UI/Downloads/DownloadQueueDialog.cs:295
 msgid "Total percentage: {percent}%"
 msgstr ""
 
@@ -4684,13 +4833,18 @@ msgstr ""
 msgid "The details could not be copied. They are in the file named above."
 msgstr ""
 
+#. Translators: Title of the native save dialog for downloading the current online file.
+#: UI/DialogService.cs:85
+msgid "Download file"
+msgstr ""
+
 #. Translators: Title of the native folder picker for DVD-Video and DVD-Audio playback.
-#: UI/DialogService.cs:72
+#: UI/DialogService.cs:96
 msgid "Open DVD"
 msgstr ""
 
 #. Translators: Extra Open File filter for Luna playlist documents; keep JSON and the wildcard unchanged.
-#: UI/DialogService.cs:84
+#: UI/DialogService.cs:108
 msgid "JSON playlists (*.json)|*.json"
 msgstr ""
 
@@ -4710,7 +4864,8 @@ msgid "DVD-Audio"
 msgstr ""
 
 #. Translators: Label of the DVD program/title choice in the native Open DVD folder picker.
-#: UI/Discs/Picker.cs:42
+#. Translators: First column of a music-server track list; the song's metadata title.
+#: UI/Discs/Picker.cs:42 UI/Subsonic/Text/Metadata.cs:7
 msgid "Title"
 msgstr ""
 
@@ -4762,6 +4917,241 @@ msgid ""
 "supported by the playback libraries."
 msgstr ""
 
+#. Translators: Title of the warning shown when Luna is closed while downloads remain unfinished.
+#: UI/Downloads/DownloadExitDialog.cs:13
+msgid "Downloads still in progress"
+msgstr ""
+
+#: UI/Downloads/DownloadExitDialog.cs:16
+msgid ""
+"There are items still downloading in the download queue. Closing Luna will "
+"cancel them."
+msgstr ""
+
+#. Translators: Confirms closing Luna even though download queue work remains unfinished.
+#: UI/Downloads/DownloadExitDialog.cs:20
+msgid "Close anyway"
+msgstr ""
+
+#. Translators: Download success message. {path} is the full destination path.
+#: UI/Downloads/DownloadOutcomes.cs:67
+msgid ""
+"The download finished. The file was saved to:\n"
+"{path}"
+msgstr ""
+
+#. Translators: Download error message box. {details} is the untranslated technical reason from the download provider.
+#: UI/Downloads/DownloadOutcomes.cs:72
+msgid ""
+"The download could not be completed.\n"
+"\n"
+"Details: {details}"
+msgstr ""
+
+#. Translators: Download error message box when no technical reason is available.
+#: UI/Downloads/DownloadOutcomes.cs:74
+msgid ""
+"The download could not be completed. Check your internet connection and try "
+"again."
+msgstr ""
+
+#. Translators: Title of the window showing progress for one file download.
+#. Translators: Title of the progress window while a file is downloading.
+#. Translators: Status of a queue item while it is downloading.
+#: UI/Downloads/DownloadProgressDialog.cs:39
+#: UI/Downloads/DownloadProgressDialog.cs:142
+#: UI/Downloads/DownloadQueueDialog.cs:312
+msgid "Downloading"
+msgstr ""
+
+#. Translators: Shown in the download window before the first progress has arrived.
+#: UI/Downloads/DownloadProgressDialog.cs:47
+msgid "Preparing to download…"
+msgstr ""
+
+#. Translators: Hides this progress window while leaving its download visible in the queue.
+#: UI/Downloads/DownloadProgressDialog.cs:55
+msgid "Minimize to queue"
+msgstr ""
+
+#. Translators: Shown for the total download size before yt-dlp reports it.
+#. Translators: Stands in for a version number that could not be read.
+#: UI/Downloads/DownloadProgressDialog.cs:146 YouTube/Components/Service.cs:270
+msgid "unknown"
+msgstr ""
+
+#. Translators: Download speed. {size} is a file size and "/s" means per second.
+#. Translators: Combined queue speed. {size} is a file size and "/s" means per second.
+#: UI/Downloads/DownloadProgressDialog.cs:149
+#: UI/Downloads/DownloadQueueDialog.cs:281
+msgid "{size}/s"
+msgstr ""
+
+#. Translators: How much of the file has downloaded. {done} and {total} are sizes such as "4.2 MB".
+#: UI/Downloads/DownloadProgressDialog.cs:158
+msgid "Downloaded: {done} of {total}"
+msgstr ""
+
+#. Translators: The current download speed. {speed} is a size per second such as "1.3 MB/s".
+#. Translators: Combined download speed of all active queue items.
+#: UI/Downloads/DownloadProgressDialog.cs:164
+#: UI/Downloads/DownloadQueueDialog.cs:297
+msgid "Speed: {speed}"
+msgstr ""
+
+#. Translators: A download has finished conversion and is being finalized.
+#. Translators: yt-dlp is moving the finished file to its destination.
+#: UI/Downloads/DownloadProgressDialog.cs:174
+#: UI/Downloads/DownloadProgressDialog.cs:192
+msgid "Finishing…"
+msgstr ""
+
+#. Translators: yt-dlp is joining the downloaded audio and video streams.
+#: UI/Downloads/DownloadProgressDialog.cs:177
+msgid "Merging video and audio…"
+msgstr ""
+
+#. Translators: yt-dlp/ffmpeg is converting the download to the chosen format.
+#: UI/Downloads/DownloadProgressDialog.cs:182
+msgid "Converting…"
+msgstr ""
+
+#. Translators: yt-dlp is embedding metadata, artwork, subtitles, or chapters.
+#: UI/Downloads/DownloadProgressDialog.cs:185
+msgid "Embedding information…"
+msgstr ""
+
+#. Translators: yt-dlp is modifying chapters or removing sponsored sections.
+#: UI/Downloads/DownloadProgressDialog.cs:189
+msgid "Processing chapters…"
+msgstr ""
+
+#. Translators: Generic state while yt-dlp performs a finishing operation after downloading.
+#: UI/Downloads/DownloadProgressDialog.cs:194
+msgid "Post-processing…"
+msgstr ""
+
+#. Translators: Asks the user to confirm stopping a download that is still running.
+#: UI/Downloads/DownloadProgressDialog.cs:211
+msgid "The download is still running. Would you like to stop it?"
+msgstr ""
+
+#. Translators: Title of the window listing queued downloads.
+#: UI/Downloads/DownloadQueueDialog.cs:42
+msgid "Download queue"
+msgstr ""
+
+#. Translators: First column in the download queue, holding a media title or a manually entered YouTube link.
+#: UI/Downloads/DownloadQueueDialog.cs:49
+msgid "Item"
+msgstr ""
+
+#. Translators: Second column in the download queue, holding states such as In queue or Downloading.
+#. Translators: Status. Used in the music-server browser and its child dialogs.
+#: UI/Downloads/DownloadQueueDialog.cs:51 UI/Subsonic/Text/Shared.cs:64
+msgid "Status"
+msgstr ""
+
+#. Translators: Stops the selected download and returns it to the queue.
+#. Translators: Recording menu item that ends a recording and closes the file.
+#. Translators: The timer action that stops playback.
+#. Translators: Button that ends a recording and closes the file.
+#: UI/Downloads/DownloadQueueDialog.cs:57 UI/Menus/RecordingMenu.cs:25
+#: UI/Playback/SleepTimerDialog.cs:82 UI/Recording/Transport.cs:109
+msgid "Stop"
+msgstr ""
+
+#. Translators: Opens a box where one or more YouTube links can be added to the queue.
+#. Translators: Button that saves a new IPTV source. The three dots mean it opens a window to type it in.
+#. Translators: Playlist editor button opening a menu to add files or a folder.
+#. Translators: Add. Used in the music-server browser and its child dialogs.
+#. Translators: Button that saves a new link. The three dots mean it opens a window to type it in.
+#: UI/Downloads/DownloadQueueDialog.cs:60 UI/Iptv/SourcesDialog.cs:55
+#: UI/Playlists/EditorDialog.cs:67 UI/Subsonic/Text/Shared.cs:34
+#: UI/YouTube/FavoritesDialog.cs:40
+msgid "Add..."
+msgstr ""
+
+#. Translators: Starts every unfinished item in the download queue.
+#. Translators: Button that begins recording, and ends it when pressed a second time.
+#. Translators: Button that begins recording.
+#: UI/Downloads/DownloadQueueDialog.cs:63 UI/Recording/MainDialog.cs:173
+#: UI/Recording/Transport.cs:107
+msgid "Start"
+msgstr ""
+
+#. Translators: Stops every active download and returns it to the queue.
+#: UI/Downloads/DownloadQueueDialog.cs:66
+msgid "Stop all"
+msgstr ""
+
+#. Translators: Confirmation shown before an item is removed from the download queue.
+#: UI/Downloads/DownloadQueueDialog.cs:227
+msgid "Remove the selected video from the download queue?"
+msgstr ""
+
+#. Translators: Queue status after every item has finished successfully.
+#: UI/Downloads/DownloadQueueDialog.cs:263
+msgid "All downloads are complete."
+msgstr ""
+
+#. Translators: Queue status when no download is running and unfinished items are waiting.
+#: UI/Downloads/DownloadQueueDialog.cs:270
+msgid "Ready to download."
+msgstr ""
+
+#. Translators: Technical reason supplied by yt-dlp for a failed queue item.
+#: UI/Downloads/DownloadQueueDialog.cs:274
+#: UI/Downloads/DownloadQueueDialog.cs:305
+msgid "Error: {details}"
+msgstr ""
+
+#. Translators: Queue progress. {current} and {total} are video counts; {percent} is a whole number.
+#: UI/Downloads/DownloadQueueDialog.cs:292
+msgid "Downloading video {current} of {total}, {percent}%"
+msgstr ""
+
+#. Translators: Status after media bytes are downloaded but finishing work may remain.
+#: UI/Downloads/DownloadQueueDialog.cs:314
+msgid "Downloaded"
+msgstr ""
+
+#. Translators: Status of a queue item that finished successfully.
+#: UI/Downloads/DownloadQueueDialog.cs:316
+msgid "Completed"
+msgstr ""
+
+#. Translators: Status of a queue item whose download failed.
+#: UI/Downloads/DownloadQueueDialog.cs:318
+msgid "Failed"
+msgstr ""
+
+#. Translators: Status of a queue item waiting to start.
+#: UI/Downloads/DownloadQueueDialog.cs:320
+msgid "In queue"
+msgstr ""
+
+#. Translators: Title of the window used to add YouTube links to the download queue.
+#: UI/Downloads/DownloadQueueDialog.cs:362
+msgid "Add links to download queue"
+msgstr ""
+
+#. Translators: Label above the multi-line box used to add links to the download queue.
+#: UI/Downloads/DownloadQueueDialog.cs:365
+msgid "Enter one YouTube video link on each line."
+msgstr ""
+
+#. Translators: Confirms adding the entered links to the download queue.
+#. Translators: Button that adds a recording source. It opens a menu of the kinds that can be added.
+#: UI/Downloads/DownloadQueueDialog.cs:369 UI/Recording/MainDialog.cs:97
+msgid "Add"
+msgstr ""
+
+#. Translators: Shown when Add is pressed without entering any links.
+#: UI/Downloads/DownloadQueueDialog.cs:412
+msgid "Enter at least one YouTube video link."
+msgstr ""
+
 #. Translators: Label of the list for choosing which preset a preset being edited starts out from.
 #: UI/Equalizer/EditDialog.cs:64
 msgid "Base preset"
@@ -4775,8 +5165,9 @@ msgstr ""
 #. Translators: Button in the equalizer editor that keeps the changes.
 #. Translators: Playlist editor button accepting the draft and saving it.
 #. Translators: Button that starts saving all selection points with the chosen settings.
+#. Translators: Save. Used in the music-server browser and its child dialogs.
 #: UI/Equalizer/EditDialog.cs:96 UI/Playlists/EditorDialog.cs:83
-#: UI/Selections/SaveDialog.cs:80
+#: UI/Selections/SaveDialog.cs:80 UI/Subsonic/Text/Shared.cs:43
 msgid "Save"
 msgstr ""
 
@@ -4835,9 +5226,11 @@ msgstr ""
 #. Translators: Button that opens the chosen equalizer preset for editing.
 #. Translators: Button that changes a saved IPTV source. The three dots mean it opens a window to change it in.
 #. Translators: Button that changes the recording source chosen in the list.
+#. Translators: Edit. Used in the music-server browser and its child dialogs.
 #. Translators: Button that changes a saved link. The three dots mean it opens a window to change it in.
 #: UI/Equalizer/PresetsDialog.cs:51 UI/Iptv/SourcesDialog.cs:57
-#: UI/Recording/MainDialog.cs:99 UI/YouTube/FavoritesDialog.cs:42
+#: UI/Recording/MainDialog.cs:99 UI/Subsonic/Text/Shared.cs:37
+#: UI/YouTube/FavoritesDialog.cs:42
 msgid "Edit..."
 msgstr ""
 
@@ -4876,11 +5269,12 @@ msgstr ""
 #: UI/Help/AboutDialog.cs:31
 msgid ""
 "Luna includes mpv, copyright © the mpv developers and contributors to "
-"MPlayer and mplayer2, and a C# translation of python-mpv, copyright © 2017-"
-"2024 Sebastian Götte. These components are licensed under the GNU Lesser "
-"General Public License, version 2.1 or later. FFmpeg is licensed under the "
-"GNU Lesser General Public License, version 3 or later. See NOTICE.txt and "
-"the licenses folder for complete third-party notices and terms."
+"MPlayer and mplayer2, and a C# translation of python-mpv, copyright © "
+"2017-2024 Sebastian Götte. These components are licensed under the GNU "
+"Lesser General Public License, version 2.1 or later. FFmpeg is licensed "
+"under the GNU Lesser General Public License, version 3 or later. See "
+"NOTICE.txt and the licenses folder for complete third-party notices and "
+"terms."
 msgstr ""
 
 #. Translators: Final two lines in the About window. {publisher} is the developer's name and
@@ -4906,7 +5300,7 @@ msgstr ""
 
 #. Translators: Title used for a window of read-only text when the caller supplies none.
 #. Translators: Title of an informational message box.
-#: UI/Help/TextDialog.cs:13 UI/Services/Messages.cs:32
+#: UI/Help/TextDialog.cs:13 UI/Services/Messages.cs:34
 msgid "Information"
 msgstr ""
 
@@ -4917,7 +5311,9 @@ msgstr ""
 
 #. Translators: Channel-browser filter choice: show channels of every kind.
 #. Translators: Option in the Spotify search filter to include every result type.
+#. Translators: All. Used in the music-server browser navigation and result list.
 #: UI/Iptv/ChannelBrowserDialog.cs:54 UI/Spotify/BrowserDialog.cs:101
+#: UI/Subsonic/Text/Browsing.cs:22
 msgid "All"
 msgstr ""
 
@@ -4954,11 +5350,13 @@ msgstr ""
 #. Translators: Button searching the current radio directory or station list.
 #. Translators: Radio browser button searching the current directory or station list.
 #. Translators: Search button or tab in the Spotify browser.
+#. Translators: Search. Used in the music-server browser navigation and result list.
 #. Translators: Button that runs the YouTube search with the text and filter chosen.
-#: UI/Iptv/ChannelBrowserDialog.cs:74 UI/Playlists/OpenedFilesDialog.cs:30
+#: UI/Iptv/ChannelBrowserDialog.cs:74 UI/Playlists/OpenedFilesDialog.cs:31
 #: UI/Radio/BrowserDialog.cs:80 UI/Radio/BrowserDialog.cs:84
 #: UI/Radio/Interactions.cs:78 UI/Spotify/BrowserDialog.cs:110
-#: UI/Spotify/BrowserDialog.cs:130 UI/YouTube/SearchDialog.cs:80
+#: UI/Spotify/BrowserDialog.cs:130 UI/Subsonic/Text/Browsing.cs:16
+#: UI/YouTube/SearchDialog.cs:80
 msgid "Search"
 msgstr ""
 
@@ -5033,12 +5431,14 @@ msgid "Web address"
 msgstr ""
 
 #. Translators: Label of the box holding the username of an Xtream IPTV account.
-#: UI/Iptv/SourceEditDialog.cs:77
+#. Translators: Account username field in the music-server connection editor.
+#: UI/Iptv/SourceEditDialog.cs:77 UI/Subsonic/Text/Connections.cs:16
 msgid "Username"
 msgstr ""
 
 #. Translators: Label of the box holding the password of an Xtream IPTV account.
-#: UI/Iptv/SourceEditDialog.cs:80
+#. Translators: Password field in the music-server connection editor.
+#: UI/Iptv/SourceEditDialog.cs:80 UI/Subsonic/Text/Connections.cs:19
 msgid "Password"
 msgstr ""
 
@@ -5068,7 +5468,8 @@ msgid "Playlist file"
 msgstr ""
 
 #. Translators: Label of the address box when the source is an Xtream Codes account (its server).
-#: UI/Iptv/SourceEditDialog.cs:164
+#. Translators: Field label for the Subsonic server base URL, including any reverse-proxy path.
+#: UI/Iptv/SourceEditDialog.cs:164 UI/Subsonic/Text/Connections.cs:13
 msgid "Server address"
 msgstr ""
 
@@ -5098,19 +5499,11 @@ msgstr ""
 
 #. Translators: Button that opens the source chosen in the list and browses its channels.
 #. Translators: Playlist manager button opening the selected playlist for playback.
+#. Translators: Open. Used in the music-server browser and its child dialogs.
 #. Translators: Button that plays the saved link chosen in the list.
 #: UI/Iptv/SourcesDialog.cs:53 UI/Playlists/ManagerDialog.cs:33
-#: UI/YouTube/FavoritesDialog.cs:38
+#: UI/Subsonic/Text/Shared.cs:73 UI/YouTube/FavoritesDialog.cs:38
 msgid "Open"
-msgstr ""
-
-#. Translators: Button that saves a new IPTV source. The three dots mean it opens a window to type it in.
-#. Translators: Playlist editor button opening a menu to add files or a folder.
-#. Translators: Opens a box where one or more YouTube links can be added to the queue.
-#. Translators: Button that saves a new link. The three dots mean it opens a window to type it in.
-#: UI/Iptv/SourcesDialog.cs:55 UI/Playlists/EditorDialog.cs:67
-#: UI/YouTube/DownloadQueueDialog.cs:60 UI/YouTube/FavoritesDialog.cs:40
-msgid "Add..."
 msgstr ""
 
 #. Translators: Button that removes a saved IPTV source. The three dots mean it asks first.
@@ -5149,7 +5542,9 @@ msgstr ""
 
 #. Translators: Recording menu item that starts a paused recording again.
 #. Translators: Button that starts a paused recording again.
-#: UI/MenuController.cs:329 UI/Recording/Transport.cs:113
+#. Translators: Resume. Used in the music-server browser's information and advanced commands.
+#: UI/MenuController.cs:347 UI/Recording/Transport.cs:113
+#: UI/Subsonic/Text/Advanced.cs:61
 msgid "Resume"
 msgstr ""
 
@@ -5165,32 +5560,32 @@ msgid "Jump to bookmark"
 msgstr ""
 
 #. Translators: Name of the File menu in the menu bar.
-#: UI/Menus/Builder.cs:70
+#: UI/Menus/Builder.cs:75
 msgid "File"
 msgstr ""
 
 #. Translators: Name of the menu holding commands for marking and saving parts of a media file.
-#: UI/Menus/Builder.cs:75
+#: UI/Menus/Builder.cs:80
 msgid "Selection"
 msgstr ""
 
 #. Translators: Name of the Bookmarks menu in the menu bar.
-#: UI/Menus/Builder.cs:77
+#: UI/Menus/Builder.cs:82
 msgid "Bookmarks"
 msgstr ""
 
 #. Translators: Name of the menu bar menu holding the things that can be done to the marked files at once.
-#: UI/Menus/Builder.cs:80
+#: UI/Menus/Builder.cs:85
 msgid "Actions for marked files"
 msgstr ""
 
 #. Translators: Name of the Player menu in the menu bar, holding the playing, seeking and volume items.
-#: UI/Menus/Builder.cs:82
+#: UI/Menus/Builder.cs:87
 msgid "Player"
 msgstr ""
 
 #. Translators: Name of the menu bar menu holding what can be done with the YouTube video being played.
-#: UI/Menus/Builder.cs:87
+#: UI/Menus/Builder.cs:92
 msgid "Video options"
 msgstr ""
 
@@ -5198,18 +5593,19 @@ msgstr ""
 #. Translators: Name of the settings category for recording sound.
 #. Translators: Title of the window where recording is set up and started.
 #. Translators: Title of the messages shown about recording.
-#: UI/Menus/Builder.cs:91 UI/Preferences/MainDialog.cs:66
+#: UI/Menus/Builder.cs:96 UI/Preferences/MainDialog.cs:66
 #: UI/Recording/MainDialog.cs:89 UI/Recording/MainDialog.cs:248
 msgid "Recording"
 msgstr ""
 
 #. Translators: Name of the Tools menu in the menu bar, holding the media converter.
-#: UI/Menus/Builder.cs:94
+#: UI/Menus/Builder.cs:99
 msgid "Tools"
 msgstr ""
 
 #. Translators: Name of the Help menu in the menu bar.
-#: UI/Menus/Builder.cs:96
+#. Translators: Help. Used in the music-server browser and its child dialogs.
+#: UI/Menus/Builder.cs:101 UI/Subsonic/Text/Shared.cs:82
 msgid "Help"
 msgstr ""
 
@@ -5234,7 +5630,8 @@ msgid "Chapters"
 msgstr ""
 
 #. Translators: Edit menu item that gives the current file a new name.
-#: UI/Menus/EditMenu.cs:20
+#. Translators: Rename. Used in the server playlist editor and queue commands.
+#: UI/Menus/EditMenu.cs:20 UI/Subsonic/Text/Playlists.cs:16
 msgid "Rename..."
 msgstr ""
 
@@ -5334,48 +5731,72 @@ msgstr ""
 msgid "Opened Files..."
 msgstr ""
 
+#. Translators: File menu command opening download options for the current online media file.
+#. Translators: Download. Used in music-server original-file download options.
+#. Translators: Context menu item in the results list that opens the download window to choose how the chosen video is saved.
+#: UI/Menus/FileMenu.cs:75 UI/Subsonic/Text/Downloads.cs:16
+#: UI/YouTube/ResultsDialog.cs:402
+msgid "Download..."
+msgstr ""
+
+#. Translators: File menu command saving the current online media file using its provider's saved download settings.
+#. Translators: Direct download. Used in music-server original-file download options.
+#. Translators: Context menu item in the results list that saves the chosen video straight to disk with the saved download settings.
+#: UI/Menus/FileMenu.cs:77 UI/Subsonic/Text/Downloads.cs:19
+#: UI/YouTube/ResultsDialog.cs:404
+msgid "Direct download"
+msgstr ""
+
+#. Translators: File menu command adding the current online media file to the download queue.
+#. Translators: Add to download queue. Used in music-server original-file download options.
+#. Translators: Context menu item that adds the selected video to the download queue.
+#: UI/Menus/FileMenu.cs:79 UI/Subsonic/Text/Downloads.cs:22
+#: UI/YouTube/ResultsDialog.cs:406
+msgid "Add to download queue"
+msgstr ""
+
 #. Translators: File menu item that removes the current file from the player.
-#: UI/Menus/FileMenu.cs:74
+#: UI/Menus/FileMenu.cs:81
 msgid "Close File"
 msgstr ""
 
 #. Translators: File menu item that opens the player's settings window.
-#: UI/Menus/FileMenu.cs:78
+#: UI/Menus/FileMenu.cs:85
 msgid "Preferences..."
 msgstr ""
 
 #. Translators: File menu item that quits the player.
-#: UI/Menus/FileMenu.cs:81
+#: UI/Menus/FileMenu.cs:88
 msgid "Exit"
 msgstr ""
 
 #. Translators: Shown in the Recent files submenu when no files have been opened yet.
-#: UI/Menus/FileMenu.cs:103
+#: UI/Menus/FileMenu.cs:110
 msgid "No recent files"
 msgstr ""
 
 #. Translators: Recent files submenu item that empties the list of recently opened files.
-#: UI/Menus/FileMenu.cs:105
+#: UI/Menus/FileMenu.cs:112
 msgid "Clear recent files"
 msgstr ""
 
 #. Translators: Shown in the Recent folders submenu when no folders have been opened yet.
-#: UI/Menus/FileMenu.cs:108
+#: UI/Menus/FileMenu.cs:115
 msgid "No recent folders"
 msgstr ""
 
 #. Translators: Recent folders submenu item that empties the list of recently opened folders.
-#: UI/Menus/FileMenu.cs:110
+#: UI/Menus/FileMenu.cs:117
 msgid "Clear recent folders"
 msgstr ""
 
 #. Translators: Shown in the Recent playlists submenu when no playlists have been opened yet.
-#: UI/Menus/FileMenu.cs:113
+#: UI/Menus/FileMenu.cs:120
 msgid "No recent playlists"
 msgstr ""
 
 #. Translators: Recent playlists submenu item that empties the list of recently opened playlists.
-#: UI/Menus/FileMenu.cs:115
+#: UI/Menus/FileMenu.cs:122
 msgid "Clear recent playlists"
 msgstr ""
 
@@ -5643,15 +6064,6 @@ msgstr ""
 msgid "Open the recording interface..."
 msgstr ""
 
-#. Translators: Recording menu item that ends a recording and closes the file.
-#. Translators: The timer action that stops playback.
-#. Translators: Button that ends a recording and closes the file.
-#. Translators: Stops the selected download and returns it to the queue.
-#: UI/Menus/RecordingMenu.cs:25 UI/Playback/SleepTimerDialog.cs:82
-#: UI/Recording/Transport.cs:109 UI/YouTube/DownloadQueueDialog.cs:57
-msgid "Stop"
-msgstr ""
-
 #. Translators: Recording menu item that opens the folder recordings are saved into.
 #: UI/Menus/RecordingMenu.cs:28
 msgid "Open recordings folder"
@@ -5713,88 +6125,85 @@ msgid "Repeat Selections"
 msgstr ""
 
 #. Translators: Tools menu item that opens the window for converting files to another audio format.
-#: UI/Menus/ToolsMenu.cs:15
+#: UI/Menus/ToolsMenu.cs:17
 msgid "Media converter..."
 msgstr ""
 
 #. Translators: Tools menu item opening the internet radio station browser.
-#: UI/Menus/ToolsMenu.cs:17
-msgid "Radio browser�"
+#: UI/Menus/ToolsMenu.cs:19
+msgid "Radio browser…"
 msgstr ""
 
 #. Translators: Opens the Spotify home, search and library interface.
-#: UI/Menus/ToolsMenu.cs:19
+#: UI/Menus/ToolsMenu.cs:21
 msgid "Spotify..."
 msgstr ""
 
+#. Translators: Tools > Music servers command that opens the server browser.
+#: UI/Menus/ToolsMenu.cs:24
+msgid "Browse servers..."
+msgstr ""
+
+#. Translators: Tools submenu for browsing saved music servers and acting on the current server song.
+#. Translators: Music servers. Used in the music-server browser navigation and result list.
+#: UI/Menus/ToolsMenu.cs:29 UI/Subsonic/Text/Browsing.cs:13
+msgid "Music servers"
+msgstr ""
+
 #. Translators: IPTV menu item that opens the window where IPTV sources are added and edited.
-#: UI/Menus/ToolsMenu.cs:27
+#: UI/Menus/ToolsMenu.cs:37
 msgid "Manage IPTV sources..."
 msgstr ""
 
 #. Translators: IPTV menu item that opens the list of channels the chosen IPTV source holds.
-#: UI/Menus/ToolsMenu.cs:29
+#: UI/Menus/ToolsMenu.cs:39
 msgid "Browse channels..."
 msgstr ""
 
 #. Translators: Tools submenu holding the IPTV source manager and channel browser.
-#: UI/Menus/ToolsMenu.cs:31
+#: UI/Menus/ToolsMenu.cs:41
 msgid "IPTV"
 msgstr ""
 
 #. Translators: Sleep-timer menu item that opens the window where a timer is set.
-#: UI/Menus/ToolsMenu.cs:37
+#: UI/Menus/ToolsMenu.cs:47
 msgid "Set timer..."
 msgstr ""
 
 #. Translators: Sleep-timer menu item that turns off a timer that is counting down.
-#: UI/Menus/ToolsMenu.cs:39
+#: UI/Menus/ToolsMenu.cs:49
 msgid "Cancel timer"
 msgstr ""
 
 #. Translators: Sleep-timer menu item that speaks how long is left before the timer fires.
-#: UI/Menus/ToolsMenu.cs:41
+#: UI/Menus/ToolsMenu.cs:51
 msgid "Time remaining"
 msgstr ""
 
 #. Translators: Tools submenu holding the sleep-timer commands.
 #. Translators: Title of the window used to configure the sleep timer.
-#: UI/Menus/ToolsMenu.cs:43 UI/Playback/SleepTimerDialog.cs:44
+#: UI/Menus/ToolsMenu.cs:53 UI/Playback/SleepTimerDialog.cs:44
 msgid "Sleep timer"
 msgstr ""
 
-#. Translators: Item in the Video options menu that opens the download window to choose how the video being played is saved.
-#: UI/Menus/VideoMenu.cs:16
-msgid "Download..."
-msgstr ""
-
-#. Translators: Item in the Video options menu that saves the video being played straight to disk with the saved download settings.
-#: UI/Menus/VideoMenu.cs:18
-msgid "Direct download"
-msgstr ""
-
-#. Translators: Item in the Video options menu that adds the video being played to the download queue.
-#: UI/Menus/VideoMenu.cs:20
-msgid "Add to download queue"
-msgstr ""
-
 #. Translators: Item in the Video options menu that shows the text the uploader wrote under the video.
-#: UI/Menus/VideoMenu.cs:22
+#: UI/Menus/VideoMenu.cs:16
 msgid "Video description..."
 msgstr ""
 
 #. Translators: Item in the Video options menu that copies the address of the video being played.
-#: UI/Menus/VideoMenu.cs:24
+#: UI/Menus/VideoMenu.cs:18
 msgid "Copy video link"
 msgstr ""
 
 #. Translators: Item in the Video options menu that opens the video being played in the web browser.
-#: UI/Menus/VideoMenu.cs:26
+#: UI/Menus/VideoMenu.cs:20
 msgid "Open video in browser"
 msgstr ""
 
 #. Translators: Item in the Video options menu that opens the channel of the video being played in the web browser.
-#: UI/Menus/VideoMenu.cs:28
+#. Translators: Context menu item in the results list that opens the channel that published the video in the web browser.
+#: UI/Menus/VideoMenu.cs:22 UI/YouTube/ResultsDialog.cs:392
 msgid "Open channel in browser"
 msgstr ""
 
@@ -5899,7 +6308,9 @@ msgstr ""
 
 #. Translators: Label above the list of files and folders in the playlist editor.
 #. Translators: Label above the list of saved playlists in My Playlists.
+#. Translators: Items. Used in the music-server browser and its child dialogs.
 #: UI/Playlists/EditorDialog.cs:55 UI/Playlists/ManagerDialog.cs:25
+#: UI/Subsonic/Text/Shared.cs:19
 msgid "Items"
 msgstr ""
 
@@ -5959,8 +6370,11 @@ msgid "My Playlists"
 msgstr ""
 
 #. Translators: Column heading for optional descriptions in the playlist manager.
+#. Translators: Description. Used in the music-server browser's information and advanced commands.
+#. Translators: Description. Used in the server playlist editor and queue commands.
 #. Translators: Label before the box that shows the text written under a video.
-#: UI/Playlists/ManagerDialog.cs:30 UI/YouTube/DescriptionDialog.cs:40
+#: UI/Playlists/ManagerDialog.cs:30 UI/Subsonic/Text/Advanced.cs:88
+#: UI/Subsonic/Text/Playlists.cs:19 UI/YouTube/DescriptionDialog.cs:40
 msgid "Description"
 msgstr ""
 
@@ -5975,22 +6389,22 @@ msgid "Export"
 msgstr ""
 
 #. Translators: Title of the window listing the files currently loaded in the player.
-#: UI/Playlists/OpenedFilesDialog.cs:27
+#: UI/Playlists/OpenedFilesDialog.cs:28
 msgid "Opened Files"
 msgstr ""
 
 #. Translators: Button that shows details of every file in the playlist.
-#: UI/Playlists/OpenedFilesDialog.cs:47
+#: UI/Playlists/OpenedFilesDialog.cs:48
 msgid "Playlist info"
 msgstr ""
 
 #. Translators: Button that starts playing the file chosen in the list.
-#: UI/Playlists/OpenedFilesDialog.cs:49
+#: UI/Playlists/OpenedFilesDialog.cs:50
 msgid "Jump to selected"
 msgstr ""
 
 #. Translators: Label above the list of loaded files, telling the user to pick the one to play.
-#: UI/Playlists/OpenedFilesDialog.cs:68
+#: UI/Playlists/OpenedFilesDialog.cs:88
 msgid "Select file to jump to."
 msgstr ""
 
@@ -6308,7 +6722,8 @@ msgid "Beginner"
 msgstr ""
 
 #. Translators: One of the two amounts of spoken detail: short messages for users who know the player well.
-#: UI/Preferences/General.cs:78
+#. Translators: Tab containing custom HTTP headers for a music-server connection.
+#: UI/Preferences/General.cs:78 UI/Subsonic/Text/Connections.cs:46
 msgid "Advanced"
 msgstr ""
 
@@ -6503,7 +6918,8 @@ msgid "Audio"
 msgstr ""
 
 #. Translators: Name of the playback settings page inside the Audio category.
-#: UI/Preferences/MainDialog.cs:54
+#. Translators: Tab containing stream format, listening reports and queue synchronization settings.
+#: UI/Preferences/MainDialog.cs:54 UI/Subsonic/Text/Connections.cs:40
 msgid "Playback"
 msgstr ""
 
@@ -6523,11 +6939,13 @@ msgid "YouTube"
 msgstr ""
 
 #. Translators: Name of the download settings page inside the YouTube category.
+#. Translators: Download. Used in music-server original-file download options.
 #. Translators: Title of the window where a download's name, type, format and quality are chosen.
 #. Translators: The button that starts this download immediately.
 #. Translators: Button that saves the video chosen in the list of results to a folder on this computer.
-#: UI/Preferences/MainDialog.cs:64 UI/YouTube/DownloadDialog.cs:56
-#: UI/YouTube/DownloadDialog.cs:127 UI/YouTube/ResultsDialog.cs:204
+#: UI/Preferences/MainDialog.cs:64 UI/Subsonic/Text/Downloads.cs:34
+#: UI/YouTube/DownloadDialog.cs:56 UI/YouTube/DownloadDialog.cs:127
+#: UI/YouTube/ResultsDialog.cs:204
 msgid "Download"
 msgstr ""
 
@@ -6538,7 +6956,7 @@ msgstr ""
 
 #. Translators: Name of the settings category for the key combinations that work while another program is in front.
 #. Translators: Heading above the list of shortcuts that work while another program is in front.
-#: UI/Preferences/MainDialog.cs:70 UI/Preferences/Shortcut.cs:55
+#: UI/Preferences/MainDialog.cs:70 UI/Preferences/Shortcut.cs:56
 msgid "Global Shortcuts"
 msgstr ""
 
@@ -6557,7 +6975,7 @@ msgid "Discord"
 msgstr ""
 
 #. Translators: Help text for the settings tree down the left of the Preferences window.
-#: UI/Preferences/MainDialog.cs:216
+#: UI/Preferences/MainDialog.cs:217
 msgid ""
 "Use the Arrow keys to move through settings pages. Press the Right Arrow key "
 "on a category to show its pages and the Left Arrow key to hide them. The "
@@ -6565,7 +6983,7 @@ msgid ""
 msgstr ""
 
 #. Translators: Spoken when the user asks for help on a control that has none.
-#: UI/Preferences/MainDialog.cs:223
+#: UI/Preferences/MainDialog.cs:224
 msgid "No detailed help is available for this control."
 msgstr ""
 
@@ -6653,57 +7071,59 @@ msgid "{value} Hz"
 msgstr ""
 
 #. Translators: A bitrate, as shown in a list. {value} is a number such as 192.
+#. Translators: Original file bitrate in the music-server Quality column. {value} is kilobits per second.
 #: UI/Preferences/Recording.cs:283 UI/Recording/Options.cs:209
+#: UI/Subsonic/Text/Metadata.cs:48
 msgid "{value} kbps"
 msgstr ""
 
 #. Translators: Spoken description of the Keyboard shortcuts settings page, read when the page is opened.
-#: UI/Preferences/Shortcut.cs:41
+#: UI/Preferences/Shortcut.cs:42
 msgid ""
 "Keyboard shortcuts. Select an action, then edit its primary or secondary "
 "local shortcut."
 msgstr ""
 
 #. Translators: Spoken description of the Global shortcuts settings page, read when the page is opened.
-#: UI/Preferences/Shortcut.cs:43
+#: UI/Preferences/Shortcut.cs:44
 msgid ""
 "System-wide shortcuts. Select an action, then edit the combination that "
 "triggers it from any application."
 msgstr ""
 
 #. Translators: Heading above the list of shortcuts that work while the player is the program in front.
-#: UI/Preferences/Shortcut.cs:53
+#: UI/Preferences/Shortcut.cs:54
 msgid "Local Shortcuts"
 msgstr ""
 
 #. Translators: Heading of the shortcut list column naming each command.
-#: UI/Preferences/Shortcut.cs:58
+#: UI/Preferences/Shortcut.cs:59
 msgid "Action"
 msgstr ""
 
 #. Translators: Heading of the shortcut list column holding the first key combination of each command.
-#: UI/Preferences/Shortcut.cs:61
+#: UI/Preferences/Shortcut.cs:62
 msgid "Primary Shortcut"
 msgstr ""
 
 #. Translators: Heading of the shortcut list column holding the key combination of each command, on the page
 #. where a command has only one.
-#: UI/Preferences/Shortcut.cs:64
+#: UI/Preferences/Shortcut.cs:65
 msgid "Shortcut"
 msgstr ""
 
 #. Translators: Heading of the shortcut list column holding the second, alternative key combination of each command.
-#: UI/Preferences/Shortcut.cs:67
+#: UI/Preferences/Shortcut.cs:68
 msgid "Secondary Shortcut"
 msgstr ""
 
 #. Translators: Checkbox below the Local Shortcuts list in Preferences; stop handling each action's alternative key combination.
-#: UI/Preferences/Shortcut.cs:71
+#: UI/Preferences/Shortcut.cs:72
 msgid "Disable secondary shortcuts"
 msgstr ""
 
 #. Translators: F1 help for the Disable secondary shortcuts checkbox on the Local Shortcuts preferences page.
-#: UI/Preferences/Shortcut.cs:73
+#: UI/Preferences/Shortcut.cs:74
 msgid ""
 "Disables the alternative shortcuts in the Secondary Shortcut column so those "
 "keys keep their normal behavior in the interface. Primary and global "
@@ -6712,52 +7132,52 @@ msgid ""
 msgstr ""
 
 #. Translators: Button that changes the first key combination of the chosen command.
-#: UI/Preferences/Shortcut.cs:77
+#: UI/Preferences/Shortcut.cs:78
 msgid "Edit Primary Shortcut"
 msgstr ""
 
 #. Translators: Button that changes the key combination of the chosen command, on the page where a command has only one.
-#: UI/Preferences/Shortcut.cs:79
+#: UI/Preferences/Shortcut.cs:80
 msgid "Edit Shortcut"
 msgstr ""
 
 #. Translators: Button that changes the second, alternative key combination of the chosen command.
-#: UI/Preferences/Shortcut.cs:81
+#: UI/Preferences/Shortcut.cs:82
 msgid "Edit Secondary Shortcut"
 msgstr ""
 
 #. Translators: Button that puts every shortcut on this page back to the combination the player came with.
-#: UI/Preferences/Shortcut.cs:83
+#: UI/Preferences/Shortcut.cs:84
 msgid "Reset to Defaults"
 msgstr ""
 
 #. Translators: Shown when the combination the user pressed is already used by another command.
-#: UI/Preferences/Shortcut.cs:159
+#: UI/Preferences/Shortcut.cs:161
 msgid "That shortcut is already assigned to another action."
 msgstr ""
 
 #. Translators: Asks the user to confirm putting every shortcut on this page back to the combination the player came with.
-#: UI/Preferences/Shortcut.cs:196
+#: UI/Preferences/Shortcut.cs:198
 msgid "Reset all shortcuts to defaults?"
 msgstr ""
 
 #. Translators: Title of the window that waits for a combination that will work while another program is in front.
-#: UI/Preferences/Shortcut.cs:285
+#: UI/Preferences/Shortcut.cs:287
 msgid "Set Global Shortcut"
 msgstr ""
 
 #. Translators: Title of the small window that waits for the user to press the combination they want.
-#: UI/Preferences/Shortcut.cs:287
+#: UI/Preferences/Shortcut.cs:289
 msgid "Set Shortcut"
 msgstr ""
 
 #. Translators: Message in the window that waits for a system-wide key combination. Escape is the name of the key that closes it.
-#: UI/Preferences/Shortcut.cs:290
+#: UI/Preferences/Shortcut.cs:292
 msgid "Press the desired global shortcut. Escape cancels."
 msgstr ""
 
 #. Translators: Message in the window that waits for a key combination. Escape is the name of the key that closes it.
-#: UI/Preferences/Shortcut.cs:292
+#: UI/Preferences/Shortcut.cs:294
 msgid "Press the desired shortcut. Escape cancels."
 msgstr ""
 
@@ -7013,30 +7433,21 @@ msgid "Enter a numeric value, then press OK to apply it."
 msgstr ""
 
 #. Translators: Spoken after saving the selected radio station to favorites.
+#. Translators: Short confirmation after adding music-server items to favorites.
 #. Translators: Spoken once a video has been added to the favourites from the results list.
 #. Translators: The short wording spoken once a video has been added to the favourites.
-#: UI/Radio/Actions.cs:49 YouTube/Playback/Browsing.cs:194
-#: YouTube/Playback/Browsing.cs:196
+#: UI/Radio/Actions.cs:49 UI/Subsonic/Text/Operations.cs:7
+#: YouTube/Playback/Browsing.cs:194 YouTube/Playback/Browsing.cs:196
 msgid "Added to favorites."
 msgstr ""
 
 #. Translators: Spoken after removing the selected radio station from favorites.
+#. Translators: Short confirmation after removing music-server items from favorites.
 #. Translators: Spoken once a video has been taken back out of the favourites from the results list.
 #. Translators: The short wording spoken once a video has been removed from the favourites.
-#: UI/Radio/Actions.cs:51 YouTube/Playback/Browsing.cs:177
-#: YouTube/Playback/Browsing.cs:179
+#: UI/Radio/Actions.cs:51 UI/Subsonic/Text/Operations.cs:10
+#: YouTube/Playback/Browsing.cs:177 YouTube/Playback/Browsing.cs:179
 msgid "Removed from favorites."
-msgstr ""
-
-#. Translators: Radio station context-menu action removing a saved station.
-#: UI/Radio/Actions.cs:89
-msgid "Remove from favorites"
-msgstr ""
-
-#. Translators: Radio station context-menu action saving a station.
-#. Translators: Radio station context-menu action saving the selected station locally.
-#: UI/Radio/Actions.cs:91 UI/Radio/BrowserDialog.cs:154
-msgid "Add to favorites"
 msgstr ""
 
 #. Translators: Spoken after a radio station name or stream URL was copied to the clipboard.
@@ -7071,7 +7482,9 @@ msgstr ""
 
 #. Translators: Label above the radio browser's navigation tree.
 #. Translators: Accessible name of the radio browser's navigation tree.
+#. Translators: Categories. Used in the music-server browser navigation and result list.
 #: UI/Radio/BrowserDialog.cs:93 UI/Radio/BrowserDialog.cs:97
+#: UI/Subsonic/Text/Browsing.cs:73
 msgid "Categories"
 msgstr ""
 
@@ -7094,7 +7507,9 @@ msgstr ""
 
 #. Translators: Column heading for a radio stream's bitrate in kilobits per second.
 #. Translators: Label of the list that chooses how much room a second of compressed audio may take.
+#. Translators: Sort-by choice for the original file's bitrate in Music servers.
 #: UI/Radio/BrowserDialog.cs:116 UI/Recording/MainDialog.cs:148
+#: UI/Subsonic/Text/Metadata.cs:16
 msgid "Bitrate"
 msgstr ""
 
@@ -7109,8 +7524,9 @@ msgstr ""
 #. Translators: Button reloading the current radio directory or station list.
 #. Translators: Radio category context-menu action reloading its contents.
 #. Translators: Button in the Spotify browser that reloads the account library.
+#. Translators: Refresh. Used in the music-server browser and its child dialogs.
 #: UI/Radio/BrowserDialog.cs:132 UI/Radio/BrowserDialog.cs:169
-#: UI/Spotify/BrowserDialog.cs:68
+#: UI/Spotify/BrowserDialog.cs:68 UI/Subsonic/Text/Shared.cs:28
 msgid "Refresh"
 msgstr ""
 
@@ -7299,7 +7715,8 @@ msgid "Global stations"
 msgstr ""
 
 #. Translators: Radio tree category containing stations saved by this user.
-#: UI/Radio/Navigation.cs:21
+#. Translators: Favorites. Used in the music-server browser navigation and result list.
+#: UI/Radio/Navigation.cs:21 UI/Subsonic/Text/Browsing.cs:85
 msgid "Favorites"
 msgstr ""
 
@@ -7310,7 +7727,9 @@ msgstr ""
 
 #. Translators: Radio discovery category ordered by public playback counts.
 #. Translators: Country-specific radio tree item ranking stations by public playback counts.
+#. Translators: Most played. Used in the music-server browser navigation and result list.
 #: UI/Radio/Navigation.cs:27 UI/Radio/Navigation.cs:129
+#: UI/Subsonic/Text/Browsing.cs:91
 msgid "Most played"
 msgstr ""
 
@@ -7393,12 +7812,6 @@ msgstr ""
 msgid "Could not schedule radio browser updates."
 msgstr ""
 
-#. Translators: Button that adds a recording source. It opens a menu of the kinds that can be added.
-#. Translators: Confirms adding the entered links to the download queue.
-#: UI/Recording/MainDialog.cs:97 UI/YouTube/DownloadQueueDialog.cs:375
-msgid "Add"
-msgstr ""
-
 #. Translators: Label of the slider that sets how loud the chosen recording source is in the mix.
 #: UI/Recording/MainDialog.cs:114
 msgid "Volume for selected source"
@@ -7411,7 +7824,9 @@ msgstr ""
 
 #. Translators: Label of the list that chooses what a recording is saved as.
 #. Translators: Label of the combo box choosing the media format for saved selections.
+#. Translators: Label for the requested output codec when server transcoding is selected.
 #: UI/Recording/MainDialog.cs:135 UI/Selections/SaveDialog.cs:50
+#: UI/Subsonic/Text/Connections.cs:67
 msgid "Format"
 msgstr ""
 
@@ -7419,14 +7834,6 @@ msgstr ""
 #. Translators: Label of the read-only folder box in the save-selection-points dialog.
 #: UI/Recording/MainDialog.cs:151 UI/Selections/SaveDialog.cs:40
 msgid "Folder"
-msgstr ""
-
-#. Translators: Button that begins recording, and ends it when pressed a second time.
-#. Translators: Button that begins recording.
-#. Translators: Starts every unfinished item in the download queue.
-#: UI/Recording/MainDialog.cs:173 UI/Recording/Transport.cs:107
-#: UI/YouTube/DownloadQueueDialog.cs:63
-msgid "Start"
 msgstr ""
 
 #. Translators: Label of the list that chooses which program a recording source captures.
@@ -7441,10 +7848,11 @@ msgid "Device"
 msgstr ""
 
 #. Translators: Shown in a list while what belongs in it is still being looked up.
+#. Translators: Loading. Used in the music-server browser and its child dialogs.
 #. Translators: Spoken while another tab of a YouTube channel is being loaded.
 #. Translators: The short wording spoken while a channel tab is being loaded.
-#: UI/Recording/SourceDialog.cs:66 YouTube/Playback/Feed.cs:166
-#: YouTube/Playback/Feed.cs:168
+#: UI/Recording/SourceDialog.cs:66 UI/Subsonic/Text/Shared.cs:49
+#: YouTube/Playback/Feed.cs:166 YouTube/Playback/Feed.cs:168
 msgid "Loading..."
 msgstr ""
 
@@ -7625,8 +8033,8 @@ msgstr ""
 #. Translators: Save dialog file types. JSON, M3U and M3U8 and all wildcard patterns must remain unchanged.
 #: UI/Services/Dialogs/Playlists.cs:82
 msgid ""
-"M3U8 playlist (*.m3u8)|*.m3u8|M3U playlist (*.m3u)|*.m3u|JSON playlist (*."
-"json)|*.json"
+"M3U8 playlist (*.m3u8)|*.m3u8|M3U playlist (*.m3u)|*.m3u|JSON playlist "
+"(*.json)|*.json"
 msgstr ""
 
 #. Translators: Confirmation before replacing an existing playlist after adjusting its filename extension.
@@ -7706,7 +8114,7 @@ msgid "Success"
 msgstr ""
 
 #. Translators: Title of a message box reporting an error.
-#: UI/Services/Messages.cs:21
+#: UI/Services/Messages.cs:23
 msgid "Error"
 msgstr ""
 
@@ -7748,12 +8156,14 @@ msgid "Filter by"
 msgstr ""
 
 #. Translators: Option in the Spotify search filter to show tracks.
-#: UI/Spotify/BrowserDialog.cs:103
+#. Translators: Songs. Used in the music-server browser navigation and result list.
+#: UI/Spotify/BrowserDialog.cs:103 UI/Subsonic/Text/Browsing.cs:31
 msgid "Songs"
 msgstr ""
 
 #. Translators: Option in the Spotify search filter to show musicians and groups.
-#: UI/Spotify/BrowserDialog.cs:105
+#. Translators: Artists. Used in the music-server browser navigation and result list.
+#: UI/Spotify/BrowserDialog.cs:105 UI/Subsonic/Text/Browsing.cs:25
 msgid "Artists"
 msgstr ""
 
@@ -7768,7 +8178,8 @@ msgid "Your playlists and Liked Songs"
 msgstr ""
 
 #. Translators: Tab in the Spotify browser listing account playlists and saved songs.
-#: UI/Spotify/BrowserDialog.cs:146
+#. Translators: Library. Used in the music-server browser navigation and result list.
+#: UI/Spotify/BrowserDialog.cs:146 UI/Subsonic/Text/Browsing.cs:34
 msgid "Library"
 msgstr ""
 
@@ -7953,13 +8364,17 @@ msgid "Search results - Spotify"
 msgstr ""
 
 #. Translators: Label for the list of songs, artists and playlists in the Spotify search results window.
+#. Translators: Label and accessible name of mixed search results in Music servers.
 #. Translators: Heading above the list of videos a YouTube search found.
-#: UI/Spotify/SearchResultsDialog.cs:44 YouTube/Playback/Session.cs:88
+#: UI/Spotify/SearchResultsDialog.cs:44 UI/Subsonic/Text/Browsing.cs:10
+#: YouTube/Playback/Session.cs:88
 msgid "Search results"
 msgstr ""
 
 #. Translators: Button that returns from Spotify tracks or search results to the browser.
+#. Translators: Back. Used in the music-server browser navigation and result list.
 #: UI/Spotify/SearchResultsDialog.cs:56 UI/Spotify/TracksDialog.cs:53
+#: UI/Subsonic/Text/Browsing.cs:79
 msgid "Back"
 msgstr ""
 
@@ -7981,6 +8396,964 @@ msgstr ""
 #. Translators: Spoken when reaching the end of a Spotify collection's track list requests another page.
 #: UI/Spotify/TracksDialog.cs:112
 msgid "Loading more tracks..."
+msgstr ""
+
+#. Translators: Server bookmarks. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:7
+msgid "Server bookmarks"
+msgstr ""
+
+#. Translators: Now playing. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:10
+msgid "Now playing"
+msgstr ""
+
+#. Translators: Podcasts. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:16
+msgid "Podcasts"
+msgstr ""
+
+#. Translators: AudioMuse. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:19
+msgid "AudioMuse"
+msgstr ""
+
+#. Translators: Details. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:22
+msgid "Details..."
+msgstr ""
+
+#. Translators: Lyrics. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:25
+msgid "Lyrics..."
+msgstr ""
+
+#. Translators: Similar songs. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:28
+msgid "Similar songs"
+msgstr ""
+
+#. Translators: Top songs. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:31
+msgid "Top songs"
+msgstr ""
+
+#. Translators: Sonic similar tracks. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:34
+msgid "Sonic similar tracks"
+msgstr ""
+
+#. Translators: Find sonic path. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:37
+msgid "Find sonic path"
+msgstr ""
+
+#. Translators: Start library scan. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:40
+msgid "Scan server library for changes"
+msgstr ""
+
+#. Translators: Start full library scan. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:43
+msgid "Rescan entire server library"
+msgstr ""
+
+#. Translators: Server scan status. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:46
+msgid "Server scan status"
+msgstr ""
+
+#. Translators: Server information. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:49
+msgid "Server information"
+msgstr ""
+
+#. Translators: Bookmark current position. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:52
+msgid "Bookmark current position..."
+msgstr ""
+
+#. Translators: Comment. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:58
+msgid "Comment"
+msgstr ""
+
+#. Translators: Subscribe to podcast. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:64
+msgid "Subscribe to podcast..."
+msgstr ""
+
+#. Translators: Refresh podcasts. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:67
+msgid "Refresh podcasts"
+msgstr ""
+
+#. Translators: Download episode to server. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:70
+msgid "Download episode to server"
+msgstr ""
+
+#. Translators: Delete episode from server. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:73
+msgid "Delete episode from server"
+msgstr ""
+
+#. Translators: Add radio station. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:76
+msgid "Add radio station..."
+msgstr ""
+
+#. Translators: Stream address. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:79
+msgid "Stream address"
+msgstr ""
+
+#. Translators: Website (optional). Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:82
+msgid "Website (optional)"
+msgstr ""
+
+#. Translators: Podcast feed address. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:85
+msgid "Podcast feed address"
+msgstr ""
+
+#. Translators: Search by description. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:91
+msgid "Search by description..."
+msgstr ""
+
+#. Translators: Generate playlist. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:94
+msgid "Generate playlist..."
+msgstr ""
+
+#. Translators: Song Alchemy. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:97
+msgid "Song Alchemy..."
+msgstr ""
+
+#. Translators: Include. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:100
+msgid "Include"
+msgstr ""
+
+#. Translators: Exclude. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:103
+msgid "Exclude"
+msgstr ""
+
+#. Translators: Operation. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:106
+msgid "Operation"
+msgstr ""
+
+#. Translators: Generate. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:109
+msgid "Generate"
+msgstr ""
+
+#. Translators: AudioMuse results. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:112
+msgid "AudioMuse results"
+msgstr ""
+
+#. Translators: Would you like to remove this bookmark? Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:115
+msgid "Would you like to remove this bookmark?"
+msgstr ""
+
+#. Translators: Would you like to remove this radio station? Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:118
+msgid "Would you like to remove this radio station?"
+msgstr ""
+
+#. Translators: Would you like to remove this podcast subscription? Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:121
+msgid "Would you like to remove this podcast subscription?"
+msgstr ""
+
+#. Translators: Would you like to remove this episode from the server? Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:124
+msgid "Would you like to remove this episode from the server?"
+msgstr ""
+
+#. Translators: Configure AudioMuse for this server first. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:127
+msgid "Configure AudioMuse for this server first."
+msgstr ""
+
+#. Translators: No lyrics are available. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:130
+msgid "No lyrics are available."
+msgstr ""
+
+#. Translators: This action requires playback from the selected server. Used in the music-server browser's information and advanced commands.
+#: UI/Subsonic/Text/Advanced.cs:133
+msgid "This action requires playback from the selected server."
+msgstr ""
+
+#. Translators: Label and accessible name of the episode list after opening a podcast in Music servers.
+#: UI/Subsonic/Text/Browsing.cs:7
+msgid "Episodes"
+msgstr ""
+
+#. Translators: Result type. Used in the music-server browser navigation and result list.
+#: UI/Subsonic/Text/Browsing.cs:19
+msgid "Result type"
+msgstr ""
+
+#. Translators: Albums. Used in the music-server browser navigation and result list.
+#: UI/Subsonic/Text/Browsing.cs:28
+msgid "Albums"
+msgstr ""
+
+#. Translators: All libraries. Used in the music-server browser navigation and result list.
+#: UI/Subsonic/Text/Browsing.cs:37
+msgid "All libraries"
+msgstr ""
+
+#. Translators: Sort by. Used in the music-server browser navigation and result list.
+#: UI/Subsonic/Text/Browsing.cs:40
+msgid "Sort by"
+msgstr ""
+
+#. Translators: Sort order. Used in the music-server browser navigation and result list.
+#: UI/Subsonic/Text/Browsing.cs:43
+msgid "Sort order"
+msgstr ""
+
+#. Translators: Ascending. Used in the music-server browser navigation and result list.
+#: UI/Subsonic/Text/Browsing.cs:46
+msgid "Ascending"
+msgstr ""
+
+#. Translators: Descending. Used in the music-server browser navigation and result list.
+#: UI/Subsonic/Text/Browsing.cs:49
+msgid "Descending"
+msgstr ""
+
+#. Translators: Default order. Used in the music-server browser navigation and result list.
+#: UI/Subsonic/Text/Browsing.cs:52
+msgid "Default order"
+msgstr ""
+
+#. Translators: Year. Used in the music-server browser navigation and result list.
+#: UI/Subsonic/Text/Browsing.cs:58
+msgid "Year"
+msgstr ""
+
+#. Translators: Date added. Used in the music-server browser navigation and result list.
+#: UI/Subsonic/Text/Browsing.cs:61
+msgid "Date added"
+msgstr ""
+
+#. Translators: Play count. Used in the music-server browser navigation and result list.
+#: UI/Subsonic/Text/Browsing.cs:64
+msgid "Play count"
+msgstr ""
+
+#. Translators: Rating. Used in the music-server browser navigation and result list.
+#: UI/Subsonic/Text/Browsing.cs:67
+msgid "Rating"
+msgstr ""
+
+#. Translators: Favorite. Used in the music-server browser navigation and result list.
+#: UI/Subsonic/Text/Browsing.cs:70
+msgid "Favorite"
+msgstr ""
+
+#. Translators: Actions. Used in the music-server browser navigation and result list.
+#: UI/Subsonic/Text/Browsing.cs:76
+msgid "Actions"
+msgstr ""
+
+#. Translators: Genres. Used in the music-server browser navigation and result list.
+#: UI/Subsonic/Text/Browsing.cs:82
+msgid "Genres"
+msgstr ""
+
+#. Translators: Browser category that fetches a fresh random selection of individual songs.
+#: UI/Subsonic/Text/Browsing.cs:94
+msgid "Random mix"
+msgstr ""
+
+#. Translators: Number of results. Used in the music-server browser navigation and result list.
+#: UI/Subsonic/Text/Browsing.cs:97
+msgid "Number of results"
+msgstr ""
+
+#. Translators: Filters. Used in the music-server browser navigation and result list.
+#: UI/Subsonic/Text/Browsing.cs:109
+msgid "Filters..."
+msgstr ""
+
+#. Translators: From year (0 means any). Used in the music-server browser navigation and result list.
+#: UI/Subsonic/Text/Browsing.cs:112
+msgid "From year (0 means any)"
+msgstr ""
+
+#. Translators: To year (0 means any). Used in the music-server browser navigation and result list.
+#: UI/Subsonic/Text/Browsing.cs:115
+msgid "To year (0 means any)"
+msgstr ""
+
+#. Translators: F1 help for the Music servers browser. The shortcut names are its default bindings.
+#: UI/Subsonic/Text/Browsing.cs:118
+msgid ""
+"Choose a server, browse a category or type to search. Enter opens "
+"collections or plays songs. Shift+Enter shows song details or plays selected "
+"collections. Ctrl+R sets ratings, Ctrl+L opens lyrics, Ctrl+B bookmarks the "
+"current position, and Ctrl+Shift+N creates a server playlist. Ctrl+Enter "
+"adds items to the current playlist without playing them. Existing songs are "
+"reused; new songs are appended at the end. Back, or Alt+Left, returns to the "
+"previous browsing view, such as an artist's albums after opening one album. "
+"It does not change playback. Ctrl+D downloads directly; Ctrl+Shift+D opens "
+"download options. F5 rereads the server catalogue. Scan server library for "
+"changes asks the server to index new, changed or removed music files. Rescan "
+"entire server library checks every server folder, including unchanged files, "
+"on servers that support it. Sort by and Sort order apply to the complete "
+"current collection. The browser stays open during playback."
+msgstr ""
+
+#. Translators: Favorite column value for an item starred on the music server.
+#. Translators: Button that agrees to fetch the extra programs YouTube needs.
+#: UI/Subsonic/Text/Browsing.cs:121 UI/YouTube/ComponentsDialog.cs:30
+msgid "Yes"
+msgstr ""
+
+#. Translators: Error in the music-server browser's year filter dialog.
+#: UI/Subsonic/Text/Browsing.cs:124
+msgid "The starting year must not be later than the ending year."
+msgstr ""
+
+#. Translators: Description of the music-server browser shortcut preferences page.
+#: UI/Subsonic/Text/Browsing.cs:127
+msgid ""
+"These shortcuts work in the Music servers browser. Playback and download "
+"shortcuts apply to its item list. Select an action to change its shortcut."
+msgstr ""
+
+#. Translators: Heading for the saved music-server connection editor and label of the account selector in the browser.
+#: UI/Subsonic/Text/Connections.cs:7
+msgid "Server"
+msgstr ""
+
+#. Translators: Button in the music-server browser that opens the list of saved server connections.
+#: UI/Subsonic/Text/Connections.cs:10
+msgid "Manage servers..."
+msgstr ""
+
+#. Translators: Secret API key field in the music-server connection editor. API is the protocol abbreviation.
+#. Translators: Authentication choice for a server-issued API key.
+#: UI/Subsonic/Text/Connections.cs:22 UI/Subsonic/Text/Connections.cs:31
+msgid "API key"
+msgstr ""
+
+#. Translators: Authentication method selector in the music-server connection editor.
+#: UI/Subsonic/Text/Connections.cs:25
+msgid "Authentication"
+msgstr ""
+
+#. Translators: Authentication choice that sends a salted password hash instead of the password.
+#: UI/Subsonic/Text/Connections.cs:28
+msgid "Username and password"
+msgstr ""
+
+#. Translators: Compatibility authentication choice for servers that require password authentication.
+#: UI/Subsonic/Text/Connections.cs:34
+msgid "Legacy password authentication"
+msgstr ""
+
+#. Translators: Tab containing the server address and credentials.
+#: UI/Subsonic/Text/Connections.cs:37
+msgid "Connection"
+msgstr ""
+
+#. Translators: Tab containing the default destination and folder organization for original-file downloads.
+#: UI/Subsonic/Text/Connections.cs:43
+msgid "Downloads"
+msgstr ""
+
+#. Translators: Button that checks connection credentials without saving the server profile.
+#: UI/Subsonic/Text/Connections.cs:49
+msgid "Test connection"
+msgstr ""
+
+#. Translators: Status shown when testing the music-server connection succeeds.
+#: UI/Subsonic/Text/Connections.cs:52
+msgid "Connection successful."
+msgstr ""
+
+#. Translators: Playback format choice that requests the original media without server transcoding.
+#: UI/Subsonic/Text/Connections.cs:55
+msgid "Original"
+msgstr ""
+
+#. Translators: Playback format choice that leaves transcoding decisions to the music server.
+#: UI/Subsonic/Text/Connections.cs:58
+msgid "Server default"
+msgstr ""
+
+#. Translators: Playback format choice that requests conversion on the music server.
+#: UI/Subsonic/Text/Connections.cs:61
+msgid "Transcode"
+msgstr ""
+
+#. Translators: Label for the streaming mode selector in the server playback settings.
+#: UI/Subsonic/Text/Connections.cs:64
+msgid "Streaming mode"
+msgstr ""
+
+#. Translators: Maximum transcoding bitrate in kilobits per second; zero means no requested limit.
+#: UI/Subsonic/Text/Connections.cs:70
+msgid "Maximum bitrate (kbps; 0 means server default)"
+msgstr ""
+
+#. Translators: Checkbox enabling playback reports and scrobbles to this music-server account.
+#: UI/Subsonic/Text/Connections.cs:73
+msgid "Report listening activity"
+msgstr ""
+
+#. Translators: Checkbox enabling automatic two-way play-queue synchronization with this server.
+#: UI/Subsonic/Text/Connections.cs:76
+msgid "Synchronize queue and position automatically"
+msgstr ""
+
+#. Translators: Multiline field for HTTP request headers, one header per line in Name: value format.
+#: UI/Subsonic/Text/Connections.cs:79
+msgid "Custom HTTP headers (one Name: value per line)"
+msgstr ""
+
+#. Translators: Optional URL of the separate AudioMuse recommendation service.
+#: UI/Subsonic/Text/Connections.cs:82
+msgid "AudioMuse address (optional)"
+msgstr ""
+
+#. Translators: Secret access token for the optional AudioMuse service.
+#: UI/Subsonic/Text/Connections.cs:85
+msgid "AudioMuse token"
+msgstr ""
+
+#. Translators: Optional server name used by AudioMuse to identify the music library.
+#: UI/Subsonic/Text/Connections.cs:88
+msgid "AudioMuse music server (optional)"
+msgstr ""
+
+#. Translators: Confirmation before removing an account; only that server’s playback entries are removed and existing downloads keep running.
+#: UI/Subsonic/Text/Connections.cs:91
+msgid ""
+"Would you like to remove this server? Its current playlist entries will be "
+"removed and its playback will stop. Existing downloads will continue."
+msgstr ""
+
+#. Translators: Error when a saved playlist references an account that has been removed.
+#: UI/Subsonic/Text/Connections.cs:94
+msgid "This item belongs to a server that is no longer configured."
+msgstr ""
+
+#. Translators: Error for invalid music-server connection fields.
+#: UI/Subsonic/Text/Connections.cs:97
+msgid "Check the server address, credentials and numeric settings."
+msgstr ""
+
+#. Translators: Validation error for the saved music-server address field.
+#: UI/Subsonic/Text/Connections.cs:100
+msgid "Enter a valid HTTP or HTTPS server address."
+msgstr ""
+
+#. Translators: Success message after Test connection in the music-server profile editor.
+#: UI/Subsonic/Text/Connections.cs:103
+msgid "The connection was successful."
+msgstr ""
+
+#. Translators: Validation error for the name field when saving a music-server profile.
+#: UI/Subsonic/Text/Connections.cs:106
+msgid "Enter a name for this server."
+msgstr ""
+
+#. Translators: F1 help for saved music-server settings. OpenSubsonic, AudioMuse, API and HTTPS are service/protocol names.
+#: UI/Subsonic/Text/Connections.cs:109
+msgid ""
+"Connection: enter a name, the server's base address, and your credentials. "
+"An address without a scheme uses HTTPS. Use legacy password authentication "
+"only for servers that require it. API key authentication requires server "
+"support. Test connection checks your details without saving. Playback: "
+"Original requests the original stream; Server default lets the server "
+"choose; Transcode requests a format and maximum bitrate. Downloads always "
+"request original files. Report listening sends playback information and "
+"scrobbles to this account. Synchronize queue automatically exchanges this "
+"server's songs, current item and position with the server queue, including "
+"other clients' changes. Browsing: choose visible sections and optionally "
+"restrict browsing to selected libraries. Load libraries uses the connection "
+"details entered here. Startup metadata refresh updates this server's songs "
+"in Luna's restored current playlist. Advanced headers are sent only to this "
+"connection. Configure AudioMuse only if you have access to that separate "
+"service. Secrets are protected for your Windows account. You can save a "
+"connection while the server is offline."
+msgstr ""
+
+#. Translators: Context-menu action that lists related artists for the selected music-server artist.
+#: UI/Subsonic/Text/Discovery.cs:7
+msgid "Similar artists"
+msgstr ""
+
+#. Translators: Browser category listing albums most recently added to a music server.
+#: UI/Subsonic/Text/Discovery.cs:10
+msgid "Recently added"
+msgstr ""
+
+#. Translators: Context-menu action that creates a list of similar songs from a song, album or artist.
+#: UI/Subsonic/Text/Discovery.cs:13
+msgid "Instant mix"
+msgstr ""
+
+#. Translators: Server-menu action to create a saved server playlist from Luna's current opened songs.
+#: UI/Subsonic/Text/Discovery.cs:16
+msgid "Send current playlist to server..."
+msgstr ""
+
+#. Translators: Initial editable name when sending Luna's current playlist to a music server.
+#: UI/Subsonic/Text/Discovery.cs:19
+msgid "Current playlist"
+msgstr ""
+
+#. Translators: Confirmation when a current playlist contains local media or songs from other servers.
+#: UI/Subsonic/Text/Discovery.cs:22
+msgid ""
+"Only songs from the selected server can be included in its playlist. "
+"Continue?"
+msgstr ""
+
+#. Translators: Context-menu action removing selected occurrences from the displayed server playlist.
+#: UI/Subsonic/Text/Discovery.cs:25
+msgid "Remove from playlist"
+msgstr ""
+
+#. Translators: Confirmation before removing selected song occurrences from a server playlist.
+#: UI/Subsonic/Text/Discovery.cs:28
+msgid "Would you like to remove the selected items from this playlist?"
+msgstr ""
+
+#. Translators: Error after a selected music-server collection no longer resolves to any songs.
+#: UI/Subsonic/Text/Discovery.cs:31
+msgid ""
+"No playable songs were found. The server library may have changed. Refresh "
+"the list and select the items again."
+msgstr ""
+
+#. Translators: Button in music-server artist or album information that opens its source web page.
+#: UI/Subsonic/Text/Discovery.cs:34
+msgid "Open information page"
+msgstr ""
+
+#. Translators: Tab of a music-server profile containing visible sections and library selection settings.
+#: UI/Subsonic/Text/Discovery.cs:37
+msgid "Browsing"
+msgstr ""
+
+#. Translators: Checklist of categories to show in the Music servers browser.
+#: UI/Subsonic/Text/Discovery.cs:40
+msgid "Visible browser sections"
+msgstr ""
+
+#. Translators: Checkbox that restricts music-server browsing to the checked libraries.
+#: UI/Subsonic/Text/Discovery.cs:43
+msgid "Only include selected libraries"
+msgstr ""
+
+#. Translators: Label of the music-server library checklist in server browsing settings.
+#: UI/Subsonic/Text/Discovery.cs:46
+msgid "Libraries"
+msgstr ""
+
+#. Translators: Button loading the library checklist using the connection details currently entered.
+#: UI/Subsonic/Text/Discovery.cs:49
+msgid "Load libraries"
+msgstr ""
+
+#. Translators: Success message after loading the library checklist in music-server settings. {count} is how many libraries were returned.
+#: UI/Subsonic/Text/Discovery.cs:52
+msgid "Loaded {count} libraries."
+msgstr ""
+
+#. Translators: Validation error when library restriction is enabled without any checked libraries.
+#: UI/Subsonic/Text/Discovery.cs:55
+msgid "Select at least one library, or turn off the library restriction."
+msgstr ""
+
+#. Translators: Validation error when all browser categories have been unchecked.
+#: UI/Subsonic/Text/Discovery.cs:58
+msgid "Select at least one browser section."
+msgstr ""
+
+#. Translators: Per-server preference to refresh metadata for its songs in Luna's restored current playlist.
+#: UI/Subsonic/Text/Discovery.cs:61
+msgid "Refresh current playlist metadata on startup"
+msgstr ""
+
+#. Translators: Download folder. Used in music-server original-file download options.
+#. Translators: Label of the box holding the folder a download is saved into.
+#. Translators: Label of the box holding the folder YouTube downloads are saved into.
+#: UI/Subsonic/Text/Downloads.cs:7 UI/YouTube/DownloadDialog.cs:94
+#: UI/YouTube/DownloadPreferences.cs:63
+msgid "Download folder"
+msgstr ""
+
+#. Translators: Organize downloads into artist and album folders. Used in music-server original-file download options.
+#: UI/Subsonic/Text/Downloads.cs:13
+msgid "Organize downloads into artist and album folders"
+msgstr ""
+
+#. Translators: File name without extension (optional). Used in music-server original-file download options.
+#: UI/Subsonic/Text/Downloads.cs:31
+msgid "File name without extension (optional)"
+msgstr ""
+
+#. Translators: This podcast episode must be downloaded to the server before it can be played. Used in music-server original-file download options.
+#: UI/Subsonic/Text/Downloads.cs:37
+msgid ""
+"This podcast episode must be downloaded to the server before it can be "
+"played."
+msgstr ""
+
+#. Translators: Shared download queue title for a group of original music files. {count} is the number of files.
+#: UI/Subsonic/Text/Downloads.cs:40
+msgid "Download {count} files"
+msgstr ""
+
+#. Translators: Success message after loading the selected music server's saved play queue into Luna.
+#: UI/Subsonic/Text/Feedback.cs:7
+msgid "The server queue was loaded."
+msgstr ""
+
+#. Translators: Announcement after appending server songs to Luna's current playback list. {count} is how many songs were added.
+#: UI/Subsonic/Text/Feedback.cs:10
+msgid "Added {count} song to Luna's current playlist."
+msgid_plural "Added {count} songs to Luna's current playlist."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Translators: Announcement after adding songs to an unsaved server playlist draft. {count} is how many songs were added; {name} is the playlist's name.
+#: UI/Subsonic/Text/Feedback.cs:13
+msgid ""
+"Added {count} song to the draft of \"{name}\". Save the playlist to keep "
+"this change."
+msgid_plural ""
+"Added {count} songs to the draft of \"{name}\". Save the playlist to keep "
+"this change."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Translators: Announcement after adding songs to a new server playlist draft whose name is still blank. {count} is how many songs were added.
+#: UI/Subsonic/Text/Feedback.cs:16
+msgid ""
+"Added {count} song to the new playlist draft. Name and save the playlist to "
+"keep this change."
+msgid_plural ""
+"Added {count} songs to the new playlist draft. Name and save the playlist to "
+"keep this change."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Translators: Success message after adding songs to an existing saved server playlist. {count} is how many songs were added; {name} is the destination playlist name.
+#: UI/Subsonic/Text/Feedback.cs:19
+msgid "Added {count} song to the server playlist \"{name}\"."
+msgid_plural "Added {count} songs to the server playlist \"{name}\"."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Translators: Success message after saving a server playlist. {name} is the playlist name written to the server.
+#: UI/Subsonic/Text/Feedback.cs:22
+msgid "The server playlist \"{name}\" was saved."
+msgstr ""
+
+#. Translators: Button that accepts the current song-picker selection in a playlist or recommendation editor.
+#: UI/Subsonic/Text/Feedback.cs:25
+msgid "Add selected songs"
+msgstr ""
+
+#. Translators: Announcement after adding songs as positive AudioMuse recommendation seeds. {count} is how many songs were added.
+#: UI/Subsonic/Text/Feedback.cs:28
+msgid "Added {count} song to the recommendation's include list."
+msgid_plural "Added {count} songs to the recommendation's include list."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Translators: Announcement after adding songs as negative AudioMuse recommendation seeds. {count} is how many songs were added.
+#: UI/Subsonic/Text/Feedback.cs:31
+msgid "Added {count} song to the recommendation's exclude list."
+msgid_plural "Added {count} songs to the recommendation's exclude list."
+msgstr[0] ""
+msgstr[1] ""
+
+#. Translators: Validation error when Add selected songs is pressed in the song picker without selecting any songs.
+#: UI/Subsonic/Text/Feedback.cs:34
+msgid "Select at least one song."
+msgstr ""
+
+#. Translators: Success message after a music server accepts a library scan request; the scan may still be running.
+#: UI/Subsonic/Text/Feedback.cs:37
+msgid "Library scan started."
+msgstr ""
+
+#. Translators: Informational message from the music-server scan status command.
+#: UI/Subsonic/Text/Feedback.cs:40
+msgid "The library scan is in progress."
+msgstr ""
+
+#. Translators: Informational message from the music-server scan status command when no scan is active.
+#: UI/Subsonic/Text/Feedback.cs:43
+msgid "No library scan is currently running."
+msgstr ""
+
+#. Translators: Success message after the server accepts a request to refresh its podcast subscriptions.
+#: UI/Subsonic/Text/Feedback.cs:46
+msgid ""
+"The podcast refresh was requested. Refresh the podcast list to check for new "
+"episodes."
+msgstr ""
+
+#. Translators: Success message when the server accepts a podcast download request. This downloads to the server, not this computer.
+#: UI/Subsonic/Text/Feedback.cs:49
+msgid ""
+"The episode download was requested on the server. Refresh the episode list "
+"to check its status."
+msgstr ""
+
+#. Translators: Success message after deleting a downloaded podcast episode from the music server.
+#: UI/Subsonic/Text/Feedback.cs:52
+msgid "The downloaded episode was removed from the server."
+msgstr ""
+
+#. Translators: Choice selecting a language or alternate lyrics version returned by a music server.
+#: UI/Subsonic/Text/Lyrics.cs:7
+msgid "Lyrics version"
+msgstr ""
+
+#. Translators: Checkbox scrolling and selecting the current synchronized lyric line during playback.
+#: UI/Subsonic/Text/Lyrics.cs:10
+msgid "Follow playback"
+msgstr ""
+
+#. Translators: Sort-by choice for the source file's audio bit depth in Music servers.
+#: UI/Subsonic/Text/Metadata.cs:19
+msgid "Bit depth"
+msgstr ""
+
+#. Translators: Browser category that fetches a fresh random selection of albums from a music server.
+#: UI/Subsonic/Text/Metadata.cs:22
+msgid "Random albums"
+msgstr ""
+
+#. Translators: Publication date column in the music-server podcast episode list.
+#: UI/Subsonic/Text/Metadata.cs:25
+msgid "Published"
+msgstr ""
+
+#. Translators: Radio button and track-list value for a song with no server rating.
+#: UI/Subsonic/Text/Metadata.cs:31
+msgid "Not rated"
+msgstr ""
+
+#. Translators: One-star radio button and rating column in Music servers.
+#: UI/Subsonic/Text/Metadata.cs:34
+msgid "1 star"
+msgstr ""
+
+#. Translators: Song rating in Music servers. {count} is a number from 2 to 5.
+#: UI/Subsonic/Text/Metadata.cs:36
+msgid "{count} stars"
+msgstr ""
+
+#. Translators: Validation message when saving a rating dialog with no radio button selected.
+#: UI/Subsonic/Text/Metadata.cs:39
+msgid "Choose a rating before saving."
+msgstr ""
+
+#. Translators: Explains why none of the radio buttons is initially selected for multiple songs.
+#: UI/Subsonic/Text/Metadata.cs:42
+msgid ""
+"The selected songs have different ratings. Choose a rating to apply to all "
+"of them."
+msgstr ""
+
+#. Translators: A batch rating or favorite operation partially failed. {count} is how many items failed.
+#: UI/Subsonic/Text/Metadata.cs:45
+msgid "Could not update {count} items. Successful changes have been kept."
+msgstr ""
+
+#. Translators: Original file sample rate in the music-server Quality column. {value} is kilohertz.
+#: UI/Subsonic/Text/Metadata.cs:51
+msgid "{value} kHz"
+msgstr ""
+
+#. Translators: Original file bit depth in the music-server Quality column. {value} is bits per sample.
+#: UI/Subsonic/Text/Metadata.cs:54
+msgid "{value} bit"
+msgstr ""
+
+#. Translators: Original file channel count in the music-server Quality column. {value} is the count.
+#: UI/Subsonic/Text/Metadata.cs:57
+msgid "{value} channels"
+msgstr ""
+
+#. Translators: Short confirmation after saving music-server song ratings.
+#: UI/Subsonic/Text/Operations.cs:13
+msgid "Rating saved."
+msgstr ""
+
+#. Translators: Short confirmation after saving the current position as a server bookmark.
+#: UI/Subsonic/Text/Operations.cs:16
+msgid "Bookmark added."
+msgstr ""
+
+#. Translators: Announcement when all selected server songs already exist in Luna's current playlist.
+#: UI/Subsonic/Text/Operations.cs:19
+msgid "The selected songs are already in the current playlist."
+msgstr ""
+
+#. Translators: Server playlists. Used in the server playlist editor and queue commands.
+#: UI/Subsonic/Text/Playlists.cs:7
+msgid "Server playlists"
+msgstr ""
+
+#. Translators: Add to server playlist. Used in the server playlist editor and queue commands.
+#: UI/Subsonic/Text/Playlists.cs:10
+msgid "Add to server playlist..."
+msgstr ""
+
+#. Translators: Create server playlist. Used in the server playlist editor and queue commands.
+#: UI/Subsonic/Text/Playlists.cs:13
+msgid "Create server playlist..."
+msgstr ""
+
+#. Translators: Public playlist. Used in the server playlist editor and queue commands.
+#: UI/Subsonic/Text/Playlists.cs:22
+msgid "Public playlist"
+msgstr ""
+
+#. Translators: Move up. Used in the server playlist editor and queue commands.
+#: UI/Subsonic/Text/Playlists.cs:25
+msgid "Move up"
+msgstr ""
+
+#. Translators: Move down. Used in the server playlist editor and queue commands.
+#: UI/Subsonic/Text/Playlists.cs:28
+msgid "Move down"
+msgstr ""
+
+#. Translators: Button in the server playlist editor that opens a searchable song picker.
+#: UI/Subsonic/Text/Playlists.cs:31
+msgid "Add songs..."
+msgstr ""
+
+#. Translators: Save queue to server. Used in the server playlist editor and queue commands.
+#: UI/Subsonic/Text/Playlists.cs:34
+msgid "Save queue to server"
+msgstr ""
+
+#. Translators: Load queue from server. Used in the server playlist editor and queue commands.
+#: UI/Subsonic/Text/Playlists.cs:37
+msgid "Load queue from server"
+msgstr ""
+
+#. Translators: Choose a server playlist. Used in the server playlist editor and queue commands.
+#: UI/Subsonic/Text/Playlists.cs:40
+msgid "Choose a server playlist"
+msgstr ""
+
+#. Translators: Would you like to remove this server playlist? Used in the server playlist editor and queue commands.
+#: UI/Subsonic/Text/Playlists.cs:43
+msgid "Would you like to remove this server playlist?"
+msgstr ""
+
+#. Translators: Owner. Used in the server playlist editor and queue commands.
+#: UI/Subsonic/Text/Playlists.cs:46
+msgid "Owner"
+msgstr ""
+
+#. Translators: Save error in the server playlist editor when another client changed the same playlist.
+#: UI/Subsonic/Text/Playlists.cs:49
+msgid ""
+"This playlist changed on the server. Reopen it before saving your changes."
+msgstr ""
+
+#. Translators: Confirmation before saving a mixed Luna playlist to one server's play queue.
+#: UI/Subsonic/Text/Playlists.cs:52
+msgid ""
+"Only songs from the selected server can be saved in its queue. Continue?"
+msgstr ""
+
+#. Translators: F1 help for editing a playlist stored on a music server.
+#: UI/Subsonic/Text/Playlists.cs:55
+msgid ""
+"Give the playlist a name and optional description. Public playlists can be "
+"visible to other users on the server. Add songs opens a searchable song "
+"picker with standard multiple selection. Shift+Up and Shift+Down select a "
+"range. To select separate songs, hold Ctrl while moving through the list and "
+"use Ctrl+Space to toggle each song. Add selected songs adds the selection "
+"from the current results to this draft. To choose songs from another search, "
+"add this selection and open Add songs again. In the playlist itself, select "
+"one or more items to remove them or move them using Shift+Up and Shift+Down. "
+"Removing an item does not delete the media file. Save writes the playlist to "
+"the server; Cancel discards this draft. Reopen the playlist if another "
+"client changed it while you were editing."
+msgstr ""
+
+#. Translators: Album. Used in the music-server browser and its child dialogs.
+#: UI/Subsonic/Text/Shared.cs:13
+msgid "Album"
+msgstr ""
+
+#. Translators: Duration. Used in the music-server browser and its child dialogs.
+#: UI/Subsonic/Text/Shared.cs:16
+msgid "Duration"
+msgstr ""
+
+#. Translators: Music-server browser action that appends songs to Luna's current playback list, without saving a server playlist.
+#: UI/Subsonic/Text/Shared.cs:25
+msgid "Add to current playlist"
+msgstr ""
+
+#. Translators: Saved successfully. Used in the music-server browser and its child dialogs.
+#: UI/Subsonic/Text/Shared.cs:52
+msgid "Saved successfully."
+msgstr ""
+
+#. Translators: This feature is not supported by this server. Used in the music-server browser and its child dialogs.
+#: UI/Subsonic/Text/Shared.cs:55
+msgid "This feature is not supported by this server."
+msgstr ""
+
+#. Translators: The operation could not be completed. Used in the music-server browser and its child dialogs.
+#: UI/Subsonic/Text/Shared.cs:58
+msgid "The operation could not be completed."
+msgstr ""
+
+#. Translators: Discard unsaved changes? Used in the music-server browser and its child dialogs.
+#: UI/Subsonic/Text/Shared.cs:61
+msgid "Discard unsaved changes?"
+msgstr ""
+
+#. Translators: Current playback position. Used in the music-server browser and its child dialogs.
+#: UI/Subsonic/Text/Shared.cs:67
+msgid "Current playback position"
+msgstr ""
+
+#. Translators: Ready. Used in the music-server browser and its child dialogs.
+#: UI/Subsonic/Text/Shared.cs:70
+msgid "Ready"
+msgstr ""
+
+#. Translators: Enabled. Used in the music-server browser and its child dialogs.
+#: UI/Subsonic/Text/Shared.cs:76
+msgid "Enabled"
+msgstr ""
+
+#. Translators: Select one or more items first. Used in the music-server browser and its child dialogs.
+#: UI/Subsonic/Text/Shared.cs:79
+msgid "Select one or more items first."
 msgstr ""
 
 #. Translators: Title of the window offering a newer Luna Player release.
@@ -8020,11 +9393,6 @@ msgstr ""
 msgid ""
 "Playing and downloading YouTube videos needs some extra programs that are "
 "not installed yet. Would you like to download them now?"
-msgstr ""
-
-#. Translators: Button that agrees to fetch the extra programs YouTube needs.
-#: UI/YouTube/ComponentsDialog.cs:30
-msgid "Yes"
 msgstr ""
 
 #. Translators: Button that declines to fetch the extra programs YouTube needs.
@@ -8098,12 +9466,6 @@ msgstr ""
 msgid "MKV"
 msgstr ""
 
-#. Translators: Label of the box holding the folder a download is saved into.
-#. Translators: Label of the box holding the folder YouTube downloads are saved into.
-#: UI/YouTube/DownloadDialog.cs:94 UI/YouTube/DownloadPreferences.cs:63
-msgid "Download folder"
-msgstr ""
-
 #. Translators: Label of the box holding how many pieces of the file are fetched at once.
 #. Translators: Label of the box holding how many pieces of a YouTube file are fetched at once. "yt-dlp" calls these fragments.
 #: UI/YouTube/DownloadDialog.cs:100 UI/YouTube/DownloadPreferences.cs:117
@@ -8154,42 +9516,6 @@ msgstr ""
 #. Translators: Title of the window that picks the folder YouTube downloads are saved into.
 #: UI/YouTube/DownloadDialog.cs:201 UI/YouTube/DownloadPreferences.cs:214
 msgid "Select the download folder"
-msgstr ""
-
-#. Translators: Title of the warning shown when Luna is closed while downloads remain unfinished.
-#: UI/YouTube/DownloadExitDialog.cs:13
-msgid "Downloads still in progress"
-msgstr ""
-
-#: UI/YouTube/DownloadExitDialog.cs:16
-msgid ""
-"There are items still downloading in the download queue. Closing Luna will "
-"cancel them."
-msgstr ""
-
-#. Translators: Confirms closing Luna even though download queue work remains unfinished.
-#: UI/YouTube/DownloadExitDialog.cs:20
-msgid "Close anyway"
-msgstr ""
-
-#. Translators: Success message box shown after a YouTube download finishes and its progress window closes.
-#: UI/YouTube/DownloadOutcomes.cs:62
-msgid "The download finished. The file was saved to your downloads folder."
-msgstr ""
-
-#. Translators: YouTube download error message box. {details} is the untranslated technical reason from yt-dlp.
-#: UI/YouTube/DownloadOutcomes.cs:67
-msgid ""
-"The download could not be completed.\n"
-"\n"
-"Details: {details}"
-msgstr ""
-
-#. Translators: YouTube download error message box when no technical reason is available.
-#: UI/YouTube/DownloadOutcomes.cs:69
-msgid ""
-"The download could not be completed. Check your internet connection and try "
-"again."
 msgstr ""
 
 #. Translators: Tick box on the YouTube download settings page: sort files into video and audio subfolders.
@@ -8340,162 +9666,6 @@ msgid ""
 "similar segments out of the download."
 msgstr ""
 
-#. Translators: Title of the window showing progress for one YouTube download.
-#. Translators: Title of the progress window while a YouTube file is downloading.
-#. Translators: Status of a queue item while it is downloading.
-#: UI/YouTube/DownloadProgressDialog.cs:39
-#: UI/YouTube/DownloadProgressDialog.cs:141
-#: UI/YouTube/DownloadQueueDialog.cs:318
-msgid "Downloading"
-msgstr ""
-
-#. Translators: Shown in the download window before the first progress has arrived.
-#: UI/YouTube/DownloadProgressDialog.cs:47
-msgid "Preparing to download…"
-msgstr ""
-
-#. Translators: Hides this progress window while leaving its download visible in the queue.
-#: UI/YouTube/DownloadProgressDialog.cs:55
-msgid "Minimize to queue"
-msgstr ""
-
-#. Translators: Shown for the total download size before yt-dlp reports it.
-#. Translators: Stands in for a version number that could not be read.
-#: UI/YouTube/DownloadProgressDialog.cs:145 YouTube/Components/Service.cs:270
-msgid "unknown"
-msgstr ""
-
-#. Translators: Download speed. {size} is a file size and "/s" means per second.
-#. Translators: Combined queue speed. {size} is a file size and "/s" means per second.
-#: UI/YouTube/DownloadProgressDialog.cs:148
-#: UI/YouTube/DownloadQueueDialog.cs:287
-msgid "{size}/s"
-msgstr ""
-
-#. Translators: How much of the file has downloaded. {done} and {total} are sizes such as "4.2 MB".
-#: UI/YouTube/DownloadProgressDialog.cs:157
-msgid "Downloaded: {done} of {total}"
-msgstr ""
-
-#. Translators: The current download speed. {speed} is a size per second such as "1.3 MB/s".
-#. Translators: Combined download speed of all active queue items.
-#: UI/YouTube/DownloadProgressDialog.cs:163
-#: UI/YouTube/DownloadQueueDialog.cs:303
-msgid "Speed: {speed}"
-msgstr ""
-
-#. Translators: A download has finished conversion and is being finalized.
-#. Translators: yt-dlp is moving the finished file to its destination.
-#: UI/YouTube/DownloadProgressDialog.cs:173
-#: UI/YouTube/DownloadProgressDialog.cs:191
-msgid "Finishing…"
-msgstr ""
-
-#. Translators: yt-dlp is joining the downloaded audio and video streams.
-#: UI/YouTube/DownloadProgressDialog.cs:176
-msgid "Merging video and audio…"
-msgstr ""
-
-#. Translators: yt-dlp/ffmpeg is converting the download to the chosen format.
-#: UI/YouTube/DownloadProgressDialog.cs:181
-msgid "Converting…"
-msgstr ""
-
-#. Translators: yt-dlp is embedding metadata, artwork, subtitles, or chapters.
-#: UI/YouTube/DownloadProgressDialog.cs:184
-msgid "Embedding information…"
-msgstr ""
-
-#. Translators: yt-dlp is modifying chapters or removing sponsored sections.
-#: UI/YouTube/DownloadProgressDialog.cs:188
-msgid "Processing chapters…"
-msgstr ""
-
-#. Translators: Generic state while yt-dlp performs a finishing operation after downloading.
-#: UI/YouTube/DownloadProgressDialog.cs:193
-msgid "Post-processing…"
-msgstr ""
-
-#. Translators: Asks the user to confirm stopping a download that is still running.
-#: UI/YouTube/DownloadProgressDialog.cs:210
-msgid "The download is still running. Would you like to stop it?"
-msgstr ""
-
-#. Translators: Title of the window listing queued YouTube downloads.
-#: UI/YouTube/DownloadQueueDialog.cs:42
-msgid "Download queue"
-msgstr ""
-
-#. Translators: Second column in the download queue, holding states such as In queue or Downloading.
-#: UI/YouTube/DownloadQueueDialog.cs:51
-msgid "Status"
-msgstr ""
-
-#. Translators: Stops every active download and returns it to the queue.
-#: UI/YouTube/DownloadQueueDialog.cs:66
-msgid "Stop all"
-msgstr ""
-
-#. Translators: Confirmation shown before an item is removed from the download queue.
-#: UI/YouTube/DownloadQueueDialog.cs:233
-msgid "Remove the selected video from the download queue?"
-msgstr ""
-
-#. Translators: Queue status after every item has finished successfully.
-#: UI/YouTube/DownloadQueueDialog.cs:269
-msgid "All downloads are complete."
-msgstr ""
-
-#. Translators: Queue status when no download is running and unfinished items are waiting.
-#: UI/YouTube/DownloadQueueDialog.cs:276
-msgid "Ready to download."
-msgstr ""
-
-#. Translators: Technical reason supplied by yt-dlp for a failed queue item.
-#: UI/YouTube/DownloadQueueDialog.cs:280 UI/YouTube/DownloadQueueDialog.cs:311
-msgid "Error: {details}"
-msgstr ""
-
-#. Translators: Queue progress. {current} and {total} are video counts; {percent} is a whole number.
-#: UI/YouTube/DownloadQueueDialog.cs:298
-msgid "Downloading video {current} of {total}, {percent}%"
-msgstr ""
-
-#. Translators: Status after media bytes are downloaded but finishing work may remain.
-#: UI/YouTube/DownloadQueueDialog.cs:320
-msgid "Downloaded"
-msgstr ""
-
-#. Translators: Status of a queue item that finished successfully.
-#: UI/YouTube/DownloadQueueDialog.cs:322
-msgid "Completed"
-msgstr ""
-
-#. Translators: Status of a queue item whose download failed.
-#: UI/YouTube/DownloadQueueDialog.cs:324
-msgid "Failed"
-msgstr ""
-
-#. Translators: Status of a queue item waiting to start.
-#: UI/YouTube/DownloadQueueDialog.cs:326
-msgid "In queue"
-msgstr ""
-
-#. Translators: Title of the window used to add YouTube links to the download queue.
-#: UI/YouTube/DownloadQueueDialog.cs:368
-msgid "Add links to download queue"
-msgstr ""
-
-#. Translators: Label above the multi-line box used to add links to the download queue.
-#: UI/YouTube/DownloadQueueDialog.cs:371
-msgid "Enter one YouTube video link on each line."
-msgstr ""
-
-#. Translators: Shown when Add is pressed without entering any links.
-#: UI/YouTube/DownloadQueueDialog.cs:418
-msgid "Enter at least one YouTube video link."
-msgstr ""
-
 #. Translators: Label of the box holding the address a saved link points at.
 #. Translators: Heading of the favourites list column holding the address of each saved link.
 #: UI/YouTube/FavoriteEditDialog.cs:38 UI/YouTube/FavoritesDialog.cs:35
@@ -8603,8 +9773,8 @@ msgstr ""
 #. Translators: Help text for the list that chooses the sound quality a video's audio is played at.
 #: UI/YouTube/GeneralPreferences.cs:152
 msgid ""
-"Sets the bitrate Luna asks for when you play a video's sound alone with Ctrl"
-"+Enter. Luna falls back to the closest the video offers."
+"Sets the bitrate Luna asks for when you play a video's sound alone with "
+"Ctrl+Enter. Luna falls back to the closest the video offers."
 msgstr ""
 
 #. Translators: Help text for the box holding how many videos a search should look for. The two numbers are
@@ -8789,6 +9959,16 @@ msgstr ""
 #. Translators: Heading above a YouTube channel's browser when the channel's name is not known.
 #: UI/YouTube/ResultsDialog.cs:356 YouTube/Playback/Session.cs:93
 msgid "Channel"
+msgstr ""
+
+#. Translators: Context menu item in the results list that copies the address of the chosen video.
+#: UI/YouTube/ResultsDialog.cs:388
+msgid "Copy link"
+msgstr ""
+
+#. Translators: Context menu item in the results list that shows the chosen video in the web browser.
+#: UI/YouTube/ResultsDialog.cs:390
+msgid "Open in browser"
 msgstr ""
 
 #. Translators: Label of the box where the user types what to search YouTube for.

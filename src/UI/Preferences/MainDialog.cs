@@ -94,8 +94,9 @@ internal sealed class MainDialog : IDisposable
         AddPage(root, discordLabel, () => new DiscordPreferences(_book, settings.Discord));
         AddPage(root, recordingLabel,
             () => new RecordingPreferences(_book, settings.Recording, dispatcher, catalog));
-        AddPage(root, shortcutsLabel,
+        var musicShortcuts = AddPage(root, shortcutsLabel,
             () => new ShortcutPreferences(_book, settings.Shortcuts, ShortcutScope.Local, globalShortcuts));
+        AddPage(musicShortcuts, LunaPlayer.UI.Subsonic.Words.Title, () => new ShortcutPreferences(_book, settings.Shortcuts, ShortcutScope.MusicServers, globalShortcuts));
         AddPage(root, globalsLabel,
             () => new ShortcutPreferences(_book, settings.Shortcuts, ShortcutScope.Global, globalShortcuts));
 

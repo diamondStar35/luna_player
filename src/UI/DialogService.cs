@@ -1,3 +1,4 @@
+using LunaPlayer.Playback;
 using LunaPlayer.UI.Services;
 using LunaPlayer.UI.Services.Dialogs;
 using LunaPlayer.Playlist;
@@ -8,7 +9,7 @@ using LunaPlayer.Configuration.Models;
 using LunaPlayer.Media;
 using LunaPlayer.UI.Equalizer;
 using WxSharp;
-using Downloads = LunaPlayer.YouTube.Download;
+using SharedDownloads = LunaPlayer.Downloads;
 
 namespace LunaPlayer.UI;
 
@@ -36,8 +37,12 @@ internal sealed class DialogService : IDialogService, IDisposable
     private readonly PreferencesDialogs _preferences;
     private readonly InformationDialogs _information;
     private readonly Frame _frame;
+    private readonly IApplicationDispatcher _dispatcher;
+    private Subsonic.BrowserDialog? _musicServers;
+    private Subsonic.SongActions? _musicItems;
     private readonly HashSet<LunaPlayer.UI.Controls.ProgressView> _progressWindows = [];
     private bool? _toastNotificationsAvailable;
+    private bool _disposed;
     private LunaPlayer.Media.Discs.DiscFormat _lastDiscFormat;
 
     internal DialogService(
@@ -45,7 +50,7 @@ internal sealed class DialogService : IDialogService, IDisposable
         LunaPlayer.Recording.AudioCatalog catalog, LunaPlayer.UI.Services.GlobalShortcuts globalShortcuts,
         Action<ActionId> requestAction)
     {
-        _frame = frame;
+        _frame = frame; _dispatcher = dispatcher;
         var context = new DialogContext(frame, dispatcher, catalog, globalShortcuts, requestAction, this);
         _playlists = new PlaylistsDialogs(context);
         _spotify = new SpotifyDialogs(context);
@@ -61,6 +66,25 @@ internal sealed class DialogService : IDialogService, IDisposable
         _preferences = new PreferencesDialogs(context);
         _information = new InformationDialogs(context);
 
+    }
+
+    public void ShowMusicServers(LunaPlayer.Subsonic.Servers.Connections connections, Player player, LunaPlayer.Downloads.DownloadQueue downloads,
+        Action showQueue, Action<string> speak, ShortcutSettings shortcuts)
+    {
+        if (_musicServers?.IsDisposed == true) _musicServers = null;
+        _musicServers ??= new Subsonic.BrowserDialog(connections, player, _dispatcher, this, downloads, showQueue, speak, shortcuts);
+        _musicServers.Show();
+    }
+    public void RefreshMusicServers() => _musicServers?.Profiles();
+    public void MusicServerContentChanged(Guid server) => _musicServers?.ContentChanged(server);
+    public void MusicServerStatus(Guid server, Exception? error) => _musicServers?.ConnectionStatus(server, error);
+
+    public string? ChooseDownloadDestination(string fileName)
+    {
+        // Translators: Title of the native save dialog for downloading the current online file.
+        using var dialog = new FileDialog(DialogParent, message: Tr("Download file"),
+            directory: Paths.DefaultDownloadsDirectory, fileName: fileName, wildcard: "*.*", style: FileDialogStyle.Save);
+        return dialog.ShowModal() == StandardId.Ok ? dialog.Path : null;
     }
 
     private Window DialogParent => Wx.GetActiveWindow() ?? _frame;
@@ -122,7 +146,11 @@ internal sealed class DialogService : IDialogService, IDisposable
     /// <summary>Tears down retained dialogs before the main frame that owns them is destroyed.</summary>
     public void Dispose()
     {
+        if (_disposed) return;
+        _disposed = true;
+        _musicItems?.Dispose();
         foreach (var progress in _progressWindows.ToArray()) progress.Dispose();
+        _musicServers?.Dispose();
         _recording.Dispose();
         _playlists.Dispose(); _spotify.Dispose(); _radio.Dispose(); _youtube.Dispose();
     }
@@ -157,13 +185,13 @@ internal sealed class DialogService : IDialogService, IDisposable
     public void EditFavorite(string caption, LunaPlayer.UI.YouTube.FavoriteDraft value, Action<LunaPlayer.UI.YouTube.FavoriteDraft?> completed) => _youtube.EditFavorite(caption, value, completed);
     public LunaPlayer.UI.YouTube.ResultChoice? ShowYouTubeResults(LunaPlayer.UI.YouTube.YouTubeResultsPrompt prompt) => _youtube.ShowYouTubeResults(prompt);
     public bool OfferYouTubeComponents() => _youtube.OfferYouTubeComponents();
-    public Downloads.OptionsResult? ShowDownloadOptions(Downloads.Request defaults) => _youtube.ShowDownloadOptions(defaults);
+    public LunaPlayer.YouTube.Download.OptionsResult? ShowDownloadOptions(LunaPlayer.YouTube.Download.Request defaults) => _youtube.ShowDownloadOptions(defaults);
     public void ShowDownloadQueue(
-        LunaPlayer.Downloads.DownloadQueue queue,
+        SharedDownloads.DownloadQueue queue,
         Func<IReadOnlyList<string>, string?> addLinks,
         Action start) => _youtube.ShowDownloadQueue(queue, addLinks, start);
     public void ShowDownloadProgress(
-        LunaPlayer.Downloads.DownloadQueue queue,
+        SharedDownloads.DownloadQueue queue,
         Guid itemId) => _youtube.ShowDownloadProgress(queue, itemId);
     internal void CloseDownloadProgressWindows() => _youtube.CloseDownloadProgressWindows();
     public void ShowVideoDescription(string title, string description) => _youtube.ShowVideoDescription(title, description);
@@ -184,5 +212,14 @@ internal sealed class DialogService : IDialogService, IDisposable
     public bool OfferAppUpdate(LunaPlayer.UI.Updates.AppUpdatePrompt prompt) => _information.OfferAppUpdate(prompt);
     public LunaPlayer.UI.Bookmarks.BookmarkManagementRequest? ManageBookmarks(IReadOnlyList<LunaPlayer.UI.Bookmarks.BookmarkListItem> bookmarks) => _information.ManageBookmarks(bookmarks);
     public LunaPlayer.UI.Playlists.OpenedFilesRequest? ChooseOpenedFile(int count, Func<int, string> nameAt, int selectedIndex) => _information.ChooseOpenedFile(count, nameAt, selectedIndex);
+    public LunaPlayer.UI.Playlists.OpenedFilesRequest? ChooseOpenedFile(int count, Func<int, string> nameAt, int selectedIndex, IReadOnlyList<string> paths)
+        => _information.ChooseOpenedFile(count, nameAt, selectedIndex,
+            index => index >= 0 && index < paths.Count ? _musicItems?.Menu(paths[index]) : null);
+    public void ConfigureMusicServerItems(LunaPlayer.Subsonic.Servers.Connections connections, Player player,
+        LunaPlayer.Downloads.DownloadQueue downloads, Action<string> speak)
+    { _musicItems?.Dispose(); _musicItems = new(null, connections, player, _dispatcher, downloads, this, speak); }
+    public void ActOnServerSong(string path, Subsonic.SongAction action, double? position = null)
+        => _musicItems?.Execute(path, action, position);
+    public void EditServerItem(string path, LunaPlayer.UI.Playlists.OpenedFilesAction action) => _musicItems?.Execute(path, action);
     public void ShowTextInfo(string title, string text) => _information.ShowTextInfo(title, text);
 }

@@ -6,13 +6,13 @@ namespace LunaPlayer.UI.Services;
 internal sealed class OwnedDialog : IDisposable
 {
     private readonly Dialog _dialog;
-    private readonly Window _owner;
+    private readonly Window? _owner;
     private bool _ownerWasEnabled;
     private bool _shown;
     private bool _finished;
     private bool _disposed;
 
-    internal OwnedDialog(Dialog dialog, Window owner)
+    internal OwnedDialog(Dialog dialog, Window? owner)
     {
         _dialog = dialog;
         _owner = owner;
@@ -30,15 +30,16 @@ internal sealed class OwnedDialog : IDisposable
     }
 
     internal event Action<bool>? Closed;
+    internal Func<bool>? CanCancel { get; set; }
 
     internal void Show()
     {
         if (_finished) return;
         if (!_shown)
         {
-            _ownerWasEnabled = _owner.Enabled;
+            _ownerWasEnabled = _owner?.Enabled ?? true;
             _dialog.Show();
-            _owner.Enabled = false;
+            if (_owner is not null) _owner.Enabled = false;
             _shown = true;
         }
         Activate();
@@ -53,11 +54,11 @@ internal sealed class OwnedDialog : IDisposable
 
     internal void Complete(bool accepted)
     {
-        if (_finished) return;
+        if (_finished || !accepted && CanCancel?.Invoke() == false) return;
         _finished = true;
         RestoreOwner();
         _dialog.Hide();
-        _owner.Raise();
+        _owner?.Raise();
         Closed?.Invoke(accepted);
     }
 
@@ -65,7 +66,7 @@ internal sealed class OwnedDialog : IDisposable
     {
         if (!_shown) return;
         _shown = false;
-        _owner.Enabled = _ownerWasEnabled;
+        if (_owner is not null) _owner.Enabled = _ownerWasEnabled;
     }
 
     public void Dispose()

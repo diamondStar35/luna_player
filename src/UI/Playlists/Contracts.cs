@@ -9,7 +9,8 @@ using LunaPlayer.UI.Equalizer;
 using LunaPlayer.YouTube;
 
 namespace LunaPlayer.UI.Playlists;
-internal enum OpenedFilesAction { Jump, Information }
+internal enum OpenedFilesAction { Jump, Information, Rate, Favorite, Unfavorite }
+internal sealed record OpenedFileMenu(string Rating, string Favorite, string Unfavorite, bool? IsFavorite);
 
 /// <summary>Whether the user picked a recent item to open, or its kind's Clear command.</summary>
 internal enum RecentAction { Open, Clear }
