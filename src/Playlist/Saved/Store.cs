@@ -20,11 +20,14 @@ internal sealed class DocumentStore
     {
         using var stream = File.OpenRead(path);
         var document = JsonSerializer.Deserialize(stream, DocumentJsonContext.Default.Document);
-        if (document is null || document.Version != 1 || document.Id == Guid.Empty
+        if (document is null || document.Version is not (1 or 2) || document.Id == Guid.Empty
             || string.IsNullOrWhiteSpace(document.Name) || document.Description is null || document.Entries is null
             || document.Entries.Select(entry => entry?.Id).Distinct().Count() != document.Entries.Count
             || document.Entries.Any(entry => entry is null || entry.Id == Guid.Empty
-                || !Enum.IsDefined(entry.Kind) || string.IsNullOrWhiteSpace(entry.Location)))
+                || !Enum.IsDefined(entry.Kind) || string.IsNullOrWhiteSpace(entry.Location)
+                || entry.Kind != EntryKind.ServerMedia && (entry.ServerMedia is not null || Subsonic.Playback.Reference.IsAddress(entry.Location))
+                || entry.Kind == EntryKind.ServerMedia && (document.Version < 2 || entry.ServerMedia is null
+                    || entry.ServerMedia != Subsonic.Playback.Reference.Parse(entry.Location))))
             throw new InvalidDataException("Invalid playlist document.");
         return document;
     }
@@ -42,6 +45,7 @@ internal sealed class DocumentStore
     }
     internal static void Write(Document document, string path)
     {
+        document.Version = document.Entries.Any(x => x.Kind == EntryKind.ServerMedia) ? 2 : 1;
         if (!AtomicFile.WriteJson(path, document, DocumentJsonContext.Default.Document, out var error))
             throw new IOException(error);
     }

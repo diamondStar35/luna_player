@@ -55,7 +55,8 @@ internal sealed partial class Player
         {
             if (!_loaded) return Metadata.None;
             var metadata = _engine.GetMetadata();
-            if (!InRadioSession) return metadata;
+            if (CatalogTags is { } catalog && _currentInput?.Live != true) return metadata with { Display = catalog };
+            if (!InRadioSession && _currentInput?.Live != true) return metadata;
             var tags = metadata.Display;
             if (tags.Artist.Length > 0) return metadata;
             // ICY commonly provides one "Artist - Title" field instead of separate tags. Only split
@@ -73,7 +74,7 @@ internal sealed partial class Player
     /// <summary>The file name for local media, or the stored title for a network entry.</summary>
     internal string? CurrentName => DiscTrackName ?? (_playlist.CurrentItem?.Chapter is Chapter chapter ? ChapterTitle(chapter)
         : CurrentPath is string path
-        ? LinkValidator.IsHttpUrl(path) || IsDisc ? DisplayName(path) : MediaLibrary.DisplayName(path)
+        ? LinkValidator.IsHttpUrl(path) || IsDisc || Subsonic.Playback.Reference.IsAddress(path) ? DisplayName(path) : MediaLibrary.DisplayName(path)
         : null);
 
     // mpv only knows a title once the file is loaded, so it is read here and kept per path: the playlist
@@ -83,7 +84,7 @@ internal sealed partial class Player
         // Nothing is written when mpv has no title to give. It has none before the file has loaded and
         // none after Stop unloads it - and Stop asks for a display name on its way out, so writing there
         // would throw away the title the file was playing under a moment earlier.
-        if (_engine.MediaTitle is not string title)
+        if (!_loaded || _mediaResolver?.Handles(path) == true || _engine.MediaTitle is not string title)
             return;
         _playlist.SetTitle(
             path,

@@ -18,12 +18,12 @@ internal sealed record Seed(string Id, SeedKind Kind = SeedKind.Song, Operation 
 internal sealed record Track
 {
     [JsonPropertyName("item_id"), JsonConverter(typeof(Transport.IdentifierConverter))]
-    public string Id { get; init; } = "";
-    public string Title { get; init; } = "";
-    public string Artist { get; init; } = "";
-    public string Author { get; init; } = "";
-    public string Album { get; init; } = "";
-    public double? Similarity { get; init; }
+    public string Id { get; set; } = "";
+    public string Title { get; set; } = "";
+    public string Artist { get; set; } = "";
+    public string Author { get; set; } = "";
+    public string Album { get; set; } = "";
+    public double? Similarity { get; set; }
     public string Credit => string.IsNullOrEmpty(Artist) ? Author : Artist;
 }
 internal sealed record Result(Track[] Tracks, string Message, string? PlaylistId = null);
@@ -34,18 +34,18 @@ internal sealed record AlchemyItem(string Id, string Type, string Op);
 internal sealed record AlchemyRequest(AlchemyItem[] Items, int N, string? Server);
 internal sealed record Generation
 {
-    [JsonPropertyName("query_results")] public Track[] QueryResults { get; init; } = [];
-    public string Response { get; init; } = "";
-    [JsonPropertyName("playlist_id")] public string? PlaylistId { get; init; }
+    [JsonPropertyName("query_results")] public Track[] QueryResults { get; set; } = [];
+    public string Response { get; set; } = "";
+    [JsonPropertyName("playlist_id")] public string? PlaylistId { get; set; }
 }
 internal sealed record Reply
 {
-    public Track[]? Results { get; init; }
-    public JsonElement Response { get; init; }
-    public string? Error { get; init; }
-    [JsonPropertyName("error_message")] public string? ErrorMessage { get; init; }
-    public string? Message { get; init; }
-    public string? Type { get; init; }
+    public Track[]? Results { get; set; }
+    public JsonElement Response { get; set; }
+    public string? Error { get; set; }
+    [JsonPropertyName("error_message")] public string? ErrorMessage { get; set; }
+    public string? Message { get; set; }
+    public string? Type { get; set; }
 }
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
     PropertyNameCaseInsensitive = true, DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]

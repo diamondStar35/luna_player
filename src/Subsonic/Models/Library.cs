@@ -5,221 +5,221 @@ namespace LunaPlayer.Subsonic.Models;
 internal sealed record MusicFolder
 {
     [JsonConverter(typeof(Transport.IdentifierConverter))]
-    public string Id { get; init; } = "";
-    public string Name { get; init; } = "";
+    public string Id { get; set; } = "";
+    public string Name { get; set; } = "";
 }
 
 internal sealed record Genre
 {
-    public string Value { get; init; } = "";
-    public int SongCount { get; init; }
-    public int AlbumCount { get; init; }
+    public string Value { get; set; } = "";
+    public int SongCount { get; set; }
+    public int AlbumCount { get; set; }
 }
 
 internal sealed record Artist
 {
     [JsonConverter(typeof(Transport.IdentifierConverter))]
-    public string Id { get; init; } = "";
-    public string Name { get; init; } = "";
-    public int AlbumCount { get; init; }
+    public string Id { get; set; } = "";
+    public string Name { get; set; } = "";
+    public int AlbumCount { get; set; }
     [JsonConverter(typeof(Transport.IdentifierConverter))]
-    public string CoverArt { get; init; } = "";
-    public string ArtistImageUrl { get; init; } = "";
-    public string? Starred { get; init; }
-    public int? UserRating { get; init; }
-    public string MusicBrainzId { get; init; } = "";
-    public string SortName { get; init; } = "";
+    public string CoverArt { get; set; } = "";
+    public string ArtistImageUrl { get; set; } = "";
+    public string? Starred { get; set; }
+    public int? UserRating { get; set; }
+    public string MusicBrainzId { get; set; } = "";
+    public string SortName { get; set; } = "";
     [JsonPropertyName("album")]
     [JsonConverter(typeof(Transport.OneOrMany<Album>))]
-    public Album[] Albums { get; init; } = [];
+    public Album[] Albums { get; set; } = [];
 }
 
 internal sealed record ArtistIndex
 {
-    public string Name { get; init; } = "";
+    public string Name { get; set; } = "";
     [JsonPropertyName("artist")]
     [JsonConverter(typeof(Transport.OneOrMany<Artist>))]
-    public Artist[] Artists { get; init; } = [];
+    public Artist[] Artists { get; set; } = [];
 }
 
 internal sealed record Artists
 {
-    public string IgnoredArticles { get; init; } = "";
-    public long? LastModified { get; init; }
+    public string IgnoredArticles { get; set; } = "";
+    public long? LastModified { get; set; }
     [JsonPropertyName("index")]
     [JsonConverter(typeof(Transport.OneOrMany<ArtistIndex>))]
-    public ArtistIndex[] Indexes { get; init; } = [];
+    public ArtistIndex[] Indexes { get; set; } = [];
 }
 
 internal sealed record Entry
 {
     [JsonConverter(typeof(Transport.IdentifierConverter))]
-    public string Id { get; init; } = "";
+    public string Id { get; set; } = "";
     [JsonConverter(typeof(Transport.IdentifierConverter))]
-    public string Parent { get; init; } = "";
-    public bool IsDir { get; init; }
-    public string Title { get; init; } = "";
-    public string Name { get; init; } = "";
-    public string Album { get; init; } = "";
-    public string Artist { get; init; } = "";
-    public int? Track { get; init; }
-    public int? Year { get; init; }
-    public string Genre { get; init; } = "";
+    public string Parent { get; set; } = "";
+    public bool IsDir { get; set; }
+    public string Title { get; set; } = "";
+    public string Name { get; set; } = "";
+    public string Album { get; set; } = "";
+    public string Artist { get; set; } = "";
+    public int? Track { get; set; }
+    public int? Year { get; set; }
+    public string Genre { get; set; } = "";
     [JsonConverter(typeof(Transport.IdentifierConverter))]
-    public string CoverArt { get; init; } = "";
-    public long? Size { get; init; }
-    public string ContentType { get; init; } = "";
-    public string Suffix { get; init; } = "";
-    public string TranscodedContentType { get; init; } = "";
-    public string TranscodedSuffix { get; init; } = "";
-    public double? Duration { get; init; }
-    public int? BitRate { get; init; }
-    public int? BitDepth { get; init; }
-    public int? SamplingRate { get; init; }
-    public int? ChannelCount { get; init; }
-    public string Path { get; init; } = "";
-    public bool IsVideo { get; init; }
-    public int? DiscNumber { get; init; }
-    public string? Created { get; init; }
-    public string? Starred { get; init; }
+    public string CoverArt { get; set; } = "";
+    public long? Size { get; set; }
+    public string ContentType { get; set; } = "";
+    public string Suffix { get; set; } = "";
+    public string TranscodedContentType { get; set; } = "";
+    public string TranscodedSuffix { get; set; } = "";
+    public double? Duration { get; set; }
+    public int? BitRate { get; set; }
+    public int? BitDepth { get; set; }
+    public int? SamplingRate { get; set; }
+    public int? ChannelCount { get; set; }
+    public string Path { get; set; } = "";
+    public bool IsVideo { get; set; }
+    public int? DiscNumber { get; set; }
+    public string? Created { get; set; }
+    public string? Starred { get; set; }
     [JsonConverter(typeof(Transport.IdentifierConverter))]
-    public string AlbumId { get; init; } = "";
+    public string AlbumId { get; set; } = "";
     [JsonConverter(typeof(Transport.IdentifierConverter))]
-    public string ArtistId { get; init; } = "";
-    public int? UserRating { get; init; }
-    public double? AverageRating { get; init; }
-    public long? PlayCount { get; init; }
-    public string? Played { get; init; }
-    public int? Bpm { get; init; }
-    public string Comment { get; init; } = "";
-    public string SortName { get; init; } = "";
-    public string MusicBrainzId { get; init; } = "";
+    public string ArtistId { get; set; } = "";
+    public int? UserRating { get; set; }
+    public double? AverageRating { get; set; }
+    public long? PlayCount { get; set; }
+    public string? Played { get; set; }
+    public int? Bpm { get; set; }
+    public string Comment { get; set; } = "";
+    public string SortName { get; set; } = "";
+    public string MusicBrainzId { get; set; } = "";
     [JsonConverter(typeof(Transport.OneOrMany<ArtistCredit>))]
-    public ArtistCredit[] Artists { get; init; } = [];
+    public ArtistCredit[] Artists { get; set; } = [];
     [JsonConverter(typeof(Transport.OneOrMany<NamedGenre>))]
-    public NamedGenre[] Genres { get; init; } = [];
-    public ReplayGain? ReplayGain { get; init; }
-    public string Type { get; init; } = "";
-    public string MediaType { get; init; } = "";
-    public long? BookmarkPosition { get; init; }
-    public string[] Isrc { get; init; } = [];
-    public string DisplayArtist { get; init; } = "";
-    public ArtistCredit[] AlbumArtists { get; init; } = [];
-    public string DisplayAlbumArtist { get; init; } = "";
-    public Contributor[] Contributors { get; init; } = [];
-    public string DisplayComposer { get; init; } = "";
-    public string[] Moods { get; init; } = [];
-    public string ExplicitStatus { get; init; } = "";
-    public Work[] Works { get; init; } = [];
-    public Movement[] Movements { get; init; } = [];
-    public string[] Groupings { get; init; } = [];
+    public NamedGenre[] Genres { get; set; } = [];
+    public ReplayGain? ReplayGain { get; set; }
+    public string Type { get; set; } = "";
+    public string MediaType { get; set; } = "";
+    public long? BookmarkPosition { get; set; }
+    public string[] Isrc { get; set; } = [];
+    public string DisplayArtist { get; set; } = "";
+    public ArtistCredit[] AlbumArtists { get; set; } = [];
+    public string DisplayAlbumArtist { get; set; } = "";
+    public Contributor[] Contributors { get; set; } = [];
+    public string DisplayComposer { get; set; } = "";
+    public string[] Moods { get; set; } = [];
+    public string ExplicitStatus { get; set; } = "";
+    public Work[] Works { get; set; } = [];
+    public Movement[] Movements { get; set; } = [];
+    public string[] Groupings { get; set; } = [];
 }
 
 internal sealed record ArtistCredit
 {
     [JsonConverter(typeof(Transport.IdentifierConverter))]
-    public string Id { get; init; } = "";
-    public string Name { get; init; } = "";
+    public string Id { get; set; } = "";
+    public string Name { get; set; } = "";
 }
 
 internal sealed record NamedGenre
 {
-    public string Name { get; init; } = "";
+    public string Name { get; set; } = "";
 }
 
 internal sealed record Contributor
 {
-    public string Role { get; init; } = "";
-    public string SubRole { get; init; } = "";
-    public ArtistCredit? Artist { get; init; }
+    public string Role { get; set; } = "";
+    public string SubRole { get; set; } = "";
+    public ArtistCredit? Artist { get; set; }
 }
 internal sealed record Work
 {
-    public string Name { get; init; } = "";
-    public string MusicBrainzId { get; init; } = "";
+    public string Name { get; set; } = "";
+    public string MusicBrainzId { get; set; } = "";
 }
 internal sealed record Movement
 {
-    public string Name { get; init; } = "";
-    public int? Number { get; init; }
-    public int? Count { get; init; }
+    public string Name { get; set; } = "";
+    public int? Number { get; set; }
+    public int? Count { get; set; }
 }
 
 internal sealed record ReplayGain
 {
-    public double? TrackGain { get; init; }
-    public double? AlbumGain { get; init; }
-    public double? TrackPeak { get; init; }
-    public double? AlbumPeak { get; init; }
-    public double? BaseGain { get; init; }
-    public double? FallbackGain { get; init; }
+    public double? TrackGain { get; set; }
+    public double? AlbumGain { get; set; }
+    public double? TrackPeak { get; set; }
+    public double? AlbumPeak { get; set; }
+    public double? BaseGain { get; set; }
+    public double? FallbackGain { get; set; }
 }
 
 internal sealed record Album
 {
     [JsonConverter(typeof(Transport.IdentifierConverter))]
-    public string Id { get; init; } = "";
-    public string Name { get; init; } = "";
-    public string Title { get; init; } = "";
-    public string Artist { get; init; } = "";
+    public string Id { get; set; } = "";
+    public string Name { get; set; } = "";
+    public string Title { get; set; } = "";
+    public string Artist { get; set; } = "";
     [JsonConverter(typeof(Transport.IdentifierConverter))]
-    public string ArtistId { get; init; } = "";
+    public string ArtistId { get; set; } = "";
     [JsonConverter(typeof(Transport.IdentifierConverter))]
-    public string CoverArt { get; init; } = "";
-    public int SongCount { get; init; }
-    public double Duration { get; init; }
-    public string? Created { get; init; }
-    public int? Year { get; init; }
-    public string Genre { get; init; } = "";
-    public string? Starred { get; init; }
-    public int? UserRating { get; init; }
-    public long? PlayCount { get; init; }
-    public string? Played { get; init; }
-    public string MusicBrainzId { get; init; } = "";
-    public string SortName { get; init; } = "";
+    public string CoverArt { get; set; } = "";
+    public int SongCount { get; set; }
+    public double Duration { get; set; }
+    public string? Created { get; set; }
+    public int? Year { get; set; }
+    public string Genre { get; set; } = "";
+    public string? Starred { get; set; }
+    public int? UserRating { get; set; }
+    public long? PlayCount { get; set; }
+    public string? Played { get; set; }
+    public string MusicBrainzId { get; set; } = "";
+    public string SortName { get; set; } = "";
     [JsonPropertyName("song")]
     [JsonConverter(typeof(Transport.OneOrMany<Entry>))]
-    public Entry[] Songs { get; init; } = [];
+    public Entry[] Songs { get; set; } = [];
     [JsonConverter(typeof(Transport.OneOrMany<ArtistCredit>))]
-    public ArtistCredit[] Artists { get; init; } = [];
+    public ArtistCredit[] Artists { get; set; } = [];
     [JsonConverter(typeof(Transport.OneOrMany<NamedGenre>))]
-    public NamedGenre[] Genres { get; init; } = [];
+    public NamedGenre[] Genres { get; set; } = [];
 }
 
 internal sealed record Directory
 {
     [JsonConverter(typeof(Transport.IdentifierConverter))]
-    public string Id { get; init; } = "";
+    public string Id { get; set; } = "";
     [JsonConverter(typeof(Transport.IdentifierConverter))]
-    public string Parent { get; init; } = "";
-    public string Name { get; init; } = "";
-    public string? Starred { get; init; }
-    public int? UserRating { get; init; }
-    public long? PlayCount { get; init; }
+    public string Parent { get; set; } = "";
+    public string Name { get; set; } = "";
+    public string? Starred { get; set; }
+    public int? UserRating { get; set; }
+    public long? PlayCount { get; set; }
     [JsonPropertyName("child")]
     [JsonConverter(typeof(Transport.OneOrMany<Entry>))]
-    public Entry[] Children { get; init; } = [];
+    public Entry[] Children { get; set; } = [];
 }
 
 internal sealed record ArtistInfo
 {
-    public string Biography { get; init; } = "";
-    public string MusicBrainzId { get; init; } = "";
-    public string LastFmUrl { get; init; } = "";
-    public string SmallImageUrl { get; init; } = "";
-    public string MediumImageUrl { get; init; } = "";
-    public string LargeImageUrl { get; init; } = "";
+    public string Biography { get; set; } = "";
+    public string MusicBrainzId { get; set; } = "";
+    public string LastFmUrl { get; set; } = "";
+    public string SmallImageUrl { get; set; } = "";
+    public string MediumImageUrl { get; set; } = "";
+    public string LargeImageUrl { get; set; } = "";
     [JsonPropertyName("similarArtist")]
     [JsonConverter(typeof(Transport.OneOrMany<Artist>))]
-    public Artist[] SimilarArtists { get; init; } = [];
+    public Artist[] SimilarArtists { get; set; } = [];
 }
 
 internal sealed record AlbumInfo
 {
-    public string Notes { get; init; } = "";
-    public string MusicBrainzId { get; init; } = "";
-    public string LastFmUrl { get; init; } = "";
-    public string SmallImageUrl { get; init; } = "";
-    public string MediumImageUrl { get; init; } = "";
-    public string LargeImageUrl { get; init; } = "";
+    public string Notes { get; set; } = "";
+    public string MusicBrainzId { get; set; } = "";
+    public string LastFmUrl { get; set; } = "";
+    public string SmallImageUrl { get; set; } = "";
+    public string MediumImageUrl { get; set; } = "";
+    public string LargeImageUrl { get; set; } = "";
 }

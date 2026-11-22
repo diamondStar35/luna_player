@@ -6,6 +6,14 @@ using LunaPlayer.Subsonic.Models;
 namespace LunaPlayer.Subsonic.Transport;
 
 /// <summary>Some older servers encode IDs as JSON numbers; never narrow them to Int32.</summary>
+internal sealed class TextConverter : JsonConverter<string>
+{
+    public override bool HandleNull => true;
+    public override string Read(ref Utf8JsonReader reader, Type type, JsonSerializerOptions options)
+        => reader.TokenType == JsonTokenType.Null ? "" : reader.GetString() ?? "";
+    public override void Write(Utf8JsonWriter writer, string value, JsonSerializerOptions options) => writer.WriteStringValue(value);
+}
+
 internal sealed class IdentifierConverter : JsonConverter<string>
 {
     public override bool HandleNull => true;
@@ -66,7 +74,7 @@ internal sealed class OneOrMany<T> : JsonConverter<T[]>
 
 [JsonSourceGenerationOptions(PropertyNamingPolicy = JsonKnownNamingPolicy.CamelCase,
     PropertyNameCaseInsensitive = true, NumberHandling = JsonNumberHandling.AllowReadingFromString,
-    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull)]
+    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, Converters = [typeof(TextConverter)])]
 [JsonSerializable(typeof(Envelope))]
 [JsonSerializable(typeof(ClientInfo))]
 [JsonSerializable(typeof(MusicFolder[]))]

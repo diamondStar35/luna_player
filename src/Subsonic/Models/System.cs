@@ -4,58 +4,59 @@ namespace LunaPlayer.Subsonic.Models;
 
 internal sealed record ScanStatus
 {
-    public bool Scanning { get; init; }
-    public long Count { get; init; }
-    public string? LastScan { get; init; }
-    public long? FolderCount { get; init; }
-    public long? ArtistCount { get; init; }
-    public long? AlbumCount { get; init; }
-    public long? SongCount { get; init; }
-    public long? Errors { get; init; }
-    public bool? FullScan { get; init; }
+    public bool Scanning { get; set; }
+    public long Count { get; set; }
+    public string? LastScan { get; set; }
+    public long? FolderCount { get; set; }
+    public long? ArtistCount { get; set; }
+    public long? AlbumCount { get; set; }
+    public long? SongCount { get; set; }
+    public long? Errors { get; set; }
+    public bool? FullScan { get; set; }
 }
 
 internal sealed record Extension
 {
-    public string Name { get; init; } = "";
-    public int[] Versions { get; init; } = [];
+    public string Name { get; set; } = "";
+    public int[] Versions { get; set; } = [];
 }
 
 internal sealed record User
 {
-    public string Username { get; init; } = "";
-    public string Email { get; init; } = "";
-    public bool ScrobblingEnabled { get; init; }
-    public bool AdminRole { get; init; }
-    public bool SettingsRole { get; init; }
-    public bool DownloadRole { get; init; }
-    public bool UploadRole { get; init; }
-    public bool PlaylistRole { get; init; }
-    public bool CoverArtRole { get; init; }
-    public bool CommentRole { get; init; }
-    public bool PodcastRole { get; init; }
-    public bool StreamRole { get; init; }
-    public bool JukeboxRole { get; init; }
-    public bool ShareRole { get; init; }
-    public bool VideoConversionRole { get; init; }
-    public int? MaxBitRate { get; init; }
+    public string Username { get; set; } = "";
+    public string Email { get; set; } = "";
+    public bool ScrobblingEnabled { get; set; }
+    // A missing role is unknown, not a refusal. Compatible servers omit roles they do not implement.
+    public bool? AdminRole { get; set; }
+    public bool? SettingsRole { get; set; }
+    public bool? DownloadRole { get; set; }
+    public bool? UploadRole { get; set; }
+    public bool? PlaylistRole { get; set; }
+    public bool? CoverArtRole { get; set; }
+    public bool? CommentRole { get; set; }
+    public bool? PodcastRole { get; set; }
+    public bool? StreamRole { get; set; }
+    public bool? JukeboxRole { get; set; }
+    public bool? ShareRole { get; set; }
+    public bool? VideoConversionRole { get; set; }
+    public int? MaxBitRate { get; set; }
     [JsonPropertyName("folder")]
     [JsonConverter(typeof(Transport.IdentifiersConverter))]
-    public string[] Folders { get; init; } = [];
-    public string? AvatarLastChanged { get; init; }
+    public string[] Folders { get; set; } = [];
+    public string? AvatarLastChanged { get; set; }
 }
 
 internal sealed record License
 {
-    public bool Valid { get; init; }
-    public string Email { get; init; } = "";
-    public string? LicenseExpires { get; init; }
-    public string? TrialExpires { get; init; }
+    public bool Valid { get; set; }
+    public string Email { get; set; } = "";
+    public string? LicenseExpires { get; set; }
+    public string? TrialExpires { get; set; }
 }
 
 internal sealed record Error
 {
-    public int Code { get; init; }
-    public string Message { get; init; } = "";
-    public string HelpUrl { get; init; } = "";
+    public int Code { get; set; }
+    public string Message { get; set; } = "";
+    public string HelpUrl { get; set; } = "";
 }

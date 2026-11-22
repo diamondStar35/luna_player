@@ -82,8 +82,8 @@ internal sealed partial class Player : IDisposable
     internal string SourceIdentity => _playlist.SourceIdentity;
     internal IReadOnlyList<string> SourceFiles => _playlist.SourceFiles;
     internal string? CurrentItemId => _playlist.CurrentItem?.Id;
-    internal bool IsPaused => _engine.IsPaused;
-    internal bool SelectionRangeCompleted => _engine.SelectionRangeCompleted;
+    internal bool IsPaused => _resolvingMedia ? _pendingMediaPaused : _engine.IsPaused;
+    internal bool SelectionRangeCompleted => !_resolvingMedia && _engine.SelectionRangeCompleted;
 
     /// <summary>Whether mpv has the current entry open, and so can report and change a position in it -
     /// whether or not it is playing. False before anything has been loaded and after <see cref="Stop"/>,
@@ -92,7 +92,7 @@ internal sealed partial class Player : IDisposable
     internal bool IsLoaded => _loaded;
 
     /// <summary>Whether a file is loaded and not paused.</summary>
-    internal bool IsPlaying => _loaded && !_engine.IsPaused;
+    internal bool IsPlaying => _loaded && !IsPaused;
 
     /// <summary>Whether a real picture is playing, from mpv itself; false for audio. The full-screen command
     /// is gated on this. Settles shortly after a load - see <see cref="VideoAvailabilityChanged"/>.</summary>
@@ -105,10 +105,10 @@ internal sealed partial class Player : IDisposable
         : IsDiscAudio ? MediaKind.Audio
         : _loaded ? (_engine.HasVideo ? MediaKind.Video : MediaKind.Audio) : MediaLibrary.KindOf(path);
 
-    internal double? Duration => _loaded ? _playlist.CurrentItem?.Chapter?.Duration ?? _engine.Duration : null;
+    internal double? Duration => _loaded ? _playlist.CurrentItem?.Chapter?.Duration ?? (_currentInput?.Duration ?? _engine.Duration) : null;
     internal double? Elapsed => SourceElapsed is double elapsed ? ToPlaybackTime(elapsed) : null;
     internal double? Remaining => Precision.Normalize(_playlist.CurrentItem?.Chapter is not null
-        ? Duration - Elapsed : _engine.Remaining ?? (Duration - Elapsed));
+        ? Duration - Elapsed : _currentInput is not null ? Duration - Elapsed : _engine.Remaining ?? (Duration - Elapsed));
     internal double Volume => _engine.Volume;
     internal double Speed => _engine.Speed;
     internal double Pitch => _engine.Pitch;
@@ -129,19 +129,20 @@ internal sealed partial class Player : IDisposable
         _engine.SubtitleTracksChanged -= OnSubtitleTracksChanged;
         _engine.SubtitleTextChanged -= OnSubtitleTextChanged;
         _engine.AudioFilterFailed -= OnAudioFilterFailed;
+        CancelMediaLoad();
         _engine.Dispose();
     }
 
     private void OnEnded(EndReason reason)
     {
-        if (!_disposed)
+        if (!_disposed && !_resolvingMedia)
             Ended?.Invoke(reason);
     }
 
     private void OnSelectionEnded(double end)
     {
-        if (!_disposed)
-            SelectionEnded?.Invoke(ToPlaybackTime(end));
+        if (!_disposed && !_resolvingMedia)
+            SelectionEnded?.Invoke(ToPlaybackTime(end + (_currentInput?.Offset ?? 0)));
     }
 
     private void OnSelectionSeekCompleted()
@@ -188,6 +189,7 @@ internal sealed partial class Player : IDisposable
     {
         Interlocked.Increment(ref _playbackRevision);
         _queuedSessionStream = null;
+        CancelMediaLoad();
         _chapterStopHeld = false;
         _engine.Stop();
         _loaded = false;

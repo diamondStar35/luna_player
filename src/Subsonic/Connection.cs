@@ -7,10 +7,10 @@ internal enum StreamingMode { Original, ServerDefault, Transcode }
 
 internal sealed record Credentials
 {
-    public AuthenticationKind Kind { get; init; }
-    public string Username { get; init; } = "";
-    public string Password { get; init; } = "";
-    public string ApiKey { get; init; } = "";
+    public AuthenticationKind Kind { get; set; }
+    public string Username { get; set; } = "";
+    public string Password { get; set; } = "";
+    public string ApiKey { get; set; } = "";
 }
 
 internal sealed record Options
@@ -51,11 +51,11 @@ internal sealed record Options
 
 internal sealed record StreamOptions
 {
-    public StreamingMode Mode { get; init; }
-    public string? Format { get; init; }
-    public int? MaximumBitRate { get; init; }
-    public double? TimeOffset { get; init; }
-    public bool EstimateContentLength { get; init; }
+    public StreamingMode Mode { get; set; }
+    public string? Format { get; set; }
+    public int? MaximumBitRate { get; set; }
+    public double? TimeOffset { get; set; }
+    public bool EstimateContentLength { get; set; }
 }
 
 internal enum FailureKind { Transport, Timeout, Http, InvalidResponse, Rejected, Unsupported, Forbidden }

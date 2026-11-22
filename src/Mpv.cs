@@ -3260,7 +3260,13 @@ namespace MpvNet
         private static string EncodeOptions(IDictionary<string, object?>? options) =>
             options == null
                 ? ""
-                : string.Join(",", options.Select(x => $"{x.Key.Replace('_', '-')}={x.Value}"));
+                : string.Join(",", options.Select(x => $"{x.Key.Replace('_', '-')}={EncodeOptionValue(x.Value)}"));
+
+        private static string EncodeOptionValue(object? value)
+        {
+            var text = Convert.ToString(value, System.Globalization.CultureInfo.InvariantCulture) ?? "";
+            return "%" + System.Text.Encoding.UTF8.GetByteCount(text) + "%" + text;
+        }
 
         /// <summary>Whether the mpv this is running against declares <paramref name="argument"/> as part
         /// of <paramref name="command"/>.</summary>

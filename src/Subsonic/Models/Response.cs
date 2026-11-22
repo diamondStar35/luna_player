@@ -4,126 +4,126 @@ namespace LunaPlayer.Subsonic.Models;
 
 internal sealed record Envelope
 {
-    [JsonPropertyName("subsonic-response")] public Response? Response { get; init; }
+    [JsonPropertyName("subsonic-response")] public Response? Response { get; set; }
 }
 internal sealed record Response
 {
-    public string Status { get; init; } = "";
-    public string Version { get; init; } = "";
-    public string Type { get; init; } = "";
-    public string ServerVersion { get; init; } = "";
-    public bool OpenSubsonic { get; init; }
-    public Error? Error { get; init; }
-    public FolderList? MusicFolders { get; init; }
-    public Artists? Artists { get; init; }
-    public Artists? Indexes { get; init; }
-    public Artist? Artist { get; init; }
-    public Album? Album { get; init; }
-    public Entry? Song { get; init; }
-    public Directory? Directory { get; init; }
-    public GenreList? Genres { get; init; }
-    public ArtistInfo? ArtistInfo { get; init; }
-    public ArtistInfo? ArtistInfo2 { get; init; }
-    public AlbumInfo? AlbumInfo { get; init; }
-    public AlbumInfo? AlbumInfo2 { get; init; }
-    public AlbumList? AlbumList { get; init; }
-    public AlbumList? AlbumList2 { get; init; }
-    public SongList? RandomSongs { get; init; }
-    public SongList? SongsByGenre { get; init; }
-    public SongList? TopSongs { get; init; }
-    public SongList? SimilarSongs { get; init; }
-    public SongList? SimilarSongs2 { get; init; }
-    public SearchResult? SearchResult2 { get; init; }
-    public SearchResult? SearchResult3 { get; init; }
-    public SearchResult? Starred { get; init; }
-    public SearchResult? Starred2 { get; init; }
-    public PlaylistList? Playlists { get; init; }
-    public Playlist? Playlist { get; init; }
-    public BookmarkList? Bookmarks { get; init; }
-    public PlayQueue? PlayQueue { get; init; }
-    public PlayQueue? PlayQueueByIndex { get; init; }
-    public RadioList? InternetRadioStations { get; init; }
-    public PodcastList? Podcasts { get; init; }
-    public EpisodeList? NewestPodcasts { get; init; }
-    public PodcastEpisode? PodcastEpisode { get; init; }
-    public NowPlayingList? NowPlaying { get; init; }
-    public Lyrics? Lyrics { get; init; }
-    public LyricsList? LyricsList { get; init; }
-    public ScanStatus? ScanStatus { get; init; }
-    public User? User { get; init; }
-    public License? License { get; init; }
-    public TranscodeDecision? TranscodeDecision { get; init; }
+    public string Status { get; set; } = "";
+    public string Version { get; set; } = "";
+    public string Type { get; set; } = "";
+    public string ServerVersion { get; set; } = "";
+    public bool OpenSubsonic { get; set; }
+    public Error? Error { get; set; }
+    public FolderList? MusicFolders { get; set; }
+    public Artists? Artists { get; set; }
+    public Artists? Indexes { get; set; }
+    public Artist? Artist { get; set; }
+    public Album? Album { get; set; }
+    public Entry? Song { get; set; }
+    public Directory? Directory { get; set; }
+    public GenreList? Genres { get; set; }
+    public ArtistInfo? ArtistInfo { get; set; }
+    public ArtistInfo? ArtistInfo2 { get; set; }
+    public AlbumInfo? AlbumInfo { get; set; }
+    public AlbumInfo? AlbumInfo2 { get; set; }
+    public AlbumList? AlbumList { get; set; }
+    public AlbumList? AlbumList2 { get; set; }
+    public SongList? RandomSongs { get; set; }
+    public SongList? SongsByGenre { get; set; }
+    public SongList? TopSongs { get; set; }
+    public SongList? SimilarSongs { get; set; }
+    public SongList? SimilarSongs2 { get; set; }
+    public SearchResult? SearchResult2 { get; set; }
+    public SearchResult? SearchResult3 { get; set; }
+    public SearchResult? Starred { get; set; }
+    public SearchResult? Starred2 { get; set; }
+    public PlaylistList? Playlists { get; set; }
+    public Playlist? Playlist { get; set; }
+    public BookmarkList? Bookmarks { get; set; }
+    public PlayQueue? PlayQueue { get; set; }
+    public PlayQueue? PlayQueueByIndex { get; set; }
+    public RadioList? InternetRadioStations { get; set; }
+    public PodcastList? Podcasts { get; set; }
+    public EpisodeList? NewestPodcasts { get; set; }
+    public PodcastEpisode? PodcastEpisode { get; set; }
+    public NowPlayingList? NowPlaying { get; set; }
+    public Lyrics? Lyrics { get; set; }
+    public LyricsList? LyricsList { get; set; }
+    public ScanStatus? ScanStatus { get; set; }
+    public User? User { get; set; }
+    public License? License { get; set; }
+    public TranscodeDecision? TranscodeDecision { get; set; }
     [JsonPropertyName("sonicMatch"), JsonConverter(typeof(Transport.OneOrMany<SonicMatch>))]
-    public SonicMatch[] SonicMatches { get; init; } = [];
-    public TokenInfo? TokenInfo { get; init; }
+    public SonicMatch[] SonicMatches { get; set; } = [];
+    public TokenInfo? TokenInfo { get; set; }
     [JsonConverter(typeof(Transport.OneOrMany<Extension>))]
-    public Extension[] OpenSubsonicExtensions { get; init; } = [];
+    public Extension[] OpenSubsonicExtensions { get; set; } = [];
 }
 internal sealed record TokenInfo
 {
-    public string Username { get; init; } = "";
+    public string Username { get; set; } = "";
 }
 internal sealed record FolderList
 {
     [JsonPropertyName("musicFolder"), JsonConverter(typeof(Transport.OneOrMany<MusicFolder>))]
-    public MusicFolder[] MusicFolders { get; init; } = [];
+    public MusicFolder[] MusicFolders { get; set; } = [];
 }
 internal sealed record GenreList
 {
     [JsonPropertyName("genre"), JsonConverter(typeof(Transport.OneOrMany<Genre>))]
-    public Genre[] Genres { get; init; } = [];
+    public Genre[] Genres { get; set; } = [];
 }
 internal sealed record AlbumList
 {
     [JsonPropertyName("album"), JsonConverter(typeof(Transport.OneOrMany<Album>))]
-    public Album[] Albums { get; init; } = [];
+    public Album[] Albums { get; set; } = [];
 }
 internal sealed record SongList
 {
     [JsonPropertyName("song"), JsonConverter(typeof(Transport.OneOrMany<Entry>))]
-    public Entry[] Songs { get; init; } = [];
+    public Entry[] Songs { get; set; } = [];
 }
 internal sealed record PlaylistList
 {
     [JsonPropertyName("playlist"), JsonConverter(typeof(Transport.OneOrMany<Playlist>))]
-    public Playlist[] Playlists { get; init; } = [];
+    public Playlist[] Playlists { get; set; } = [];
 }
 internal sealed record BookmarkList
 {
     [JsonPropertyName("bookmark"), JsonConverter(typeof(Transport.OneOrMany<Bookmark>))]
-    public Bookmark[] Bookmarks { get; init; } = [];
+    public Bookmark[] Bookmarks { get; set; } = [];
 }
 internal sealed record RadioList
 {
     [JsonPropertyName("internetRadioStation"), JsonConverter(typeof(Transport.OneOrMany<RadioStation>))]
-    public RadioStation[] Stations { get; init; } = [];
+    public RadioStation[] Stations { get; set; } = [];
 }
 internal sealed record PodcastList
 {
     [JsonPropertyName("channel"), JsonConverter(typeof(Transport.OneOrMany<PodcastChannel>))]
-    public PodcastChannel[] Channels { get; init; } = [];
+    public PodcastChannel[] Channels { get; set; } = [];
 }
 internal sealed record EpisodeList
 {
     [JsonPropertyName("episode"), JsonConverter(typeof(Transport.OneOrMany<PodcastEpisode>))]
-    public PodcastEpisode[] Episodes { get; init; } = [];
+    public PodcastEpisode[] Episodes { get; set; } = [];
 }
 internal sealed record NowPlayingList
 {
     [JsonPropertyName("entry"), JsonConverter(typeof(Transport.OneOrMany<NowPlayingEntry>))]
-    public NowPlayingEntry[] Entries { get; init; } = [];
+    public NowPlayingEntry[] Entries { get; set; } = [];
 }
 internal sealed record LyricsList
 {
     [JsonPropertyName("structuredLyrics"), JsonConverter(typeof(Transport.OneOrMany<StructuredLyrics>))]
-    public StructuredLyrics[] Lyrics { get; init; } = [];
+    public StructuredLyrics[] Lyrics { get; set; } = [];
 }
 internal sealed record SearchResult
 {
     [JsonPropertyName("artist"), JsonConverter(typeof(Transport.OneOrMany<Artist>))]
-    public Artist[] Artists { get; init; } = [];
+    public Artist[] Artists { get; set; } = [];
     [JsonPropertyName("album"), JsonConverter(typeof(Transport.OneOrMany<Album>))]
-    public Album[] Albums { get; init; } = [];
+    public Album[] Albums { get; set; } = [];
     [JsonPropertyName("song"), JsonConverter(typeof(Transport.OneOrMany<Entry>))]
-    public Entry[] Songs { get; init; } = [];
+    public Entry[] Songs { get; set; } = [];
 }

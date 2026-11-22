@@ -25,7 +25,7 @@ internal sealed partial class PlaybackCoordinator
         _ = Task.Run(() =>
         {
             var result = probe.Read(request.Path, CancellationToken.None,
-                () => !_disposed && generation == Volatile.Read(ref _loadGeneration));
+                () => !_disposed && generation == Volatile.Read(ref _loadGeneration), request.Headers);
             lock (_loadSync)
             {
                 if (_disposed || generation != _loadGeneration)
@@ -78,7 +78,7 @@ internal sealed partial class PlaybackCoordinator
         {
             var result = probe.Read(request.Path, CancellationToken.None,
                 () => !_disposed && generation == Volatile.Read(ref _queueGeneration)
-                    && load == Volatile.Read(ref _loadGeneration));
+                    && load == Volatile.Read(ref _loadGeneration), request.Headers);
             lock (_loadSync)
             {
                 if (_disposed || generation != _queueGeneration || load != _loadGeneration

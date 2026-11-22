@@ -15,6 +15,11 @@ internal sealed class FakeEngine : IEngine
     internal List<double> RequestedSeeks { get; } = [];
     internal double Loudness { get; private set; } = 100;
     internal double Rate { get; private set; } = 1;
+    internal double? LoopStart { get; private set; }
+    internal double? LoopEnd { get; private set; }
+    internal PlaybackRange? Selection { get; private set; }
+    internal bool SelectionRepeats { get; private set; }
+    internal void CompleteSelection(double end) => ((Action<double>?)_events.GetValueOrDefault("SelectionEnded"))?.Invoke(end);
     public void Dispose() { }
     internal void End(EndReason reason) => ((Action<EndReason>?)_events.GetValueOrDefault("Ended"))?.Invoke(reason);
     public event Action<EndReason>? Ended { add => _events["Ended"] = Delegate.Combine(_events.GetValueOrDefault("Ended"), value); remove => _events["Ended"] = Delegate.Remove(_events.GetValueOrDefault("Ended"), value); }
@@ -28,8 +33,8 @@ internal sealed class FakeEngine : IEngine
     public event Action? AudioTracksChanged { add => _events["AudioTracksChanged"] = Delegate.Combine(_events.GetValueOrDefault("AudioTracksChanged"), value); remove => _events["AudioTracksChanged"] = Delegate.Remove(_events.GetValueOrDefault("AudioTracksChanged"), value); }
     public event Action? SubtitleTracksChanged { add => _events["SubtitleTracksChanged"] = Delegate.Combine(_events.GetValueOrDefault("SubtitleTracksChanged"), value); remove => _events["SubtitleTracksChanged"] = Delegate.Remove(_events.GetValueOrDefault("SubtitleTracksChanged"), value); }
     public event Action<string>? SubtitleTextChanged { add => _events["SubtitleTextChanged"] = Delegate.Combine(_events.GetValueOrDefault("SubtitleTextChanged"), value); remove => _events["SubtitleTextChanged"] = Delegate.Remove(_events.GetValueOrDefault("SubtitleTextChanged"), value); }
-    public bool Load(string path, double? startPosition = null, bool paused = false, string? audioFile = null, bool noVideo = false, bool fadeTransition = false, PlaybackRange? range = null, string? itemId = null, double? chapterStop = null) { Loads.Add(path); Position = startPosition ?? 0; Paused = paused; return true; }
-    public bool QueueNext(string path, double? startPosition = null, string? audioFile = null, bool noVideo = false, PlaybackRange? range = null, string? itemId = null) => true;
+    public bool Load(string path, double? startPosition = null, bool paused = false, string? audioFile = null, bool noVideo = false, bool fadeTransition = false, PlaybackRange? range = null, string? itemId = null, double? chapterStop = null, IReadOnlyDictionary<string, string>? headers = null, Boundaries? boundaries = null) { Loads.Add(path); Position = startPosition ?? 0; Paused = paused; LoopStart = boundaries?.LoopStart; LoopEnd = boundaries?.LoopEnd; Selection = boundaries?.Selection; SelectionRepeats = boundaries?.RepeatSelection ?? false; return true; }
+    public bool QueueNext(string path, double? startPosition = null, string? audioFile = null, bool noVideo = false, PlaybackRange? range = null, string? itemId = null, IReadOnlyDictionary<string, string>? headers = null) => true;
     public void ClearQueuedNext() {}
     public QueuedAdvance? TakeQueuedAdvance() => default;
     public double? PositionFor(string path) { return Position; }
@@ -49,13 +54,13 @@ internal sealed class FakeEngine : IEngine
     public double? Remaining => 10d - Position;
     public void SeekRelative(double seconds) { Position += seconds; }
     public void SeekAbsolute(double seconds) { RequestedSeeks.Add(seconds); if (!DeferSeeks) Position = seconds; }
-    public bool SetLoopStart(double seconds) => true;
-    public bool SetLoopEnd(double seconds) => true;
-    public bool ClearLoop() => true;
-    public bool SetSelectionRange(double start, double end, bool repeat) => true;
-    public bool PlaySelectionRange(double start, double end, bool repeat) => true;
-    public bool ExitSelectionRange(double end, bool play) => true;
-    public bool ClearSelectionRange(bool restoreEndBehavior = true) => true;
+    public bool SetLoopStart(double seconds) { LoopStart = seconds; LoopEnd = null; return true; }
+    public bool SetLoopEnd(double seconds) { LoopEnd = seconds; return true; }
+    public bool ClearLoop() { LoopStart = LoopEnd = null; return true; }
+    public bool SetSelectionRange(double start, double end, bool repeat) { Selection = new(start, end); SelectionRepeats = repeat; return true; }
+    public bool PlaySelectionRange(double start, double end, bool repeat) { SetSelectionRange(start, end, repeat); SeekAbsolute(start); Play(); return true; }
+    public bool ExitSelectionRange(double end, bool play) { Selection = null; SeekAbsolute(end); if (play) Play(); else Pause(); return true; }
+    public bool ClearSelectionRange(bool restoreEndBehavior = true) { Selection = null; return true; }
     public double SetVolume(double volume) { return Loudness = Math.Clamp(volume, 0, 2000); }
     public double Volume => Loudness;
     public double SetSpeed(double speed) { return Rate = Math.Clamp(speed, 0.5, 4); }

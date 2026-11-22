@@ -6,11 +6,13 @@ using LunaPlayer.Media;
 
 namespace LunaPlayer.Playlist;
 
-internal enum EntryKind { File, Folder, Stream }
+internal enum EntryKind { File, Folder, Stream, ServerMedia }
 internal sealed record SavedEntry(Guid Id, EntryKind Kind, string Location, string? Title = null)
 {
+    public Subsonic.Playback.Reference? ServerMedia { get; init; }
     internal static SavedEntry FromPath(string path) => new(Guid.NewGuid(),
-        Directory.Exists(path) ? EntryKind.Folder : LinkValidator.IsHttpUrl(path) ? EntryKind.Stream : EntryKind.File, path);
+        Subsonic.Playback.Reference.IsAddress(path) ? EntryKind.ServerMedia : Directory.Exists(path) ? EntryKind.Folder : LinkValidator.IsHttpUrl(path) ? EntryKind.Stream : EntryKind.File, path)
+        { ServerMedia = Subsonic.Playback.Reference.Parse(path) };
     internal string Name => Title ?? (Kind == EntryKind.Folder ? new DirectoryInfo(Location).Name : MediaLibrary.DisplayName(Location));
 }
 

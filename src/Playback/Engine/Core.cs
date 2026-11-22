@@ -20,8 +20,8 @@ internal sealed class Engine : IEngine
     public event Action? AudioTracksChanged { add => _coordinator.AudioTracksChanged += value; remove => _coordinator.AudioTracksChanged -= value; }
     public event Action? SubtitleTracksChanged { add => _coordinator.SubtitleTracksChanged += value; remove => _coordinator.SubtitleTracksChanged -= value; }
     public event Action<string>? SubtitleTextChanged { add => _coordinator.SubtitleTextChanged += value; remove => _coordinator.SubtitleTextChanged -= value; }
-    public bool Load(string path, double? startPosition = null, bool paused = false, string? audioFile = null, bool noVideo = false, bool fadeTransition = false, PlaybackRange? range = null, string? itemId = null, double? chapterStop = null) => _coordinator.Load(path, startPosition, paused, audioFile, noVideo, fadeTransition, range, itemId, chapterStop);
-    public bool QueueNext(string path, double? startPosition = null, string? audioFile = null, bool noVideo = false, PlaybackRange? range = null, string? itemId = null) => _coordinator.QueueNext(path, startPosition, audioFile, noVideo, range, itemId);
+    public bool Load(string path, double? startPosition = null, bool paused = false, string? audioFile = null, bool noVideo = false, bool fadeTransition = false, PlaybackRange? range = null, string? itemId = null, double? chapterStop = null, IReadOnlyDictionary<string, string>? headers = null, Boundaries? boundaries = null) => _coordinator.Load(path, startPosition, paused, audioFile, noVideo, fadeTransition, range, itemId, chapterStop, headers, boundaries);
+    public bool QueueNext(string path, double? startPosition = null, string? audioFile = null, bool noVideo = false, PlaybackRange? range = null, string? itemId = null, IReadOnlyDictionary<string, string>? headers = null) => _coordinator.QueueNext(path, startPosition, audioFile, noVideo, range, itemId, headers);
     public void ClearQueuedNext() => _coordinator.ClearQueuedNext();
     public QueuedAdvance? TakeQueuedAdvance() => _coordinator.TakeQueuedAdvance();
     public double? PositionFor(string path) => _coordinator.PositionFor(path);

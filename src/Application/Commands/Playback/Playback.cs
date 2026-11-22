@@ -136,7 +136,7 @@ internal sealed partial class Playback
             && IsAtSelectionEnd(range))
             return;
 
-        if (_player.Duration is null)
+        if (!_player.IsLoaded && !_player.IsResolvingMedia)
         {
             if (_player.Reload() && _settings.General.Verbosity == SpeechVerbosity.Beginner)
                 // Translators: Spoken when playing starts or carries on again.

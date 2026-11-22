@@ -15,6 +15,16 @@ internal sealed class Podcasts(Session session, Func<string, int, CancellationTo
         await require("getPodcastEpisode", 1, token).ConfigureAwait(false);
         return Required((await Session.ReadAsync("getPodcastEpisode", new Parameters().With("id", Id(id)), token).ConfigureAwait(false)).PodcastEpisode, "getPodcastEpisode");
     }
+    internal async Task<PodcastEpisode> FindEpisodeAsync(string id, CancellationToken token = default)
+    {
+        try { return await GetEpisodeAsync(id, token).ConfigureAwait(false); }
+        catch (RequestException error) when (error.Kind == FailureKind.Unsupported)
+        {
+            // The single-episode endpoint is an extension; legacy servers expose episodes through channels.
+            return (await GetChannelsAsync(token: token).ConfigureAwait(false)).SelectMany(x => x.Episodes)
+                .FirstOrDefault(x => x.Id == id) ?? throw new RequestException(FailureKind.Rejected, "getPodcasts", code: 70);
+        }
+    }
     internal Task SubscribeAsync(string feedUrl, CancellationToken token = default)
         => Change("createPodcastChannel", new Parameters().With("url", Radio.Radio.Url(feedUrl)), token);
     internal Task UnsubscribeAsync(string id, CancellationToken token = default)

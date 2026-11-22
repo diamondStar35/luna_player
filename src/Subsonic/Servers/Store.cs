@@ -57,7 +57,7 @@ internal sealed class Store(string path)
             foreach (var entry in document.Servers)
             {
                 if (entry?.Profile is not { } profile || profile.Id == Guid.Empty || !ids.Add(profile.Id)
-                    || profile.Credentials is null || profile.Streaming is null || profile.Headers is null || profile.LibraryIds is null)
+                    || profile.Credentials is null || profile.Streaming is null || profile.Headers is null || profile.LibraryIds is null || profile.HiddenSections is null || profile.Downloads is null)
                     throw new InvalidDataException("Invalid server identity.");
                 var plain = ProtectedData.Unprotect(Convert.FromBase64String(entry.Secret), Entropy, DataProtectionScope.CurrentUser);
                 try
@@ -124,7 +124,10 @@ internal sealed class Store(string path)
         ArgumentNullException.ThrowIfNull(profile.Credentials);
         ArgumentNullException.ThrowIfNull(profile.Headers);
         ArgumentNullException.ThrowIfNull(profile.LibraryIds);
+        ArgumentNullException.ThrowIfNull(profile.HiddenSections);
         ArgumentNullException.ThrowIfNull(profile.Streaming);
+        ArgumentNullException.ThrowIfNull(profile.Downloads);
+        ArgumentNullException.ThrowIfNull(profile.Downloads.Folder);
         if (!Enum.IsDefined(profile.Credentials.Kind)) throw new ArgumentException(nameof(profile));
         if (!Enum.IsDefined(profile.Streaming.Mode) || profile.Streaming.MaximumBitRate < 0
             || profile.Streaming.TimeOffset is { } offset && (!double.IsFinite(offset) || offset < 0))

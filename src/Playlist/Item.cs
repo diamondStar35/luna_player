@@ -6,6 +6,7 @@ namespace LunaPlayer.Playlist;
 /// queued transitions and shuffled navigation can distinguish consecutive chapters of one book.</summary>
 internal sealed record PlaylistItem(Guid SourceId, string Path, Chapter? Chapter = null)
 {
+    internal Subsonic.Playback.Reference? ServerMedia => Subsonic.Playback.Reference.Parse(Path);
     internal string Id => $"{SourceId:N}/{Chapter?.Index ?? -1}";
     internal double Start => Chapter?.Start ?? 0;
     internal double? End => Chapter?.End;

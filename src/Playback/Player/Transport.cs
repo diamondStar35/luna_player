@@ -8,6 +8,11 @@ internal sealed partial class Player
     // otherwise have no way of hearing about it.
     internal bool TogglePause()
     {
+        if (_resolvingMedia)
+        {
+            if (_pendingMediaPaused) Play(); else Pause();
+            return !_pendingMediaPaused;
+        }
         if (_chapterStopHeld)
         {
             ResumeAfterChapterStop();
@@ -23,6 +28,8 @@ internal sealed partial class Player
 
     internal void Play()
     {
+        if (_resolvingMedia) { _pendingMediaPaused = false; StateChanged?.Invoke(); return; }
+        if (!_loaded && CurrentPath is { } identity && _mediaResolver?.Handles(identity) == true) { LoadCurrent(0, false); return; }
         if (_chapterStopHeld)
         {
             ResumeAfterChapterStop();
@@ -51,6 +58,7 @@ internal sealed partial class Player
 
     internal void Pause()
     {
+        if (_resolvingMedia) { _pendingMediaPaused = true; _engine.Pause(); StateChanged?.Invoke(); return; }
         _engine.Pause();
         StateChanged?.Invoke();
     }
@@ -58,7 +66,7 @@ internal sealed partial class Player
     internal void Seek(double seconds)
     {
         Interlocked.Increment(ref _playbackRevision);
-        if ((_playlist.CurrentItem?.Chapter is not null || _engine.IsLoading) && Elapsed is double elapsed)
+        if ((_playlist.CurrentItem?.Chapter is not null || _engine.IsLoading || _resolvingMedia || _currentInput is not null) && Elapsed is double elapsed)
             SeekAbsolute(elapsed + seconds);
         else
         {
@@ -79,8 +87,11 @@ internal sealed partial class Player
             LoadCurrent(source, paused: true);
             return;
         }
+        if (CurrentPath is { } identity && _mediaResolver?.Handles(identity) == true
+            && (_resolvingMedia || _currentInput?.SeekByReopening == true))
+        { BeginMediaLoad(identity, source, IsPaused, fade: false); return; }
         FollowChapterStop(source);
-        _engine.SeekAbsolute(source);
+        _engine.SeekAbsolute(EngineTime(source));
     }
 
     internal bool SeekToEnd()

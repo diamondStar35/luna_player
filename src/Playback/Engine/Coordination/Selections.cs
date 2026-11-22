@@ -6,16 +6,21 @@ internal sealed partial class PlaybackCoordinator
 {
     public bool SetLoopStart(double seconds)
     {
+        if (UpdateOpeningBoundaries(_boundaries with { LoopStart = Math.Max(0, seconds), LoopEnd = null })) return true;
         var startSet = _session.TrySetProperty("ab-loop-a", Precision.Normalize(Math.Max(0, seconds)));
         var endCleared = _session.TrySetProperty("ab-loop-b", "no");
         return startSet && endCleared;
     }
 
     public bool SetLoopEnd(double seconds)
-        => _session.TrySetProperty("ab-loop-b", Precision.Normalize(Math.Max(0, seconds)));
+    {
+        if (UpdateOpeningBoundaries(_boundaries with { LoopEnd = Math.Max(0, seconds) })) return true;
+        return _session.TrySetProperty("ab-loop-b", Precision.Normalize(Math.Max(0, seconds)));
+    }
 
     public bool ClearLoop()
     {
+        if (UpdateOpeningBoundaries(_boundaries with { LoopStart = null, LoopEnd = null })) return true;
         var startCleared = _session.TrySetProperty("ab-loop-a", "no");
         var endCleared = _session.TrySetProperty("ab-loop-b", "no");
         return startCleared && endCleared;
@@ -43,6 +48,7 @@ internal sealed partial class PlaybackCoordinator
         _selectionRangeCompleted = false;
         _selectionRangeEnd = end;
         _selectionRangeEntryId = _session.PositiveEntryId();
+        if (UpdateOpeningBoundaries(new(Selection: new(start, end), RepeatSelection: repeat))) return true;
         var endSet = _session.TrySetProperty("end", EffectiveEnd(repeat ? null : end));
         var fileLoopCleared = _session.TrySetProperty("loop-file", "no");
         // A one-shot selection reaches an artificial EOF. keep-open makes mpv hold the exact boundary so
@@ -116,6 +122,11 @@ internal sealed partial class PlaybackCoordinator
         _selectionRangeCompleted = false;
         _selectionRangeEnd = 0;
         _selectionRangeEntryId = null;
+        if (UpdateOpeningBoundaries(Boundaries.None))
+        {
+            _endBehaviorRestorePending = !restoreEndBehavior && releasedOneShot;
+            return true;
+        }
         var endCleared = _session.TrySetProperty("end", EffectiveEnd());
         var loopCleared = ClearLoop();
         if (restoreEndBehavior)

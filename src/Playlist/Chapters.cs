@@ -44,7 +44,7 @@ internal sealed partial class PlaylistState
 
     /// <summary>Preserves the existing shuffled order when metadata expands a source. New chapters are
     /// inserted into the existing order without reshuffling surviving items.</summary>
-    private void RebuildItems(double position)
+    private void RebuildItems(double position, bool randomizeNew = true)
     {
         var current = CurrentItem;
         var previousOrder = Items.ToArray();
@@ -57,17 +57,29 @@ internal sealed partial class PlaylistState
             _currentIndex = Math.Max(0, _items.FindIndex(item => item.SourceId == current?.SourceId));
         if (!IsShuffleEnabled)
             return;
-        var order = new List<int>();
+        var indexes = _items.Select((item, index) => (item, index)).ToDictionary(x => x.item.Id, x => x.index);
+        var fallback = _items.Select((item, index) => (item, index))
+            .Where(x => x.item.Chapter is null || x.item == CurrentItem || x.item.Chapter.Index == 0)
+            .GroupBy(x => x.item.SourceId).ToDictionary(x => x.Key, x => x.First().index);
+        var existing = new List<int>(); var seen = new HashSet<int>();
         foreach (var old in previousOrder)
         {
-            var index = _items.FindIndex(item => item.Id == old.Id);
-            if (index < 0)
-                index = _items.FindIndex(item => item.SourceId == old.SourceId
-                    && (item.Chapter is null || item == CurrentItem || item.Chapter.Index == 0));
-            if (index >= 0 && !order.Contains(index)) order.Add(index);
+            if (!indexes.TryGetValue(old.Id, out var index) && !fallback.TryGetValue(old.SourceId, out index)) continue;
+            if (seen.Add(index)) existing.Add(index);
         }
-        for (var index = 0; index < _items.Count; index++)
-            if (!order.Contains(index)) order.Insert(Random.Shared.Next(order.Count + 1), index);
+        var added = Enumerable.Range(0, _items.Count).Where(index => !seen.Contains(index)).ToArray();
+        var order = new List<int>(_items.Count);
+        if (randomizeNew)
+        {
+            Random.Shared.Shuffle(added);
+            // Merge a shuffled set of new items without repeatedly shifting a large playlist.
+            var oldIndex = 0; var newIndex = 0;
+            while (oldIndex < existing.Count || newIndex < added.Length)
+                if (Random.Shared.Next(existing.Count - oldIndex + added.Length - newIndex) < existing.Count - oldIndex)
+                    order.Add(existing[oldIndex++]);
+                else order.Add(added[newIndex++]);
+        }
+        else { order.AddRange(existing); order.AddRange(added); }
         _shuffle.Replace(order);
         _shuffle.Position = _shuffle.IndexOf(_currentIndex);
     }
