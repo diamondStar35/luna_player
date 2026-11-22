@@ -1,3 +1,4 @@
+using LunaPlayer.Downloads;
 using System.Diagnostics;
 using System.Globalization;
 using LunaPlayer.Configuration.Models;

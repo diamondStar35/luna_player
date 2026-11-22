@@ -1,18 +1,18 @@
 using LunaPlayer.UI.Services;
 using LunaPlayer.Application;
 using WxSharp;
-using Downloads = LunaPlayer.YouTube.Download;
+using SharedDownloads = LunaPlayer.Downloads;
 
-namespace LunaPlayer.UI.YouTube;
+namespace LunaPlayer.UI.Downloads;
 
-/// <summary>The live, modal view of the application-wide download queue.</summary>
+/// <summary>The live, modeless view of the application-wide download queue.</summary>
 internal sealed class DownloadQueueDialog : IDisposable
 {
     private const int GaugeRange = 1000;
     private static readonly TimeSpan TickInterval = TimeSpan.FromMilliseconds(200);
 
     private readonly Dialog _dialog;
-    private readonly Downloads.DownloadQueue _queue;
+    private readonly SharedDownloads.DownloadQueue _queue;
     private readonly IApplicationDispatcher _dispatcher;
     private readonly Func<IReadOnlyList<string>, string?> _addLinks;
     private readonly Action _start;
@@ -23,14 +23,14 @@ internal sealed class DownloadQueueDialog : IDisposable
     private readonly Button _startButton;
     private readonly Button _stopAll;
     private readonly List<Guid> _shownIds = [];
-    private readonly List<Downloads.QueueItemStatus> _shownStatuses = [];
+    private readonly List<SharedDownloads.QueueItemStatus> _shownStatuses = [];
     private IDisposable? _ticker;
-    private Downloads.QueueSnapshot? _snapshot;
+    private SharedDownloads.QueueSnapshot? _snapshot;
 
     internal DownloadQueueDialog(
         Window parent,
         IApplicationDispatcher dispatcher,
-        Downloads.DownloadQueue queue,
+        SharedDownloads.DownloadQueue queue,
         Func<IReadOnlyList<string>, string?> addLinks,
         Action start)
     {
@@ -38,15 +38,15 @@ internal sealed class DownloadQueueDialog : IDisposable
         _queue = queue;
         _addLinks = addLinks;
         _start = start;
-        // Translators: Title of the window listing queued YouTube downloads.
-        _dialog = new Dialog(parent, title: Tr("Download queue"),
-            style: DialogStyle.Default | DialogStyle.ResizeBorder);
+        // Translators: Title of the window listing queued downloads.
+        _dialog = new Dialog(null, title: Tr("Download queue"),
+            style: DialogStyle.Default | DialogStyle.ResizeBorder | DialogStyle.NoParent);
 
         _status = new TextCtrl(_dialog, style:
             TextCtrlStyle.MultiLine | TextCtrlStyle.ReadOnly | TextCtrlStyle.DontWrap);
         _list = new ListCtrl(_dialog, style: ListCtrlStyle.Report | ListCtrlStyle.SingleSelection);
-        // Translators: First column in the download queue, holding a video title or a manually entered link.
-        _list.InsertColumn(0, Tr("Video"), 480);
+        // Translators: First column in the download queue, holding a media title or a manually entered YouTube link.
+        _list.InsertColumn(0, Tr("Item"), 480);
         // Translators: Second column in the download queue, holding states such as In queue or Downloading.
         _list.InsertColumn(1, Tr("Status"), 150);
         _gauge = new Gauge(_dialog, GaugeRange);
@@ -101,22 +101,16 @@ internal sealed class DownloadQueueDialog : IDisposable
             if (args.Code is Key.Delete or Key.NumpadDelete)
                 RemoveSelected();
         };
+        close.Click += (_, _) => _dialog.Close();
+        _dialog.Closing += (_, args) => { args.Veto(); _dialog.Hide(); _ticker?.Dispose(); _ticker = null; };
         Refresh();
         _list.Focus();
     }
 
     internal void Show()
     {
-        _ticker = _dispatcher.Repeat(TickInterval, Refresh);
-        try
-        {
-            _dialog.ShowModal();
-        }
-        finally
-        {
-            // Completed rows remain available for review until the user closes this window.
-            _queue.RemoveCompleted();
-        }
+        _ticker ??= _dispatcher.Repeat(TickInterval, Refresh);
+        _dialog.Show(); _dialog.Raise();
     }
 
     public void Dispose()
@@ -160,7 +154,7 @@ internal sealed class DownloadQueueDialog : IDisposable
         SyncButtons();
     }
 
-    private void RefreshList(Downloads.QueueSnapshot snapshot)
+    private void RefreshList(SharedDownloads.QueueSnapshot snapshot)
     {
         var selectedId = SelectedId();
         var rebuild = _shownIds.Count != snapshot.Items.Count
@@ -204,11 +198,11 @@ internal sealed class DownloadQueueDialog : IDisposable
         var selected = SelectedItem(snapshot);
         var activeSelected = selected is
         {
-            Status: Downloads.QueueItemStatus.Downloading
-            or Downloads.QueueItemStatus.Downloaded
+            Status: SharedDownloads.QueueItemStatus.Downloading
+            or SharedDownloads.QueueItemStatus.Downloaded
         };
         var canStart = !snapshot.Running && snapshot.Items.Any(item =>
-            item.Status is Downloads.QueueItemStatus.InQueue or Downloads.QueueItemStatus.Failed);
+            item.Status is SharedDownloads.QueueItemStatus.InQueue or SharedDownloads.QueueItemStatus.Failed);
         var showStopAll = snapshot.Running && snapshot.ActiveCount > 0;
         var changed = SetVisible(_stop, activeSelected)
             | SetVisible(_startButton, canStart)
@@ -252,7 +246,7 @@ internal sealed class DownloadQueueDialog : IDisposable
         return row >= 0 && _list.GetItemData(row) is Guid id ? id : null;
     }
 
-    private Downloads.QueueItemSnapshot? SelectedItem(Downloads.QueueSnapshot snapshot)
+    private SharedDownloads.QueueItemSnapshot? SelectedItem(SharedDownloads.QueueSnapshot snapshot)
     {
         if (SelectedId() is not Guid id)
             return null;
@@ -262,16 +256,16 @@ internal sealed class DownloadQueueDialog : IDisposable
         return null;
     }
 
-    private static string StatusText(Downloads.QueueSnapshot snapshot)
+    private static string StatusText(SharedDownloads.QueueSnapshot snapshot)
     {
-        if (snapshot.Items.All(item => item.Status == Downloads.QueueItemStatus.Completed))
+        if (snapshot.Items.All(item => item.Status == SharedDownloads.QueueItemStatus.Completed))
             // Translators: Queue status after every item has finished successfully.
             return Tr("All downloads are complete.");
 
         if (snapshot.ActiveCount == 0 || snapshot.CurrentIndex < 0)
         {
             var queuedFailure = snapshot.Items.FirstOrDefault(item =>
-                item.Status == Downloads.QueueItemStatus.Failed && item.Error.Length > 0);
+                item.Status == SharedDownloads.QueueItemStatus.Failed && item.Error.Length > 0);
             // Translators: Queue status when no download is running and unfinished items are waiting.
             var ready = Tr("Ready to download.");
             if (string.IsNullOrEmpty(queuedFailure.Error))
@@ -305,23 +299,23 @@ internal sealed class DownloadQueueDialog : IDisposable
             TrFormat("Estimated time left: {time}", estimated),
         };
         var failed = snapshot.Items.FirstOrDefault(item =>
-            item.Status == Downloads.QueueItemStatus.Failed && item.Error.Length > 0);
+            item.Status == SharedDownloads.QueueItemStatus.Failed && item.Error.Length > 0);
         if (!string.IsNullOrEmpty(failed.Error))
             // Translators: Technical reason supplied by yt-dlp for a failed queue item.
             lines.Add(TrFormat("Error: {details}", failed.Error));
         return string.Join(Environment.NewLine, lines);
     }
 
-    private static string StatusLabel(Downloads.QueueItemStatus status) => status switch
+    private static string StatusLabel(SharedDownloads.QueueItemStatus status) => status switch
     {
         // Translators: Status of a queue item while it is downloading.
-        Downloads.QueueItemStatus.Downloading => Tr("Downloading"),
+        SharedDownloads.QueueItemStatus.Downloading => Tr("Downloading"),
         // Translators: Status after media bytes are downloaded but finishing work may remain.
-        Downloads.QueueItemStatus.Downloaded => Tr("Downloaded"),
+        SharedDownloads.QueueItemStatus.Downloaded => Tr("Downloaded"),
         // Translators: Status of a queue item that finished successfully.
-        Downloads.QueueItemStatus.Completed => Tr("Completed"),
+        SharedDownloads.QueueItemStatus.Completed => Tr("Completed"),
         // Translators: Status of a queue item whose download failed.
-        Downloads.QueueItemStatus.Failed => Tr("Failed"),
+        SharedDownloads.QueueItemStatus.Failed => Tr("Failed"),
         // Translators: Status of a queue item waiting to start.
         _ => Tr("In queue"),
     };
@@ -365,8 +359,8 @@ internal sealed class DownloadQueueLinksDialog : IDisposable
     {
         _addLinks = addLinks;
         // Translators: Title of the window used to add YouTube links to the download queue.
-        _dialog = new Dialog(parent, title: Tr("Add links to download queue"),
-            style: DialogStyle.Default | DialogStyle.ResizeBorder);
+        _dialog = new Dialog(null, title: Tr("Add links to download queue"),
+            style: DialogStyle.Default | DialogStyle.ResizeBorder | DialogStyle.NoParent);
         // Translators: Label above the multi-line box used to add links to the download queue.
         var label = new StaticText(_dialog, label: Tr("Enter one YouTube video link on each line."));
         _links = new TextCtrl(_dialog,

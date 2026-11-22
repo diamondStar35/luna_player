@@ -1,6 +1,6 @@
 using WxSharp;
 
-namespace LunaPlayer.UI.YouTube;
+namespace LunaPlayer.UI.Downloads;
 
 /// <summary>Confirms an application exit that will cancel or discard unfinished download jobs.</summary>
 internal sealed class DownloadExitDialog : IDisposable

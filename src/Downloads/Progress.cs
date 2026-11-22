@@ -1,6 +1,6 @@
-namespace LunaPlayer.YouTube.Download;
+namespace LunaPlayer.Downloads;
 
-/// <summary>One progress update parsed from yt-dlp. Bytes, speed and eta are 0 when not yet known.</summary>
+/// <summary>One download progress update. Bytes, speed and eta are 0 when not yet known.</summary>
 internal readonly record struct Progress(
     string Status,
     long DownloadedBytes,

@@ -1,6 +1,7 @@
+using LunaPlayer.YouTube.Download;
 using LunaPlayer.Configuration.Models;
 
-namespace LunaPlayer.YouTube.Download;
+namespace LunaPlayer.Downloads;
 
 /// <summary>The states shown for an item in the download queue.</summary>
 internal enum QueueItemStatus
@@ -47,7 +48,7 @@ internal sealed class DownloadQueue : IDisposable
     {
         internal required Guid Id { get; init; }
         internal required string Title { get; init; }
-        internal required Request Request { get; init; }
+        internal required Job Job { get; init; }
         internal bool Visible { get; set; } = true;
         internal QueueItemStatus Status { get; set; } = QueueItemStatus.InQueue;
         internal long DownloadedBytes { get; set; }
@@ -107,7 +108,7 @@ internal sealed class DownloadQueue : IDisposable
         {
             Id = Guid.NewGuid(),
             Title = string.IsNullOrWhiteSpace(title) ? request.Url : title.Trim(),
-            Request = request,
+            Job = new(title, (report, token) => _download(request, report, token)),
         };
         lock (_gate)
         {
@@ -129,7 +130,7 @@ internal sealed class DownloadQueue : IDisposable
         {
             Id = Guid.NewGuid(),
             Title = string.IsNullOrWhiteSpace(title) ? request.Url : title.Trim(),
-            Request = request,
+            Job = new(title, (report, token) => _download(request, report, token)),
             Visible = false,
         };
         lock (_gate)
@@ -137,6 +138,21 @@ internal sealed class DownloadQueue : IDisposable
             ObjectDisposedException.ThrowIf(_disposed, this);
             _items.Add(item);
             LaunchLocked(item);
+        }
+        return item.Id;
+    }
+
+    internal Guid Add(Job job, bool startImmediately = false)
+    {
+        ArgumentNullException.ThrowIfNull(job);
+        var item = new Item { Id = Guid.NewGuid(), Title = job.Title, Job = job, Visible = !startImmediately };
+        lock (_gate)
+        {
+            ObjectDisposedException.ThrowIf(_disposed, this);
+            _items.Add(item);
+            _completionNotified = false;
+            if (startImmediately) LaunchLocked(item);
+            else if (_running) ScheduleLocked();
         }
         return item.Id;
     }
@@ -319,7 +335,7 @@ internal sealed class DownloadQueue : IDisposable
         var notify = false;
         try
         {
-            outcome = _download(item.Request, progress => Report(item, progress), token);
+            outcome = item.Job.Run(progress => Report(item, progress), token);
         }
         catch (OperationCanceledException)
         {

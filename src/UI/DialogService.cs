@@ -159,11 +159,11 @@ internal sealed class DialogService : IDialogService, IDisposable
     public bool OfferYouTubeComponents() => _youtube.OfferYouTubeComponents();
     public Downloads.OptionsResult? ShowDownloadOptions(Downloads.Request defaults) => _youtube.ShowDownloadOptions(defaults);
     public void ShowDownloadQueue(
-        Downloads.DownloadQueue queue,
+        LunaPlayer.Downloads.DownloadQueue queue,
         Func<IReadOnlyList<string>, string?> addLinks,
         Action start) => _youtube.ShowDownloadQueue(queue, addLinks, start);
     public void ShowDownloadProgress(
-        Downloads.DownloadQueue queue,
+        LunaPlayer.Downloads.DownloadQueue queue,
         Guid itemId) => _youtube.ShowDownloadProgress(queue, itemId);
     internal void CloseDownloadProgressWindows() => _youtube.CloseDownloadProgressWindows();
     public void ShowVideoDescription(string title, string description) => _youtube.ShowVideoDescription(title, description);

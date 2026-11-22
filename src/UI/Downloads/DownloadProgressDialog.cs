@@ -1,12 +1,12 @@
 using LunaPlayer.UI.Services;
 using LunaPlayer.Application;
 using WxSharp;
-using Downloads = LunaPlayer.YouTube.Download;
+using SharedDownloads = LunaPlayer.Downloads;
 
-namespace LunaPlayer.UI.YouTube;
+namespace LunaPlayer.UI.Downloads;
 
-/// <summary>A modeless view of one download owned by <see cref="Downloads.DownloadQueue"/>. The queue
-/// outlives this window, which lets the user minimize the job into it without interrupting yt-dlp.</summary>
+/// <summary>A modeless view of one download owned by <see cref="SharedDownloads.DownloadQueue"/>. The queue
+/// outlives this window, which lets the user minimize the job into it without interrupting its worker.</summary>
 internal sealed class DownloadProgressDialog : IDisposable
 {
     private const int Range = 1000;
@@ -14,7 +14,7 @@ internal sealed class DownloadProgressDialog : IDisposable
 
     private readonly Dialog _dialog;
     private readonly IApplicationDispatcher _dispatcher;
-    private readonly Downloads.DownloadQueue _queue;
+    private readonly SharedDownloads.DownloadQueue _queue;
     private readonly Guid _itemId;
     private readonly TextCtrl _text;
     private readonly Gauge _gauge;
@@ -26,7 +26,7 @@ internal sealed class DownloadProgressDialog : IDisposable
 
     internal DownloadProgressDialog(
         IApplicationDispatcher dispatcher,
-        Downloads.DownloadQueue queue,
+        SharedDownloads.DownloadQueue queue,
         Guid itemId)
     {
         _dispatcher = dispatcher;
@@ -35,7 +35,7 @@ internal sealed class DownloadProgressDialog : IDisposable
         // A null parent alone lets wxWidgets choose the main window as the native owner.
         _dialog = new Dialog(
             parent: null,
-            // Translators: Title of the window showing progress for one YouTube download.
+            // Translators: Title of the window showing progress for one file download.
             title: Tr("Downloading"),
             size: new Size(520, 300),
             style: DialogStyle.Default | DialogStyle.ResizeBorder | DialogStyle.NoParent);
@@ -78,7 +78,7 @@ internal sealed class DownloadProgressDialog : IDisposable
 
     /// <summary>Raised after this modeless window has released all of its UI resources. A null result means
     /// the download was cancelled or moved into the queue and needs no message box.</summary>
-    internal event Action<DownloadProgressDialog, Downloads.Outcome?>? Closed;
+    internal event Action<DownloadProgressDialog, SharedDownloads.Outcome?>? Closed;
 
     internal Window Window => _dialog;
 
@@ -105,30 +105,31 @@ internal sealed class DownloadProgressDialog : IDisposable
         if (_finished || _confirming)
             return;
         var item = _queue.Snapshot(_itemId);
-        if (item is not Downloads.QueueItemSnapshot current)
+        if (item is not SharedDownloads.QueueItemSnapshot current)
         {
             Close(null);
             return;
         }
-        if (current.Status == Downloads.QueueItemStatus.Completed)
+        if (current.Status == SharedDownloads.QueueItemStatus.Completed)
         {
             _queue.Remove(_itemId);
-            Close(Downloads.Outcome.Saved(current.FilePath));
+            Close(SharedDownloads.Outcome.Saved(current.FilePath));
             return;
         }
-        if (current.Status == Downloads.QueueItemStatus.Failed)
+        if (current.Status == SharedDownloads.QueueItemStatus.Failed)
         {
             _queue.Remove(_itemId);
-            Close(Downloads.Outcome.Failed(current.Error));
+            Close(SharedDownloads.Outcome.Failed(current.Error));
             return;
         }
         Render(current);
     }
 
-    private void Render(Downloads.QueueItemSnapshot item)
+    private void Render(SharedDownloads.QueueItemSnapshot item)
     {
-        _gauge.Value = Math.Clamp((int)Math.Round(item.Percent * (Range / 100.0)), 0, Range);
-        if (item.Status == Downloads.QueueItemStatus.Downloaded || item.PostProcessor.Length > 0)
+        if (item.TotalBytes <= 0 && item.Percent <= 0) _gauge.Pulse();
+        else _gauge.Value = Math.Clamp((int)Math.Round(item.Percent * (Range / 100.0)), 0, Range);
+        if (item.Status == SharedDownloads.QueueItemStatus.Downloaded || item.PostProcessor.Length > 0)
         {
             var activity = PostProcessText(item.PostProcessor, item.PostProcessStatus);
             _dialog.Title = activity;
@@ -137,7 +138,7 @@ internal sealed class DownloadProgressDialog : IDisposable
             return;
         }
 
-        // Translators: Title of the progress window while a YouTube file is downloading.
+        // Translators: Title of the progress window while a file is downloading.
         _dialog.Title = Tr("Downloading");
         var total = item.TotalBytes > 0
             ? Size(item.TotalBytes)
@@ -198,8 +199,8 @@ internal sealed class DownloadProgressDialog : IDisposable
         if (_finished || _confirming)
             return;
         var item = _queue.Snapshot(_itemId);
-        if (item is null || item.Value.Status is Downloads.QueueItemStatus.Completed
-            or Downloads.QueueItemStatus.Failed)
+        if (item is null || item.Value.Status is SharedDownloads.QueueItemStatus.Completed
+            or SharedDownloads.QueueItemStatus.Failed)
         {
             Tick();
             return;
@@ -223,7 +224,7 @@ internal sealed class DownloadProgressDialog : IDisposable
         Close(null);
     }
 
-    private void Close(Downloads.Outcome? outcome)
+    private void Close(SharedDownloads.Outcome? outcome)
     {
         if (_finished)
             return;

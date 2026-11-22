@@ -34,7 +34,7 @@ internal sealed partial class YouTube
     private readonly LunaPlayer.YouTube.Components.Service _components;
     private readonly IApplicationDispatcher _dispatcher;
     private readonly MediaGuard _guard;
-    private readonly LunaPlayer.YouTube.Download.DownloadQueue _downloadQueue;
+    private readonly LunaPlayer.Downloads.DownloadQueue _downloadQueue;
 
     internal YouTube(
         ActionRouter router,
@@ -47,7 +47,7 @@ internal sealed partial class YouTube
         Sessions sessions,
         LunaPlayer.YouTube.Components.Service components,
         IApplicationDispatcher dispatcher,
-        LunaPlayer.YouTube.Download.DownloadQueue downloadQueue)
+        LunaPlayer.Downloads.DownloadQueue downloadQueue)
     {
         _view = view;
         _player = player;

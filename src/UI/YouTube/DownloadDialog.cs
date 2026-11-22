@@ -1,7 +1,7 @@
 using LunaPlayer.UI.Services;
 using LunaPlayer.Configuration.Models;
 using WxSharp;
-using Downloads = LunaPlayer.YouTube.Download;
+using SharedDownloads = LunaPlayer.Downloads;
 
 namespace LunaPlayer.UI.YouTube;
 
@@ -46,9 +46,9 @@ internal sealed class DownloadDialog : IDisposable
     private readonly CheckBox _embedChapters;
     private readonly CheckBox _embedSubtitles;
     private readonly CheckBox _sponsorBlock;
-    private Downloads.OptionsResult? _result;
+    private LunaPlayer.YouTube.Download.OptionsResult? _result;
 
-    internal DownloadDialog(Window parent, Downloads.Request defaults)
+    internal DownloadDialog(Window parent, LunaPlayer.YouTube.Download.Request defaults)
     {
         _url = defaults.Url;
         _splitByType = defaults.SplitByType;
@@ -151,7 +151,7 @@ internal sealed class DownloadDialog : IDisposable
     }
 
     /// <summary>The request and whether it should be queued, or null when the user cancelled.</summary>
-    internal Downloads.OptionsResult? Show()
+    internal LunaPlayer.YouTube.Download.OptionsResult? Show()
     {
         _result = null;
         _dialog.ShowModal();
@@ -171,7 +171,7 @@ internal sealed class DownloadDialog : IDisposable
             _folder.Focus();
             return;
         }
-        var request = new Downloads.Request
+        var request = new LunaPlayer.YouTube.Download.Request
         {
             Url = _url,
             Kind = (DownloadKind)Math.Max(0, _type.SelectedIndex),
@@ -189,7 +189,7 @@ internal sealed class DownloadDialog : IDisposable
             EmbedSubtitles = _embedSubtitles.Checked,
             SponsorBlockRemove = _sponsorBlock.Checked,
         };
-        _result = new Downloads.OptionsResult(request, addToQueue);
+        _result = new LunaPlayer.YouTube.Download.OptionsResult(request, addToQueue);
         _dialog.EndModal(StandardId.Ok);
     }
 

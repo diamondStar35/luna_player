@@ -141,13 +141,13 @@ internal interface IDialogService
 
     /// <summary>Opens the download queue until the user closes it. Downloads continue after it closes.</summary>
     void ShowDownloadQueue(
-        Downloads.DownloadQueue queue,
+        LunaPlayer.Downloads.DownloadQueue queue,
         Func<IReadOnlyList<string>, string?> addLinks,
         Action start);
 
     /// <summary>Shows a modeless progress window for a download already owned by the queue.</summary>
     void ShowDownloadProgress(
-        Downloads.DownloadQueue queue,
+        LunaPlayer.Downloads.DownloadQueue queue,
         Guid itemId);
 
     /// <summary>Shows the modeless recording window. Closing it leaves an active recording running.</summary>

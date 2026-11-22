@@ -33,7 +33,7 @@ internal sealed partial class Features : IDisposable
     private LunaPlayer.Recording.RecordingEngine? _recorder;
     private LunaPlayer.YouTube.Playback.Sessions? _sessions;
     private LunaPlayer.Radio.Playback? _radio;
-    private LunaPlayer.YouTube.Download.DownloadQueue? _downloadQueue;
+    private LunaPlayer.Downloads.DownloadQueue? _downloadQueue;
     private Tools _tools = null!;
     private Files _fileActions = null!;
     private bool _disposed;
@@ -120,7 +120,7 @@ internal sealed partial class Features : IDisposable
         var components = new LunaPlayer.YouTube.Components.Service(
             _view, _settings, speech, _dispatcher, updater, features.Installer);
         _components = components;
-        var downloadQueue = new LunaPlayer.YouTube.Download.DownloadQueue(_settings);
+        var downloadQueue = new LunaPlayer.Downloads.DownloadQueue(_settings);
         _downloadQueue = downloadQueue;
         downloadQueue.AllCompleted += () => _dispatcher.Post(() =>
             _view.Dialogs.ShowNotification(
