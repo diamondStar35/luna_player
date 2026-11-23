@@ -12,6 +12,27 @@ public sealed class CommandTests
         => new(rows, new(Category.Songs), user, null, "owner", false, false, false);
 
     [TestMethod]
+    public void ModernServersDoNotHidePlaylistsForTheRetiredPlaylistRole()
+    {
+        var context = Context([new(RowKind.Song, "s", "Song")], new() { AdminRole = false, PlaylistRole = false })
+            with { Capabilities = new(new Response { Type = "navidrome", Version = "1.16.1" }, [], true), HasPlaylist = true };
+        foreach (var command in new[] { Command.CreatePlaylist, Command.AddPlaylist, Command.SendPlaylist })
+            Assert.IsTrue(CommandPolicy.Allows(command, context), command.ToString());
+        context = context with { Rows = [new(RowKind.Playlist, "p", "Mine", Owner: "owner")] };
+        Assert.IsTrue(CommandPolicy.Allows(Command.EditPlaylist, context));
+        Assert.IsFalse(CommandPolicy.Allows(Command.EditPlaylist, context with { Rows = [new(RowKind.Playlist, "p", "Other", Owner: "other")] }));
+    }
+
+    [TestMethod]
+    public void OlderServersCanStillRequireThePlaylistRole()
+    {
+        var context = Context([], new() { AdminRole = false, PlaylistRole = false })
+            with { Capabilities = new(new Response { Version = "1.7.0" }, [], false) };
+        Assert.IsFalse(CommandPolicy.Allows(Command.CreatePlaylist, context));
+        Assert.IsTrue(CommandPolicy.Allows(Command.CreatePlaylist, context with { User = new() { PlaylistRole = true } }));
+    }
+
+    [TestMethod]
     public void EmptyMenusRetainServerCommandsWithoutSelectionActions()
     {
         var context = Context([]);

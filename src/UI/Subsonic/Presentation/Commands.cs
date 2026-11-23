@@ -28,7 +28,10 @@ internal static class CommandPolicy
         var expandable = rows.Length > 0 && rows.All(row => row.Playable
             || row.Available && row.Kind is RowKind.Artist or RowKind.Album or RowKind.Playlist);
         var favorite = rows.Length > 0 && rows.All(row => row.Available && row.Kind is RowKind.Song or RowKind.Bookmark or RowKind.Artist or RowKind.Album);
-        var playlist = user?.AdminRole == true || user?.PlaylistRole != false;
+        // Since Subsonic 1.8 the legacy playlistRole flag no longer controls playlist access.
+        // Modern servers authorize each mutation, while ownership still limits editing here.
+        var playlist = user?.AdminRole == true || user?.PlaylistRole != false
+            || Version.TryParse(context.Capabilities?.Server.Version, out var version) && version >= new Version(1, 8);
         var sonic = context.Capabilities?.Extension("sonicSimilarity") == Support.Supported;
         return command switch
         {
