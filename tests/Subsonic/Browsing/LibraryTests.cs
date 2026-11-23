@@ -44,7 +44,8 @@ public sealed class LibraryTests
         Assert.AreEqual("123", indexes["ifModifiedSince"][0]);
         Assert.AreEqual("0", indexes["musicFolderId"][0]);
         Assert.AreEqual("title & artist", handler.Requests.First(x => x.Endpoint == "search3").Parameters["query"][0]);
-        Assert.AreEqual("artist", handler.Requests.Last(x => x.Endpoint == "getTopSongs").Parameters["artistId"][0]);
+        Assert.AreEqual("artist", handler.Requests.Last(x => x.Endpoint == "getTopSongs").Parameters["id"][0]);
+        Assert.IsFalse(handler.Requests.Last(x => x.Endpoint == "getTopSongs").Parameters.ContainsKey("artistId"));
     }
 
     [TestMethod]

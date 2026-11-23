@@ -68,7 +68,7 @@ internal sealed class Library(Session session, Func<string, int, CancellationTok
     internal async Task<Entry[]> GetTopSongsAsync(string artist, int count = 50, bool byId = false, CancellationToken token = default)
     {
         if (byId) await require("topSongsByArtistId", 1, token).ConfigureAwait(false);
-        return Required((await Session.ReadAsync("getTopSongs", new Parameters().With(byId ? "artistId" : "artist", Id(artist))
+        return Required((await Session.ReadAsync("getTopSongs", new Parameters().With(byId ? "id" : "artist", Id(artist))
             .With("count", Count(count)), token).ConfigureAwait(false)).TopSongs, "getTopSongs").Songs;
     }
     internal async Task<Entry[]> GetSimilarSongsAsync(string id, int count = 50, bool id3 = true, CancellationToken token = default)
