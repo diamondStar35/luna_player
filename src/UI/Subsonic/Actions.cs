@@ -49,7 +49,7 @@ internal sealed partial class BrowserDialog
             case Command.SaveQueue: SaveQueue(); break;
             case Command.LoadQueue:
                 Run(async token => await client.Listening.GetQueueAsync((await client.DiscoverAsync(token: token)).Extension("indexBasedQueue") == Support.Supported, token),
-                    queue => { _player.ApplyServerQueue(server, queue, play: true); _speak(Words.QueueLoaded); }, command: command); break;
+                    queue => { _connections.Metadata.Observe(server, queue.Entries); _player.ApplyServerQueue(server, queue, play: true); _speak(Words.QueueLoaded); }, command: command); break;
             case Command.Scan: case Command.FullScan:
                 if (_user?.AdminRole == false) return;
                 Change(async token => { await client.Scanning.StartAsync(command == Command.FullScan, token); }, command: command); break;

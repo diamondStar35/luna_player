@@ -55,6 +55,22 @@ internal sealed class TrackDiscovery(MpvSession session)
 
     public bool SetAudioTrack(int id) => _session.TrySetProperty("aid", id);
 
+    public StreamFormat? GetStreamFormat()
+    {
+        if (_session.ReadObject("track-list") is not IEnumerable<object?> values) return null;
+        foreach (var value in values)
+        {
+            if (ReadTrack(value, "audio") is not { Selected: true } track) continue;
+            string? Text(string key) => track.Values.TryGetValue(key, out var raw) && raw?.ToString() is { Length: > 0 } text ? text : null;
+            int? Number(string key) => int.TryParse(Text(key), NumberStyles.Integer, CultureInfo.InvariantCulture, out var number) && number > 0 ? number : null;
+            int? Observed(string key) => _session.ReadInt64(key) is > 0 and <= int.MaxValue and var number ? (int)number : null;
+            return new(Text("codec"), _session.ReadString("file-format")?.Split(',')[0],
+                Observed("audio-bitrate") ?? Number("demux-bitrate"), Observed("audio-params/samplerate") ?? Number("demux-samplerate"),
+                Channels: Observed("audio-params/channel-count") ?? Number("demux-channel-count"));
+        }
+        return null;
+    }
+
     public IReadOnlyList<SubtitleTrack> GetSubtitleTracks()
     {
         if (_session.ReadObject("track-list") is not IEnumerable<object?> values)

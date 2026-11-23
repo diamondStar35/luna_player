@@ -75,6 +75,7 @@ internal sealed class Engine : IEngine
     public void SetEndBehavior(EndBehavior behavior) => _coordinator.SetEndBehavior(behavior);
     public string? MediaTitle => _coordinator.MediaTitle;
     public Metadata GetMetadata() => _coordinator.GetMetadata();
+    public StreamFormat? GetStreamFormat() => _coordinator.GetStreamFormat();
     public bool HasVideo => _coordinator.HasVideo;
     internal string RegisterSpotifyAudio(LunaPlayer.Spotify.Playback.AudioDecryptStream audio) => _coordinator.RegisterSpotifyAudio(audio);
     internal void ReleaseSpotifyAudio(string path) => _coordinator.ReleaseSpotifyAudio(path);

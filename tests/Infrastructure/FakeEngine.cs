@@ -13,6 +13,8 @@ internal sealed class FakeEngine : IEngine
     internal double Position { get; private set; }
     internal bool DeferSeeks { get; set; }
     internal List<double> RequestedSeeks { get; } = [];
+    internal StreamFormat? ReportedFormat { get; set; }
+    public StreamFormat? GetStreamFormat() => ReportedFormat;
     internal double Loudness { get; private set; } = 100;
     internal double Rate { get; private set; } = 1;
     internal double? LoopStart { get; private set; }

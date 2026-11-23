@@ -272,6 +272,11 @@ internal sealed partial class Files
         Add(metadata.Value("icy-br"),
             // Translators: Line spoken by Ctrl+Alt+I. {bitrate} is the radio stream's advertised bitrate in kilobits per second. Keep kbps as the bitrate unit.
             value => TrFormat("Bitrate: {bitrate} kbps", value));
+        if (!_spotify.IsActive && _player.CurrentStreamFormat is { } stream)
+        {
+            var description = LunaPlayer.UI.Subsonic.StreamPresentation.Describe(stream);
+            if (description.Length > 0) lines.Add(description);
+        }
         _speech.SpeakText(lines.Count > 0 ? string.Join(Environment.NewLine, lines)
             // Translators: Spoken by Ctrl+Alt+I when the current media provides no metadata to announce.
             : Tr("No metadata is available."));

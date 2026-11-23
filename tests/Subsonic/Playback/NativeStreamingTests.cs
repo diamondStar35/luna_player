@@ -29,6 +29,11 @@ public sealed class NativeStreamingTests
         Assert.IsTrue(player.Next(false)); await Ready("second.wav");
         Assert.IsTrue(player.Previous(false)); await Ready("first.wav");
         Assert.IsTrue(player.Next(false)); await Ready("second.wav");
+        await NativeHost.Until(() => player.CurrentStreamFormat?.SampleRate == 16000);
+        Assert.AreEqual("pcm_s16le", player.CurrentStreamFormat!.Codec);
+        Assert.AreEqual("wav", player.CurrentStreamFormat.Container);
+        Assert.AreEqual(1, player.CurrentStreamFormat.Channels);
+
         var queue = new PlayQueue { Entries = [new() { Id = "first.wav" }, new() { Id = "second.wav" }], CurrentIndex = 1, Position = 6250 };
         for (var iteration = 0; iteration < 2; iteration++)
         {

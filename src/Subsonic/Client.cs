@@ -16,6 +16,7 @@ internal sealed class Client : IDisposable
     private readonly Session _session;
     private readonly SemaphoreSlim _discovery = new(1, 1);
     private Capabilities? _capabilities;
+    internal TimeProvider Clock => _session.Clock;
     internal Browsing.Library Library { get; }
     internal Playlists.Playlists Playlists { get; }
     internal Listening.Listening Listening { get; }

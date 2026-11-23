@@ -8,18 +8,17 @@ internal sealed record TranscodeDecision
     public bool? CanTranscode { get; set; }
     public string TranscodeParams { get; set; } = "";
     public string ErrorReason { get; set; } = "";
-    public SourceStream? SourceStream { get; set; }
+    public StreamDetails? SourceStream { get; set; }
     [JsonPropertyName("transcodeReason")]
     public string[] TranscodeReasons { get; set; } = [];
-    public SourceStream? TranscodeStream { get; set; }
+    public StreamDetails? TranscodeStream { get; set; }
 }
 
-internal sealed record SourceStream
+internal sealed record StreamDetails
 {
     public string Protocol { get; set; } = "";
     public string Codec { get; set; } = "";
     public string Container { get; set; } = "";
-    public string AudioCodec { get; set; } = "";
     public string AudioProfile { get; set; } = "";
     [JsonPropertyName("audioBitrate")]
     public int? AudioBitRate { get; set; }
@@ -28,8 +27,6 @@ internal sealed record SourceStream
     public int? AudioChannels { get; set; }
     [JsonPropertyName("audioBitdepth")]
     public int? AudioBitDepth { get; set; }
-    public double? Duration { get; set; }
-    public long? Size { get; set; }
 }
 
 internal sealed record ClientInfo

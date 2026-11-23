@@ -17,11 +17,12 @@ internal sealed partial class Connections
         lock (_clients)
         {
             ObjectDisposedException.ThrowIf(_disposed, this);
+            var client = Client(server);
             if (!refresh && _inspections.TryGetValue(server, out var previous) && previous.Profile == profile
                 && !previous.Request.IsFaulted && !previous.Request.IsCanceled
-                && DateTimeOffset.UtcNow - previous.Created < TimeSpan.FromMinutes(5))
+                && (!previous.Request.IsCompleted || client.Clock.GetUtcNow() - previous.Created < TimeSpan.FromMinutes(5)))
                 return previous.Request.WaitAsync(token);
-            var client = Client(server);
+            if (refresh) ForgetStreams(server);
             // A caller leaving a view cancels only its wait. Other views can reuse the same
             // inspection; disposal of the connection service cancels the actual requests.
             var lifetime = _lifetime.Token;
@@ -30,7 +31,7 @@ internal sealed partial class Connections
             // Observe failures without changing what an active caller receives.
             _ = request.ContinueWith(completed => { _ = completed.Exception; }, CancellationToken.None,
                 TaskContinuationOptions.OnlyOnFaulted | TaskContinuationOptions.ExecuteSynchronously, TaskScheduler.Default);
-            _inspections[server] = (profile, DateTimeOffset.UtcNow, request);
+            _inspections[server] = (profile, client.Clock.GetUtcNow(), request);
             return request.WaitAsync(token);
         }
     }

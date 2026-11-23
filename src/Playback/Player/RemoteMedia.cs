@@ -19,6 +19,23 @@ internal sealed partial class Player
     internal event Action? SamplingTick;
     internal void SampleMedia() => SamplingTick?.Invoke();
     internal MediaTags? CatalogTags => CurrentPath is { } path && _catalogTags.TryGetValue(path, out var tags) ? tags : null;
+    internal StreamFormat? CurrentStreamFormat
+    {
+        get
+        {
+            if (!_loaded || _engine.IsLoading || _currentInput is null) return null;
+            var expected = _currentInput.Format;
+            if (_engine.GetStreamFormat() is not { } actual) return expected;
+            var sameCodec = expected?.Codec is null || actual.Codec is null
+                || string.Equals(expected.Codec, actual.Codec, StringComparison.OrdinalIgnoreCase);
+            // A server can fall back to another encoding. Do not attach the negotiated
+            // encoding's quality measurements to a different codec observed by the decoder.
+            return new(actual.Codec ?? expected?.Codec, actual.Container ?? (sameCodec ? expected?.Container : null),
+                actual.BitRate ?? (sameCodec ? expected?.BitRate : null), actual.SampleRate ?? (sameCodec ? expected?.SampleRate : null),
+                actual.BitDepth ?? (sameCodec ? expected?.BitDepth : null), actual.Channels ?? (sameCodec ? expected?.Channels : null),
+                sameCodec ? expected?.Transcoded : null);
+        }
+    }
     internal void SetMediaResolver(IMediaResolver resolver, Action<Action> post) { _mediaResolver = resolver; _postMedia = post; }
 
     internal int InsertMedia(IReadOnlyList<(string Address, MediaTags Tags)> items, bool play, double? position = null)
@@ -73,7 +90,7 @@ internal sealed partial class Player
         _loaded = false;
         _engine.ClearQueuedNext();
         if (_preparedInputs.Remove(identity, out var prepared)
-            && (prepared.SeekByReopening ? Math.Abs(prepared.Offset - (resolveFrom ?? 0)) < 0.001
+            && (prepared.SeekByReopening ? Math.Abs((prepared.RequestedPosition ?? prepared.Offset) - (resolveFrom ?? 0)) < 0.001
                 : prepared.Offset <= (resolveFrom ?? 0)))
         {
             CompleteMediaLoad(identity, item.Id, prepared, position, fade);
@@ -127,7 +144,8 @@ internal sealed partial class Player
                     _catalogTags[next.Path] = input.Tags;
                     _preparedInputs.Clear();
                     _preparedInputs[next.Path] = input;
-                    _engine.QueueNext(input.Address, input.Offset > 0 ? 0 : start, noVideo: true, itemId: next.Id, headers: input.Headers);
+                    var position = start is { } requested ? Math.Max(0, requested - input.Offset) : input.Offset > 0 ? 0 : (double?)null;
+                    _engine.QueueNext(input.Address, position, noVideo: true, itemId: next.Id, headers: input.Headers);
                 });
             }
             catch (OperationCanceledException) when (token.IsCancellationRequested) { }

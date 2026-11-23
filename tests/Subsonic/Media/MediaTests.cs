@@ -25,7 +25,7 @@ public sealed class MediaTests
         { Mode = StreamingMode.Transcode, Format = "opus", MaximumBitRate = 128, TimeOffset = 12.5, EstimateContentLength = true }), HttpMethod.Get, "", []);
         Assert.AreEqual("opus", transcode.Parameters["format"][0]);
         Assert.AreEqual("128", transcode.Parameters["maxBitRate"][0]);
-        Assert.AreEqual("12.5", transcode.Parameters["timeOffset"][0]);
+        Assert.AreEqual("12", transcode.Parameters["timeOffset"][0]);
         Assert.AreEqual("true", transcode.Parameters["estimateContentLength"][0]);
         Assert.AreEqual(2, handler.Requests.Count);
     }
@@ -39,7 +39,7 @@ public sealed class MediaTests
         using var client = new Client(Fixture.Options, http);
         var decision = await client.Media.GetTranscodeDecisionAsync("s", new ClientInfo
         {
-            Name = "LunaPlayer", MaxAudioBitrate = 512000, MaxTranscodingAudioBitrate = 256000,
+            Name = "LunaPlayer", Platform = "Windows", MaxAudioBitrate = 512000, MaxTranscodingAudioBitrate = 256000,
             DirectPlayProfiles = [new() { Containers = ["flac"], AudioCodecs = ["flac"] }],
             CodecProfiles = [new() { Name = "flac", Limitations = [new() { Name = "audioChannels", Comparison = "LessThanEqual", Values = ["2"] }] }]
         });
@@ -49,10 +49,11 @@ public sealed class MediaTests
         using var body = JsonDocument.Parse(sent.Body);
         Assert.AreEqual(256000, body.RootElement.GetProperty("maxTranscodingAudioBitrate").GetInt32());
         Assert.AreEqual("flac", body.RootElement.GetProperty("directPlayProfiles")[0].GetProperty("containers")[0].GetString());
-        await using var stream = await client.Media.OpenTranscodeAsync("s", decision.TranscodeParams, 2.5);
+        await using var stream = await client.Media.OpenTranscodeAsync("s", decision.TranscodeParams, 2);
         var query = handler.Requests.Last().Parameters;
         Assert.AreEqual("opaque+/=&%token", query["transcodeParams"][0]);
-        Assert.AreEqual("2.5", query["offset"][0]);
+        Assert.AreEqual("2", query["offset"][0]);
+        Assert.IsFalse(handler.Requests.Last().Uri.Query.Contains("%252B", StringComparison.OrdinalIgnoreCase));
     }
 
     [TestMethod]

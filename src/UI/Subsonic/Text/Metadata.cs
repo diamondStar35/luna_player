@@ -44,15 +44,15 @@ internal static partial class Words
         // Translators: A batch rating or favorite operation partially failed. {count} is how many items failed.
         TrFormat("Could not update {count} items. Successful changes have been kept.", count);
     internal static string Kilobits(int value) =>
-        // Translators: Original file bitrate in the music-server Quality column. {value} is kilobits per second.
+        // Translators: Bitrate in the music-server Quality column or currently playing stream details. {value} is kilobits per second.
         TrFormat("{value} kbps", value);
     internal static string SampleRate(double value) =>
-        // Translators: Original file sample rate in the music-server Quality column. {value} is kilohertz.
+        // Translators: Sample rate in the music-server Quality column or currently playing stream details. {value} is kilohertz.
         TrFormat("{value} kHz", value);
     internal static string BitDepth(int value) =>
-        // Translators: Original file bit depth in the music-server Quality column. {value} is bits per sample.
+        // Translators: Bit depth in the music-server Quality column or currently playing stream details. {value} is bits per sample.
         TrFormat("{value} bit", value);
     internal static string Channels(int value) =>
-        // Translators: Original file channel count in the music-server Quality column. {value} is the count.
+        // Translators: Channel count in the music-server Quality column or currently playing stream details. {value} is the count.
         TrFormat("{value} channels", value);
 }

@@ -78,7 +78,7 @@ internal sealed partial class SongActions(Window? owner, Connections connections
                         else _speak(starred ? Words.FavoriteAdded : Words.FavoriteRemoved);
                     }); break;
                 case SongAction.Lyrics: Lyrics(reference.ServerId, row); break;
-                case SongAction.Details: Details(row); break;
+                case SongAction.Details: Details(reference.ServerId, row); break;
             }
         });
     }

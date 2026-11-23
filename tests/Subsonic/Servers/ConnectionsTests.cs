@@ -103,7 +103,8 @@ public sealed class ConnectionsTests
     [TestMethod]
     public async Task PlaybackResolutionUsesTranscodeOffsetsAndCapturedHeaders()
     {
-        using var directory = new TemporaryDirectory(); using var handler = new Handler(Fixture.Reply); using var http = new HttpClient(handler);
+        using var directory = new TemporaryDirectory(); using var handler = new Handler((sent, token) => sent.Endpoint == "getOpenSubsonicExtensions"
+            ? Task.FromResult(Fixture.Json("\"openSubsonicExtensions\":[{\"name\":\"transcodeOffset\",\"versions\":[1]}]")) : Fixture.Reply(sent, token)); using var http = new HttpClient(handler);
         using var connections = new Connections(new Store(Path.Combine(directory.Path, "servers.json")), profile => new Client(profile.ConnectionOptions(), http));
         var profile = await connections.SaveAsync(new Profile { Name = "Music", Server = Fixture.Options.Server, Credentials = Fixture.Options.Credentials,
             Streaming = new() { Mode = StreamingMode.Transcode, Format = "opus", MaximumBitRate = 128 }, Headers = new Dictionary<string, string> { ["X-Proxy"] = "a,b" } });

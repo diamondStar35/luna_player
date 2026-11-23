@@ -11,6 +11,27 @@ namespace LunaPlayer.Tests.Subsonic.Playback;
 public sealed class NativeRangeTests
 {
     [TestMethod]
+    public async Task WholeSecondTranscodedOriginsRetainFractionalResumeAndLoopPositions()
+    {
+        using var workspace = new Workspace(); using var engine = NativeHost.Create(); using var player = new Player(engine);
+        var pump = new Pump();
+        player.SetMediaResolver(new WholeSecondResolver(NativeHost.Wave(workspace)), pump.Post);
+        player.InsertMedia([(new Reference(Guid.NewGuid(), "song").Address, MediaTags.None)], true, 10.75);
+        await NativeHost.Until(() => { pump.Drain(); return player.IsLoaded && !engine.IsLoading; });
+        player.Pause(); await NativeHost.Until(() => engine.IsPaused);
+        Assert.AreEqual(0.75, engine.Elapsed!.Value, 0.15);
+        Assert.AreEqual(10.75, player.SourceElapsed!.Value, 0.15);
+        Assert.IsTrue(player.SetLoopStart(10.25)); Assert.IsTrue(player.SetLoopEnd(11.5));
+        await NativeHost.Flush(engine);
+        Assert.AreEqual(0.25, Convert.ToDouble(NativeHost.Handle(engine).GetProperty("ab-loop-a")), 0.001);
+        Assert.AreEqual(1.5, Convert.ToDouble(NativeHost.Handle(engine).GetProperty("ab-loop-b")), 0.001);
+        player.SeekAbsolute(3.25);
+        await NativeHost.Until(() => { pump.Drain(); return player.IsLoaded && !engine.IsLoading; });
+        Assert.AreEqual(3.25, player.SourceElapsed!.Value, 0.15);
+        Assert.AreEqual(0.25, engine.Elapsed!.Value, 0.15);
+    }
+
+    [TestMethod]
     [DataRow(false, false)]
     [DataRow(true, false)]
     [DataRow(false, true)]
@@ -140,5 +161,12 @@ public sealed class NativeRangeTests
         public bool Handles(string address) => Reference.IsAddress(address);
         public Task<MediaInput> ResolveAsync(string address, double? position, CancellationToken token)
             => Task.FromResult(new MediaInput(file, MediaTags.None, duration, Offset: offset ? position ?? 0 : 0, SeekByReopening: offset));
+    }
+    private sealed class WholeSecondResolver(string file) : IMediaResolver
+    {
+        public bool Handles(string address) => Reference.IsAddress(address);
+        public Task<MediaInput> ResolveAsync(string address, double? position, CancellationToken token)
+            => Task.FromResult(new MediaInput(file, MediaTags.None, 100, Offset: Math.Floor(position ?? 0),
+                SeekByReopening: true, RequestedPosition: position));
     }
 }

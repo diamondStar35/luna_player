@@ -84,7 +84,7 @@ internal static class Fixture
         "getNewestPodcasts" => "\"newestPodcasts\":{\"episode\":[]}",
         "getPodcastEpisode" => "\"podcastEpisode\":{\"id\":\"episode\"}",
         "getScanStatus" or "startScan" => "\"scanStatus\":{\"scanning\":false,\"count\":100}",
-        "getTranscodeDecision" => "\"transcodeDecision\":{\"canTranscode\":true,\"transcodeParams\":\"opaque+/=&%token\",\"sourceStream\":{\"codec\":\"flac\",\"audioSamplerate\":96000}}",
+        "getTranscodeDecision" => "\"transcodeDecision\":{\"canDirectPlay\":false,\"canTranscode\":true,\"transcodeParams\":\"opaque%2B%2F%3D%26%25token\",\"sourceStream\":{\"protocol\":\"http\",\"container\":\"flac\",\"codec\":\"flac\",\"audioSamplerate\":96000},\"transcodeStream\":{\"protocol\":\"http\",\"container\":\"ogg\",\"codec\":\"opus\",\"audioBitrate\":128000}}",
         _ => ""
     };
 }

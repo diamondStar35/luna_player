@@ -7071,7 +7071,7 @@ msgid "{value} Hz"
 msgstr ""
 
 #. Translators: A bitrate, as shown in a list. {value} is a number such as 192.
-#. Translators: Original file bitrate in the music-server Quality column. {value} is kilobits per second.
+#. Translators: Bitrate in the music-server Quality column or currently playing stream details. {value} is kilobits per second.
 #: UI/Preferences/Recording.cs:283 UI/Recording/Options.cs:209
 #: UI/Subsonic/Text/Metadata.cs:48
 msgid "{value} kbps"
@@ -9162,17 +9162,17 @@ msgstr ""
 msgid "Could not update {count} items. Successful changes have been kept."
 msgstr ""
 
-#. Translators: Original file sample rate in the music-server Quality column. {value} is kilohertz.
+#. Translators: Sample rate in the music-server Quality column or currently playing stream details. {value} is kilohertz.
 #: UI/Subsonic/Text/Metadata.cs:51
 msgid "{value} kHz"
 msgstr ""
 
-#. Translators: Original file bit depth in the music-server Quality column. {value} is bits per sample.
+#. Translators: Bit depth in the music-server Quality column or currently playing stream details. {value} is bits per sample.
 #: UI/Subsonic/Text/Metadata.cs:54
 msgid "{value} bit"
 msgstr ""
 
-#. Translators: Original file channel count in the music-server Quality column. {value} is the count.
+#. Translators: Channel count in the music-server Quality column or currently playing stream details. {value} is the count.
 #: UI/Subsonic/Text/Metadata.cs:57
 msgid "{value} channels"
 msgstr ""
@@ -10546,4 +10546,9 @@ msgstr ""
 #. Translators: Shown when a video could not be turned into something playable and nothing said why.
 #: YouTube/Utils.cs:191
 msgid "Could not resolve YouTube stream."
+msgstr ""
+
+#. Translators: Audio format of the stream currently playing, which may differ from the source file. {format} contains codec, bitrate, sample rate and other available audio properties.
+#: UI/Subsonic/Text/Streams.cs:7
+msgid "Playback stream: {format}"
 msgstr ""

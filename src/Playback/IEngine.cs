@@ -130,6 +130,7 @@ internal interface IEngine : IDisposable
 
     /// <summary>The current title and metadata from mpv. Live radio can update these during playback.</summary>
     Metadata GetMetadata();
+    StreamFormat? GetStreamFormat() => null;
 
     /// <summary>Whether a real picture is playing: a decoded video track that is neither a still image nor
     /// cover art. False for audio and for audio-only tracks in a video container. Not known synchronously

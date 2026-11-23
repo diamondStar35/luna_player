@@ -4,10 +4,16 @@ namespace LunaPlayer.UI.Subsonic;
 
 internal sealed partial class SongActions
 {
-    private void Details(Row row)
+    private void Details(Guid server, Row row)
     {
         var form = new Form(_owner, row.Name, closeOnly: true);
         var summary = string.Join(Environment.NewLine, Columns.Tracks.Select(column => Columns.Heading(column) + ": " + Columns.Cell(row, column)));
+        var current = LunaPlayer.Subsonic.Playback.Reference.Parse(_player.CurrentPath);
+        if (current?.ServerId == server && current.Id == row.Id && _player.CurrentStreamFormat is { } format)
+        {
+            var stream = StreamPresentation.Describe(format);
+            if (stream.Length > 0) summary += Environment.NewLine + stream;
+        }
         form.Text(Words.Details, summary, multiline: true).Editable = false;
         Keep(form); form.Show();
     }
