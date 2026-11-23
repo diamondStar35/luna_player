@@ -7,16 +7,20 @@ namespace LunaPlayer.UI.Subsonic;
 internal sealed class ProfileEditor : IDisposable
 {
     private readonly Form _form;
-    internal ProfileEditor(Window owner, Profile? profile, Func<Profile, CancellationToken, Task> save)
+    internal ProfileEditor(Window owner, Profile? profile, Func<Profile, CancellationToken, Task> save, Action<string> speak)
     {
         var draft = profile ?? new Profile { Name = "", Server = new Uri("https://localhost/"), ReportListening = true };
-        _form = new Form(owner, Words.Server) { HelpText = Words.ConnectionHelp };
+        _form = new Form(owner, Words.Server) { SpeakHelp = speak };
+        _form.HelpFooter(Words.HelpSaveServer, Words.HelpCancelServer);
         _form.Window.MinSize = new Size(660, 650);
         var tabs = new Notebook(_form.Panel); _form.Body.Add(tabs, proportion: 1, flags: SizerFlags.Expand);
-        (Window, BoxSizer) Page(string title)
+        var pageHelp = new List<string>();
+        _form.PageHelp = () => pageHelp.ElementAtOrDefault(tabs.SelectedIndex) ?? Words.HelpConnection;
+        (Window, BoxSizer) Page(string title, string help)
         {
             var panel = new ScrolledWindow(tabs); panel.SetScrollRate(0, 16);
             var body = new BoxSizer(Orientation.Vertical); panel.SetSizer(body); tabs.AddPage(panel, title);
+            _form.Help(panel, help); pageHelp.Add(help);
             return (panel, body);
         }
         var labels = new Dictionary<Window, StaticText>();
@@ -29,7 +33,7 @@ internal sealed class ProfileEditor : IDisposable
         }
         Choice Choose(Window panel, BoxSizer body, string label, string[] values, int index)
         { var field = Form.Field(panel, body, label, () => new Choice(panel), out var caption); foreach (var value in values) field.Add(value); field.SelectedIndex = index; labels[field] = caption; return field; }
-        var (connection, first) = Page(Words.Connection);
+        var (connection, first) = Page(Words.Connection, Words.HelpConnection);
         var name = Text(connection, first, Words.Name, draft.Name);
         var address = Text(connection, first, Words.Address, profile?.Server.AbsoluteUri ?? "");
         var auth = Choose(connection, first, Words.Auth, [Words.TokenAuth, Words.LegacyAuth, Words.KeyAuth], (int)draft.Credentials.Kind);
@@ -45,7 +49,7 @@ internal sealed class ProfileEditor : IDisposable
         auth.SelectionChanged += (_, _) => Authentication();
         var test = new Button(connection, label: Words.Test); first.Add(test, flags: SizerFlags.All, border: 5);
         var status = new StaticText(connection, label: ""); first.Add(status, flags: SizerFlags.Expand | SizerFlags.All, border: 5);
-        var (playback, second) = Page(Words.Playback);
+        var (playback, second) = Page(Words.Playback, Words.HelpPlayback);
         var mode = Choose(playback, second, Words.Mode, [Words.Original, Words.ServerDefault, Words.Transcode], (int)draft.Streaming.Mode);
         var format = Choose(playback, second, Words.Format, ["opus", "mp3", "aac", "flac", "wav"], 0);
         var formats = new[] { "opus", "mp3", "aac", "flac", "wav" }; format.SelectedIndex = Math.Max(0, Array.IndexOf(formats, draft.Streaming.Format));
@@ -59,20 +63,29 @@ internal sealed class ProfileEditor : IDisposable
         mode.SelectionChanged += (_, _) => Streaming();
         var report = new CheckBox(playback, label: Words.Report) { Checked = draft.ReportListening }; second.Add(report, flags: SizerFlags.All, border: 5);
         var sync = new CheckBox(playback, label: Words.Sync) { Checked = draft.SynchronizeQueue }; second.Add(sync, flags: SizerFlags.All, border: 5);
-        var (browsing, browsingBody) = Page(Words.BrowseSettings);
+        var (browsing, browsingBody) = Page(Words.BrowseSettings, Words.HelpBrowsing);
         var browsingOptions = new BrowsingPage(browsing, browsingBody, draft, _form);
-        var (downloads, third) = Page(Words.Downloads);
+        var (downloads, third) = Page(Words.Downloads, Words.HelpDownloads);
         var folder = Text(downloads, third, Words.Folder, draft.Downloads.Folder);
         var browse = new Button(downloads, label: Words.Browse); third.Add(browse, flags: SizerFlags.All, border: 5);
         browse.Click += (_, _) => { if (_form.ChooseFolder(folder.Value) is { } path) folder.Value = path; };
         var albumFolders = new CheckBox(downloads, label: Words.AlbumFolders) { Checked = draft.Downloads.AlbumFolders }; third.Add(albumFolders, flags: SizerFlags.All, border: 5);
-        var (advanced, fourth) = Page(Words.Advanced);
+        var (advanced, fourth) = Page(Words.Advanced, Words.HelpAdvanced);
         var headers = Text(advanced, fourth, Words.Headers, string.Join(Environment.NewLine, draft.Headers.Select(x => x.Key + ": " + x.Value)), multiline: true);
-        var (ai, fifth) = Page(Words.AudioMuse);
+        var (ai, fifth) = Page(Words.AudioMuse, Words.HelpAudioMuse);
         var aiAddress = Text(ai, fifth, Words.AudioMuseAddress, draft.AudioMuse?.Server?.AbsoluteUri ?? "");
         var aiToken = Text(ai, fifth, Words.AudioMuseToken, draft.AudioMuse?.Token ?? "", secret: true);
         var aiServer = Text(ai, fifth, Words.AudioMuseServer, draft.AudioMuse?.MusicServer ?? "");
         var count = Form.Field(ai, fifth, Words.Count, () => new SpinCtrl(ai, draft.AudioMuse?.ResultCount ?? 50, 1, 500));
+        _form.Help(name, Words.HelpServerName); _form.Help(address, Words.HelpServerAddress);
+        _form.Help(auth, Words.HelpAuthentication); _form.Help(user, Words.HelpUsername);
+        _form.Help(password, Words.HelpPassword); _form.Help(key, Words.HelpApiKey); _form.Help(test, Words.HelpTestConnection);
+        _form.Help(mode, Words.HelpStreamingMode); _form.Help(format, Words.HelpStreamingFormat);
+        _form.Help(bitrate, Words.HelpStreamingBitrate); _form.Help(report, Words.HelpListening); _form.Help(sync, Words.HelpQueueSync);
+        _form.Help(folder, Words.HelpDownloadFolder); _form.Help(browse, Words.HelpBrowseDownloads);
+        _form.Help(albumFolders, Words.HelpAlbumFolders); _form.Help(headers, Words.HelpHeaders);
+        _form.Help(aiAddress, Words.HelpAudioMuseAddress); _form.Help(aiToken, Words.HelpAudioMuseToken);
+        _form.Help(aiServer, Words.HelpAudioMuseServer); _form.Help(count, Words.HelpAudioMuseCount);
         Profile Read(bool browsingSettings = true)
         {
             var location = address.Value.Trim();

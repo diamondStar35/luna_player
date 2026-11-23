@@ -25,7 +25,7 @@ internal sealed partial class BrowserDialog
             var selected = list.SelectedIndex;
             if (!create && (selected < 0 || selected >= profiles.Length)) return;
             var editor = new ProfileEditor(form.Window, create ? null : profiles[(int)selected],
-                async (value, token) => { await _connections.SaveAsync(value, token).ConfigureAwait(false); });
+                async (value, token) => { await _connections.SaveAsync(value, token).ConfigureAwait(false); }, _speak);
             _editors.Add(editor);
             editor.Closed += accepted =>
             {

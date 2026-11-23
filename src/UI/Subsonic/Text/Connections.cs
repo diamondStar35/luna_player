@@ -104,7 +104,4 @@ internal static partial class Words
     internal static string NameRequired =>
         // Translators: Validation error for the name field when saving a music-server profile.
         Tr("Enter a name for this server.");
-    internal static string ConnectionHelp =>
-        // Translators: F1 help for saved music-server settings. OpenSubsonic, AudioMuse, API and HTTPS are service/protocol names.
-        Tr("Connection: enter a name, the server's base address, and your credentials. An address without a scheme uses HTTPS. Use legacy password authentication only for servers that require it. API key authentication requires server support. Test connection checks your details without saving. Playback: Original requests the original stream; Server default lets the server choose; Transcode requests a format and maximum bitrate. Downloads always request original files. Report listening sends playback information and scrobbles to this account. Synchronize queue automatically exchanges this server's songs, current item and position with the server queue, including other clients' changes. Browsing: choose visible sections and optionally restrict browsing to selected libraries. Load libraries uses the connection details entered here. Startup metadata refresh updates this server's songs in Luna's restored current playlist. Advanced headers are sent only to this connection. Configure AudioMuse only if you have access to that separate service. Secrets are protected for your Windows account. You can save a connection while the server is offline.");
 }

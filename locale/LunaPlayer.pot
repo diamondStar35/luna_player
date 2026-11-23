@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-11-23 00:57+0200\n"
+"POT-Creation-Date: 2026-11-23 02:32+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -8872,27 +8872,6 @@ msgstr ""
 msgid "Enter a name for this server."
 msgstr ""
 
-#. Translators: F1 help for saved music-server settings. OpenSubsonic, AudioMuse, API and HTTPS are service/protocol names.
-#: UI/Subsonic/Text/Connections.cs:109
-msgid ""
-"Connection: enter a name, the server's base address, and your credentials. "
-"An address without a scheme uses HTTPS. Use legacy password authentication "
-"only for servers that require it. API key authentication requires server "
-"support. Test connection checks your details without saving. Playback: "
-"Original requests the original stream; Server default lets the server "
-"choose; Transcode requests a format and maximum bitrate. Downloads always "
-"request original files. Report listening sends playback information and "
-"scrobbles to this account. Synchronize queue automatically exchanges this "
-"server's songs, current item and position with the server queue, including "
-"other clients' changes. Browsing: choose visible sections and optionally "
-"restrict browsing to selected libraries. Load libraries uses the connection "
-"details entered here. Startup metadata refresh updates this server's songs "
-"in Luna's restored current playlist. Advanced headers are sent only to this "
-"connection. Configure AudioMuse only if you have access to that separate "
-"service. Secrets are protected for your Windows account. You can save a "
-"connection while the server is offline."
-msgstr ""
-
 #. Translators: Context-menu action that lists related artists for the selected music-server artist.
 #: UI/Subsonic/Text/Discovery.cs:7
 msgid "Similar artists"
@@ -9299,6 +9278,265 @@ msgid ""
 "Removing an item does not delete the media file. Save writes the playlist to "
 "the server; Cancel discards this draft. Reopen the playlist if another "
 "client changed it while you were editing."
+msgstr ""
+
+#. Translators: F1 help for Save in the saved music-server editor.
+#: UI/Subsonic/Text/ServerHelp.cs:7
+msgid ""
+"Save the settings on every tab for this account and close the editor. You do "
+"not need a successful connection test to save. Invalid fields are reported "
+"before anything is saved."
+msgstr ""
+
+#. Translators: F1 help for Cancel in the saved music-server editor.
+#: UI/Subsonic/Text/ServerHelp.cs:10
+msgid ""
+"Close the editor without saving these changes. Luna asks before discarding a "
+"changed account. Testing the connection does not save changes."
+msgstr ""
+
+#. Translators: F1 help for the Connection tab in the saved music-server editor.
+#: UI/Subsonic/Text/ServerHelp.cs:13
+msgid ""
+"Enter a name, the server address and your login details. Test connection "
+"checks them without saving. Move to a setting and press F1 to hear help for "
+"that setting."
+msgstr ""
+
+#. Translators: F1 help for the Playback tab in the saved music-server editor.
+#: UI/Subsonic/Text/ServerHelp.cs:16
+msgid ""
+"Choose how this account streams music and whether Luna reports listening "
+"activity or synchronizes its playback queue. These settings do not change "
+"downloaded files."
+msgstr ""
+
+#. Translators: F1 help for the Browsing tab in the saved music-server editor.
+#: UI/Subsonic/Text/ServerHelp.cs:19
+msgid ""
+"Choose which sections and music libraries appear when browsing this account. "
+"The checklists use Space to check or uncheck an entry. These choices do not "
+"change permissions on the server."
+msgstr ""
+
+#. Translators: F1 help for the Downloads tab in the saved music-server editor.
+#: UI/Subsonic/Text/ServerHelp.cs:22
+msgid ""
+"Choose where original files from this account are downloaded and whether to "
+"organize them by artist and album. Playback transcoding does not affect "
+"these downloads."
+msgstr ""
+
+#. Translators: F1 help for the Advanced tab in the saved music-server editor.
+#: UI/Subsonic/Text/ServerHelp.cs:25
+msgid ""
+"Custom HTTP headers are only needed when your server or proxy requires them. "
+"Leave this page empty for an ordinary connection."
+msgstr ""
+
+#. Translators: F1 help for the AudioMuse tab in the saved music-server editor. Keep AudioMuse unchanged.
+#: UI/Subsonic/Text/ServerHelp.cs:28
+msgid ""
+"AudioMuse is an optional, separate recommendation service. Configure it only "
+"if you have access to one. Leave its address empty to use the music server "
+"without AudioMuse."
+msgstr ""
+
+#. Translators: F1 help for Name on the server editor's Connection tab.
+#: UI/Subsonic/Text/ServerHelp.cs:31
+msgid ""
+"Enter a name that helps you recognize this account in Luna's server list. It "
+"does not rename the server or change your login name."
+msgstr ""
+
+#. Translators: F1 help for Server address on the server editor's Connection tab. HTTPS is a protocol name.
+#: UI/Subsonic/Text/ServerHelp.cs:34
+msgid ""
+"Enter the base address supplied by your server administrator, including any "
+"path used to reach it. Do not enter a song or stream link. An address "
+"without a protocol uses HTTPS."
+msgstr ""
+
+#. Translators: F1 help for Authentication on the server editor's Connection tab. API means application programming interface.
+#: UI/Subsonic/Text/ServerHelp.cs:37
+msgid ""
+"Username and password uses normal token authentication. Choose Legacy "
+"password authentication only when your server requires it. API key requires "
+"a key supplied by a server that supports this login method."
+msgstr ""
+
+#. Translators: F1 help for Username on the server editor's Connection tab.
+#: UI/Subsonic/Text/ServerHelp.cs:40
+msgid ""
+"Enter your account's login name on this music server. It may be different "
+"from your email address or the name you gave this saved connection."
+msgstr ""
+
+#. Translators: F1 help for Password on the server editor's Connection tab.
+#: UI/Subsonic/Text/ServerHelp.cs:43
+msgid ""
+"Enter this account's password. Luna protects the saved password for your "
+"Windows account. Testing the connection does not save it."
+msgstr ""
+
+#. Translators: F1 help for API key on the server editor's Connection tab.
+#: UI/Subsonic/Text/ServerHelp.cs:46
+msgid ""
+"Enter the API key issued for this music-server account. This replaces "
+"username and password authentication and requires server support. Luna "
+"protects the saved key for your Windows account."
+msgstr ""
+
+#. Translators: F1 help for Test connection on the server editor's Connection tab.
+#: UI/Subsonic/Text/ServerHelp.cs:49
+msgid ""
+"Check the address and credentials currently entered here without saving. A "
+"success message confirms access and loads available libraries into the "
+"Browsing tab. You can also save an account while the server is offline."
+msgstr ""
+
+#. Translators: F1 help for Streaming mode on the server editor's Playback tab.
+#: UI/Subsonic/Text/ServerHelp.cs:52
+msgid ""
+"Original requests the source file. Server default lets the server choose "
+"whether to transcode. Transcode requests a particular format and bitrate, "
+"which can reduce bandwidth and may change audio quality."
+msgstr ""
+
+#. Translators: F1 help for Format on the server editor's Playback tab.
+#: UI/Subsonic/Text/ServerHelp.cs:55
+msgid ""
+"Choose the format to request when transcoding. The server must be able to "
+"produce that format. Use Original streaming mode if you want the source file "
+"without conversion."
+msgstr ""
+
+#. Translators: F1 help for the maximum bitrate control on the server editor's Playback tab.
+#: UI/Subsonic/Text/ServerHelp.cs:58
+msgid ""
+"Set the maximum requested playback bitrate in kilobits per second. Zero "
+"leaves the bitrate unrestricted by Luna. The server decides which conversion "
+"settings it supports."
+msgstr ""
+
+#. Translators: F1 help for Report listening activity on the server editor's Playback tab.
+#: UI/Subsonic/Text/ServerHelp.cs:61
+msgid ""
+"Report which song is playing and submit a completed listen after half the "
+"song or four minutes of listening, whichever comes first. Seeking forward "
+"does not count as listening. The server decides how to use these reports."
+msgstr ""
+
+#. Translators: F1 help for automatic queue synchronization on the server editor's Playback tab.
+#: UI/Subsonic/Text/ServerHelp.cs:64
+msgid ""
+"Automatically exchange this account's songs, current item and position with "
+"its server queue. Other clients' changes can replace this account's entries "
+"in Luna. Local files and other accounts are kept. Leave this off to use Save "
+"queue and Load queue manually."
+msgstr ""
+
+#. Translators: F1 help for Only include selected libraries on the server editor's Browsing tab.
+#: UI/Subsonic/Text/ServerHelp.cs:67
+msgid ""
+"Limit library browsing and searches to the checked libraries. Load libraries "
+"first, then check at least one. Turning this off includes all libraries that "
+"your account can access."
+msgstr ""
+
+#. Translators: F1 help for the Libraries checklist on the server editor's Browsing tab.
+#: UI/Subsonic/Text/ServerHelp.cs:70
+msgid ""
+"Use the arrow keys to select a library and Space to check or uncheck it. "
+"These checks apply when Only include selected libraries is enabled. They do "
+"not create libraries or change server access."
+msgstr ""
+
+#. Translators: F1 help for Load libraries on the server editor's Browsing tab.
+#: UI/Subsonic/Text/ServerHelp.cs:73
+msgid ""
+"Read available libraries using the address and login details currently "
+"entered in Connection. This does not save the account. Test connection also "
+"loads these libraries."
+msgstr ""
+
+#. Translators: F1 help for Visible browser sections on the server editor's Browsing tab.
+#: UI/Subsonic/Text/ServerHelp.cs:76
+msgid ""
+"Choose which categories appear in the browser for this account. Use Space to "
+"check or uncheck a section and leave at least one checked. Hiding a section "
+"does not remove its content from the server."
+msgstr ""
+
+#. Translators: F1 help for startup metadata refresh on the server editor's Browsing tab.
+#: UI/Subsonic/Text/ServerHelp.cs:79
+msgid ""
+"Refresh names and other metadata for this account's songs when Luna restores "
+"its current playlist. The refresh runs in the background and requires access "
+"to the server."
+msgstr ""
+
+#. Translators: F1 help for Download folder on the server editor's Downloads tab.
+#: UI/Subsonic/Text/ServerHelp.cs:82
+msgid ""
+"Choose the default folder for original files downloaded from this account. "
+"An empty value uses Downloads, Luna Player. A download's options can "
+"override this destination for one operation."
+msgstr ""
+
+#. Translators: F1 help for Browse on the server editor's Downloads tab.
+#: UI/Subsonic/Text/ServerHelp.cs:85
+msgid ""
+"Open the folder picker to choose this account's default download "
+"destination. This chooses a folder on your computer, not a library on the "
+"server."
+msgstr ""
+
+#. Translators: F1 help for artist and album folder organization on the server editor's Downloads tab.
+#: UI/Subsonic/Text/ServerHelp.cs:88
+msgid ""
+"Place downloaded files in artist and album subfolders beneath the download "
+"destination. Clear this to keep them directly in the chosen destination."
+msgstr ""
+
+#. Translators: F1 help for Custom HTTP headers on the server editor's Advanced tab. Name: value is the required line format.
+#: UI/Subsonic/Text/ServerHelp.cs:91
+msgid ""
+"Enter one HTTP header per line in the form Name: value. Use only headers "
+"required by this server or its proxy. Header values are protected with the "
+"account's saved credentials."
+msgstr ""
+
+#. Translators: F1 help for AudioMuse address on the server editor's AudioMuse tab.
+#: UI/Subsonic/Text/ServerHelp.cs:94
+msgid ""
+"Enter the address of your AudioMuse service, including its protocol and any "
+"required path. This is separate from the music-server address. Leave it "
+"empty to disable AudioMuse for this account."
+msgstr ""
+
+#. Translators: F1 help for the access token on the server editor's AudioMuse tab.
+#: UI/Subsonic/Text/ServerHelp.cs:97
+msgid ""
+"Enter the access token supplied for your AudioMuse service. It is separate "
+"from the music-server password or API key and is protected for your Windows "
+"account."
+msgstr ""
+
+#. Translators: F1 help for the optional music-server name on the server editor's AudioMuse tab.
+#: UI/Subsonic/Text/ServerHelp.cs:100
+msgid ""
+"Enter the music-server name expected by your AudioMuse service if it manages "
+"several libraries. Leave this empty when the service does not require a "
+"name. It does not rename your saved connection."
+msgstr ""
+
+#. Translators: F1 help for Number of results on the server editor's AudioMuse tab.
+#: UI/Subsonic/Text/ServerHelp.cs:103
+msgid ""
+"Choose the default number of recommendation results, from one to five "
+"hundred. You can change this again when running a search or generating a "
+"playlist."
 msgstr ""
 
 #. Translators: Album. Used in the music-server browser and its child dialogs.

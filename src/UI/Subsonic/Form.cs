@@ -11,10 +11,12 @@ internal sealed class Form : IDisposable
     internal BoxSizer Body { get; }
     private readonly OwnedDialog _owner;
     private readonly Button _save;
+    private readonly Button? _cancel;
     private readonly Lifetime _lifetime = new();
     private readonly CancellationToken _token;
     private bool _closed, _disposed;
     private readonly bool _closeOnly;
+    private readonly Dictionary<Window, string> _help = [];
     internal CancellationToken Token => _token;
     internal Form(Window? owner, string title, string? accept = null, bool closeOnly = false)
     {
@@ -28,7 +30,10 @@ internal sealed class Form : IDisposable
         var buttons = new BoxSizer(Orientation.Horizontal);
         _save = new Button(Window, closeOnly ? StandardId.Cancel : StandardId.Ok, closeOnly ? Words.Close : accept ?? Words.Save); _save.SetDefault();
         buttons.AddStretchSpacer(); buttons.Add(_save, flags: SizerFlags.BorderRight, border: 8);
-        if (!closeOnly) buttons.Add(new Button(Window, StandardId.Cancel, Words.Cancel));
+        if (!closeOnly)
+        {
+            _cancel = new Button(Window, StandardId.Cancel, Words.Cancel); buttons.Add(_cancel);
+        }
         root.Add(buttons, flags: SizerFlags.Expand | SizerFlags.All, border: 10); Window.SetSizer(root);
         Window.SetEscapeId(StandardId.Cancel);
         _owner = new OwnedDialog(Window, owner) { CanCancel = () => HasChanges?.Invoke() != true || Confirm(Words.Unsaved) };
@@ -36,7 +41,11 @@ internal sealed class Form : IDisposable
         if (!closeOnly) _save.Click += (_, _) => Save();
         Window.Bind(WxEvents.CharHook, (_, args) =>
         {
-            if (args.Code == Key.F1) Info(HelpText);
+            if (args.Code == Key.F1)
+            {
+                var help = GetContextHelp(WxSharp.Window.FindFocus());
+                if (SpeakHelp is { } speak) speak(help); else Info(help);
+            }
             else if (args.Control && args.Code is (Key)'S' or (Key)'s') Save();
             else args.Skip();
         });
@@ -56,6 +65,20 @@ internal sealed class Form : IDisposable
     }
     internal Func<bool>? HasChanges { get; set; }
     internal string HelpText { get; set; } = Words.HelpText;
+    internal Action<string>? SpeakHelp { get; set; }
+    internal Func<string>? PageHelp { get; set; }
+    internal void Help(Window control, string text) => _help[control] = text;
+    internal void HelpFooter(string save, string cancel)
+    { Help(_save, save); if (_cancel is not null) Help(_cancel, cancel); }
+    internal string GetContextHelp(Window? focused)
+    {
+        for (var control = focused; control is not null; control = control.Parent)
+        {
+            if (_help.TryGetValue(control, out var help)) return help;
+            if (ReferenceEquals(control, Window)) break;
+        }
+        return PageHelp?.Invoke() ?? HelpText;
+    }
     internal event Action<bool>? Closed;
     internal event Action? Disposing;
     internal Func<CancellationToken, Task<bool>>? SaveAsync { get; set; }

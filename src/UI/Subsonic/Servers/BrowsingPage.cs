@@ -33,6 +33,9 @@ internal sealed class BrowsingPage
         { _sections.Add(Sections.Name(category)); _sections.SetChecked(_sections.Count - 1, !profile.HiddenSections.Contains(category.ToString(), StringComparer.Ordinal)); }
         _refresh = new CheckBox(parent, label: Words.RefreshMetadata) { Checked = profile.RefreshMetadataOnStartup };
         body.Add(_refresh, flags: SizerFlags.All, border: 5);
+        form.Help(_restrict, Words.HelpRestrictLibraries); form.Help(_libraries, Words.HelpSelectLibraries);
+        form.Help(_load, Words.HelpLoadLibraries); form.Help(_sections, Words.HelpVisibleSections);
+        form.Help(_refresh, Words.HelpStartupMetadata);
     }
 
     internal Profile Apply(Profile profile)
