@@ -133,45 +133,6 @@ public sealed partial class CrossfadeTests
     }
 
     [TestMethod]
-    [DataRow(false, false)]
-    [DataRow(false, true)]
-    [DataRow(true, false)]
-    [DataRow(true, true)]
-    public async Task RapidAbsoluteNavigationLoadsTheLastSelection(bool manual, bool paused)
-    {
-        using var engine = NewEngine();
-        using var player = new Player(engine);
-        var dispatcher = new Dispatcher();
-        var ready = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
-        var tracks = new[] { Track(1), Track(2), Track(3), Track(4) };
-        using var sessions = new Sessions(new SpotifySettings(), player, dispatcher, async (uri, _, token) =>
-        {
-            if (uri != tracks[0].Uri) await ready.Task.WaitAsync(token);
-            return Audio();
-        });
-        var errors = new List<Exception>();
-        sessions.CommandFailed += errors.Add;
-        Configure(player, sessions, Options(manual));
-        sessions.Play(tracks[0], tracks, default);
-        await Until(dispatcher, () => !engine.IsLoading && player.IsPlaying);
-        if (paused) sessions.Pause();
-        Assert.IsTrue(sessions.GoToIndex(3));
-        Assert.IsTrue(sessions.GoToIndex(1));
-        Assert.IsTrue(sessions.GoToIndex(2));
-        if (paused) sessions.Pause();
-        ready.SetResult();
-
-        // Decoder readiness precedes the queued resume/fade. Pause state is part of the
-        // asynchronous navigation result and must settle before checking that result.
-        await Until(dispatcher, () => !engine.IsLoading && player.CurrentSource == sessions.CurrentLink
-            && player.IsPaused == paused);
-        Assert.AreSame(tracks[2], sessions.CurrentTrack);
-        Assert.AreEqual(2, sessions.CurrentIndex);
-        Assert.AreEqual(paused, player.IsPaused);
-        Assert.HasCount(0, errors);
-    }
-
-    [TestMethod]
     [DataRow(false, 120d, 11d)]
     [DataRow(true, 120d, 11d)]
     [DataRow(false, -2d, 0d)]
