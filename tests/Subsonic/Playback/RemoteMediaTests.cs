@@ -12,6 +12,50 @@ namespace LunaPlayer.Tests.Subsonic.Playback;
 public sealed class RemoteMediaTests
 {
     [TestMethod]
+    public async Task ManualNextUsesTheInputThatWasAlreadyPrepared()
+    {
+        using var engine = new FakeEngine(); using var player = new Player(engine);
+        var dispatcher = new Pump(); var resolver = new Resolver(); player.SetMediaResolver(resolver, dispatcher.Post);
+        player.ConfigurePlaybackEffects(new LunaPlayer.Configuration.Models.AudioSettings
+            { GaplessPlayback = LunaPlayer.Configuration.Models.GaplessPlaybackMode.CompatibleFiles });
+        var server = Guid.NewGuid();
+        player.InsertMedia([(new Reference(server, "a").Address, MediaTags.None), (new Reference(server, "b").Address, MediaTags.None)], true);
+        await Pump.Wait(() => resolver.Calls.Count == 1);
+        resolver.Calls.First().Result.SetResult(new MediaInput("https://invalid/a", MediaTags.None));
+        await dispatcher.Until(() => player.IsLoaded);
+        await Pump.Wait(() => resolver.Calls.Count == 2);
+        resolver.Calls.Last().Result.SetResult(new MediaInput("https://invalid/b", MediaTags.None));
+        await Pump.Wait(() => dispatcher.HasPosts); dispatcher.Drain();
+        Assert.IsTrue(player.Next(false));
+        CollectionAssert.AreEqual(new[] { "https://invalid/a", "https://invalid/b" }, engine.Loads);
+        Assert.AreEqual(2, resolver.Calls.Count, "Manual navigation must not resolve an already prepared input again.");
+    }
+
+    [TestMethod]
+    [DataRow(false)]
+    [DataRow(true)]
+    public async Task ManualNextResolvesAgainWhenAPreparedInputCannotBeReused(bool serverChanged)
+    {
+        using var engine = new FakeEngine(); using var player = new Player(engine);
+        var dispatcher = new Pump(); var resolver = new Resolver(); player.SetMediaResolver(resolver, dispatcher.Post);
+        player.ConfigurePlaybackEffects(new LunaPlayer.Configuration.Models.AudioSettings
+            { GaplessPlayback = LunaPlayer.Configuration.Models.GaplessPlaybackMode.CompatibleFiles });
+        var server = Guid.NewGuid();
+        player.InsertMedia([(new Reference(server, "a").Address, MediaTags.None), (new Reference(server, "b").Address, MediaTags.None)], true);
+        await Pump.Wait(() => resolver.Calls.Count == 1);
+        resolver.Calls.First().Result.SetResult(new MediaInput("https://invalid/a", MediaTags.None));
+        await dispatcher.Until(() => player.IsLoaded); await Pump.Wait(() => resolver.Calls.Count == 2);
+        resolver.Calls.Last().Result.SetResult(new MediaInput("https://invalid/prepared", MediaTags.None,
+            Offset: serverChanged ? 0 : 20, SeekByReopening: true));
+        await Pump.Wait(() => dispatcher.HasPosts); dispatcher.Drain();
+        if (serverChanged) player.RetryServerMedia(server);
+        Assert.IsTrue(player.Next(false));
+        await Pump.Wait(() => resolver.Calls.Count == 3);
+        resolver.Calls.Last().Result.SetResult(new MediaInput("https://invalid/fresh", MediaTags.None));
+        await dispatcher.Until(() => player.IsLoaded);
+        CollectionAssert.AreEqual(new[] { "https://invalid/a", "https://invalid/fresh" }, engine.Loads);
+    }
+    [TestMethod]
     public void ReferencesPreserveOpaqueIdsAndRejectMalformedAddresses()
     {
         var server = Guid.NewGuid();

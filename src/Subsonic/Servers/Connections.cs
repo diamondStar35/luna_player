@@ -13,6 +13,19 @@ internal sealed partial class Connections(Store store, Func<Profile, Client>? co
     private readonly SemaphoreSlim _profilesGate = new(1, 1);
     internal Profile[] Profiles { get; private set; } = [];
     internal event Action? Changed;
+    internal Guid? LastServer => store.LastServer;
+    private int _selectionRevision;
+    internal async Task SelectAsync(Guid server, CancellationToken token = default)
+    {
+        var revision = Interlocked.Increment(ref _selectionRevision);
+        await _profilesGate.WaitAsync(token).ConfigureAwait(false);
+        try
+        {
+            if (revision != Volatile.Read(ref _selectionRevision) || !Profiles.Any(profile => profile.Id == server)) return;
+            await Task.Run(() => store.SelectAsync(server, token), token).ConfigureAwait(false);
+        }
+        finally { _profilesGate.Release(); }
+    }
     private Task _initialLoad = Task.CompletedTask;
     internal Task LoadAsync(CancellationToken token = default) => _initialLoad = LoadProfilesAsync(token);
     private async Task LoadProfilesAsync(CancellationToken token)
@@ -27,6 +40,7 @@ internal sealed partial class Connections(Store store, Func<Profile, Client>? co
         var profile = Profile(id);
         lock (_clients)
         {
+            ObjectDisposedException.ThrowIf(_disposed, this);
             if (_clients.TryGetValue(id, out var cached) && cached.Profile == profile) return cached.Client;
             if (cached.Client is not null) _retired.Add(cached.Client);
             var client = connect?.Invoke(profile) ?? new Client(profile.ConnectionOptions());
@@ -45,6 +59,7 @@ internal sealed partial class Connections(Store store, Func<Profile, Client>? co
         Profile saved;
         try { saved = await store.SaveAsync(profile, token).ConfigureAwait(false); Profiles = await store.LoadAsync(token).ConfigureAwait(false); }
         finally { _profilesGate.Release(); }
+        Metadata.Clear(saved.Id);
         Changed?.Invoke(); return saved;
     }
     internal async Task RemoveAsync(Guid id, CancellationToken token = default)
@@ -52,6 +67,7 @@ internal sealed partial class Connections(Store store, Func<Profile, Client>? co
         await _profilesGate.WaitAsync(token).ConfigureAwait(false);
         try { await store.RemoveAsync(id, token).ConfigureAwait(false); Profiles = await store.LoadAsync(token).ConfigureAwait(false); }
         finally { _profilesGate.Release(); }
+        Metadata.Clear(id);
         Changed?.Invoke();
     }
     public bool Handles(string address) => Reference.IsAddress(address);
@@ -75,7 +91,8 @@ internal sealed partial class Connections(Store store, Func<Profile, Client>? co
         }
         else
         {
-            song = await client.Library.GetSongAsync(reference.Id, token).ConfigureAwait(false);
+            song = Metadata.Get(profile.Id, reference.Id)
+                ?? await client.Library.GetSongAsync(reference.Id, token).ConfigureAwait(false);
             Metadata.Observe(profile.Id, song);
         }
         var options = profile.Streaming with { TimeOffset = null };
@@ -92,8 +109,15 @@ internal sealed partial class Connections(Store store, Func<Profile, Client>? co
     {
         lock (_clients)
         {
-            foreach (var client in _clients.Values.Select(x => x.Client).Concat(_retired)) client.Dispose();
-            _clients.Clear(); _retired.Clear();
+            if (_disposed) return;
+            _disposed = true;
         }
+        _lifetime.Cancel();
+        lock (_clients)
+        {
+            foreach (var client in _clients.Values.Select(x => x.Client).Concat(_retired)) client.Dispose();
+            _clients.Clear(); _retired.Clear(); _inspections.Clear();
+        }
+        _lifetime.Dispose();
     }
 }

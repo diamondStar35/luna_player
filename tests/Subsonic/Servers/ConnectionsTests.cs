@@ -12,6 +12,70 @@ namespace LunaPlayer.Tests.Subsonic.Servers;
 public sealed class ConnectionsTests
 {
     [TestMethod]
+    public async Task LastServerSurvivesReloadAndRapidSelectionsKeepTheLatestChoice()
+    {
+        using var directory = new TemporaryDirectory(); var path = Path.Combine(directory.Path, "servers.json");
+        using var connections = new Connections(new Store(path));
+        var first = await connections.SaveAsync(new Profile { Name = "First", Server = Fixture.Options.Server, Credentials = Fixture.Options.Credentials });
+        var second = await connections.SaveAsync(first with { Id = Guid.Empty, Name = "Second" });
+        await Task.WhenAll(Enumerable.Range(0, 12).Select(index => connections.SelectAsync(index % 2 == 0 ? first.Id : second.Id)));
+        using var restored = new Connections(new Store(path)); await restored.LoadAsync();
+        Assert.AreEqual(second.Id, restored.LastServer);
+        await restored.SaveAsync(restored.Profile(first.Id) with { Name = "Renamed" });
+        using var edited = new Connections(new Store(path)); await edited.LoadAsync();
+        Assert.AreEqual(second.Id, edited.LastServer);
+        await edited.RemoveAsync(second.Id);
+        using var removed = new Connections(new Store(path)); await removed.LoadAsync();
+        Assert.IsNull(removed.LastServer); Assert.AreEqual(first.Id, removed.Profiles.Single().Id);
+    }
+
+    [TestMethod]
+    public async Task InspectionIsSharedAndCancellingOneWaitDoesNotCancelOtherCallers()
+    {
+        using var directory = new TemporaryDirectory();
+        var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var release = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var handler = new Handler(async (sent, token) =>
+        {
+            if (sent.Endpoint == "getUser") { started.TrySetResult(); await release.Task.WaitAsync(token); }
+            return await Fixture.Reply(sent, token);
+        });
+        using var http = new HttpClient(handler);
+        using var connections = new Connections(new Store(Path.Combine(directory.Path, "servers.json")), profile => new Client(profile.ConnectionOptions(), http));
+        var profile = await connections.SaveAsync(new Profile { Name = "Music", Server = Fixture.Options.Server, Credentials = Fixture.Options.Credentials });
+        using var cancellation = new CancellationTokenSource();
+        var cancelled = connections.InspectAsync(profile.Id, token: cancellation.Token);
+        var other = connections.InspectAsync(profile.Id);
+        await started.Task.WaitAsync(TimeSpan.FromSeconds(5)); cancellation.Cancel();
+        await Assert.ThrowsAsync<OperationCanceledException>(async () => await cancelled);
+        release.TrySetResult(); var information = await other;
+        Assert.AreEqual("user", information.Username); Assert.AreEqual(1, information.Folders.Length);
+        var requests = handler.Requests.Count;
+        Assert.AreSame(information, await connections.InspectAsync(profile.Id)); Assert.AreEqual(requests, handler.Requests.Count);
+        await connections.InspectAsync(profile.Id, refresh: true);
+        Assert.AreEqual(2, handler.Requests.Count(sent => sent.Endpoint == "getUser"));
+        Assert.AreEqual(2, handler.Requests.Count(sent => sent.Endpoint == "getMusicFolders"));
+        await connections.SaveAsync(profile with { Name = "Edited" });
+        await connections.InspectAsync(profile.Id);
+        Assert.AreEqual(3, handler.Requests.Count(sent => sent.Endpoint == "getUser"));
+    }
+
+    [TestMethod]
+    public async Task ResolvingABrowsedSongDoesNotFetchItsMetadataAgain()
+    {
+        using var directory = new TemporaryDirectory(); using var handler = new Handler(Fixture.Reply); using var http = new HttpClient(handler);
+        using var connections = new Connections(new Store(Path.Combine(directory.Path, "servers.json")), profile => new Client(profile.ConnectionOptions(), http));
+        var profile = await connections.SaveAsync(new Profile { Name = "Music", Server = Fixture.Options.Server, Credentials = Fixture.Options.Credentials });
+        connections.Metadata.Observe(profile.Id, new Entry { Id = "s", Title = "Browsed title", Artist = "Artist", Duration = 120 });
+        var input = await connections.ResolveAsync(new Reference(profile.Id, "s").Address, null, CancellationToken.None);
+        Assert.IsEmpty(handler.Requests, "Building an original stream URL from known metadata needs no network round trip.");
+        Assert.AreEqual("Browsed title", input.Tags.Title); Assert.AreEqual(120d, input.Duration);
+        await connections.SaveAsync(profile with { Name = "Edited" });
+        var refreshed = await connections.ResolveAsync(new Reference(profile.Id, "s").Address, null, CancellationToken.None);
+        Assert.AreEqual("Song", refreshed.Tags.Title);
+        Assert.AreEqual(1, handler.Requests.Count(sent => sent.Endpoint == "getSong"));
+    }
+    [TestMethod]
     public async Task SavedOptionsAndProtectedSecretsSurviveConcurrentEdits()
     {
         using var directory = new TemporaryDirectory();

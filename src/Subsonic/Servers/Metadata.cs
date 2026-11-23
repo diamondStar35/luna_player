@@ -14,6 +14,16 @@ internal sealed class Metadata
     internal Entry? Get(Guid server, string id)
     { lock (_gate) return _songs.GetValueOrDefault(new(server, id)); }
 
+    internal void Clear(Guid server)
+    {
+        lock (_gate)
+        {
+            foreach (var key in _songs.Keys.Where(key => key.ServerId == server).ToArray()) _songs.Remove(key);
+            var retained = _order.Where(key => key.ServerId != server).ToArray();
+            _order.Clear(); foreach (var key in retained) _order.Enqueue(key);
+        }
+    }
+
     internal void Observe(Guid server, Entry song) => Observe(server, [song]);
 
     internal void Observe(Guid server, IEnumerable<Entry> songs)

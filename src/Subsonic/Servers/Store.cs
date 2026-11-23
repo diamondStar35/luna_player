@@ -10,6 +10,7 @@ internal sealed class Store(string path)
     private static readonly byte[] Entropy = "LunaPlayer.Subsonic.v1"u8.ToArray();
     private readonly string _path = Path.GetFullPath(path);
     private readonly SemaphoreSlim _gate = new(1, 1);
+    internal Guid? LastServer { get; private set; }
     internal async Task<Profile[]> LoadAsync(CancellationToken token = default)
     {
         await _gate.WaitAsync(token).ConfigureAwait(false);
@@ -26,7 +27,7 @@ internal sealed class Store(string path)
             var saved = profile.Id == Guid.Empty ? profile with { Id = Guid.NewGuid() } : profile;
             var index = profiles.FindIndex(x => x.Id == saved.Id);
             if (index < 0) profiles.Add(saved); else profiles[index] = saved;
-            await WriteAsync(profiles, token).ConfigureAwait(false);
+            await WriteAsync(profiles, LastServer, token).ConfigureAwait(false);
             return saved;
         }
         finally { _gate.Release(); }
@@ -39,14 +40,25 @@ internal sealed class Store(string path)
         {
             var profiles = (await ReadAsync(token).ConfigureAwait(false)).ToList();
             if (profiles.RemoveAll(x => x.Id == id) == 0) return false;
-            await WriteAsync(profiles, token).ConfigureAwait(false);
+            await WriteAsync(profiles, LastServer, token).ConfigureAwait(false);
             return true;
+        }
+        finally { _gate.Release(); }
+    }
+    internal async Task SelectAsync(Guid server, CancellationToken token = default)
+    {
+        await _gate.WaitAsync(token).ConfigureAwait(false);
+        try
+        {
+            var profiles = (await ReadAsync(token).ConfigureAwait(false)).ToList();
+            if (!profiles.Any(profile => profile.Id == server)) throw new KeyNotFoundException();
+            if (LastServer != server) await WriteAsync(profiles, server, token).ConfigureAwait(false);
         }
         finally { _gate.Release(); }
     }
     private async Task<Profile[]> ReadAsync(CancellationToken token)
     {
-        if (!File.Exists(_path)) return [];
+        if (!File.Exists(_path)) { LastServer = null; return []; }
         try
         {
             var bytes = await File.ReadAllBytesAsync(_path, token).ConfigureAwait(false);
@@ -76,14 +88,15 @@ internal sealed class Store(string path)
                 }
                 finally { CryptographicOperations.ZeroMemory(plain); }
             }
+            LastServer = result.Any(profile => profile.Id == document.LastServer) ? document.LastServer : null;
             return result.ToArray();
         }
         catch (Exception error) when (error is JsonException or FormatException or ArgumentException)
         { throw new InvalidDataException("Invalid server store.", error); }
     }
-    private async Task WriteAsync(List<Profile> profiles, CancellationToken token)
+    private async Task WriteAsync(List<Profile> profiles, Guid? lastServer, CancellationToken token)
     {
-        var document = new StoredDocument();
+        var document = new StoredDocument { LastServer = profiles.Any(profile => profile.Id == lastServer) ? lastServer : null };
         foreach (var profile in profiles)
         {
             var secrets = new Secrets { Password = profile.Credentials.Password, ApiKey = profile.Credentials.ApiKey,
@@ -108,6 +121,7 @@ internal sealed class Store(string path)
             await File.WriteAllBytesAsync(temporary, JsonSerializer.SerializeToUtf8Bytes(document, StoreJson.Default.StoredDocument), token).ConfigureAwait(false);
             token.ThrowIfCancellationRequested();
             File.Move(temporary, _path, true);
+            LastServer = document.LastServer;
         }
         catch (Exception error)
         {
@@ -151,6 +165,8 @@ internal sealed class Store(string path)
 internal sealed class StoredDocument
 {
     public int Version { get; set; } = 1;
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public Guid? LastServer { get; set; }
     public List<StoredProfile> Servers { get; set; } = [];
 }
 internal sealed class StoredProfile

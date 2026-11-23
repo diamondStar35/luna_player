@@ -54,7 +54,7 @@ internal sealed partial class BrowserDialog : IDisposable
     private bool _binding, _visible, _disposed;
     private int _revision, _minimumYear, _maximumYear;
     private string _query = "";
-    private sealed record Place(Location Location, string Query, int Type, int Sort, int Direction, string? Library,
+    private sealed record Place(Location Location, string Query, int Type, string? Library,
         Func<CancellationToken, Task<Row[]>>? Derived = null);
     internal BrowserDialog(Connections connections, Player player, IApplicationDispatcher dispatcher,
         IDialogService dialogs, Queue downloads, Action showQueue, Action<string> speak, LunaPlayer.Configuration.Models.ShortcutSettings shortcuts)

@@ -72,6 +72,13 @@ internal sealed partial class Player
         _inputIdentity = identity; _currentInput = null;
         _loaded = false;
         _engine.ClearQueuedNext();
+        if (_preparedInputs.Remove(identity, out var prepared)
+            && (prepared.SeekByReopening ? Math.Abs(prepared.Offset - (resolveFrom ?? 0)) < 0.001
+                : prepared.Offset <= (resolveFrom ?? 0)))
+        {
+            CompleteMediaLoad(identity, item.Id, prepared, position, fade);
+            return true;
+        }
         _ = Task.Run(async () =>
         {
             try
@@ -80,15 +87,7 @@ internal sealed partial class Player
                 _postMedia!(() =>
                 {
                     if (_disposed || token.IsCancellationRequested || CurrentItemId != item.Id) return;
-                    _resolvingMedia = false;
-                    _currentInput = input; _inputIdentity = identity; _catalogTags[identity] = input.Tags;
-                    _playlist.SetTitle(identity, input.Tags.Title);
-                    _loaded = _engine.Load(input.Address, position is { } target ? Math.Max(0, target - input.Offset) : null, _pendingMediaPaused,
-                        noVideo: true, fadeTransition: fade, itemId: item.Id, headers: input.Headers,
-                        boundaries: _mediaBoundaries.RelativeTo(input.Offset));
-                    _engine.SetNormalization(_normalizationEnabled); _engine.SetMono(_monoEnabled);
-                    _engine.SetSilenceRemoval(_silenceEnabled, AudioFilters.SilenceGraph(_silence));
-                    PrepareNext(); CurrentChanged?.Invoke(); StateChanged?.Invoke();
+                    CompleteMediaLoad(identity, item.Id, input, position, fade);
                 });
             }
             catch (OperationCanceledException) when (token.IsCancellationRequested) { }
@@ -97,6 +96,19 @@ internal sealed partial class Player
         }, token);
         CurrentChanged?.Invoke(); StateChanged?.Invoke();
         return true;
+    }
+
+    private void CompleteMediaLoad(string identity, string itemId, MediaInput input, double? position, bool fade)
+    {
+        _resolvingMedia = false;
+        _currentInput = input; _inputIdentity = identity; _catalogTags[identity] = input.Tags;
+        _playlist.SetTitle(identity, input.Tags.Title);
+        _loaded = _engine.Load(input.Address, position is { } target ? Math.Max(0, target - input.Offset) : null, _pendingMediaPaused,
+            noVideo: true, fadeTransition: fade, itemId: itemId, headers: input.Headers,
+            boundaries: _mediaBoundaries.RelativeTo(input.Offset));
+        _engine.SetNormalization(_normalizationEnabled); _engine.SetMono(_monoEnabled);
+        _engine.SetSilenceRemoval(_silenceEnabled, AudioFilters.SilenceGraph(_silence));
+        PrepareNext(); CurrentChanged?.Invoke(); StateChanged?.Invoke();
     }
 
     private void PrepareRemoteNext(PlaylistItem next, double? start)
@@ -113,6 +125,7 @@ internal sealed partial class Player
                 {
                     if (_disposed || token.IsCancellationRequested || CurrentItemId != current || _playlist.PeekNext(_wrapPlaylist)?.Id != next.Id) return;
                     _catalogTags[next.Path] = input.Tags;
+                    _preparedInputs.Clear();
                     _preparedInputs[next.Path] = input;
                     _engine.QueueNext(input.Address, input.Offset > 0 ? 0 : start, noVideo: true, itemId: next.Id, headers: input.Headers);
                 });

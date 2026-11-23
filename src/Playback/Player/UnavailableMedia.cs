@@ -7,7 +7,11 @@ internal sealed partial class Player
     internal event Action<string>? MediaUnavailable;
     internal bool IsMediaUnavailable(string path) => _unavailableMedia.Contains(path);
     internal void RetryServerMedia(Guid server)
-        => _unavailableMedia.RemoveWhere(path => Subsonic.Playback.Reference.Parse(path)?.ServerId == server);
+    {
+        _unavailableMedia.RemoveWhere(path => Subsonic.Playback.Reference.Parse(path)?.ServerId == server);
+        foreach (var path in _preparedInputs.Keys.Where(path => Subsonic.Playback.Reference.Parse(path)?.ServerId == server).ToArray())
+            _preparedInputs.Remove(path);
+    }
 
     private static bool MissingMedia(Exception error) => error is Subsonic.RequestException request
         && (request.Code == 70 || request.StatusCode == System.Net.HttpStatusCode.NotFound);

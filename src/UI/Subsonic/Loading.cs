@@ -44,8 +44,17 @@ internal sealed partial class BrowserDialog
         _reading.Cancel(); _revision++;
         _player.RetryServerMedia(_server); _unsupported.RemoveWhere(entry => entry.Server == _server);
         _unavailableCommands.RemoveWhere(entry => entry.Server == _server); Categories();
-        var server = _server;
-        Run(async token => { await _connections.Catalog(server).InvalidateAsync(token); return true; }, _ => { if (_server == server) Reload(); });
+        var server = _server; var revision = _connectionRevision;
+        var library = _libraries.SelectedIndex > 0 ? _libraryIds[_libraries.SelectedIndex - 1] : null;
+        Run(async token =>
+        {
+            await _connections.Catalog(server).InvalidateAsync(token);
+            return await _connections.InspectAsync(server, refresh: true, token);
+        }, information =>
+        {
+            if (_server != server || revision != _connectionRevision) return;
+            SetInspection(information, library); Reload();
+        });
     }
     private int _sortRevision;
     private void Sort()
