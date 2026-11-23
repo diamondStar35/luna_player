@@ -58,11 +58,13 @@ internal sealed class Client : IDisposable
             try
             {
                 var extensions = await _session.ReadAsync("getOpenSubsonicExtensions", token: token, authenticate: false).ConfigureAwait(false);
-                return _capabilities = new(server, extensions.OpenSubsonicExtensions, true);
+                _capabilities = new(server, extensions.OpenSubsonicExtensions, true);
+                _session.SetFormPost(_capabilities.Extension("formPost") == Support.Supported);
+                return _capabilities;
             }
             catch (RequestException error) when (error.Kind == FailureKind.Unsupported
                 || error.StatusCode is System.Net.HttpStatusCode.NotFound or System.Net.HttpStatusCode.Unauthorized)
-            { return _capabilities = new(server, [], false); }
+            { _session.SetFormPost(false); return _capabilities = new(server, [], false); }
         }
         finally { _discovery.Release(); }
     }

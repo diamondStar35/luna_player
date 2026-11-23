@@ -17,6 +17,7 @@ internal sealed class Session : IDisposable
     private readonly CancellationTokenSource _lifetime = new();
     private readonly CancellationToken _disposedToken;
     private readonly Uri _base;
+    private bool _formPost;
     private int _disposed;
     internal TimeProvider Clock => _options.TimeProvider;
     internal void EnsureActive() => ObjectDisposedException.ThrowIf(Volatile.Read(ref _disposed) != 0, this);
@@ -25,6 +26,7 @@ internal sealed class Session : IDisposable
         ArgumentNullException.ThrowIfNull(options);
         options.Validate();
         _options = options with { Headers = new Dictionary<string, string>(options.Headers) };
+        _formPost = options.UseFormPost;
         _base = new Uri(options.Server.AbsoluteUri.TrimEnd('/') + "/");
         _ownsHttp = http is null;
         _http = http ?? new HttpClient(new HttpClientHandler
@@ -35,10 +37,20 @@ internal sealed class Session : IDisposable
     }
 
     internal Uri Address(string endpoint, Parameters? parameters = null, bool authenticate = true)
+        => new(Endpoint(endpoint).AbsoluteUri + "?" + Query(parameters, authenticate).Query);
+
+    internal void SetFormPost(bool supported) => Volatile.Write(ref _formPost, _options.UseFormPost || supported);
+
+    private Uri Endpoint(string endpoint)
     {
         EnsureActive();
         if (endpoint.Length == 0 || !endpoint.All(c => char.IsAsciiLetterOrDigit(c)))
             throw new ArgumentException(nameof(endpoint));
+        return new Uri(_base, "rest/" + endpoint + ".view");
+    }
+
+    private Parameters Query(Parameters? parameters, bool authenticate)
+    {
         var query = new Parameters().With("v", _options.ApiVersion).With("c", _options.ClientName).With("f", "json");
         if (authenticate)
         {
@@ -62,8 +74,8 @@ internal sealed class Session : IDisposable
                 }
             }
         }
-        if (parameters is not null) query.AddRange(parameters);
-        return new Uri(_base, "rest/" + endpoint + ".view?" + query.Query);
+        if (parameters is not null) query.Include(parameters);
+        return query;
     }
 
     internal async Task<Response> ReadAsync(string endpoint, Parameters? parameters = null,
@@ -154,13 +166,17 @@ internal sealed class Session : IDisposable
             {
                 try
                 {
-                    var uri = Address(endpoint, parameters, authenticate);
+                    var target = Endpoint(endpoint);
+                    var query = Query(parameters, authenticate).Query;
+                    var form = json is null && Volatile.Read(ref _formPost)
+                        && endpoint is not ("ping" or "getOpenSubsonicExtensions");
+                    // Form requests never pass through a URI: a large queue can exceed its length limit.
+                    var uri = form ? target : new Uri(target.AbsoluteUri + "?" + query);
                     using var request = new HttpRequestMessage(json is null ? HttpMethod.Get : HttpMethod.Post, uri);
-                    if (json is null && _options.UseFormPost)
+                    if (form)
                     {
                         request.Method = HttpMethod.Post;
-                        request.RequestUri = new Uri(uri.GetLeftPart(UriPartial.Path));
-                        request.Content = new StringContent(uri.Query[1..], Encoding.UTF8, "application/x-www-form-urlencoded");
+                        request.Content = new StringContent(query, Encoding.UTF8, "application/x-www-form-urlencoded");
                     }
                     foreach (var header in _options.Headers) request.Headers.Add(header.Key, header.Value);
                     if (byteOffset.HasValue) request.Headers.Range = new RangeHeaderValue(byteOffset, null);

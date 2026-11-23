@@ -63,6 +63,62 @@ public sealed class RequestsTests
         Assert.AreEqual("false", sent.Parameters["public"][0]);
     }
     [TestMethod]
+    public async Task NegotiatedFormPostCanSaveQueuesLargerThanAUri()
+    {
+        using var handler = new Handler((sent, token) => sent.Endpoint == "getOpenSubsonicExtensions"
+            ? Task.FromResult(Fixture.Json("\"openSubsonicExtensions\":[{\"name\":\"formPost\",\"versions\":[1]}]"))
+            : Fixture.Reply(sent, token));
+        using var http = new HttpClient(handler); using var client = new Client(Fixture.Options, http);
+        await client.DiscoverAsync();
+        var ids = Enumerable.Range(0, 12000).Select(index => "song/" + index + "/&+ repeated").ToArray();
+        await client.Listening.SaveQueueAsync(ids, ids[5], 1250);
+        var sent = handler.Requests.Single(request => request.Endpoint == "savePlayQueue");
+        Assert.AreEqual(HttpMethod.Post, sent.Method);
+        Assert.AreEqual("", sent.Uri.Query);
+        Assert.IsTrue(sent.Body.Length > 65536);
+        CollectionAssert.AreEqual(ids, sent.Parameters["id"]);
+        Assert.AreEqual(ids[5], sent.Parameters["current"][0]);
+        Assert.AreEqual("1250", sent.Parameters["position"][0]);
+        Assert.IsTrue(handler.Requests.Where(request => request.Endpoint is "ping" or "getOpenSubsonicExtensions")
+            .All(request => request.Method == HttpMethod.Get));
+    }
+
+    [TestMethod]
+    public async Task RefreshRenegotiatesPostWhileMediaAddressesRemainGetUrls()
+    {
+        var advertised = true;
+        using var handler = new Handler((sent, token) => sent.Endpoint == "getOpenSubsonicExtensions"
+            ? Task.FromResult(Fixture.Json("\"openSubsonicExtensions\":" + (advertised
+                ? "[{\"name\":\"formPost\",\"versions\":[1]}]" : "[]"))) : Fixture.Reply(sent, token));
+        using var http = new HttpClient(handler); using var client = new Client(Fixture.Options, http);
+        await client.DiscoverAsync();
+        await client.Playlists.DeleteAsync("first");
+        Assert.AreEqual(HttpMethod.Post, handler.Requests.Last().Method);
+        var stream = await client.Media.GetStreamAddressAsync("song");
+        Assert.IsTrue(stream.Query.Contains("id=song", StringComparison.Ordinal));
+        advertised = false;
+        await client.DiscoverAsync(refresh: true);
+        await client.Playlists.DeleteAsync("second");
+        Assert.AreEqual(HttpMethod.Get, handler.Requests.Last().Method);
+        Assert.AreEqual("second", handler.Requests.Last().Parameters["id"][0]);
+    }
+
+    [TestMethod]
+    public async Task NegotiatedFormsDoNotChangeTheTranscodeDecisionJsonContract()
+    {
+        using var handler = new Handler((sent, token) => sent.Endpoint == "getOpenSubsonicExtensions"
+            ? Task.FromResult(Fixture.Json("\"openSubsonicExtensions\":[{\"name\":\"formPost\",\"versions\":[1]},"
+                + "{\"name\":\"transcoding\",\"versions\":[1]}]")) : Fixture.Reply(sent, token));
+        using var http = new HttpClient(handler); using var client = new Client(Fixture.Options, http);
+        await client.Media.GetTranscodeDecisionAsync("song", new LunaPlayer.Subsonic.Models.ClientInfo { Name = "LunaPlayer", Platform = "Windows" });
+        var sent = handler.Requests.Last();
+        Assert.AreEqual(HttpMethod.Post, sent.Method);
+        Assert.IsTrue(sent.Body.StartsWith('{'));
+        Assert.AreEqual("song", sent.Parameters["mediaId"][0]);
+        Assert.AreEqual("user", sent.Parameters["u"][0]);
+    }
+
+    [TestMethod]
     public async Task SafeReadsRetryButMutationsNeverRepeat()
     {
         var calls = 0;
