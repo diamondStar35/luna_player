@@ -188,12 +188,16 @@ public sealed class WorkerTests
     public async Task TransportFailureReconnectsAndUsesTheLatestState()
     {
         var failed = new Client { FailSend = true };
-        var connected = new Client();
+        var connected = new Client { HoldConnect = new(TaskCreationOptions.RunContinuationsAsynchronously) };
         var connections = 0;
         await using var service = new Host(() => Interlocked.Increment(ref connections) == 1 ? failed : connected, Timing);
         service.Update(Options(), "old");
         await NativeHost.Until(() => failed.Disposals > 0);
+        // Reconnecting can finish before disposal is observed. Hold the handshake so the
+        // assertion concerns the state available at publication, regardless of scheduling.
+        await NativeHost.Until(() => connected.Connections > 0);
         service.Update(Options(), "latest");
+        connected.HoldConnect.SetResult();
         await NativeHost.Until(() => connected.Activities.Contains("latest"));
         Assert.IsFalse(connected.Activities.Contains("old"));
     }
