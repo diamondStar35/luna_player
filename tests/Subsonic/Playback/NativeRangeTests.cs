@@ -11,6 +11,39 @@ namespace LunaPlayer.Tests.Subsonic.Playback;
 public sealed class NativeRangeTests
 {
     [TestMethod]
+    [DataRow(false, false)]
+    [DataRow(true, false)]
+    [DataRow(false, true)]
+    [DataRow(true, true)]
+    public async Task LoadingAQueuePlaysFromTheSavedPositionEvenAfterTheCurrentSongEnds(bool offset, bool atEnd)
+    {
+        using var workspace = new Workspace(); using var engine = NativeHost.Create(); using var player = new Player(engine);
+        var pump = new Pump();
+        player.SetMediaResolver(new Resolver(NativeHost.Wave(workspace), offset, 10), pump.Post);
+        var server = Guid.NewGuid();
+        if (atEnd)
+        {
+            player.SetEndBehavior(EndBehavior.None);
+            player.InsertMedia([(new Reference(server, "song").Address, MediaTags.None)], true);
+            await NativeHost.Until(() => { pump.Drain(); return player.IsLoaded && !engine.IsLoading; });
+            engine.SeekAbsolute(10);
+            await NativeHost.Until(() => engine.EndReached && engine.IsPaused);
+        }
+        player.ApplyServerQueue(server, new LunaPlayer.Subsonic.Models.PlayQueue
+        { Entries = [new() { Id = "song" }], Current = "song", Position = 3000 }, play: true);
+        Assert.AreEqual(3d, player.SourceElapsed);
+        Assert.IsFalse(player.IsPaused);
+        await NativeHost.Until(() =>
+        {
+            pump.Drain();
+            return player.IsPlaying && !engine.IsLoading && engine.Elapsed is { } elapsed
+                && Math.Abs(elapsed - (offset ? 0 : 3)) < 0.5;
+        });
+        Assert.AreEqual(3d, player.SourceElapsed!.Value, 0.5);
+        await NativeHost.Until(() => player.IsPlaying && player.SourceElapsed > 3.1);
+    }
+
+    [TestMethod]
     [DataRow(false)]
     [DataRow(true)]
     public async Task OffsetSelectionStopsAtItsSongBoundaryAndLeavesNoFalseTrackEnd(bool crossfade)
@@ -100,10 +133,10 @@ public sealed class NativeRangeTests
         internal Task Until(Func<bool> condition) => NativeHost.Until(() => { _pump.Drain(); return condition(); });
         public void Dispose() { Player.Dispose(); _workspace.Dispose(); }
     }
-    private sealed class Resolver(string file) : IMediaResolver
+    private sealed class Resolver(string file, bool offset = true, double duration = 100) : IMediaResolver
     {
         public bool Handles(string address) => Reference.IsAddress(address);
         public Task<MediaInput> ResolveAsync(string address, double? position, CancellationToken token)
-            => Task.FromResult(new MediaInput(file, MediaTags.None, 100, Offset: position ?? 0, SeekByReopening: true));
+            => Task.FromResult(new MediaInput(file, MediaTags.None, duration, Offset: offset ? position ?? 0 : 0, SeekByReopening: offset));
     }
 }

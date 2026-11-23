@@ -140,10 +140,12 @@ internal sealed partial class Player
         }, token);
     }
 
-    internal void ApplyServerQueue(Guid server, Subsonic.Models.PlayQueue queue)
+    internal void ApplyServerQueue(Guid server, Subsonic.Models.PlayQueue queue, bool play = false)
     {
+        if (play) { _mediaForward = true; SavePosition(); LeaveSession(); LeaveDisc(); }
         var active = (_loaded || _resolvingMedia) && Subsonic.Playback.Reference.Parse(CurrentPath) is { Kind: Subsonic.Playback.MediaKind.Song } reference && reference.ServerId == server;
-        var wasPaused = IsPaused;
+        var stopped = !_loaded && !_resolvingMedia;
+        var wasPaused = !play && IsPaused;
         var position = SourceElapsed ?? 0;
         var addresses = queue.Entries.Select(x => new Subsonic.Playback.Reference(server, x.Id).Address).ToArray();
         foreach (var song in queue.Entries)
@@ -153,7 +155,9 @@ internal sealed partial class Player
             _playlist.SetTitle(address, song.Title);
         }
         _playlist.ReconcileServer(server, addresses, position);
-        if (active)
+        // An explicit load supplies the song, position and play state together. A separate
+        // seek then Play can race restart-at-end handling while the seek is still queued.
+        if (active || play)
         {
             var index = queue.CurrentIndex ?? Array.FindIndex(queue.Entries, x => x.Id == queue.Current);
             var target = index >= 0 && index < addresses.Length ? addresses[index] : null;
@@ -162,7 +166,7 @@ internal sealed partial class Player
             {
                 var occurrence = Items.Where(x => x.Path == target).Skip(queue.Entries.Take(index).Count(x => x.Id == queue.Entries[index].Id)).FirstOrDefault();
                 if (occurrence is not null) _playlist.GoToItem(occurrence.Id);
-                if (CurrentPath != _inputIdentity) LoadCurrent(queue.Position / 1000, wasPaused);
+                if (play || stopped || CurrentPath != _inputIdentity) LoadCurrent(queue.Position / 1000, wasPaused);
                 else if (Math.Abs(position - queue.Position / 1000) > 1) SeekAbsolute(queue.Position / 1000);
             }
         }
