@@ -10,9 +10,9 @@ internal sealed partial class PlaybackCoordinator
 
     private bool LoadWithCrossfade(LoadRequest request, bool paused, long generation)
     {
-        // Spotify's private protocol exists only on the playback mpv instance. Its adapter
-        // supplies decrypted audio, so a second metadata player must never consume it.
-        if (request.Path.StartsWith("luna-spotify://", StringComparison.Ordinal))
+        // Forced audio playback already excludes video. Opening a second player to classify
+        // an authenticated stream adds a network round trip without changing that decision.
+        if (request.NoVideo || request.Path.StartsWith("luna-spotify://", StringComparison.Ordinal))
             return CompleteManualLoad(request, paused, overlap: true);
         var probe = _probe!;
         if (probe.CachedResult(request.Path) is Probe.Result cached)
@@ -61,9 +61,8 @@ internal sealed partial class PlaybackCoordinator
         }
         var generation = ++_queueGeneration;
         var load = _loadGeneration;
-        // Spotify's private protocol exists only on the playback mpv instance. Its adapter
-        // supplies decrypted audio, so a second metadata player must never consume it.
-        if (request.Path.StartsWith("luna-spotify://", StringComparison.Ordinal))
+        // Forced audio needs no probe; Spotify's private protocol exists only in the playback instance.
+        if (request.NoVideo || request.Path.StartsWith("luna-spotify://", StringComparison.Ordinal))
         {
             AppendAudioSuccessor(request, audioOnly: true);
             return;

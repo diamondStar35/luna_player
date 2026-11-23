@@ -29,9 +29,11 @@ public sealed class NativeRangeTests
             engine.SeekAbsolute(10);
             await NativeHost.Until(() => engine.EndReached && engine.IsPaused);
         }
+        using var seek = new NativeHost.SeekCompletion(engine);
         player.ApplyServerQueue(server, new LunaPlayer.Subsonic.Models.PlayQueue
         { Entries = [new() { Id = "song" }], Current = "song", Position = 3000 }, play: true);
-        Assert.AreEqual(3d, player.SourceElapsed);
+        if (atEnd && !offset) await seek.Wait();
+        Assert.AreEqual(3d, player.SourceElapsed!.Value, 0.1);
         Assert.IsFalse(player.IsPaused);
         await NativeHost.Until(() =>
         {

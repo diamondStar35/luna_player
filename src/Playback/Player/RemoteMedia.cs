@@ -145,6 +145,7 @@ internal sealed partial class Player
         if (play) { _mediaForward = true; SavePosition(); LeaveSession(); LeaveDisc(); }
         var active = (_loaded || _resolvingMedia) && Subsonic.Playback.Reference.Parse(CurrentPath) is { Kind: Subsonic.Playback.MediaKind.Song } reference && reference.ServerId == server;
         var stopped = !_loaded && !_resolvingMedia;
+        var currentItem = CurrentItemId;
         var wasPaused = !play && IsPaused;
         var position = SourceElapsed ?? 0;
         var addresses = queue.Entries.Select(x => new Subsonic.Playback.Reference(server, x.Id).Address).ToArray();
@@ -155,8 +156,8 @@ internal sealed partial class Player
             _playlist.SetTitle(address, song.Title);
         }
         _playlist.ReconcileServer(server, addresses, position);
-        // An explicit load supplies the song, position and play state together. A separate
-        // seek then Play can race restart-at-end handling while the seek is still queued.
+        // Reuse an open original stream's decoder and buffered data. Resuming the engine
+        // directly avoids Play's restart-at-end branch while the saved seek is queued.
         if (active || play)
         {
             var index = queue.CurrentIndex ?? Array.FindIndex(queue.Entries, x => x.Id == queue.Current);
@@ -166,8 +167,14 @@ internal sealed partial class Player
             {
                 var occurrence = Items.Where(x => x.Path == target).Skip(queue.Entries.Take(index).Count(x => x.Id == queue.Entries[index].Id)).FirstOrDefault();
                 if (occurrence is not null) _playlist.GoToItem(occurrence.Id);
-                if (play || stopped || CurrentPath != _inputIdentity) LoadCurrent(queue.Position / 1000, wasPaused);
-                else if (Math.Abs(position - queue.Position / 1000) > 1) SeekAbsolute(queue.Position / 1000);
+                if (stopped || _resolvingMedia || CurrentPath != _inputIdentity || CurrentItemId != currentItem
+                    || play && (_currentInput?.SeekByReopening == true || !_mediaBoundaries.IsEmpty || _chapterStopHeld))
+                    LoadCurrent(queue.Position / 1000, wasPaused);
+                else
+                {
+                    if (play || Math.Abs(position - queue.Position / 1000) > 1) SeekAbsolute(queue.Position / 1000);
+                    if (play) { _engine.Play(); StateChanged?.Invoke(); }
+                }
             }
         }
         PrepareNext(); CurrentChanged?.Invoke(); StateChanged?.Invoke();

@@ -67,6 +67,26 @@ public sealed class QueueTests
     }
 
     [TestMethod]
+    public async Task ExplicitLoadingReplacesAPausedPendingResolutionAndStartsAtTheSavedPosition()
+    {
+        using var engine = new FakeEngine(); using var player = new Player(engine);
+        var dispatcher = new Pump(); var resolver = new Resolver(); player.SetMediaResolver(resolver, dispatcher.Post);
+        var server = Guid.NewGuid();
+        var queue = new PlayQueue { Entries = [new() { Id = "song" }], Current = "song", Position = 9000 };
+        player.ApplyServerQueue(server, queue, play: true);
+        await Pump.Wait(() => resolver.Calls.Count == 1);
+        player.Pause();
+        player.ApplyServerQueue(server, queue, play: true);
+        await Pump.Wait(() => resolver.Calls.Count == 2);
+        var calls = resolver.Calls.ToArray();
+        calls[1].Result.SetResult(new MediaInput("https://invalid/current", MediaTags.None, 60));
+        await dispatcher.Until(() => player.IsLoaded);
+        calls[0].Result.SetResult(new MediaInput("https://invalid/abandoned", MediaTags.None, 60));
+        Assert.IsTrue(player.IsPlaying); Assert.AreEqual(9d, player.SourceElapsed);
+        Assert.AreEqual("https://invalid/current", engine.Loads.Single());
+    }
+
+    [TestMethod]
     public async Task PausingWhileTheSavedQueueIsOpeningKeepsItsPosition()
     {
         using var engine = new FakeEngine(); using var player = new Player(engine);
@@ -101,16 +121,12 @@ public sealed class QueueTests
         if (paused) player.Pause();
         player.ApplyServerQueue(server, new PlayQueue
         { Entries = [new() { Id = "song" }], Current = "song", Position = 9000 }, play: play);
-        if (play)
-        {
-            await Pump.Wait(() => resolver.Calls.Count == 2);
-            resolver.Calls.Last().Result.SetResult(new MediaInput("https://invalid/song", MediaTags.None, 60));
-            await dispatcher.Until(() => player.IsLoaded);
-        }
+        Assert.IsFalse(player.IsResolvingMedia, "An already-open original stream must retain its decoder and cache.");
         Assert.AreEqual(9d, player.Elapsed);
         Assert.AreEqual(paused && !play, player.IsPaused);
-        Assert.AreEqual(play ? 2 : 1, engine.Loads.Count);
-        CollectionAssert.AreEqual(play ? Array.Empty<double>() : new[] { 9d }, engine.RequestedSeeks);
+        Assert.AreEqual(1, engine.Loads.Count);
+        Assert.AreEqual(1, resolver.Calls.Count);
+        CollectionAssert.AreEqual(new[] { 9d }, engine.RequestedSeeks);
     }
 
     [TestMethod]
