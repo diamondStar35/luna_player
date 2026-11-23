@@ -10,18 +10,7 @@ internal sealed partial class SongActions
     internal void Lyrics(Guid server, Row row)
     {
         var client = _connections.Client(server);
-        Run(async token =>
-        {
-            try
-            {
-                var versions = await client.Listening.GetLyricsBySongIdAsync(row.Id, token).ConfigureAwait(false);
-                if (versions.Any(version => version.Lines.Length > 0)) return versions.Where(version => version.Lines.Length > 0).ToArray();
-            }
-            catch (RequestException error) when (error.Kind == FailureKind.Unsupported)
-            { /* Plain lyrics remain available on older servers. */ }
-            var plain = (await client.Listening.GetLyricsAsync(row.Artist, row.Name, token).ConfigureAwait(false)).Value;
-            return new[] { new StructuredLyrics { Lines = plain.Split('\n').Select(line => new LyricLine { Value = line.TrimEnd('\r') }).ToArray() } };
-        }, versions =>
+        Run(token => client.Listening.GetSongLyricsAsync(row.Id, row.Artist, row.Name, token), versions =>
         {
             if (versions.All(version => version.Lines.All(line => line.Value.Length == 0))) { Info(Words.NoLyrics); return; }
             var form = new Form(_owner, Words.Lyrics, closeOnly: true);

@@ -6,7 +6,7 @@ namespace LunaPlayer.Subsonic.Listening;
 internal enum StarKind { Song, Album, Artist }
 internal enum PlaybackState { Playing, Paused, Stopped }
 
-internal sealed class Listening(Session session, Func<string, int, CancellationToken, Task> require) : Feature(session)
+internal sealed partial class Listening(Session session, Func<string, int, CancellationToken, Task> require) : Feature(session)
 {
     internal Task SetStarredAsync(IEnumerable<string> ids, bool starred, StarKind kind = StarKind.Song, CancellationToken token = default)
     {
