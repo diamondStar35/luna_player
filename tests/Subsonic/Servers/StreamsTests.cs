@@ -144,6 +144,28 @@ public sealed class StreamsTests
     }
 
     [TestMethod]
+    public async Task StreamAndInspectionCachesUseTheirOwnConfiguredLifetimes()
+    {
+        using var rig = new Rig(StreamingMode.ServerDefault, timing: new() { StreamCacheSeconds = 20, ConnectionCacheSeconds = 10 });
+        await rig.Resolve(0); await rig.Connections.InspectAsync(rig.Profile.Id);
+        rig.Clock.Now += TimeSpan.FromSeconds(10);
+        await rig.Resolve(0); await rig.Connections.InspectAsync(rig.Profile.Id);
+        Assert.AreEqual(1, rig.Handler.Requests.Count(sent => sent.Endpoint == "getTranscodeDecision"));
+        Assert.AreEqual(2, rig.Handler.Requests.Count(sent => sent.Endpoint == "getUser"));
+        rig.Clock.Now += TimeSpan.FromSeconds(10); await rig.Resolve(0);
+        Assert.AreEqual(2, rig.Handler.Requests.Count(sent => sent.Endpoint == "getTranscodeDecision"));
+    }
+
+    [TestMethod]
+    public async Task ZeroCacheDurationsRenewCompletedInformationOnEveryRequest()
+    {
+        using var rig = new Rig(StreamingMode.ServerDefault, timing: new() { StreamCacheSeconds = 0, ConnectionCacheSeconds = 0 });
+        for (var index = 0; index < 3; index++) { await rig.Resolve(0); await rig.Connections.InspectAsync(rig.Profile.Id); }
+        Assert.AreEqual(3, rig.Handler.Requests.Count(sent => sent.Endpoint == "getTranscodeDecision"));
+        Assert.AreEqual(3, rig.Handler.Requests.Count(sent => sent.Endpoint == "getUser"));
+    }
+
+    [TestMethod]
     public async Task CancelledNavigationDoesNotHoldUpTheNextNegotiation()
     {
         var started = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
@@ -177,12 +199,13 @@ public sealed class StreamsTests
         internal readonly Connections Connections;
         internal readonly Profile Profile;
         internal readonly Clock Clock = new();
-        internal Rig(StreamingMode mode, Func<Sent, CancellationToken, Task<HttpResponseMessage>>? reply = null)
+        internal Rig(StreamingMode mode, Func<Sent, CancellationToken, Task<HttpResponseMessage>>? reply = null, TimingSettings? timing = null)
         {
             Handler = new(reply ?? Fixture.Reply); _http = new(Handler);
             Connections = new(new Store(Path.Combine(_directory.Path, "servers.json")), profile => new Client(profile.ConnectionOptions() with { TimeProvider = Clock }, _http));
             Profile = Connections.SaveAsync(new Profile { Name = "Music", Server = Fixture.Options.Server, Credentials = Fixture.Options.Credentials,
-                Streaming = new() { Mode = mode, Format = "opus", MaximumBitRate = mode == StreamingMode.Transcode ? 128 : null } }).GetAwaiter().GetResult();
+                Streaming = new() { Mode = mode, Format = "opus", MaximumBitRate = mode == StreamingMode.Transcode ? 128 : null },
+                Timing = timing ?? new() }).GetAwaiter().GetResult();
             Connections.Metadata.Observe(Profile.Id, new Entry { Id = "song", Title = "Song", Suffix = "flac", Duration = 60 });
         }
         internal Task<LunaPlayer.Playback.MediaInput> Resolve(double position)

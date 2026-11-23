@@ -849,7 +849,7 @@ Clear Only include selected libraries to browse all libraries available to your 
 The remaining tabs provide settings you may need for a particular account:
 
 - **Downloads:** choose the default folder for original-file downloads and whether to put them in artist and album subfolders. You can override the destination for an individual download.
-- **Advanced:** enter custom HTTP headers only if the server or its proxy requires them. Enter one header per line in the form `Name: value`. These headers apply to requests made through this saved connection.
+- **Advanced:** adjust background updates, cache lifetimes, search delay and request timeouts for this account. The controls start with Luna's existing defaults. Press <kbd>F1</kbd> on a control to hear what it affects and how its timing works. Enter custom HTTP headers only if the server or its proxy requires them, using one header per line in the form `Name: value`.
 - **AudioMuse:** configure an optional recommendation service. Leave it unconfigured if you do not use AudioMuse. See [Finding related music](#finding-related-music).
 
 ### Browsing the library

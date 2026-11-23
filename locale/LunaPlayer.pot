@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
-"POT-Creation-Date: 2026-11-23 02:32+0200\n"
+"POT-Creation-Date: 2026-11-23 08:37+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1620,29 +1620,29 @@ msgid "Bitrate: {bitrate} kbps"
 msgstr ""
 
 #. Translators: Spoken by Ctrl+Alt+I when the current media provides no metadata to announce.
-#: Application/Commands/Files/Info.cs:277
+#: Application/Commands/Files/Info.cs:282
 msgid "No metadata is available."
 msgstr ""
 
 #. Translators: Spoken by Shift+I when the current file or radio broadcast provides no artist information.
-#: Application/Commands/Files/Info.cs:288
+#: Application/Commands/Files/Info.cs:293
 msgid "Unknown artist."
 msgstr ""
 
 #. Translators: Spoken by I when the live radio station supplies no programme title.
-#: Application/Commands/Files/Info.cs:306
+#: Application/Commands/Files/Info.cs:311
 msgid "The current radio broadcast has no title."
 msgstr ""
 
 #. Translators: Short announcement by I when the live radio station supplies no programme title.
 #. Translators: Short announcement when the current media file contains no title metadata.
-#: Application/Commands/Files/Info.cs:308
-#: Application/Commands/Files/Info.cs:314
+#: Application/Commands/Files/Info.cs:313
+#: Application/Commands/Files/Info.cs:319
 msgid "No title."
 msgstr ""
 
 #. Translators: Spoken when the current media file contains no title metadata.
-#: Application/Commands/Files/Info.cs:312
+#: Application/Commands/Files/Info.cs:317
 msgid "The current file has no title."
 msgstr ""
 
@@ -8700,17 +8700,17 @@ msgstr ""
 
 #. Translators: Favorite column value for an item starred on the music server.
 #. Translators: Button that agrees to fetch the extra programs YouTube needs.
-#: UI/Subsonic/Text/Browsing.cs:121 UI/YouTube/ComponentsDialog.cs:30
+#: UI/Subsonic/Text/Browsing.cs:118 UI/YouTube/ComponentsDialog.cs:30
 msgid "Yes"
 msgstr ""
 
 #. Translators: Error in the music-server browser's year filter dialog.
-#: UI/Subsonic/Text/Browsing.cs:124
+#: UI/Subsonic/Text/Browsing.cs:121
 msgid "The starting year must not be later than the ending year."
 msgstr ""
 
 #. Translators: Description of the music-server browser shortcut preferences page.
-#: UI/Subsonic/Text/Browsing.cs:127
+#: UI/Subsonic/Text/Browsing.cs:124
 msgid ""
 "These shortcuts work in the Music servers browser. Playback and download "
 "shortcuts apply to its item list. Select an action to change its shortcut."
@@ -9312,8 +9312,9 @@ msgstr ""
 #. Translators: F1 help for the Advanced tab in the saved music-server editor.
 #: UI/Subsonic/Text/ServerHelp.cs:25
 msgid ""
-"Custom HTTP headers are only needed when your server or proxy requires them. "
-"Leave this page empty for an ordinary connection."
+"Adjust background updates, cache lifetimes, search delays and request "
+"timeouts for this account. The defaults suit most connections. Custom HTTP "
+"headers are only needed when your server or proxy requires them."
 msgstr ""
 
 #. Translators: F1 help for the AudioMuse tab in the saved music-server editor. Keep AudioMuse unchanged.
@@ -9574,6 +9575,206 @@ msgstr ""
 #. Translators: Select one or more items first. Used in the music-server browser and its child dialogs.
 #: UI/Subsonic/Text/Shared.cs:79
 msgid "Select one or more items first."
+msgstr ""
+
+#. Translators: Audio format of the stream currently playing, which may differ from the source file. {format} contains codec, bitrate, sample rate and other available audio properties.
+#: UI/Subsonic/Text/Streams.cs:7
+msgid "Playback stream: {format}"
+msgstr ""
+
+#. Translators: Group heading on the music-server editor's Advanced tab for automatic server updates.
+#: UI/Subsonic/Text/Timing.cs:7
+msgid "Background updates"
+msgstr ""
+
+#. Translators: Group heading on the music-server editor's Advanced tab for cached server information and browsing delays.
+#: UI/Subsonic/Text/Timing.cs:10
+msgid "Cache and browsing"
+msgstr ""
+
+#. Translators: Group heading on the music-server editor's Advanced tab for how long network requests may take.
+#: UI/Subsonic/Text/Timing.cs:13
+msgid "Request timeouts"
+msgstr ""
+
+#. Translators: Integer spin control on the music-server editor's Advanced tab. How often Luna checks the server's saved playback queue.
+#: UI/Subsonic/Text/Timing.cs:16
+msgid "Queue polling interval (seconds)"
+msgstr ""
+
+#. Translators: Integer spin control on the music-server editor's Advanced tab. How often Luna saves the playing position during automatic queue synchronization.
+#: UI/Subsonic/Text/Timing.cs:19
+msgid "Queue position save interval (seconds)"
+msgstr ""
+
+#. Translators: Integer spin control on the music-server editor's Advanced tab. How often Luna reports the current playback position to a server supporting playback reports.
+#: UI/Subsonic/Text/Timing.cs:22
+msgid "Playback reporting interval (seconds)"
+msgstr ""
+
+#. Translators: Integer spin control on the music-server editor's Advanced tab. How often an open scan-status window checks the server.
+#: UI/Subsonic/Text/Timing.cs:25
+msgid "Scan status polling interval (milliseconds)"
+msgstr ""
+
+#. Translators: Integer spin control on the music-server editor's Advanced tab. Maximum delay between retries after background synchronization errors.
+#: UI/Subsonic/Text/Timing.cs:28
+msgid "Maximum synchronization retry delay (seconds)"
+msgstr ""
+
+#. Translators: Integer spin control on the music-server editor's Advanced tab. Zero prevents reusing completed connection inspections.
+#: UI/Subsonic/Text/Timing.cs:31
+msgid "Connection information cache (seconds; 0 disables)"
+msgstr ""
+
+#. Translators: Integer spin control on the music-server editor's Advanced tab. How long negotiated stream information is reused. Zero disables this cache.
+#: UI/Subsonic/Text/Timing.cs:34
+msgid "Stream negotiation cache (seconds; 0 disables)"
+msgstr ""
+
+#. Translators: Integer spin control on the music-server editor's Advanced tab. Cache used to determine which albums belong to selected libraries. Zero disables it.
+#: UI/Subsonic/Text/Timing.cs:37
+msgid "Library membership cache (seconds; 0 disables)"
+msgstr ""
+
+#. Translators: Integer spin control on the music-server editor's Advanced tab. Refresh on reopening after the browser has been hidden this long. Zero disables automatic refresh.
+#: UI/Subsonic/Text/Timing.cs:40
+msgid "Refresh browser after being closed for (seconds; 0 disables)"
+msgstr ""
+
+#. Translators: Integer spin control on the music-server editor's Advanced tab. Delay after typing before a browser or song-picker search starts.
+#: UI/Subsonic/Text/Timing.cs:43
+msgid "Search delay (milliseconds; 0 searches immediately)"
+msgstr ""
+
+#. Translators: Integer spin control on the music-server editor's Advanced tab. Timeout for normal music-server requests, excluding an established audio stream.
+#: UI/Subsonic/Text/Timing.cs:46
+msgid "Music server request timeout (seconds)"
+msgstr ""
+
+#. Translators: Integer spin control on the music-server editor's Advanced tab. Timeout for searches and recommendations from the optional AudioMuse service. Keep AudioMuse unchanged.
+#: UI/Subsonic/Text/Timing.cs:49
+msgid "AudioMuse search timeout (seconds)"
+msgstr ""
+
+#. Translators: Integer spin control on the music-server editor's Advanced tab. Timeout for playlist generation by the optional AudioMuse service. Keep AudioMuse unchanged.
+#: UI/Subsonic/Text/Timing.cs:52
+msgid "AudioMuse playlist generation timeout (seconds)"
+msgstr ""
+
+#. Translators: F1 help for Queue polling interval on the music-server editor's Advanced tab.
+#: UI/Subsonic/Text/Timing.cs:56
+msgid ""
+"Choose the time between background checks of the server's playback queue. "
+"The default is 5 seconds. This applies only when automatic queue "
+"synchronization is enabled. Local changes and scheduled position saves can "
+"check the queue sooner to avoid overwriting another client's changes."
+msgstr ""
+
+#. Translators: F1 help for Queue position save interval on the music-server editor's Advanced tab.
+#: UI/Subsonic/Text/Timing.cs:59
+msgid ""
+"Choose how often Luna saves the current song position while playing and "
+"leading automatic queue synchronization. The default is 5 seconds. Changes "
+"to the queue, playback state or position are sent on the next app tick "
+"without waiting for this interval. Manual Save queue also works immediately."
+msgstr ""
+
+#. Translators: F1 help for Playback reporting interval on the music-server editor's Advanced tab.
+#: UI/Subsonic/Text/Timing.cs:62
+msgid ""
+"Choose how often Luna reports the current position when Report listening "
+"activity is enabled and the server supports playback reports. The default is "
+"1 second. Pause, seek and track changes are reported on the next app tick. "
+"This interval does not change the listening time required to submit a "
+"completed listen."
+msgstr ""
+
+#. Translators: F1 help for Scan status polling interval on the music-server editor's Advanced tab.
+#: UI/Subsonic/Text/Timing.cs:65
+msgid ""
+"Choose how often the open scan-status window checks whether a library scan "
+"has finished. The default is 1500 milliseconds. This does not start scans or "
+"change how quickly the server scans its library."
+msgstr ""
+
+#. Translators: F1 help for Maximum synchronization retry delay on the music-server editor's Advanced tab.
+#: UI/Subsonic/Text/Timing.cs:68
+msgid ""
+"After a background synchronization error, Luna increases the delay between "
+"retries up to this limit. The default maximum is 30 seconds. A successful "
+"request restores the normal update intervals."
+msgstr ""
+
+#. Translators: F1 help for Connection information cache on the music-server editor's Advanced tab.
+#: UI/Subsonic/Text/Timing.cs:71
+msgid ""
+"Choose how long to reuse the server's library list and account information "
+"before reading them again. The default is 300 seconds, or 5 minutes. Zero "
+"disables reuse of completed inspections. Refresh always requests updated "
+"information, and saving account changes clears the old information."
+msgstr ""
+
+#. Translators: F1 help for Stream negotiation cache on the music-server editor's Advanced tab.
+#: UI/Subsonic/Text/Timing.cs:74
+msgid ""
+"Choose how long to reuse the server's streaming decision when returning to a "
+"song. The default is 300 seconds, or 5 minutes. This caches stream "
+"information, not audio files. Zero negotiates again each time. A server may "
+"expire its stream tokens sooner than a long cache setting; Refresh renews "
+"them."
+msgstr ""
+
+#. Translators: F1 help for Library membership cache on the music-server editor's Advanced tab.
+#: UI/Subsonic/Text/Timing.cs:77
+msgid ""
+"Choose how long to remember which albums belong to the selected libraries "
+"when filtering artists and recommendations. The default is 1800 seconds, or "
+"30 minutes. Zero reads this information each time it is needed. Refresh "
+"clears the cache."
+msgstr ""
+
+#. Translators: F1 help for automatic browser refresh on the music-server editor's Advanced tab.
+#: UI/Subsonic/Text/Timing.cs:80
+msgid ""
+"Refresh the browser when you reopen it after it has been closed for at least "
+"this many seconds. The default is 1800 seconds, or 30 minutes. Zero disables "
+"this automatic refresh. You can still use Refresh whenever you want updated "
+"content."
+msgstr ""
+
+#. Translators: F1 help for Search delay on the music-server editor's Advanced tab.
+#: UI/Subsonic/Text/Timing.cs:83
+msgid ""
+"Choose how long Luna waits after you stop typing before searching this "
+"server in the browser or a playlist's song picker. The default is 300 "
+"milliseconds. Zero starts searches immediately. A longer delay avoids "
+"requests for words you have not finished typing."
+msgstr ""
+
+#. Translators: F1 help for Music server request timeout on the music-server editor's Advanced tab.
+#: UI/Subsonic/Text/Timing.cs:86
+msgid ""
+"Choose how long browsing, account operations and establishing downloads may "
+"take before Luna reports a timeout. The default is 30 seconds. This does not "
+"change playback connection timeouts or limit the length of an established "
+"download."
+msgstr ""
+
+#. Translators: F1 help for AudioMuse search timeout on the music-server editor's Advanced tab. Keep AudioMuse unchanged.
+#: UI/Subsonic/Text/Timing.cs:89
+msgid ""
+"Choose how long to wait for searches and recommendations from AudioMuse. The "
+"default is 60 seconds. This applies only when an AudioMuse service is "
+"configured for this account."
+msgstr ""
+
+#. Translators: F1 help for AudioMuse playlist generation timeout on the music-server editor's Advanced tab. Keep AudioMuse unchanged.
+#: UI/Subsonic/Text/Timing.cs:92
+msgid ""
+"Choose how long to wait while AudioMuse generates a playlist. The default is "
+"300 seconds, or 5 minutes. Generation can take longer than a normal search. "
+"This applies only when an AudioMuse service is configured for this account."
 msgstr ""
 
 #. Translators: Title of the window offering a newer Luna Player release.
@@ -10528,9 +10729,4 @@ msgstr ""
 #. Translators: Shown when a video could not be turned into something playable and nothing said why.
 #: YouTube/Utils.cs:191
 msgid "Could not resolve YouTube stream."
-msgstr ""
-
-#. Translators: Audio format of the stream currently playing, which may differ from the source file. {format} contains codec, bitrate, sample rate and other available audio properties.
-#: UI/Subsonic/Text/Streams.cs:7
-msgid "Playback stream: {format}"
 msgstr ""

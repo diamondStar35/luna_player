@@ -111,7 +111,7 @@ internal sealed partial class BrowserDialog
             Run(token => _connections.Catalog(server).ReadAsync(new(Category.Songs), query, 3, null, null, token, libraries), rows =>
             { if (form.Token.IsCancellationRequested || revision != generation) return; results = rows; list.SetDataSource(results, (row, col) => Columns.Cell(row, Columns.Tracks[col])); }, token, form.Error);
         }
-        search.TextChanged += (_, _) => { timer?.Dispose(); timer = _dispatcher.Repeat(TimeSpan.FromMilliseconds(300), () => { timer?.Dispose(); Search(); }); };
+        search.TextChanged += (_, _) => { timer?.Dispose(); timer = _dispatcher.Repeat(TimeSpan.FromMilliseconds(Math.Max(1, _connections.Profile(server).Timing.SearchDelayMilliseconds)), () => { timer?.Dispose(); Search(); }); };
         var addedCount = 0;
         form.SaveAsync = _ =>
         {

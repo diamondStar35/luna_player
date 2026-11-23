@@ -20,6 +20,7 @@ internal sealed record Options
     public string ApiVersion { get; init; } = "1.16.1";
     public string ClientName { get; init; } = "LunaPlayer";
     public TimeSpan RequestTimeout { get; init; } = TimeSpan.FromSeconds(30);
+    public TimeSpan LibraryCacheDuration { get; init; } = TimeSpan.FromMinutes(30);
     public int MaximumAttempts { get; init; } = 3;
     public bool UseFormPost { get; init; }
     public IReadOnlyDictionary<string, string> Headers { get; init; } = new Dictionary<string, string>();
@@ -36,7 +37,7 @@ internal sealed record Options
             || Server.UserInfo.Length > 0 || Server.Query.Length > 0 || Server.Fragment.Length > 0)
             throw new ArgumentException(nameof(Options));
         if (RequestTimeout <= TimeSpan.Zero || RequestTimeout.TotalMilliseconds > uint.MaxValue - 1
-            || MaximumAttempts < 1) throw new ArgumentOutOfRangeException(nameof(Options));
+            || MaximumAttempts < 1 || LibraryCacheDuration < TimeSpan.Zero) throw new ArgumentOutOfRangeException(nameof(Options));
         ArgumentException.ThrowIfNullOrWhiteSpace(ClientName);
         if (!Version.TryParse(ApiVersion, out _)) throw new ArgumentException(nameof(Options));
         foreach (var header in Headers)

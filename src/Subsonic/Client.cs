@@ -17,6 +17,7 @@ internal sealed class Client : IDisposable
     private readonly SemaphoreSlim _discovery = new(1, 1);
     private Capabilities? _capabilities;
     internal TimeProvider Clock => _session.Clock;
+    internal TimeSpan LibraryCacheDuration { get; }
     internal Browsing.Library Library { get; }
     internal Playlists.Playlists Playlists { get; }
     internal Listening.Listening Listening { get; }
@@ -29,6 +30,7 @@ internal sealed class Client : IDisposable
     internal Client(Options options, HttpClient? httpClient = null)
     {
         _session = new Session(options, httpClient);
+        LibraryCacheDuration = options.LibraryCacheDuration;
         Library = new(_session, RequireAsync);
         Playlists = new(_session);
         Listening = new(_session, RequireAsync);

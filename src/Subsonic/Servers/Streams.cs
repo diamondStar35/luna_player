@@ -39,7 +39,7 @@ internal sealed partial class Connections
         {
             revision = _streamRevision;
             if (_streams.TryGetValue(reference, out var cached) && cached.Profile == profile
-                && client.Clock.GetUtcNow() - cached.Created < TimeSpan.FromMinutes(5)) plan = cached.Plan;
+                && client.Clock.GetUtcNow() - cached.Created < TimeSpan.FromSeconds(profile.Timing.StreamCacheSeconds)) plan = cached.Plan;
         }
         if (plan is null)
         {
@@ -47,7 +47,7 @@ internal sealed partial class Connections
             token.ThrowIfCancellationRequested();
             lock (_clients)
             {
-                if (!_disposed && revision == _streamRevision && Profiles.Any(saved => saved.Id == profile.Id && saved == profile))
+                if (!_disposed && profile.Timing.StreamCacheSeconds > 0 && revision == _streamRevision && Profiles.Any(saved => saved.Id == profile.Id && saved == profile))
                 {
                     if (_streams.Count >= 128)
                         _streams.Remove(_streams.MinBy(entry => entry.Value.Created).Key);

@@ -41,7 +41,7 @@ internal sealed partial class Catalog
         HashSet<string> allowed;
         try
         {
-            if (_libraryAlbums.TryGetValue(library, out var cached) && DateTimeOffset.UtcNow - cached.Loaded < TimeSpan.FromMinutes(30))
+            if (_libraryAlbums.TryGetValue(library, out var cached) && client.Clock.GetUtcNow() - cached.Loaded < client.LibraryCacheDuration)
                 allowed = cached.Albums;
             else
             {
@@ -54,7 +54,7 @@ internal sealed partial class Catalog
                     foreach (var album in page) allowed.Add(album.Id);
                     if (page.Length < 500 || allowed.Count == before) break;
                 }
-                _libraryAlbums[library] = (DateTimeOffset.UtcNow, allowed);
+                _libraryAlbums[library] = (client.Clock.GetUtcNow(), allowed);
             }
         }
         finally { _libraryGate.Release(); }

@@ -15,6 +15,7 @@ internal sealed record Profile
     public required Uri Server { get; set; }
     public Credentials Credentials { get; set; } = new();
     public StreamOptions Streaming { get; set; } = new();
+    public TimingSettings Timing { get; set; } = new();
     public string[] LibraryIds { get; set; } = [];
     public string[] HiddenSections { get; set; } = [];
     public bool RefreshMetadataOnStartup { get; set; } = true;
@@ -23,7 +24,8 @@ internal sealed record Profile
     public DownloadSettings Downloads { get; set; } = new();
     public IReadOnlyDictionary<string, string> Headers { get; set; } = new Dictionary<string, string>();
     public AudioMuseSettings? AudioMuse { get; set; }
-    internal Options ConnectionOptions() => new() { Server = Server, Credentials = Credentials, Headers = Headers };
+    internal Options ConnectionOptions() => new() { Server = Server, Credentials = Credentials, Headers = Headers,
+        RequestTimeout = TimeSpan.FromSeconds(Timing.RequestTimeoutSeconds), LibraryCacheDuration = TimeSpan.FromSeconds(Timing.LibraryCacheSeconds) };
 }
 
 internal sealed record DownloadSettings

@@ -88,7 +88,7 @@ internal sealed partial class BrowserDialog
             Keep(form, form); form.Show();
             Run(async token =>
             {
-                await foreach (var current in client.Scanning.WatchAsync(token: token))
+                await foreach (var current in client.Scanning.WatchAsync(TimeSpan.FromMilliseconds(_connections.Profile(server).Timing.ScanPollMilliseconds), token))
                     form.Post(() =>
                     {
                         text.ChangeValue(current.Scanning ? Words.ScanInProgress : Words.ScanFinished);

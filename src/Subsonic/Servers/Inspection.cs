@@ -20,7 +20,7 @@ internal sealed partial class Connections
             var client = Client(server);
             if (!refresh && _inspections.TryGetValue(server, out var previous) && previous.Profile == profile
                 && !previous.Request.IsFaulted && !previous.Request.IsCanceled
-                && (!previous.Request.IsCompleted || client.Clock.GetUtcNow() - previous.Created < TimeSpan.FromMinutes(5)))
+                && (!previous.Request.IsCompleted || client.Clock.GetUtcNow() - previous.Created < TimeSpan.FromSeconds(profile.Timing.ConnectionCacheSeconds)))
                 return previous.Request.WaitAsync(token);
             if (refresh) ForgetStreams(server);
             // A caller leaving a view cancels only its wait. Other views can reuse the same

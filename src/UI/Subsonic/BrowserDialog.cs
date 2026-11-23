@@ -137,7 +137,8 @@ internal sealed partial class BrowserDialog : IDisposable
                 .LastOrDefault(x => x?.Enabled == true);
             child?.Raise(); return;
         }
-        var stale = !_visible && _hiddenAt is { } hidden && DateTimeOffset.UtcNow - hidden > TimeSpan.FromMinutes(30);
+        var refresh = _connections.Profiles.FirstOrDefault(profile => profile.Id == _server)?.Timing.BrowserRefreshSeconds ?? 1800;
+        var stale = !_visible && refresh > 0 && _hiddenAt is { } hidden && DateTimeOffset.UtcNow - hidden > TimeSpan.FromSeconds(refresh);
         _visible = true; _window.Show(); _window.Raise();
         if (!_initialized) { _startup.Start(); return; }
         Profiles();

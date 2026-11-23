@@ -20,7 +20,7 @@ internal sealed partial class BrowserDialog
             if (_binding) return;
             if (_derived is not null) { _history.Add(Capture()); _derived = null; }
             _debounce?.Dispose(); _reading.Cancel(); _revision++; _sortRevision++;
-            _debounce = _dispatcher.Repeat(TimeSpan.FromMilliseconds(300), () => { _debounce?.Dispose(); _debounce = null; Reload(); });
+            _debounce = _dispatcher.Repeat(TimeSpan.FromMilliseconds(Math.Max(1, _activeProfile?.Timing.SearchDelayMilliseconds ?? 300)), () => { _debounce?.Dispose(); _debounce = null; Reload(); });
         };
         _search.EnterPressed += (_, _) => { Reload(); _list.Focus(); };
         _types.SelectionChanged += (_, _) => { if (!_binding) { _derived = null; Reload(); } };

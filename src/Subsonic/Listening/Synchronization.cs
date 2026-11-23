@@ -7,7 +7,7 @@ using LunaPlayer.Subsonic.Servers;
 namespace LunaPlayer.Subsonic.Listening;
 
 /// <summary>Samples on the app clock; each account has one serialized network worker and its own echo checkpoint.</summary>
-internal sealed class Synchronization : IDisposable
+internal sealed partial class Synchronization : IDisposable
 {
     private readonly Connections _connections;
     private readonly Player _player;
@@ -28,22 +28,27 @@ internal sealed class Synchronization : IDisposable
         internal readonly Queue<Sample> Stopped = [];
         public void Dispose() { Lifetime.Cancel(); Lifetime.Dispose(); }
         internal bool Busy, Initialized, Leader;
-        internal string? LastLocal, LastRemote, LastStart;
+        internal string? LastLocal, LastRemote, LastStart, LastReport;
         internal long Revision, WrittenRevision = -1;
         internal readonly Queue<(string Id, DateTimeOffset Time)> Submissions = [];
-        internal DateTimeOffset LastSaved, RetryAfter;
+        internal DateTimeOffset LastSaved, NextQueueRead, NextPlaybackReport, RetryAfter;
         internal int Failures;
     }
     private sealed record Sample(Guid Server, string[] Ids, int? Index, long Position, Reference? Current,
-        string? Occurrence, bool Playing, bool Loaded, double Speed, string LocalKey, long Revision);
+        string? Occurrence, bool Playing, bool Loaded, double Speed, string LocalKey, long Revision, DateTimeOffset CapturedAt)
+    {
+        internal string ReportKey => LocalKey + ":" + Occurrence + ":" + Loaded + ":" + Playing + ":" + Speed;
+    }
 
     internal Synchronization(Connections connections, Player player, IApplicationDispatcher dispatcher, TimeProvider? time = null)
     {
         _connections = connections; _player = player; _dispatcher = dispatcher; _time = time ?? TimeProvider.System;
         _lastTick = _time.GetTimestamp(); _player.SamplingTick += Tick;
+        _player.CurrentChanged += QueueChanged; _player.StateChanged += QueueChanged;
     }
     internal void ProfilesChanged()
     {
+        QueueChanged();
         foreach (var id in _accounts.Keys.Where(id => !_connections.Profiles.Any(x => x.Id == id && (x.ReportListening || x.SynchronizeQueue)
             && x == _accounts[id].Profile)).ToArray())
         { _accounts[id].Dispose(); _accounts.Remove(id); }
@@ -64,11 +69,11 @@ internal sealed class Synchronization : IDisposable
         foreach (var profile in _connections.Profiles.Where(x => x.ReportListening || x.SynchronizeQueue))
         {
             if (!_accounts.TryGetValue(profile.Id, out var state)) _accounts[profile.Id] = state = new(profile, _lifetime.Token);
-            var items = _player.Items.DistinctBy(x => x.SourceId).Where(x => x.ServerMedia is { Kind: Playback.MediaKind.Song } source && source.ServerId == profile.Id).ToArray();
-            var index = Array.FindIndex(items, x => x.SourceId.ToString("N") == occurrence);
+            var queue = profile.SynchronizeQueue ? QueueFor(profile.Id) : QueueSnapshot.Empty;
+            var index = queue.Indexes.GetValueOrDefault(occurrence ?? "", -1);
             var active = current?.ServerId == profile.Id && current.Kind == Playback.MediaKind.Song;
-            var ids = items.Select(x => x.ServerMedia!.Id).ToArray();
-            var key = string.Join("/", items.Select(x => x.Id)) + ":" + (active ? _player.PlaybackRevision + ":" + _player.IsPaused : "");
+            var ids = queue.Ids;
+            var key = queue.Key + ":" + (active ? _player.PlaybackRevision + ":" + _player.IsPaused : "");
             if (state.LastLocal != key)
             {
                 if (state.LastLocal is null && active && _player.IsLoaded) state.Leader = true;
@@ -82,21 +87,26 @@ internal sealed class Synchronization : IDisposable
             if (state.Busy || now < state.RetryAfter) continue;
             var sample = new Sample(profile.Id, ids, index < 0 ? null : index, active ? (long)((_player.SourceElapsed ?? 0) * 1000) : 0,
                 active ? current : null, active ? occurrence : null, active && _player.IsPlaying, active && _player.IsLoaded,
-                _player.Speed, key, state.Revision);
+                _player.Speed, key, state.Revision, now);
             if (active) state.LastPlayback = sample;
             var stopped = state.Stopped.ToArray(); state.Stopped.Clear();
             var start = profile.ReportListening && sample.Loaded && sample.Occurrence is not null && state.LastStart != sample.Occurrence;
             if (start) state.LastStart = sample.Occurrence;
             var submissions = state.Submissions.ToArray(); state.Submissions.Clear();
             var writeDue = state.Leader && (state.WrittenRevision != state.Revision
-                || active && now - state.LastSaved >= TimeSpan.FromSeconds(5));
+                || active && now - state.LastSaved >= TimeSpan.FromSeconds(profile.Timing.QueueSaveSeconds));
+            var queueDue = profile.SynchronizeQueue && (writeDue || !state.Initialized || now >= state.NextQueueRead);
+            var reportDue = profile.ReportListening && (profile.Timing.PlaybackReportSeconds == 1
+                || start || sample.ReportKey != state.LastReport || now >= state.NextPlaybackReport);
             state.Busy = true;
-            Process(profile, sample, state, start, submissions, stopped, writeDue, state.Initialized);
+            Process(profile, sample, state, start, submissions, stopped, writeDue, queueDue, reportDue, state.Initialized);
         }
     }
-    private async void Process(Profile profile, Sample sample, Account state, bool start, (string Id, DateTimeOffset Time)[] submissions, Sample[] stopped, bool writeDue, bool initialized)
+    private async void Process(Profile profile, Sample sample, Account state, bool start, (string Id, DateTimeOffset Time)[] submissions, Sample[] stopped, bool writeDue, bool queueDue, bool reportDue, bool initialized)
     {
         var token = state.Lifetime.Token;
+        var localChange = state.WrittenRevision != sample.Revision;
+        var expectedRemote = state.LastRemote;
         try
         {
             var result = await Task.Run(async () =>
@@ -112,20 +122,24 @@ internal sealed class Synchronization : IDisposable
                 if (profile.ReportListening && sample.Current is { } current)
                 {
                     if (start) await client.Listening.ScrobbleAsync(current.Id, false, token: token).ConfigureAwait(false);
-                    if (capabilities.Extension("playbackReport") == Support.Supported)
+                    if (reportDue && capabilities.Extension("playbackReport") == Support.Supported)
                         await client.Listening.ReportPlaybackAsync(current.Id, sample.Position,
                             !sample.Loaded ? PlaybackState.Stopped : sample.Playing ? PlaybackState.Playing : PlaybackState.Paused,
                             sample.Speed, ignoreScrobble: true, token: token).ConfigureAwait(false);
                 }
-                if (!profile.SynchronizeQueue) return (Queue: (PlayQueue?)null, Written: false);
+                if (!queueDue) return (Queue: (PlayQueue?)null, Written: false);
                 var byIndex = capabilities.Extension("indexBasedQueue") == Support.Supported;
-                var remote = await client.Listening.GetQueueAsync(byIndex, token).ConfigureAwait(false);
-                var write = writeDue || !initialized && remote.Entries.Length == 0 && sample.Ids.Length > 0;
+                // A periodic position save must first notice another client's changes. A local
+                // edit already owns the desired queue and cursor, so only its readback is needed.
+                var remote = writeDue && localChange && sample.Index.HasValue ? null
+                    : await client.Listening.GetQueueAsync(byIndex, token).ConfigureAwait(false);
+                var write = writeDue && (localChange || remote is null || expectedRemote is null || Fingerprint(remote) == expectedRemote)
+                    || !initialized && remote?.Entries.Length == 0 && sample.Ids.Length > 0;
                 if (write)
                 {
-                    var index = sample.Index ?? (remote.CurrentIndex is >= 0 and var previous && previous < sample.Ids.Length ? previous : 0);
+                    var index = sample.Index ?? (remote?.CurrentIndex is >= 0 and var previous && previous < sample.Ids.Length ? previous : 0);
                     await client.Listening.SaveQueueAsync(sample.Ids, sample.Ids.Length > 0 ? sample.Ids[index] : null,
-                        sample.Current is not null ? sample.Position : (long)remote.Position,
+                        sample.Current is not null ? sample.Position : (long)(remote?.Position ?? 0),
                         byIndex && sample.Ids.Length > 0 ? index : null, byIndex, token).ConfigureAwait(false);
                     remote = await client.Listening.GetQueueAsync(byIndex, token).ConfigureAwait(false);
                 }
@@ -136,19 +150,27 @@ internal sealed class Synchronization : IDisposable
                 if (_disposed) return;
                 state.Busy = false; state.Failures = 0;
                 if (!_accounts.TryGetValue(profile.Id, out var account) || !ReferenceEquals(account, state)) return;
+                if (reportDue)
+                {
+                    state.LastReport = sample.ReportKey;
+                    // Schedule from the sample, not response completion: network latency must
+                    // not lengthen every configured period. Account workers remain serialized.
+                    state.NextPlaybackReport = sample.CapturedAt + TimeSpan.FromSeconds(profile.Timing.PlaybackReportSeconds);
+                }
                 Status?.Invoke(profile.Id, null);
                 if (result.Queue is not { } remote || state.Revision != sample.Revision) return;
+                state.NextQueueRead = sample.CapturedAt + TimeSpan.FromSeconds(profile.Timing.QueuePollSeconds);
                 var fingerprint = Fingerprint(remote);
-                if (result.Written) { state.LastSaved = _time.GetUtcNow(); state.LastRemote = fingerprint; state.WrittenRevision = sample.Revision; }
+                if (result.Written) { state.LastSaved = sample.CapturedAt; state.LastRemote = fingerprint; state.WrittenRevision = sample.Revision; }
                 else if (fingerprint != state.LastRemote)
                 {
                     state.LastRemote = fingerprint;
                     if (remote.Entries.Length > 0 || state.Initialized)
                     {
+                        _connections.Metadata.Observe(profile.Id, remote.Entries);
                         _player.ApplyServerQueue(profile.Id, remote);
                         var current = Reference.Parse(_player.CurrentPath);
-                        var items = _player.Items.DistinctBy(x => x.SourceId).Where(x => x.ServerMedia is { Kind: Playback.MediaKind.Song } source && source.ServerId == profile.Id);
-                        state.LastLocal = string.Join("/", items.Select(x => x.Id)) + ":" + (current?.ServerId == profile.Id ? _player.PlaybackRevision + ":" + _player.IsPaused : "");
+                        state.LastLocal = QueueFor(profile.Id).Key + ":" + (current?.ServerId == profile.Id ? _player.PlaybackRevision + ":" + _player.IsPaused : "");
                         state.Leader = false;
                     }
                 }
@@ -163,7 +185,8 @@ internal sealed class Synchronization : IDisposable
                 if (_disposed) return;
                 if (!_accounts.TryGetValue(profile.Id, out var account) || !ReferenceEquals(account, state)) return;
                 if (start) state.LastStart = null;
-                state.Busy = false; state.Failures++; state.RetryAfter = _time.GetUtcNow() + TimeSpan.FromSeconds(Math.Min(30, 1 << Math.Min(5, state.Failures)));
+                state.Busy = false; state.Failures++; state.RetryAfter = _time.GetUtcNow()
+                    + TimeSpan.FromSeconds(Math.Min(profile.Timing.SynchronizationRetrySeconds, 1 << Math.Min(30, state.Failures)));
                 Status?.Invoke(profile.Id, error);
             });
         }
@@ -173,6 +196,7 @@ internal sealed class Synchronization : IDisposable
     public void Dispose()
     {
         _disposed = true; _player.SamplingTick -= Tick; _lifetime.Cancel();
+        _player.CurrentChanged -= QueueChanged; _player.StateChanged -= QueueChanged; _queues.Clear();
         foreach (var account in _accounts.Values) account.Dispose();
         _accounts.Clear(); _lifetime.Dispose();
     }

@@ -10,7 +10,9 @@ internal sealed partial class BrowserDialog
 {
     private static Ai.Client? CreateAudioMuse(Profile profile, int? count = null)
         => profile.AudioMuse?.Server is { } server ? new Ai.Client(new()
-        { Server = server, Token = profile.AudioMuse.Token, MusicServer = profile.AudioMuse.MusicServer, ResultCount = count ?? profile.AudioMuse.ResultCount }) : null;
+        { Server = server, Token = profile.AudioMuse.Token, MusicServer = profile.AudioMuse.MusicServer, ResultCount = count ?? profile.AudioMuse.ResultCount,
+            SearchTimeout = TimeSpan.FromSeconds(profile.Timing.AudioMuseSearchSeconds),
+            GenerationTimeout = TimeSpan.FromSeconds(profile.Timing.AudioMuseGenerationSeconds) }) : null;
     private void AudioMuse(Command command, Row[] selection)
     {
         var server = _server; var profile = _connections.Profile(server); var client = _connections.Client(server);

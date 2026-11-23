@@ -22,7 +22,7 @@ internal static partial class Words
         Tr("Choose where original files from this account are downloaded and whether to organize them by artist and album. Playback transcoding does not affect these downloads.");
     internal static string HelpAdvanced =>
         // Translators: F1 help for the Advanced tab in the saved music-server editor.
-        Tr("Custom HTTP headers are only needed when your server or proxy requires them. Leave this page empty for an ordinary connection.");
+        Tr("Adjust background updates, cache lifetimes, search delays and request timeouts for this account. The defaults suit most connections. Custom HTTP headers are only needed when your server or proxy requires them.");
     internal static string HelpAudioMuse =>
         // Translators: F1 help for the AudioMuse tab in the saved music-server editor. Keep AudioMuse unchanged.
         Tr("AudioMuse is an optional, separate recommendation service. Configure it only if you have access to one. Leave its address empty to use the music server without AudioMuse.");

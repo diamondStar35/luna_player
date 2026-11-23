@@ -7,6 +7,28 @@ namespace LunaPlayer.Tests.Subsonic.Browsing;
 public sealed class LibraryScopeTests
 {
     [TestMethod]
+    [DataRow(0)]
+    [DataRow(10)]
+    public async Task LibraryMembershipCacheHonorsConfiguredExpiryAndCanBeDisabled(int seconds)
+    {
+        var time = new Clock();
+        using var handler = new Handler((sent, _) => Task.FromResult(Fixture.Json(sent.Endpoint switch
+        {
+            "getArtist" => "\"artist\":{\"album\":[{\"id\":\"a\"}]}",
+            "getAlbumList2" => "\"albumList2\":{\"album\":[{\"id\":\"a\"}]}",
+            _ => ""
+        })));
+        using var http = new HttpClient(handler);
+        using var client = new Client(Fixture.Options with { TimeProvider = time, LibraryCacheDuration = TimeSpan.FromSeconds(seconds) }, http);
+        var catalog = new Catalog(client);
+        async Task Read() => await catalog.ReadAsync(new(Category.Artists, RowKind.Artist, "artist"), "", 0, "library", null, CancellationToken.None);
+        await Read(); await Read();
+        Assert.AreEqual(seconds == 0 ? 2 : 1, handler.Requests.Count(sent => sent.Endpoint == "getAlbumList2"));
+        time.Now += TimeSpan.FromSeconds(10); await Read();
+        Assert.AreEqual(seconds == 0 ? 3 : 2, handler.Requests.Count(sent => sent.Endpoint == "getAlbumList2"));
+    }
+
+    [TestMethod]
     public async Task ArtistDrilldownAndExpansionRespectLibraryBoundaries()
     {
         using var handler = new Handler((sent, _) => Task.FromResult(Fixture.Json(sent.Endpoint switch
@@ -48,5 +70,11 @@ public sealed class LibraryScopeTests
         Assert.AreEqual(0, rows[0].PlaylistIndex); Assert.AreEqual(1, rows[1].PlaylistIndex);
         var expanded = await catalog.ExpandAsync(rows, CancellationToken.None);
         Assert.AreEqual(2, expanded.Length);
+    }
+
+    private sealed class Clock : TimeProvider
+    {
+        internal DateTimeOffset Now = DateTimeOffset.UnixEpoch;
+        public override DateTimeOffset GetUtcNow() => Now;
     }
 }

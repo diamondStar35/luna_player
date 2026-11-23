@@ -140,6 +140,8 @@ internal sealed class Store(string path)
         ArgumentNullException.ThrowIfNull(profile.LibraryIds);
         ArgumentNullException.ThrowIfNull(profile.HiddenSections);
         ArgumentNullException.ThrowIfNull(profile.Streaming);
+        ArgumentNullException.ThrowIfNull(profile.Timing);
+        profile.Timing.Validate();
         ArgumentNullException.ThrowIfNull(profile.Downloads);
         ArgumentNullException.ThrowIfNull(profile.Downloads.Folder);
         if (!Enum.IsDefined(profile.Credentials.Kind)) throw new ArgumentException(nameof(profile));

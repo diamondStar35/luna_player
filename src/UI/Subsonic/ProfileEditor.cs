@@ -71,7 +71,7 @@ internal sealed class ProfileEditor : IDisposable
         browse.Click += (_, _) => { if (_form.ChooseFolder(folder.Value) is { } path) folder.Value = path; };
         var albumFolders = new CheckBox(downloads, label: Words.AlbumFolders) { Checked = draft.Downloads.AlbumFolders }; third.Add(albumFolders, flags: SizerFlags.All, border: 5);
         var (advanced, fourth) = Page(Words.Advanced, Words.HelpAdvanced);
-        var headers = Text(advanced, fourth, Words.Headers, string.Join(Environment.NewLine, draft.Headers.Select(x => x.Key + ": " + x.Value)), multiline: true);
+        var advancedOptions = new AdvancedPage(advanced, fourth, draft, _form);
         var (ai, fifth) = Page(Words.AudioMuse, Words.HelpAudioMuse);
         var aiAddress = Text(ai, fifth, Words.AudioMuseAddress, draft.AudioMuse?.Server?.AbsoluteUri ?? "");
         var aiToken = Text(ai, fifth, Words.AudioMuseToken, draft.AudioMuse?.Token ?? "", secret: true);
@@ -83,7 +83,7 @@ internal sealed class ProfileEditor : IDisposable
         _form.Help(mode, Words.HelpStreamingMode); _form.Help(format, Words.HelpStreamingFormat);
         _form.Help(bitrate, Words.HelpStreamingBitrate); _form.Help(report, Words.HelpListening); _form.Help(sync, Words.HelpQueueSync);
         _form.Help(folder, Words.HelpDownloadFolder); _form.Help(browse, Words.HelpBrowseDownloads);
-        _form.Help(albumFolders, Words.HelpAlbumFolders); _form.Help(headers, Words.HelpHeaders);
+        _form.Help(albumFolders, Words.HelpAlbumFolders);
         _form.Help(aiAddress, Words.HelpAudioMuseAddress); _form.Help(aiToken, Words.HelpAudioMuseToken);
         _form.Help(aiServer, Words.HelpAudioMuseServer); _form.Help(count, Words.HelpAudioMuseCount);
         Profile Read(bool browsingSettings = true)
@@ -94,11 +94,11 @@ internal sealed class ProfileEditor : IDisposable
                 throw new ArgumentException(Words.InvalidAddress);
             if (browsingSettings && name.Value.Trim().Length == 0) throw new ArgumentException(Words.NameRequired);
             var map = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-            foreach (var line in headers.Value.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+            foreach (var line in advancedOptions.Headers.Value.Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
             { var colon = line.IndexOf(':'); if (colon <= 0) throw new ArgumentException(Words.Headers); map.Add(line[..colon].Trim(), line[(colon + 1)..].Trim()); }
             var value = draft with
             {
-                Name = name.Value.Trim(), Server = server, Headers = map,
+                Name = name.Value.Trim(), Server = server, Headers = map, Timing = advancedOptions.Read(),
                 Credentials = new() { Kind = (AuthenticationKind)auth.SelectedIndex, Username = user.Value, Password = password.Value, ApiKey = key.Value },
                 Streaming = new() { Mode = (StreamingMode)mode.SelectedIndex, Format = formats[format.SelectedIndex], MaximumBitRate = bitrate.Value },
                 ReportListening = report.Checked, SynchronizeQueue = sync.Checked,
@@ -129,7 +129,7 @@ internal sealed class ProfileEditor : IDisposable
         _form.SaveAsync = async token => { var value = Read(); await Task.Run(() => save(value, token), token); return true; };
         string Signature() => string.Join("\0", name.Value, address.Value, auth.SelectedIndex, user.Value,
             password.Value, key.Value, mode.SelectedIndex, format.SelectedIndex, bitrate.Value,
-            report.Checked, sync.Checked, folder.Value, albumFolders.Checked, headers.Value,
+            report.Checked, sync.Checked, folder.Value, albumFolders.Checked, advancedOptions.Signature,
             aiAddress.Value, aiToken.Value, aiServer.Value, count.Value, browsingOptions.Signature);
         var initial = Signature(); _form.HasChanges = () => Signature() != initial;
         Authentication(); Streaming();
