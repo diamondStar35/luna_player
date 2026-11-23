@@ -83,6 +83,7 @@ internal sealed partial class BrowserDialog
     }
     private static async Task<Row[]> ResolveAudioMuse(Client client, Ai.Result result, CancellationToken token)
     {
+        if (result.Songs is { } songs) return songs.Select(Row.From).ToArray();
         var rows = new Row[result.Tracks.Length];
         await Parallel.ForEachAsync(Enumerable.Range(0, rows.Length), new ParallelOptions { MaxDegreeOfParallelism = 4, CancellationToken = token }, async (index, cancellation) =>
         {

@@ -26,7 +26,7 @@ internal sealed record Track
     public double? Similarity { get; set; }
     public string Credit => string.IsNullOrEmpty(Artist) ? Author : Artist;
 }
-internal sealed record Result(Track[] Tracks, string Message, string? PlaylistId = null);
+internal sealed record Result(Track[] Tracks, string Message, string? PlaylistId = null, Models.Entry[]? Songs = null);
 internal sealed record ProgressEvent(string Kind, string Message, Result? Result = null);
 internal sealed record TextRequest(string Query, int Limit, string? Server);
 internal sealed record PlaylistRequest(string UserInput, int N, string? Server);

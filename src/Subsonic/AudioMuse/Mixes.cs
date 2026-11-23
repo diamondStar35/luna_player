@@ -13,7 +13,7 @@ internal sealed class Mixes(Subsonic.Client subsonic, Client? audioMuse = null)
         try { songs = await subsonic.Library.GetSimilarSongsAsync(id, count, token: token).ConfigureAwait(false); }
         catch (RequestException error) when (error.Kind == FailureKind.Unsupported) { songs = []; }
         if (songs.Length > 0)
-            return new(songs.Select(song => new Track { Id = song.Id, Title = song.Title, Artist = song.Artist, Album = song.Album }).ToArray(), "");
+            return new(songs.Select(song => new Track { Id = song.Id, Title = song.Title, Artist = song.Artist, Album = song.Album }).ToArray(), "", Songs: songs);
         return audioMuse is null ? new([], "") : await audioMuse.SimilarAsync(id, kind, token).ConfigureAwait(false);
     }
 }

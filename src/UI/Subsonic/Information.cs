@@ -43,6 +43,7 @@ internal sealed partial class BrowserDialog
     private void Related(Command command, Row[] rows)
     {
         if (rows.Length == 0) return;
+        var revision = command == Command.Similar ? ++_playRevision : _playRevision;
         var server = _server; var client = _connections.Client(server); var profile = _connections.Profile(server);
         var libraries = SelectedLibraries(); var catalog = _connections.Catalog(server);
         async Task<Row[]> Read(CancellationToken token)
@@ -57,20 +58,23 @@ internal sealed partial class BrowserDialog
             if (command == Command.Sonic) return (await client.Library.GetSonicSimilarTracksAsync(rows[0].Id, token: token)).Where(x => x.Song is not null).Select(x => Row.From(x.Song!)).ToArray();
             if (command == Command.Path && rows.Length == 2) return (await client.Library.FindSonicPathAsync(rows[0].Id, rows[1].Id, token: token)).Where(x => x.Song is not null).Select(x => Row.From(x.Song!)).ToArray();
             using var ai = CreateAudioMuse(profile);
-            var seed = rows[0];
-            if (seed.Kind == RowKind.Album)
-            {
-                var album = await client.Library.GetAlbumAsync(seed.Id, token);
-                if (album.Songs.Length == 0) return [];
-                seed = Row.From(album.Songs[0]);
-            }
-            var result = await new LunaPlayer.Subsonic.AudioMuse.Mixes(client, ai).SimilarAsync(seed.Id,
+            var seed = rows[0].Kind is RowKind.Artist or RowKind.Album
+                ? (await catalog.ExpandAsync([rows[0]], token, libraries)).FirstOrDefault() : rows[0];
+            if (seed is null) return [];
+            var result = await new LunaPlayer.Subsonic.AudioMuse.Mixes(client, ai).SimilarAsync(rows[0].Kind == RowKind.Artist ? rows[0].Id : seed.Id,
                 rows[0].Kind == RowKind.Artist ? LunaPlayer.Subsonic.AudioMuse.SeedKind.Artist : LunaPlayer.Subsonic.AudioMuse.SeedKind.Song, token: token);
-            return await ResolveAudioMuse(client, result, token);
+            var related = await ResolveAudioMuse(client, result, token);
+            return new[] { seed }.Concat(related.Where(row => row.Available)).DistinctBy(row => row.Id, StringComparer.Ordinal).ToArray();
         }
         async Task<Row[]> ScopedRead(CancellationToken token) => await catalog.FilterAsync(await Read(token), libraries, token);
-        Run(ScopedRead, found => { if (_visible && _server == server) ShowDerived(found, ScopedRead,
-            command == Command.SimilarArtists ? Category.Artists : Category.Songs); }, command: command);
+        Run(ScopedRead, found =>
+        {
+            if (!_visible || _server != server || command == Command.Similar && revision != _playRevision) return;
+            _connections.Metadata.Observe(server, found.Where(row => row.Song is not null).Select(row => row.Song!));
+            ShowDerived(found, ScopedRead, command == Command.SimilarArtists ? Category.Artists : Category.Songs);
+            if (command == Command.Similar)
+                _player.PlayMediaMix(found.Select(row => (row.Reference(server).Address, row.Tags)).ToArray());
+        }, command: command);
     }
     private void Scan()
     {
