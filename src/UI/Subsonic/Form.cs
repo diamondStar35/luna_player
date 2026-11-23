@@ -44,6 +44,7 @@ internal sealed class Form : IDisposable
             if (args.Code == Key.F1)
             {
                 var help = GetContextHelp(WxSharp.Window.FindFocus());
+                if (help.Length == 0) { args.Skip(); return; }
                 if (SpeakHelp is { } speak) speak(help); else Info(help);
             }
             else if (args.Control && args.Code is (Key)'S' or (Key)'s') Save();
@@ -64,7 +65,7 @@ internal sealed class Form : IDisposable
         finally { Post(() => _save.Enabled = true); }
     }
     internal Func<bool>? HasChanges { get; set; }
-    internal string HelpText { get; set; } = Words.HelpText;
+    internal string HelpText { get; set; } = "";
     internal Action<string>? SpeakHelp { get; set; }
     internal Func<string>? PageHelp { get; set; }
     internal void Help(Window control, string text) => _help[control] = text;

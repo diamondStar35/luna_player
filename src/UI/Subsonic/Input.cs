@@ -34,7 +34,6 @@ internal sealed partial class BrowserDialog
             if (Shortcut(key, false)) return;
             else if (key.Alt && key.Code is (Key)'B' or (Key)'b') _sort.Focus();
             else if (key.Alt && key.Code is (Key)'O' or (Key)'o') _direction.Focus();
-            else if (key.Code == Key.F1) Info(Words.HelpText);
             else if (key.Code == Key.Escape) _window.Close();
             else key.Skip();
         });

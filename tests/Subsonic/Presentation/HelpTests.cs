@@ -17,6 +17,7 @@ public sealed class HelpTests
             try
             {
                 NativeHost.Initialize(); using var app = new App(); using var form = new Form(null, "Help lookup");
+                Assert.AreEqual("", form.GetContextHelp(null));
                 var tab = new Panel(form.Panel); var field = new TextCtrl(tab);
                 var selectedTab = "Connection help";
                 form.PageHelp = () => selectedTab;

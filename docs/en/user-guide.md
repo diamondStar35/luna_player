@@ -1061,7 +1061,7 @@ These shortcuts apply while you are in the music-server browser. Most actions us
 | Rename or edit a supported selection | <kbd>F2</kbd> |
 | Remove a supported selection | <kbd>Delete</kbd>, followed by confirmation |
 
-Press <kbd>F1</kbd> in the browser or a server-playlist editor for help with that window.
+Press <kbd>F1</kbd> in a server-playlist editor for help with that window.
 
 ## 15. Downloading online media
 

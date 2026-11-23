@@ -113,9 +113,6 @@ internal static partial class Words
     internal static string MaximumYear =>
         // Translators: To year (0 means any). Used in the music-server browser navigation and result list.
         Tr("To year (0 means any)");
-    internal static string HelpText =>
-        // Translators: F1 help for the Music servers browser. The shortcut names are its default bindings.
-        Tr("Choose a server, browse a category or type to search. Enter opens collections or plays songs. Shift+Enter shows song details or plays selected collections. Ctrl+R sets ratings, Ctrl+L opens lyrics, Ctrl+B bookmarks the current position, and Ctrl+Shift+N creates a server playlist. Ctrl+Enter adds items to the current playlist without playing them. Existing songs are reused; new songs are appended at the end. Back, or Alt+Left, returns to the previous browsing view, such as an artist's albums after opening one album. It does not change playback. Ctrl+D downloads directly; Ctrl+Shift+D opens download options. F5 rereads the server catalogue. Scan server library for changes asks the server to index new, changed or removed music files. Rescan entire server library checks every server folder, including unchanged files, on servers that support it. Sort by and Sort order apply to the complete current collection. The browser stays open during playback.");
     internal static string Yes =>
         // Translators: Favorite column value for an item starred on the music server.
         Tr("Yes");
