@@ -5,7 +5,9 @@ namespace LunaPlayer.UI.Menus;
 
 internal static partial class Builder
 {
-    private static Menu BuildToolsMenu(
+    private sealed record ToolsMenuParts(Menu Menu, IReadOnlyList<MenuItem> ServerSongItems);
+
+    private static ToolsMenuParts BuildToolsMenu(
         IReadOnlyDictionary<ActionId, int> commandIds, ShortcutManager shortcuts)
     {
         // Appended after all the indexed menus below, between Recording and Help, which nothing counts by
@@ -14,10 +16,18 @@ internal static partial class Builder
         // Translators: Tools menu item that opens the window for converting files to another audio format.
         toolsMenu.Append(commandIds[ActionId.OpenMediaConverter], Label(Tr("Media converter..."), ActionId.OpenMediaConverter, shortcuts));
         // Translators: Tools menu item opening the internet radio station browser.
-        toolsMenu.Append(commandIds[ActionId.OpenRadioBrowser], Label(Tr("Radio browser…"), ActionId.OpenRadioBrowser, shortcuts));
+        toolsMenu.Append(commandIds[ActionId.OpenRadioBrowser], Label(Tr("Radio browserâ€¦"), ActionId.OpenRadioBrowser, shortcuts));
         // Translators: Opens the Spotify home, search and library interface.
         toolsMenu.Append(commandIds[ActionId.OpenSpotifyBrowser], Label(Tr("Spotify..."), ActionId.OpenSpotifyBrowser, shortcuts));
-        // Translators: Tools menu item that opens the YouTube download queue.
+        var servers = new Menu(); var serverItems = new List<MenuItem>();
+        // Translators: Tools > Music servers command that opens the server browser.
+        servers.Append(commandIds[ActionId.OpenMusicServers], Label(Tr("Browse servers..."), ActionId.OpenMusicServers, shortcuts));
+        servers.AppendSeparator();
+        foreach (var action in CurrentServerActions.All)
+            Add(servers, serverItems, commandIds, shortcuts, action.Id, action.Label);
+        // Translators: Tools submenu for browsing saved music servers and acting on the current server song.
+        toolsMenu.AppendSubMenu(servers, Tr("Music servers"));
+        // Translators: Tools menu item that opens the download queue shared by online media providers.
         toolsMenu.Append(commandIds[ActionId.OpenDownloadQueue], Label(Tr("Download queue..."), ActionId.OpenDownloadQueue, shortcuts));
 
         // IPTV is a submenu of Tools rather than a top-level menu: two items do not earn a place on the menu
@@ -41,6 +51,6 @@ internal static partial class Builder
         sleepMenu.Append(commandIds[ActionId.AnnounceSleepTimerRemaining], Label(Tr("Time remaining"), ActionId.AnnounceSleepTimerRemaining, shortcuts));
         // Translators: Tools submenu holding the sleep-timer commands.
         toolsMenu.AppendSubMenu(sleepMenu, Tr("Sleep timer"));
-        return toolsMenu;
+        return new(toolsMenu, serverItems);
     }
 }

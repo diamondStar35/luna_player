@@ -22,16 +22,6 @@ internal static class YouTubeActions
         // Translators: Name of the command that opens the YouTube download queue window.
         new(ActionId.OpenDownloadQueue, Tr("Download queue..."),
             new("q", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
-        // Translators: Name of the command that adds the active YouTube video to the download queue.
-        new(ActionId.AddToDownloadQueue, Tr("Add the current video to the download queue"),
-            new("q", ShortcutModifiers.Control)),
-        // Translators: Name of the command that saves the video being played straight to disk with the saved
-        // download settings, without asking.
-        new(ActionId.VideoDirectDownload, Tr("Direct download of the current video"), new("d", ShortcutModifiers.Control)),
-        // Translators: Name of the command that opens the download window to choose how the video being
-        // played is saved.
-        new(ActionId.VideoDownload, Tr("Download the current video..."),
-            new("d", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
         // Translators: Name of the command that shows the text the uploader wrote under the video.
         new(ActionId.VideoDescription, Tr("Show the video description"), new("d", ShortcutModifiers.Alt)),
         // Translators: Name of the command that copies the address of the video being played.

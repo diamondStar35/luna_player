@@ -90,12 +90,17 @@ internal sealed partial class Files
         var files = _player.Items.ToArray();
         var request = _view.Dialogs.ChooseOpenedFile(files.Length,
             index => index >= 0 && index < files.Length ? _player.DisplayName(files[index]) : string.Empty,
-            selected);
+            selected, files.Select(item => item.Path).ToArray());
         if (request is null)
             return;
         if (request.Value.Action == LunaPlayer.UI.Playlists.OpenedFilesAction.Jump)
         {
             _player.GoToItem(files[request.Value.SelectedIndex]);
+            return;
+        }
+        if (request.Value.Action != LunaPlayer.UI.Playlists.OpenedFilesAction.Information)
+        {
+            _view.Dialogs.EditServerItem(files[request.Value.SelectedIndex].Path, request.Value.Action);
             return;
         }
         ShowPlaylistInformation(() => ShowOpenedFiles(request.Value.SelectedIndex));
@@ -267,6 +272,11 @@ internal sealed partial class Files
         Add(metadata.Value("icy-br"),
             // Translators: Line spoken by Ctrl+Alt+I. {bitrate} is the radio stream's advertised bitrate in kilobits per second. Keep kbps as the bitrate unit.
             value => TrFormat("Bitrate: {bitrate} kbps", value));
+        if (!_spotify.IsActive && _player.CurrentStreamFormat is { } stream)
+        {
+            var description = LunaPlayer.UI.Subsonic.StreamPresentation.Describe(stream);
+            if (description.Length > 0) lines.Add(description);
+        }
         _speech.SpeakText(lines.Count > 0 ? string.Join(Environment.NewLine, lines)
             // Translators: Spoken by Ctrl+Alt+I when the current media provides no metadata to announce.
             : Tr("No metadata is available."));

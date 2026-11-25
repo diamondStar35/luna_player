@@ -258,6 +258,8 @@ internal sealed class MainFrame : IMainView
     public void SetEditState(bool hasLocalFile, bool hasMedia) => Menus.SetEditState(hasLocalFile, hasMedia);
 
     public void SetBookmarkState(bool enabled) => Menus.SetBookmarkState(enabled);
+    public void SetMusicServerState(bool enabled, bool? favorite = null) => Menus.SetMusicServerState(enabled, favorite);
+    public void SetDownloadState(bool enabled) => Menus.SetDownloadState(enabled);
 
     public void SetMarkState(bool currentMarked, bool allMarked) => Menus.SetMarkState(currentMarked, allMarked);
 

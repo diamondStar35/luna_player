@@ -65,6 +65,7 @@ internal sealed partial class PlaybackCoordinator
             _lastPosition = null;
             _activeEntryId = loaded.Id;
             _activePath = loaded.Request.Path;
+            if (_selectionRangeActive) _selectionRangeEntryId = loaded.Id;
             // Initial tags may arrive before playback-restart, while reads still reject the outgoing
             // entry's metadata. Refresh again now that the new stream's tags can be read safely.
             MetadataChanged?.Invoke();

@@ -1,12 +1,19 @@
 using LunaPlayer.Configuration;
 using LunaPlayer.Media;
 using LunaPlayer.YouTube;
-using Downloads = LunaPlayer.YouTube.Download;
+using SharedDownloads = LunaPlayer.Downloads;
 
 namespace LunaPlayer.Application.Commands.YouTube;
 
 internal sealed partial class YouTube
 {
+    internal void DownloadCurrent(bool direct, bool queued)
+    {
+        if (queued) AddCurrentToDownloadQueue();
+        else if (direct) DirectDownload();
+        else Download();
+    }
+
     /// <summary>Direct-downloads the current video with the saved settings.</summary>
     private void DirectDownload()
     {
@@ -33,14 +40,14 @@ internal sealed partial class YouTube
     {
         if (!EnsureComponents(() => DirectDownloadTo(url, title)))
             return;
-        Run(Downloads.Request.FromSettings(_settings.YouTube.Download, url), title);
+        Run(LunaPlayer.YouTube.Download.Request.FromSettings(_settings.YouTube.Download, url), title);
     }
 
     /// <summary>Opens the download dialog for a video, then downloads what was chosen.</summary>
     internal void DownloadTo(string url, string title)
     {
         var stem = string.IsNullOrWhiteSpace(title) ? string.Empty : Paths.SafeFileName(title);
-        var defaults = Downloads.Request.FromSettings(_settings.YouTube.Download, url, stem);
+        var defaults = LunaPlayer.YouTube.Download.Request.FromSettings(_settings.YouTube.Download, url, stem);
         if (_view.Dialogs.ShowDownloadOptions(defaults) is not { } choice)
             return;
         if (choice.AddToQueue)
@@ -51,9 +58,9 @@ internal sealed partial class YouTube
 
     /// <summary>Adds a search result or other known video with the saved default settings.</summary>
     internal void AddToDownloadQueue(string url, string title)
-        => AddToDownloadQueue(Downloads.Request.FromSettings(_settings.YouTube.Download, url), title);
+        => AddToDownloadQueue(LunaPlayer.YouTube.Download.Request.FromSettings(_settings.YouTube.Download, url), title);
 
-    private void AddToDownloadQueue(Downloads.Request request, string title)
+    private void AddToDownloadQueue(LunaPlayer.YouTube.Download.Request request, string title)
     {
         _downloadQueue.Add(title, request);
         _speech.Speak(
@@ -80,7 +87,7 @@ internal sealed partial class YouTube
         {
             var trimmed = link.Trim();
             _downloadQueue.Add(trimmed,
-                Downloads.Request.FromSettings(_settings.YouTube.Download, trimmed));
+                LunaPlayer.YouTube.Download.Request.FromSettings(_settings.YouTube.Download, trimmed));
         }
         return null;
     }
@@ -92,7 +99,7 @@ internal sealed partial class YouTube
     }
 
     /// <summary>Starts a download owned by the queue and opens its modeless progress window.</summary>
-    private void Run(Downloads.Request request, string title)
+    private void Run(LunaPlayer.YouTube.Download.Request request, string title)
     {
         var itemId = _downloadQueue.StartSingle(title, request);
         _view.Dialogs.ShowDownloadProgress(_downloadQueue, itemId);

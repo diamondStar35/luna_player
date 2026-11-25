@@ -5,28 +5,29 @@ using LunaPlayer.Configuration.Models;
 using LunaPlayer.Media;
 using LunaPlayer.UI.Equalizer;
 using WxSharp;
-using Downloads = LunaPlayer.YouTube.Download;
+using SharedDownloads = LunaPlayer.Downloads;
 
 namespace LunaPlayer.UI.Services.Dialogs;
 
 internal sealed class YouTubeDialogs : IDisposable
 {
     private readonly DialogContext _context;
-    private readonly YouTube.DownloadOutcomes _downloadOutcomes;
+    private readonly LunaPlayer.UI.Downloads.DownloadOutcomes _downloadOutcomes;
     private YouTube.ResultsDialog? _youTubeResults;
     private YouTube.FavoritesDialog? _favorites;
     private YouTube.FavoriteEditDialog? _favoriteEditor;
     private Window? _resultsOwner;
-    private readonly HashSet<YouTube.DownloadProgressDialog> _downloadProgressDialogs = [];
+    private LunaPlayer.UI.Downloads.DownloadQueueDialog? _queueDialog;
+    private readonly HashSet<LunaPlayer.UI.Downloads.DownloadProgressDialog> _downloadProgressDialogs = [];
 
     internal YouTubeDialogs(DialogContext context)
     {
         _context = context;
-        _downloadOutcomes = new YouTube.DownloadOutcomes(context.Dispatcher, () => YouTube.DownloadOutcomes.SelectOwner(
+        _downloadOutcomes = new LunaPlayer.UI.Downloads.DownloadOutcomes(context.Dispatcher, () => LunaPlayer.UI.Downloads.DownloadOutcomes.SelectOwner(
             Wx.GetActiveWindow(), _resultsOwner, context.Frame, _downloadProgressDialogs.Select(dialog => dialog.Window)));
     }
     public bool ConfirmCloseWithDownloads()
-    { using var dialog = new YouTube.DownloadExitDialog(_context.Parent); return dialog.Show(); }
+    { using var dialog = new LunaPlayer.UI.Downloads.DownloadExitDialog(_context.Parent); return dialog.Show(); }
 
     public LunaPlayer.UI.YouTube.YouTubeLinkKind? ChooseYouTubeLinkKind() { using var dialog = new YouTube.LinkKindDialog(_context.Parent); return dialog.Show(); }
     public LunaPlayer.UI.YouTube.YouTubeSearchRequest? SearchYouTube(LunaPlayer.UI.YouTube.YouTubeSearchPrompt prompt) { using var dialog = new YouTube.SearchDialog(_context.Parent, _context.Dispatcher, prompt); return dialog.Show(); }
@@ -80,24 +81,25 @@ internal sealed class YouTubeDialogs : IDisposable
     }
     public bool OfferYouTubeComponents() { using var dialog = new YouTube.ComponentsDialog(_context.Parent); return dialog.Show(); }
 
-    public Downloads.OptionsResult? ShowDownloadOptions(Downloads.Request defaults)
+    public LunaPlayer.YouTube.Download.OptionsResult? ShowDownloadOptions(LunaPlayer.YouTube.Download.Request defaults)
     { using var dialog = new YouTube.DownloadDialog(_context.Parent, defaults); return dialog.Show(); }
 
     public void ShowDownloadQueue(
-        Downloads.DownloadQueue queue,
+        SharedDownloads.DownloadQueue queue,
         Func<IReadOnlyList<string>, string?> addLinks,
         Action start)
-    { using var dialog = new YouTube.DownloadQueueDialog(_context.Parent, _context.Dispatcher, queue, addLinks, start); dialog.Show(); }
+    { _queueDialog ??= new LunaPlayer.UI.Downloads.DownloadQueueDialog(_context.Parent, _context.Dispatcher, queue, addLinks, start); _queueDialog.Show(); }
 
     public void ShowDownloadProgress(
-        Downloads.DownloadQueue queue,
+        SharedDownloads.DownloadQueue queue,
         Guid itemId)
     {
-        var dialog = new YouTube.DownloadProgressDialog(_context.Dispatcher, queue, itemId);
+        var completionOwner = _resultsOwner ?? _context.Parent;
+        var dialog = new LunaPlayer.UI.Downloads.DownloadProgressDialog(_context.Dispatcher, queue, itemId);
         dialog.Closed += (closed, outcome) =>
         {
             _downloadProgressDialogs.Remove(closed);
-            _downloadOutcomes.Add(outcome);
+            _downloadOutcomes.Add(outcome, completionOwner);
         };
         _downloadProgressDialogs.Add(dialog);
         dialog.Show();
@@ -114,6 +116,7 @@ internal sealed class YouTubeDialogs : IDisposable
     public void Dispose()
     {
         _downloadOutcomes.Dispose();
+        _queueDialog?.Dispose();
         _youTubeResults?.Dispose();
         _youTubeResults = null;
         _favoriteEditor?.Dispose();

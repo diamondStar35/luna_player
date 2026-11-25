@@ -42,6 +42,7 @@ internal sealed partial class PlaybackCoordinator
             // Native work is serialized here, after the destination decoder is ready and before
             // the output envelope rises. No filter setup holds the playback or UI lock.
             if (!_audio.CompleteEqualizerLoad()) AudioFilterFailed?.Invoke(AudioFilter.Equalizer);
+            ApplyOpeningBoundaries(mpv, generation);
             bool paused;
             lock (_loadSync)
             {

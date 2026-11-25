@@ -21,6 +21,8 @@ internal static class DocumentResolver
                 files.AddRange(children.Select(path => new M3uEntry(path, null)));
                 if (children.Count == 0) unavailable.Add(entry.Location);
             }
+            else if (entry.Kind == EntryKind.ServerMedia && entry.ServerMedia is { } reference)
+                files.Add(new(reference.Address, entry.Title));
             else if (entry.Kind == EntryKind.Stream && LinkValidator.IsHttpUrl(entry.Location)
                 || entry.Kind == EntryKind.File && File.Exists(entry.Location))
                 files.Add(new(entry.Location, entry.Title));

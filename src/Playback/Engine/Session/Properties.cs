@@ -10,9 +10,9 @@ internal sealed partial class MpvSession
     private static readonly string[] ObservedProperties =
     [
         "af", "audio-device", "audio-device-list", "audio-filter-history-reset", "audio-fade", "audio-fade/active",
-        "audio-fade/paused", "audio-fade/transport-active", "audio-params/samplerate", "audio-out-params/channel-count",
+        "audio-fade/paused", "audio-fade/transport-active", "audio-params/samplerate", "audio-params/channel-count", "audio-bitrate", "audio-out-params/channel-count",
         "chapter", "chapter-list", "current-tracks/video/image", "current-tracks/video/albumart",
-        "duration", "eof-reached", "filename", "media-title", "metadata", "path", "pause",
+        "duration", "eof-reached", "filename", "file-format", "media-title", "metadata", "path", "pause",
         "playlist", "playlist-count", "seeking", "speed", "sub-text", "time-pos",
         "time-remaining", "track-list", "track-list/count", "video-params/w",
     ];

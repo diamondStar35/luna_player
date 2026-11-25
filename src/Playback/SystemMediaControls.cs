@@ -17,7 +17,8 @@ internal readonly record struct MediaControlsState(
     double? Duration,
     double? Position,
     bool CanGoNext,
-    bool CanGoPrevious);
+    bool CanGoPrevious,
+    byte[]? Artwork = null);
 
 /// <summary>Publishes what is playing to the Windows System Media Transport Controls - the overlay the OS
 /// shows for the volume keys and the lock screen - and turns its buttons back into player actions.</summary>
@@ -31,7 +32,7 @@ internal readonly record struct MediaControlsState(
 /// The whole class is optional: if the session cannot be created, <see cref="IsAvailable"/> stays false and
 /// every method does nothing, so playback works exactly as before on a system without it.
 /// </remarks>
-internal sealed class SystemMediaControls : IDisposable
+internal sealed partial class SystemMediaControls : IDisposable
 {
     private readonly SessionPlayer? _session;
     private readonly SystemMediaTransportControls? _controls;
@@ -112,6 +113,7 @@ internal sealed class SystemMediaControls : IDisposable
 
             controls.PlaybackStatus = state.IsPlaying ? MediaPlaybackStatus.Playing : MediaPlaybackStatus.Paused;
             UpdateDisplay(controls, state.Title, state.Artist, state.Album);
+            UpdateArtwork(state.Artwork);
             UpdateTimeline(controls, state.Duration, state.Position);
         }
         catch (COMException)
@@ -125,6 +127,7 @@ internal sealed class SystemMediaControls : IDisposable
     {
         if (_disposed) return;
         _disposed = true;
+        ClearArtwork();
         Release();
     }
 
@@ -187,6 +190,7 @@ internal sealed class SystemMediaControls : IDisposable
 
     private void ClearDisplay(SystemMediaTransportControls controls)
     {
+        ClearArtwork();
         if (_lastTitle.Length == 0 && _lastArtist.Length == 0 && _lastAlbum.Length == 0) return;
         _lastTitle = string.Empty;
         _lastArtist = string.Empty;

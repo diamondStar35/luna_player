@@ -10,8 +10,8 @@ internal sealed partial class Player
     // into a fixed list of the files it happened to contain when it was opened.
     internal IReadOnlyList<SavedEntry> SnapshotSaved()
         => _playlist.SavedSnapshot ?? _playlist.Sources.Select(item => new SavedEntry(item.SourceId,
-            LinkValidator.IsHttpUrl(item.Path) ? EntryKind.Stream : EntryKind.File,
-            _playlist.GetSource(item.Path) ?? item.Path, _playlist.GetTitle(item.Path))).ToList();
+            item.ServerMedia is not null ? EntryKind.ServerMedia : LinkValidator.IsHttpUrl(item.Path) ? EntryKind.Stream : EntryKind.File,
+            _playlist.GetSource(item.Path) ?? item.Path, _playlist.GetTitle(item.Path)) { ServerMedia = item.ServerMedia }).ToList();
 
     internal void OpenSaved(IReadOnlyList<SavedEntry> entries, IReadOnlyList<M3uEntry> files)
     {

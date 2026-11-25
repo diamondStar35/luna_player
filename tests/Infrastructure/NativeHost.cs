@@ -1,4 +1,5 @@
 using LunaPlayer.Playback;
+using MpvNet;
 namespace LunaPlayer.Tests.Infrastructure;
 internal static class NativeHost
 {
@@ -15,6 +16,33 @@ internal static class NativeHost
     {
         Initialize();
         return new Engine(0, new Dictionary<string, object?> { ["ao"] = "null", ["vo"] = "null" });
+    }
+    internal static MpvSession Session(Engine engine)
+    {
+        var coordinator = NativeFields.Read(typeof(Engine), engine, "_coordinator")!;
+        return (MpvSession)NativeFields.Read(typeof(PlaybackCoordinator), coordinator, "_session")!;
+    }
+    internal static MPV Handle(Engine engine) => (MPV)NativeFields.Read(typeof(MpvSession), Session(engine), "_mpv")!;
+    internal static WorkQueue Queue(Engine engine) => (WorkQueue)NativeFields.Read(typeof(MpvSession), Session(engine), "_work")!;
+    internal sealed class SeekCompletion : IDisposable
+    {
+        private readonly IDisposable _seek, _restart;
+        private readonly TaskCompletionSource _completed = new(TaskCreationOptions.RunContinuationsAsynchronously);
+        private bool _seeking;
+        internal SeekCompletion(Engine engine)
+        {
+            var mpv = Handle(engine);
+            _seek = mpv.OnEvent(_ => _seeking = true, MpvEventId.Seek);
+            _restart = mpv.OnEvent(_ => { if (_seeking) _completed.TrySetResult(); }, MpvEventId.PlaybackRestart);
+        }
+        internal Task Wait() => _completed.Task.WaitAsync(TimeSpan.FromSeconds(8));
+        public void Dispose() { _seek.Dispose(); _restart.Dispose(); }
+    }
+    internal static async Task Flush(Engine engine)
+    {
+        var completed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        Assert.IsTrue(Queue(engine).Post(() => { completed.SetResult(); return true; }));
+        await completed.Task.WaitAsync(TimeSpan.FromSeconds(8));
     }
     internal static async Task Until(Func<bool> condition)
     {

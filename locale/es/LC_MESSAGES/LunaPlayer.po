@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Luna Player\n"
 "Report-Msgid-Bugs-To: https://github.com/diamondStar35/luna_player/issues\n"
 "POT-Creation-Date: 2026-11-16 20:01+0200\n"
-"PO-Revision-Date: 2026-11-17 21:11-0300\n"
-"Last-Translator: anagisellear86\n"
+"PO-Revision-Date: 2026-11-19 12:00+0100\n"
+"Last-Translator: Pedro Flores\n"
 "Language-Team: Spanish\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
@@ -7296,25 +7296,25 @@ msgstr "El umbral de silencio debe ser un número válido."
 #. {field} is the name of the setting, such as "Leading silent parts to trim".
 #: UI/Preferences/Silence.cs:159
 msgid "{field} must be an integer value."
-msgstr "{field} must be an integer value."
+msgstr "El valor de '{field}' debe ser un número entero."
 
 #. Translators: Error message shown when an advanced silence removal setting cannot be negative.
 #. {field} is the name of the setting, such as "Leading silent parts to trim".
 #: UI/Preferences/Silence.cs:166
 msgid "{field} must be zero or greater."
-msgstr "{field} must be zero or greater."
+msgstr "El valor de '{field}' debe ser igual o mayor que cero."
 
 #. Translators: Error message shown when an advanced silence removal setting accepts -1 but nothing lower.
 #. {field} is the name of the setting, such as "Silent parts to trim after audio starts".
 #: UI/Preferences/Silence.cs:173
 msgid "{field} must be -1 or greater."
-msgstr "{field} must be -1 or greater."
+msgstr "El valor de '{field}' debe ser igual o mayor que -1."
 
 #. Translators: Error message shown when an advanced silence removal setting needs a number that is not negative.
 #. {field} is the name of the setting, such as "Sound required before leading trim stops (seconds)".
 #: UI/Preferences/Silence.cs:181
 msgid "{field} must be a non-negative number."
-msgstr "{field} must be a non-negative number."
+msgstr "El valor de '{field}' debe ser un número no negativo."
 
 #. Translators: Help text for the advanced setting that chooses which section of sound ends trimming at the start of the file.
 #: UI/Preferences/Silence.cs:271

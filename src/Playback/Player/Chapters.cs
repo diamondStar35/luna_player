@@ -15,7 +15,7 @@ internal sealed partial class Player
     internal bool AudiobookMode => _audiobookMode && !IsDisc;
     internal bool StopAtChapterEnd => _stopAtChapterEnd;
     internal double? SourceElapsed => _chapterStopHeld ? _chapterStopPosition
-        : _engine.IsLoading ? _requestedSourcePosition : _engine.Elapsed;
+        : _resolvingMedia || _engine.IsLoading ? _requestedSourcePosition : _engine.Elapsed + (_currentInput?.Offset ?? 0);
     internal IReadOnlyList<Chapter> CurrentChapters => _loaded ? _playlist.ChaptersFor(CurrentPath) : [];
     internal Chapter? CurrentChapter => PendingDiscChapter ?? _playlist.CurrentItem?.Chapter
         ?? Media.Chapters.At(CurrentChapters, _chapterStopHeld ? Math.Max(0, _chapterStopPosition - 0.001) : SourceElapsed ?? 0);
@@ -94,6 +94,7 @@ internal sealed partial class Player
         {
             // A chapter marker is a seek within the same file in normal mode. Preserve its selected
             // audio and subtitles, while releasing any selection that would pull playback back again.
+            ClearMediaBoundaries();
             _engine.ClearSelectionRange(restoreEndBehavior: false);
             _engine.ClearLoop();
             SeekAbsolute(start);

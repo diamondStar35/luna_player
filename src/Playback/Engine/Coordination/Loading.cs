@@ -11,18 +11,19 @@ internal sealed partial class PlaybackCoordinator
     /// audio URL cannot be safely flattened into those options, so <c>audio-files</c> is queued first; mpv
     /// processes both requests in order.</remarks>
     public bool Load(string path, double? startPosition = null, bool paused = false, string? audioFile = null,
-        bool noVideo = false, bool fadeTransition = false, PlaybackRange? range = null, string? itemId = null, double? chapterStop = null)
+        bool noVideo = false, bool fadeTransition = false, PlaybackRange? range = null, string? itemId = null, double? chapterStop = null, IReadOnlyDictionary<string, string>? headers = null, Boundaries? boundaries = null)
     {
         lock (_loadSync)
-            return BeginLoad(path, startPosition, paused, audioFile, noVideo, fadeTransition, range, itemId, chapterStop);
+            return BeginLoad(path, startPosition, paused, audioFile, noVideo, fadeTransition, range, itemId, chapterStop, headers, boundaries);
     }
 
     private bool BeginLoad(string path, double? startPosition, bool paused, string? audioFile,
-        bool noVideo, bool fadeTransition, PlaybackRange? range, string? itemId, double? chapterStop)
+        bool noVideo, bool fadeTransition, PlaybackRange? range, string? itemId, double? chapterStop, IReadOnlyDictionary<string, string>? headers, Boundaries? boundaries)
     {
         var declick = _replacement is not null || _loaded && !IsPaused && !_awaitingLoadRestart;
         var overlap = fadeTransition && _crossfade && _crossfadeManual && _loaded && !IsPaused
-            && !_awaitingLoadRestart && !_replacementMuted && !_currentUsesAudioFile && audioFile is null && CurrentIsAudio();
+            && !_awaitingLoadRestart && !_replacementMuted && !_currentUsesAudioFile && audioFile is null
+            && (boundaries is null || boundaries.IsEmpty) && CurrentIsAudio();
         var generation = ++_loadGeneration;
         _nativeLoads.Clear();
         _nativeEntries.Clear();
@@ -41,7 +42,8 @@ internal sealed partial class PlaybackCoordinator
         // seeking the newly loaded entry to the old selection's timestamp.
         _releasedSelectionWasPlaying = false;
         _releasedSelectionWasCompleted = false;
-        var request = new LoadRequest(path, startPosition, audioFile, noVideo, range, itemId, chapterStop);
+        var request = new LoadRequest(path, startPosition, audioFile, noVideo, range, itemId, chapterStop, headers, boundaries);
+        SetLoadBoundaries(boundaries ?? Boundaries.None);
         _nextRequest = null;
         _queuedNext = false;
         _queuedSourceEntryId = null;
@@ -59,21 +61,16 @@ internal sealed partial class PlaybackCoordinator
         ReleasePendingSpotifyAudio(path);
         var loaded = overlap ? LoadWithCrossfade(request, paused, generation)
             : declick ? BeginReplacement(request, paused, generation) : LoadCore(request, paused);
-        _selectionRangeActive = false;
-        _selectionRangeRepeats = false;
-        _selectionRangeCompleted = false;
-        _selectionRangeEnd = 0;
-        _selectionRangeEntryId = null;
         return loaded;
     }
 
-    public bool QueueNext(string path, double? startPosition = null, string? audioFile = null, bool noVideo = false, PlaybackRange? range = null, string? itemId = null)
+    public bool QueueNext(string path, double? startPosition = null, string? audioFile = null, bool noVideo = false, PlaybackRange? range = null, string? itemId = null, IReadOnlyDictionary<string, string>? headers = null)
     {
         lock (_loadSync)
-            return QueueNextCore(path, startPosition, audioFile, noVideo, range, itemId);
+            return QueueNextCore(path, startPosition, audioFile, noVideo, range, itemId, headers);
     }
 
-    private bool QueueNextCore(string path, double? startPosition, string? audioFile, bool noVideo, PlaybackRange? range, string? itemId)
+    private bool QueueNextCore(string path, double? startPosition, string? audioFile, bool noVideo, PlaybackRange? range, string? itemId, IReadOnlyDictionary<string, string>? headers)
     {
         if ((!_crossfade && _gaplessPlayback == GaplessPlaybackMode.Disabled) || _holdAutomaticAdvance
             || string.IsNullOrWhiteSpace(path)
@@ -86,7 +83,7 @@ internal sealed partial class PlaybackCoordinator
             ClearQueuedNext();
             return false;
         }
-        var request = new LoadRequest(path, startPosition, null, noVideo, range, itemId);
+        var request = new LoadRequest(path, startPosition, null, noVideo, range, itemId, Headers: headers);
         if (_queuedNext && _nextRequest == request)
             return true;
         // Invalidate the old native entry before waiting for replacement metadata. Otherwise it could
@@ -161,6 +158,7 @@ internal sealed partial class PlaybackCoordinator
 
     private bool LoadCore(LoadRequest request, bool paused, bool crossfade = false)
     {
+        request = request with { Boundaries = _boundaries };
         _playbackRange = request.Range;
         _chapterStopEnd = request.ChapterStop;
         _chapterStopCompleted = false;
@@ -221,20 +219,26 @@ internal sealed partial class PlaybackCoordinator
             // A YouTube video opened as audio can still resolve to a stream containing a picture. Leave it
             // undecoded for that item without affecting the video choice on the items around it.
             ["vid"] = request.NoVideo ? "no" : "auto",
-            // A one-shot selection sets this dynamically. Never let that boundary leak into another file.
-            ["end"] = (request.ChapterStop ?? request.Range?.End) is double end ? end : "none",
-            ["keep-open"] = request.ChapterStop.HasValue || _holdAutomaticAdvance || _endBehavior == EndBehavior.None ? "yes" : "no",
-            ["loop-file"] = !_holdAutomaticAdvance && request.ChapterStop is null && request.Range is null && _endBehavior == EndBehavior.Loop ? "inf" : "no",
         };
+        // Keep temporary controls separate from the input's chapter/item bounds. FinishReplacement
+        // installs the latest loop and selection on the opened input before its audio is unpaused.
+        foreach (var pair in BoundaryOptions(Boundaries.None, request.Range, request.ChapterStop))
+            options[pair.Key] = pair.Value;
         if (request.StartPosition.HasValue || request.Range.HasValue)
             options["start"] = Precision.Normalize(request.StartPosition ?? request.Range!.Value.Start);
+        // String-list escaping differs from loadfile's key/value quoting. One HTTP header block
+        // also preserves a value ending in a backslash without escaping the next list separator.
+        if (request.Headers is { Count: > 0 })
+            options["http-header-fields"] = string.Join("\r\n", request.Headers.Select(pair =>
+                pair.Key + ": " + pair.Value)).Replace(",", @"\,", StringComparison.Ordinal);
+        else options["http-header-fields-clr"] = "";
         return options;
     }
 
     private bool ShouldFadeTransitions => _fadeFileTransitions && _fadeIntervalMilliseconds > 0;
 
     private sealed record LoadRequest(string Path, double? StartPosition, string? AudioFile, bool NoVideo,
-        PlaybackRange? Range = null, string? ItemId = null, double? ChapterStop = null);
+        PlaybackRange? Range = null, string? ItemId = null, double? ChapterStop = null, IReadOnlyDictionary<string, string>? Headers = null, Boundaries? Boundaries = null);
 
     public void Stop()
     {
@@ -251,6 +255,7 @@ internal sealed partial class PlaybackCoordinator
         _manualRequest = null;
         _replacement = null;
         _playbackRange = null;
+        SetLoadBoundaries(Boundaries.None);
         _chapterStopEnd = null;
         _chapterStopCompleted = false;
         _heldEndNotified = false;

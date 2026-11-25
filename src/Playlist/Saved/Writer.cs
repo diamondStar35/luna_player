@@ -10,6 +10,9 @@ internal static class DocumentWriter
 {
     internal static void Export(Document document, string path, Resolution? resolved = null)
     {
+        if (document.Entries.Any(x => x.Kind == EntryKind.ServerMedia)
+            || resolved?.Files.Any(x => Subsonic.Playback.Reference.IsAddress(x.Location)) == true)
+            throw new InvalidDataException("Server items cannot be exported as M3U locations.");
         var text = new StringBuilder("#EXTM3U\n");
         foreach (var entry in (resolved ?? DocumentResolver.Resolve(document.Entries)).Files)
         {

@@ -15,6 +15,7 @@ internal enum ShortcutScope
     /// <summary>Shortcuts registered with the system, which work from any application. One slot per action.
     /// </summary>
     Global,
+    MusicServers,
 }
 
 internal sealed class ShortcutPreferences : PreferencesPage
@@ -36,7 +37,7 @@ internal sealed class ShortcutPreferences : PreferencesPage
     /// combination. Without that, a combination already in use fires its action instead of being recorded.
     /// </param>
     internal ShortcutPreferences(Window parent, ShortcutSettings settings, ShortcutScope scope, LunaPlayer.UI.Services.GlobalShortcuts? globals)
-        : base(new Panel(parent), scope == ShortcutScope.Local
+        : base(new Panel(parent), scope == ShortcutScope.MusicServers ? LunaPlayer.UI.Subsonic.Words.ShortcutHelp : scope == ShortcutScope.Local
             // Translators: Spoken description of the Keyboard shortcuts settings page, read when the page is opened.
             ? Tr("Keyboard shortcuts. Select an action, then edit its primary or secondary local shortcut.")
             // Translators: Spoken description of the Global shortcuts settings page, read when the page is opened.
@@ -45,10 +46,10 @@ internal sealed class ShortcutPreferences : PreferencesPage
         _settings = settings;
         _scope = scope;
         _globals = globals;
-        _actions = [.. scope == ShortcutScope.Local ? ActionRegistry.All : GlobalActions.All];
+        _actions = [.. scope == ShortcutScope.MusicServers ? MusicServerActions.All : scope == ShortcutScope.Local ? ActionRegistry.All : GlobalActions.All];
         _editable = [.. _actions.Select(action => action.Id)];
         var panel = (Panel)Window;
-        var heading = new StaticText(panel, label: scope == ShortcutScope.Local
+        var heading = new StaticText(panel, label: scope == ShortcutScope.MusicServers ? LunaPlayer.UI.Subsonic.Words.Title : scope == ShortcutScope.Local
             // Translators: Heading above the list of shortcuts that work while the player is the program in front.
             ? Tr("Local Shortcuts")
             // Translators: Heading above the list of shortcuts that work while another program is in front.
@@ -117,6 +118,7 @@ internal sealed class ShortcutPreferences : PreferencesPage
             _settings.Secondary = Overrides(_secondary, primary: false);
             _settings.DisableSecondary = _disableSecondary!.Checked;
         }
+        else if (_scope == ShortcutScope.MusicServers) _settings.MusicServers = Overrides(_primary, primary: true);
         else
         {
             _settings.Global = Overrides(_primary, primary: true);
@@ -136,7 +138,7 @@ internal sealed class ShortcutPreferences : PreferencesPage
         }
         // Keyed on the page's own action set rather than on the loaded defaults: an action that ships without
         // a shortcut can still have been given one, and that binding has to come back.
-        foreach (var pair in _scope == ShortcutScope.Local ? _settings.Primary : _settings.Global)
+        foreach (var pair in _scope == ShortcutScope.MusicServers ? _settings.MusicServers : _scope == ShortcutScope.Local ? _settings.Primary : _settings.Global)
             if (_editable.Contains(pair.Key)) _primary[pair.Key] = pair.Value;
         if (HasSecondary)
             foreach (var pair in _settings.Secondary)

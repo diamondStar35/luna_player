@@ -44,6 +44,8 @@ internal static class ToolsActions
         new(ActionId.OpenRadioBrowser, Tr("Open the radio browser"), new("r", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
         // Translators: Command in shortcut preferences that opens the Spotify home, search and library browser. Keep Spotify unchanged.
         new(ActionId.OpenSpotifyBrowser, Tr("Open the Spotify browser"), new("s", ShortcutModifiers.Alt)),
+        // Translators: Command opening the Navidrome, Subsonic and OpenSubsonic music-server browser.
+        new(ActionId.OpenMusicServers, Tr("Open music servers"), new("m", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
         // Translators: Command opening the Spotify account and audio-quality page in Preferences. Keep Spotify unchanged.
         new(ActionId.OpenSpotifyCredentials, Tr("Spotify preferences")),
     ];
@@ -56,6 +58,6 @@ internal static class ActionRegistry
     internal static IReadOnlyList<ActionDefinition> All { get; } =
     [.. PlaylistActions.All, .. MediaActions.All, .. PlaybackActions.All, .. YouTubeActions.All,
         .. HelpActions.All, .. UpdateActions.All,
-        .. RecordingActions.All, .. ToolsActions.All, .. IptvActions.All,
+        .. RecordingActions.All, .. ToolsActions.All, .. CurrentServerActions.All, .. IptvActions.All,
         .. SleepTimerActions.All];
 }

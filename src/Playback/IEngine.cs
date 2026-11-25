@@ -42,10 +42,10 @@ internal interface IEngine : IDisposable
     /// <paramref name="path"/>. Null for anything that carries its own sound, which is everything but a
     /// YouTube video above 360p.</param>
     bool Load(string path, double? startPosition = null, bool paused = false, string? audioFile = null,
-        bool noVideo = false, bool fadeTransition = false, PlaybackRange? range = null, string? itemId = null, double? chapterStop = null);
+        bool noVideo = false, bool fadeTransition = false, PlaybackRange? range = null, string? itemId = null, double? chapterStop = null, IReadOnlyDictionary<string, string>? headers = null, Boundaries? boundaries = null);
     /// <summary>Appends the next item to mpv's internal playlist so its audio can start without waiting for
     /// the application to react to end-of-file. Returns false when the item cannot be queued safely.</summary>
-    bool QueueNext(string path, double? startPosition = null, string? audioFile = null, bool noVideo = false, PlaybackRange? range = null, string? itemId = null);
+    bool QueueNext(string path, double? startPosition = null, string? audioFile = null, bool noVideo = false, PlaybackRange? range = null, string? itemId = null, IReadOnlyDictionary<string, string>? headers = null);
     void ClearQueuedNext();
     QueuedAdvance? TakeQueuedAdvance();
     double? PositionFor(string path);
@@ -130,6 +130,7 @@ internal interface IEngine : IDisposable
 
     /// <summary>The current title and metadata from mpv. Live radio can update these during playback.</summary>
     Metadata GetMetadata();
+    StreamFormat? GetStreamFormat() => null;
 
     /// <summary>Whether a real picture is playing: a decoded video track that is neither a still image nor
     /// cover art. False for audio and for audio-only tracks in a video container. Not known synchronously

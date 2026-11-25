@@ -1,6 +1,6 @@
 # Luna Player User Guide
 
-Luna Player is a keyboard-friendly audio and video player for Windows. It plays local media, DVD-Video and DVD-Audio discs, network streams, YouTube, Spotify, internet radio and IPTV; reads subtitles aloud; downloads and converts media; records audio; and provides file management, bookmarks, speech announcements, and configurable local and system-wide shortcuts.
+Luna Player is a keyboard-friendly audio and video player for Windows. It plays local media, DVD-Video and DVD-Audio discs, network streams, YouTube, Spotify, Subsonic music servers, internet radio and IPTV; reads subtitles aloud; downloads and converts media; records audio; and provides file management, bookmarks, speech announcements, and configurable local and system-wide shortcuts.
 
 This guide describes the current version of Luna Player. Menu names and shortcuts below use the English interface and the default shortcut configuration.
 
@@ -65,7 +65,7 @@ Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>V</kbd> to switch verbosity immediat
 
 ### Windows media controls
 
-Luna integrates with the Windows media overlay and compatible hardware media keys. The overlay can show the current title and timeline. Play, pause, previous, next, rewind, and fast-forward buttons invoke the corresponding Luna commands.
+Luna integrates with the Windows media overlay and compatible hardware media keys. The overlay can show the current title, artist, album, artwork and timeline when available. Play, pause, previous, next, rewind, and fast-forward buttons invoke the corresponding Luna commands.
 
 If a keyboard, headset, or another program sends media commands to the wrong application or sends them twice, enable **Disable system media controls** on the General Preferences page. This removes Luna from the Windows media overlay and stops it from handling hardware media keys.
 
@@ -84,6 +84,8 @@ To play every supported file in a folder, press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>
 To play a YouTube video, press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Y</kbd> and enter its address. To search instead, press <kbd>Ctrl</kbd>+<kbd>Y</kbd>.
 
 To find an internet radio station, press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd>. To open Spotify, press <kbd>Alt</kbd>+<kbd>S</kbd>; follow the account setup in the [Spotify section](#13-spotify) before playing your first track.
+
+To browse your Navidrome, Subsonic or OpenSubsonic library, press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>, then use **Manage servers...** to add your account. See [Music servers](#14-music-servers) for connection, browsing and playlist instructions.
 
 ## 4. Opening media
 
@@ -382,6 +384,8 @@ Choose **File > Opened Files...** or press <kbd>F2</kbd>. The current item is se
 - Choose an item and activate **Jump to selected**, or press <kbd>Enter</kbd> on it, to play it.
 - Activate **Playlist info** to calculate the number of files, total size, total duration, elapsed time across the playlist, and remaining time. The scan is cancellable and the result opens in a read-only text window.
 
+For a music-server song, the context menu also offers **Set rating...** and the applicable **Add to favorites** or **Remove from favorites** command. Changes are saved to that song's server account.
+
 The list is designed to remain responsive even with a very large number of loaded files.
 
 ### Shuffle
@@ -615,30 +619,36 @@ Copy and move use a cancellable progress dialog. Luna reports complete success, 
 
 ## 11. Bookmarks
 
-Bookmarks save named playback positions for local files. They are stored per file and are not available for streams or YouTube videos.
+Bookmarks save a listening position that you can return to later. Local-file bookmarks are stored by Luna; bookmarks for Subsonic songs are saved on the song's server account. **Add a new bookmark** chooses the appropriate kind from the media playing. YouTube, Spotify, live radio and ordinary network streams do not use this bookmark feature.
 
-### Adding a bookmark
+### Adding a local bookmark
 
-1. Play or seek to the desired position.
-2. Choose **Bookmarks > Add a new bookmark** or press <kbd>Shift</kbd>+<kbd>M</kbd>.
+1. Play or seek to the desired position in a local file.
+2. Choose **Bookmarks > Add a new bookmark** or press <kbd>Ctrl</kbd>+<kbd>B</kbd>.
 3. Accept the generated time-based name or type a descriptive name.
 
-Bookmarks are ordered by playback position. The first ten in that order occupy the slots exposed by direct shortcuts.
+Local bookmarks are ordered by playback position. The first ten in that order occupy the slots exposed by direct shortcuts. In audiobook mode, a bookmark retains its position in the whole book and can return you to another chapter.
 
 ### Jumping to a numbered bookmark
 
-Press <kbd>Alt</kbd>+<kbd>1</kbd> through <kbd>Alt</kbd>+<kbd>9</kbd> for slots 1 through 9. Press <kbd>Alt</kbd>+<kbd>0</kbd> for slot 10. Luna announces when the requested slot is empty.
+For local files, press <kbd>Alt</kbd>+<kbd>1</kbd> through <kbd>Alt</kbd>+<kbd>9</kbd> for slots 1 through 9. Press <kbd>Alt</kbd>+<kbd>0</kbd> for slot 10. Luna announces when the requested slot is empty.
 
-### Managing bookmarks
+### Managing local bookmarks
 
-Choose **Bookmarks > Manage bookmarks** or press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>. The dialog lists bookmark names and positions for the current file.
+Choose **Bookmarks > Manage bookmarks** or press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>. The dialog lists bookmark names and positions for the current local file.
 
 - **Jump** moves playback to the selected bookmark.
 - **Edit** changes its name.
 - **Delete** removes it after confirmation.
 - Activating a bookmark in the list jumps to it directly.
 
-Use the Backup and restore Preferences page to export or import the entire bookmark collection.
+Use the Backup and restore Preferences page to export or import the local bookmark collection.
+
+### Bookmarking a music-server song
+
+While a Subsonic song plays, use the same **Bookmarks > Add a new bookmark** command or <kbd>Ctrl</kbd>+<kbd>B</kbd>. Enter an optional comment and Save. The dialog closes, Luna sends the position to the server in the background, and a spoken confirmation reports success.
+
+To resume or manage those positions, open **Tools > Music servers > Browse servers...**, select the account, and choose **Server bookmarks** in the category tree. These entries belong to the remote account. The local manager and numbered shortcuts do not operate on them. See [Server bookmarks](#server-bookmarks) for details.
 
 ## 12. YouTube
 
@@ -685,17 +695,14 @@ These are playback settings. Download quality and format have their own defaults
 
 While a YouTube video is active, the **Video options** menu provides:
 
-- **Download...** or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd>: choose the name, destination, format, quality, and additional processing options.
-- **Direct download** or <kbd>Ctrl</kbd>+<kbd>D</kbd>: start immediately with the defaults from YouTube Preferences.
-- **Add to download queue** or <kbd>Ctrl</kbd>+<kbd>Q</kbd>: add the current video with those defaults without starting the queue.
 - **Video description...** or <kbd>Alt</kbd>+<kbd>D</kbd>: fetch the title and uploader description and show them in a read-only text window.
 - **Copy video link**: copy the stable YouTube watch address rather than the temporary media stream address.
 - **Open video in browser** and **Open channel in browser**: open the corresponding YouTube page in the default browser.
 - **Go to channel**: browse the uploader's channel inside Luna.
 
-A repeated download does not overwrite an existing file with the same name; Luna chooses an unused numbered name.
+### YouTube download options
 
-### Choosing download options
+For the current video, choose **File > Download...**, or press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd>. **File > Direct download** (<kbd>Ctrl</kbd>+<kbd>D</kbd>) starts with saved defaults; **File > Add to download queue** (<kbd>Ctrl</kbd>+<kbd>Q</kbd>) queues it with those defaults. The same choices are available for selected search results.
 
 The Download dialog starts with the defaults from YouTube Preferences and lets you change them for one item. You can choose:
 
@@ -707,30 +714,11 @@ The Download dialog starts with the defaults from YouTube Preferences and lets y
 - Whether to embed metadata, a thumbnail, chapters, or subtitles.
 - Whether SponsorBlock sections should be removed.
 
-Choose **Download** to start immediately. Its modeless progress window reports downloaded size, percentage, speed, estimated time, and finishing work such as merging, converting, or embedding information. You can continue using Luna while this window is open. Choose **Minimize to queue** to hide the individual progress window and continue the download in the queue.
-
-Choose **Add to queue** instead to retain every choice made in the dialog as settings for that queue item.
-
-### Download queue
-
-Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd> or choose **Tools > Download queue...** to open the queue. The list shows each video's title and its current state. A link entered manually is shown as the title when Luna has not looked up its metadata.
-
-- **Add...** accepts one YouTube video link per line.
-- **Start** begins every queued item and retries failed items.
-- **Stop** cancels the selected active download and returns it to the queue for a later start.
-- **Stop all** cancels every active download and leaves unfinished items in the queue.
-- Press <kbd>Delete</kbd> to remove the selected item after confirmation. Removing an active item also cancels it.
-- **Close** hides the queue window without stopping active downloads.
-
-The status box and total progress bar appear only while the queue contains items. During a running batch, they report the current item, total percentage, combined speed, and estimated time left. A downloaded item can remain in a finishing state while yt-dlp converts, merges, embeds, or moves its output.
-
-The queue runs up to the **Simultaneous downloads** limit from YouTube Preferences. Finished rows remain available for review until the queue window is closed, then they are cleared. Luna sends a desktop notification when all visible queue items finish successfully.
-
-If you close Luna while the queue still has unfinished items, Luna asks whether to exit and cancel them or return to the application.
+Choose **Download** to start immediately, or **Add to queue** to retain the choices in a queued job. Progress, finishing work and the shared queue are described in [Downloading online media](#15-downloading-online-media).
 
 ### Favorite videos and streams
 
-Favorites save links, while bookmarks save positions inside local files. Open favorites with **File > Favorite videos...** or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd>.
+Favorite videos and streams save links in Luna. Music-server favorites are stored separately on their server, and bookmarks save listening positions. Open favorites with **File > Favorite videos...** or <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd>.
 
 The Favorites window can open, add, edit, or remove entries. You can keep using the main player while it is open. Adding or editing an entry temporarily disables Favorites until you finish that dialog, while the main player remains usable. Each entry has a name, link, and type:
 
@@ -795,7 +783,331 @@ Spotify supports Luna's gapless and cross-fading settings under **Preferences > 
 
 Spotify collections belong to Spotify. Browsing them does not copy them into **My Playlists**, and Luna's local playlist editor does not edit your Spotify library.
 
-## 14. Radio browser
+## 14. Music servers
+
+Luna can browse and play music from Navidrome and other servers that support Subsonic or OpenSubsonic. You need the server address and login details from its administrator. You can save more than one account, including accounts on different servers.
+
+Choose **Tools > Music servers > Browse servers...**, or press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd>. The browser opens in its own window. You can leave it open and return to the main player to pause, seek or use other playback controls.
+
+### Adding a server
+
+1. In the music-server browser, choose **Manage servers...**, then **Add...**.
+2. On the **Connection** tab, enter a **Name** that will help you recognize the account in Luna. This name is only for the saved connection; it does not change your username on the server.
+3. Enter the **Server address** supplied by the administrator. Use the server's base address, including a path such as `/music/` if one is required. Do not enter a link to an individual song. If you leave out `http://` or `https://`, Luna uses HTTPS.
+4. Choose an **Authentication** method and enter the corresponding login details, as described below.
+5. Choose **Test connection**. A success message confirms that Luna can connect, and the available music libraries are loaded into the Browsing tab. If the test fails, Luna shows an error explaining the problem.
+6. Review the remaining tabs, then choose **Save**. Testing does not save the connection. You can also save while the server is offline and test it later.
+
+The authentication choices are:
+
+- **Username and password:** use this for a normal server account.
+- **Legacy password authentication:** use this only if the server requires the older authentication method.
+- **API key:** use this if your server supports API-key authentication and you have been given a key for your account.
+
+Press <kbd>F1</kbd> on a setting to hear help for that control. With a tab selected, F1 explains the tab. Help is spoken in the same way as help in Preferences.
+
+### Switching, editing and removing accounts
+
+The **Server** list in the browser selects the account you are browsing. Luna remembers the last selected account when you close the player and uses it the next time you open the browser. Recently loaded connection information is reused when you switch accounts, but the contents of the selected view are read from the server.
+
+To change an account's settings, choose **Manage servers...**, select the account and choose Edit. Choose Remove to remove a saved connection.
+
+Removing an account stops playback from that account and removes its songs from Luna's current playback list. It does not delete music on the server or delete saved playlist documents. Local files and other accounts' songs remain in the playback list. Downloads already running or queued for the removed account can finish.
+
+Passwords, API keys, custom HTTP header values and AudioMuse tokens are protected for your current Windows account. Saved server connections are separate from ordinary player preferences and are not included in a settings backup. Copying the protected connection data to another Windows account does not make the credentials usable there.
+
+### Choosing the playback format
+
+The account editor's **Playback** tab has three **Streaming mode** choices:
+
+- **Original** requests the source file without asking the server to convert it.
+- **Server default** lets the server decide whether to transcode the file.
+- **Transcode** requests a particular **Format** and **Maximum bitrate**. These fields appear when Transcode is selected. A bitrate of zero leaves the requested bitrate unrestricted; the server still determines which conversions it supports.
+
+Transcoding can reduce the amount of data needed for playback. Converting to a compressed format can also change audio quality. Choose Original if you want the original stream. Downloading uses the original file regardless of the playback mode.
+
+The Playback tab also contains **Report listening activity** and **Synchronize queue and position automatically**. These are explained under [Listening activity](#listening-activity) and [Saving and synchronizing the playback queue](#saving-and-synchronizing-the-playback-queue).
+
+### Choosing browser sections and libraries
+
+The **Browsing** tab controls what appears when you browse this account.
+
+**Visible browser sections** is a checklist of categories. Use the arrow keys to select an entry and <kbd>Space</kbd> to check or uncheck it. Leave at least one section checked. Hiding a section does not remove anything from the server.
+
+To browse only particular music libraries:
+
+1. Choose **Load libraries**. This uses the address and login details currently entered on the Connection tab, even if you have not saved them. Test connection also loads the libraries.
+2. Select **Only include selected libraries**.
+3. In the libraries checklist, use <kbd>Space</kbd> to check each library you want to include. At least one must be checked while this restriction is enabled.
+
+Clear Only include selected libraries to browse all libraries available to your account. These choices limit Luna's library browsing and searches; they do not change your permissions or create libraries on the server.
+
+**Refresh current playlist metadata on startup** updates names and other information for this account's songs when Luna restores its current playback list. It runs in the background and needs access to the server.
+
+### Other connection settings
+
+The remaining tabs provide settings you may need for a particular account:
+
+- **Downloads:** choose the default folder for original-file downloads and whether to put them in artist and album subfolders. You can override the destination for an individual download.
+- **Advanced:** adjust background updates, cache lifetimes, search delay and request timeouts for this account. The controls start with Luna's existing defaults. Press <kbd>F1</kbd> on a control to hear what it affects and how its timing works. Enter custom HTTP headers only if the server or its proxy requires them, using one header per line in the form `Name: value`.
+- **AudioMuse:** configure an optional recommendation service. Leave it unconfigured if you do not use AudioMuse. See [Finding related music](#finding-related-music).
+
+### Browsing the library
+
+Use the **Categories** tree to choose what to browse. Depending on the server and your settings, it can include artists, albums, songs, genres, favorites, recent or frequently played music, random music, server playlists, bookmarks, now-playing information, radio and podcasts. Some sections and actions require server support or particular account permissions.
+
+Choose **Artists**, select an artist in the list and press <kbd>Enter</kbd> to open their albums. Select an album and press Enter again to open its songs. Enter also opens collections such as genres, server playlists and podcast channels. The list's label changes to describe its contents, for example **Albums** or **Songs**.
+
+Opening a collection from the list announces the new view and updates the category tree. Selecting a category in the tree does not add a second announcement of the same view. **Back**, or <kbd>Alt</kbd>+<kbd>Left</kbd>, returns to the previous browsing view without changing playback.
+
+Use **Library** to narrow the current view to one of the available music libraries.
+
+The list has columns appropriate to the view. For songs, these can include title, artist, album, duration, quality, rating, favorite status, track number, year and play count. The **Quality** column describes the original server file, using its format, bitrate, sample rate, bit depth and channel information when available. It does not describe the format of a transcoded playback stream.
+
+Other views show information such as an artist's album count, a playlist's owner and description, a bookmark's position or a podcast episode's availability. The server may not supply every field.
+
+### Searching, sorting and filtering
+
+Type in **Search** to search after a short pause. **Result type** selects artists, albums, songs or all three. Clear the search text to return to the current browsing location. Searches and view loading run in the background; choosing another view or changing the query cancels the previous request. A large Songs view can take time to load.
+
+**Sort by** and **Sort order** rearrange the rows already loaded into the browser. Changing the sort does not make another network request or fetch additional metadata. The chosen sort remains in effect when you open another collection, go Back or switch accounts. Newly loaded results use that same sort.
+
+You can sort by name, artist, album, track, duration, year, date added, play count, rating, format, source bitrate, sample rate or bit depth. Numbers are sorted by value, and missing values come last. Choose **Default** to use the order supplied by the server, such as a playlist's saved song order. Sorting the browser does not change the order saved in a server playlist.
+
+Choose **Filters...** to set a year range. Zero leaves that end of the range unrestricted.
+
+Choose **Refresh**, or press <kbd>F5</kbd>, to reload the current view. This reads the server's existing catalogue. To make the server look for new or changed music files, use a library scan as described under [Refreshing and scanning the library](#refreshing-and-scanning-the-library).
+
+### Playing songs and collections
+
+Select a song and press <kbd>Enter</kbd> to play it. To play an album, artist or server playlist without opening it first, use **Play** in its context menu or press <kbd>Shift</kbd>+<kbd>Enter</kbd>. Enter on those collections opens them for browsing instead.
+
+You can select several rows before playing or adding them. Use <kbd>Shift</kbd> with the arrow keys to select a range. For separate rows, hold <kbd>Ctrl</kbd> while moving with the arrow keys and press <kbd>Ctrl</kbd>+<kbd>Space</kbd> to select or clear each row.
+
+Playing a selection adds new songs at the end of Luna's current playback list and starts the first selected song. If a song is already in that list, Luna plays the existing entry rather than adding a second copy. **Add to current playlist**, or <kbd>Ctrl</kbd>+<kbd>Enter</kbd>, adds missing songs without starting playback. Local files and songs from different server accounts can share this list.
+
+The browser stays open and keeps its selection when you start playback. Previous, Next, pause, seeking, speed changes and audio processing work through the main player. A-B loops and selection ranges also work with server songs. For transcoded streams, some seeks require a new response from the server; Luna opens it in the background while preserving the song's position, loop and selection boundaries. Server response time and connection speed can affect how quickly playback or seeking starts.
+
+**File > Opened Files...** shows Luna's full playback list. Its context menu includes rating and favorite actions for server songs. If a song is missing or unavailable, Luna marks it unavailable instead of repeatedly trying to play it. After correcting the problem, refresh the music-server browser to let Luna retry.
+
+To save a song to your computer, use its download commands. These download the original file, including when you use transcoding for playback. See [Downloading online media](#15-downloading-online-media) for download options, progress and the shared download queue.
+
+### Favorites and ratings
+
+Open a song's context menu to choose **Add to favorites**, **Remove from favorites** or **Set rating...**. Favorite commands also work for supported artist and album selections. Luna offers the favorite action that applies to the selection and speaks a short confirmation after a successful change, such as "Added to favorites."
+
+To rate one or more songs:
+
+1. Select the songs and choose **Set rating...**, or press <kbd>Ctrl</kbd>+<kbd>R</kbd>.
+2. Choose a radio button for one through five stars. Choose **Not rated** to remove the rating.
+3. Choose **Save**. The dialog closes, Luna saves the rating in the background and announces when it has succeeded.
+
+The chosen rating applies to all selected songs, including when they previously had different ratings. The server determines whether your account may make these changes.
+
+### Song details and lyrics
+
+For a single song, choose **Details...** or press <kbd>Shift</kbd>+<kbd>Enter</kbd> to read its metadata and original audio quality. Artist and album details can include a biography or album notes. **Open information page** opens the source website when the server supplies a link.
+
+Choose **Lyrics...**, or press <kbd>Ctrl</kbd>+<kbd>L</kbd>, to read a song's lyrics. If the server supplies several versions, choose one from **Lyrics version**. Timed lyrics include the position of each line. Select **Follow playback** to keep the current line selected and visible while that song plays. Follow playback is available only for timed lyrics; plain-text lyrics can still be read normally. Luna tells you when no lyrics are available.
+
+### Actions for the currently playing song
+
+You do not have to find the playing song again in the browser to change its rating or read its lyrics. The main window's **Tools > Music servers** submenu contains:
+
+- **Add to favorites** and **Remove from favorites**, with only the applicable action enabled.
+- **Set rating...**.
+- **Song lyrics...**.
+- **Song details...**.
+
+These commands apply to the loaded server song, regardless of the browser's selection. They are unavailable when the loaded item is not a music-server song. To bookmark the playing position, use the **Bookmarks** menu described below.
+
+### Creating a server playlist
+
+A server playlist is a named list saved on the selected account. You can open it again in Luna or another compatible client. It is separate from Luna's current playback list and the local playlists under **File > Playlists > My Playlists**.
+
+To create one:
+
+1. In the music-server browser, press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd>, or open the context menu and choose **Server > Create server playlist...**.
+2. Enter a **Name** and, if wanted, a **Description**. Select **Public playlist** if you want to share it and your server permits this.
+3. Choose **Add songs...** to open the song picker. Search for songs, then select the results you want. This is a normal multi-column selection list: Shift with the arrow keys selects a range, while Ctrl with the arrow keys and Ctrl+Space selects separate songs.
+4. Choose **Add selected songs** to put those songs into the playlist draft and close the picker. To add results from another search, open Add songs again.
+5. Review the draft. Remove unwanted entries, or use **Move up** and **Move down** to change their order. You can also move selected entries with <kbd>Shift</kbd>+<kbd>Up</kbd> and <kbd>Shift</kbd>+<kbd>Down</kbd>. The selection follows the moved entries. In this editor those keys reorder songs; in the song picker they select a range.
+6. Choose **Save** to create the playlist on the server. Luna's confirmation names the saved playlist. Cancel discards the unsaved draft.
+
+Adding songs to the draft does not save it until you choose Save. If saving fails, the draft stays open so you can correct the problem or try again.
+
+### Editing a server playlist or adding songs to it
+
+Choose **Server playlists** in the category tree. Press Enter on a playlist to browse its songs, or choose **Edit...** from its context menu to change its name, description, public visibility or song order. Editing and deletion depend on ownership and server permissions. If another client changes the playlist while you are editing, reopen it before saving again.
+
+To add songs, albums or artists from another browser view, select them and choose **Add to server playlist...**. Choose the destination playlist by name. You can instead choose **Create server playlist...** there to make a new playlist from the selection. The confirmation names the playlist that received the songs.
+
+A server playlist can contain the same song more than once. While browsing its songs, **Remove from playlist** removes the selected occurrences after confirmation. Removing a song from a playlist does not delete its music file. Removing the playlist deletes the saved list, not the music in the library.
+
+### Making a server playlist from Luna's playback list
+
+Choose **Server > Send current playlist to server...** from the browser's context menu. This opens a new server-playlist draft containing songs from the selected account that are currently in Luna's playback list.
+
+Local files and songs from other accounts cannot be included. If any are present, Luna asks before leaving them out. Repeated songs from the selected account are included once in this transfer. Review the name, description and contents, then choose Save. You are creating a new named playlist; this command does not append to an existing server playlist.
+
+### Keeping server songs in a local Luna playlist
+
+Use **File > Playlists > Save Playlist As...** and choose Luna's JSON format to keep server songs alongside local files or other media. Luna saves references to the account and song, without passwords or temporary stream addresses. That saved account must still be configured when you open the playlist later. Editing a local Luna playlist does not edit a playlist stored on the server.
+
+M3U and M3U8 cannot retain these private account references. When exporting either format, Luna asks before leaving server items out. Confirm only if you want the remaining local files and public streams exported. If all entries are server items, Luna leaves the destination unchanged.
+
+### Server bookmarks
+
+A server bookmark saves a song position and an optional comment on your account. While a server song is playing, choose **Bookmarks > Add a new bookmark**, or press <kbd>Ctrl</kbd>+<kbd>B</kbd>. Enter a comment and choose Save. The comment dialog closes immediately, the position is saved in the background and Luna announces "Bookmark added." when it succeeds.
+
+Inside the browser, Ctrl+B bookmarks the playing song from the selected account. It does not bookmark the highlighted search result.
+
+Choose **Server bookmarks** in the category tree to find these saved positions. Play a bookmark to resume its song at the saved position. Its context menu lets you edit the comment or remove the bookmark.
+
+The local **Manage bookmarks** dialog, numbered bookmark slots and bookmark backups apply to local files. Manage bookmarks uses <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd>; use the browser's Server bookmarks section for remote positions.
+
+### Listening activity
+
+**Report listening activity**, on the account editor's Playback tab, is enabled for new connections. It tells the server which song is playing and submits a completed listen after half the song's duration or four minutes of listening, whichever comes first. Seeking forward does not count toward listening time.
+
+Luna also sends playback, pause and stop reports when the server supports them. The server decides how to use these reports, including whether to forward listening activity to another service.
+
+### Saving and synchronizing the playback queue
+
+The server queue stores a playback list, current song and position for your account. Use it to resume listening in another compatible client. A queue is different from a named server playlist: it records a listening session rather than a collection you save under a name.
+
+For manual transfers, use **Server > Save queue to server** or **Server > Load queue from server** in the browser's context menu. Only songs from the selected account can be saved in that account's queue. When the playback list contains other media, Luna asks before saving because that media cannot be included.
+
+To exchange queue changes automatically, enable **Synchronize queue and position automatically** on the account editor's Playback tab. This is off for new connections. When enabled, Luna sends local queue edits, periodically saves the playing position and checks for changes made through other clients.
+
+Queue synchronization replaces only the selected account's song entries in Luna's playback list. Local files, podcasts, radio and other accounts' songs remain. While playing a song from the synchronized account, Luna can follow the remote current song and position. It keeps the current pause state; pause state is not synchronized between clients. Remote changes do not interrupt playback of a local file or another account's song.
+
+Changes from several clients can overwrite one another. Leave automatic synchronization off if you want to choose when to save or load the server queue.
+
+### Radio stations on a server
+
+Choose **Radio** in the browser to see stations configured on the selected music server. Select a station and play it to open its stream in Luna. This is separate from the public directory described under [Radio browser](#16-radio-browser).
+
+An administrator can use **Server > Add radio station...** to enter a station name, stream address and optional website. The station's context menu provides editing and removal when permitted.
+
+### Podcasts on a server
+
+Choose **Podcasts**, then open a channel to browse its episodes. Depending on account permissions and server support, you can subscribe to feeds, refresh subscriptions, request **Download episode to server**, delete downloaded episodes or remove subscriptions.
+
+Downloading an episode to the server asks the remote server to obtain it for its library. Downloading to your computer saves a local copy instead. An episode needs a playable copy on the server before Luna can stream it; Luna explains when one is not available.
+
+### Refreshing and scanning the library
+
+Refresh and library scans do different jobs. **Refresh**, or <kbd>F5</kbd>, reads the catalogue the server already has. It is useful after a playlist or song has changed through another client, but does not make the server inspect its music folders.
+
+The **Server** submenu in the browser's context menu provides these administrative commands:
+
+- **Scan server library for changes** asks the server to update its catalogue for new, changed or removed files. This normally requires administrator permission.
+- **Rescan entire server library** requests a full Navidrome scan, including folders whose modification times have not changed. It is available for permitted Navidrome accounts and can take longer than a scan for changes.
+- **Server scan status** checks whether a scan is running. If it is, Luna opens a status window. Closing the window stops monitoring without cancelling the server's scan. If no scan is running, Luna shows one informational message instead.
+- **Server information** shows the server type, version and advertised OpenSubsonic extensions.
+
+After a scan finishes, refresh the browser to read the updated catalogue. A command may be unavailable if the server does not support it or your account lacks permission. Luna can also stop offering a command for the current session after the server rejects it as unsupported or forbidden.
+
+### Managing library folders and source files
+
+Luna can browse the libraries made available by the server, but cannot create server library folders or upload, edit or delete source music files through the standard Subsonic interface. Favorites, ratings and playlists have separate editing commands and do not modify the music files.
+
+For Navidrome, administrators manage libraries on the server website under Settings > Libraries. A library points to a folder accessible to the server machine. Navidrome does not upload or modify the source music files. Add or change those files through the server's filesystem, a network share or a separately configured file-transfer service, then scan the library to update its catalogue.
+
+See the [Navidrome library documentation](https://www.navidrome.org/docs/usage/features/multi-library/) and [file management and upload FAQ](https://www.navidrome.org/docs/faq/) for the server-side setup.
+
+### Finding related music
+
+An artist's context menu can offer **Top songs** and **Similar artists**. **Instant mix** finds music related to a selected song, album or artist. When the server supports sonic similarity, **Sonic similar tracks** offers related songs, and selecting two songs makes **Find sonic path** available. The resulting lists use the usual playback, download and playlist commands.
+
+AudioMuse provides additional recommendations through a separate service. You need access to an AudioMuse service before configuring it; adding its settings in Luna does not create an account. On the connection editor's **AudioMuse** tab, enter:
+
+- The service address and access token.
+- The music-server name expected by the service, if it requires one.
+- The default number of results, from 1 to 500. You can change the count for an individual request.
+
+Once configured, the browser's **AudioMuse** context submenu offers:
+
+- **Search by description...:** describe the music you want to find.
+- **Generate playlist...:** request a generated collection from a description. Luna reports progress while waiting for the result.
+- **Song Alchemy...:** start with selected songs or artists. Use Include and Exclude to add song seeds for music you want or want to avoid. Remove unwanted seeds, set the result count and choose Generate.
+
+Results are matched to songs on the selected server and restricted to the chosen libraries. Unavailable songs are marked. You can play the results, add them to Luna's playback list or save them in a server playlist. Instant mix can also use AudioMuse when the music server cannot supply similar music.
+
+### Browser shortcuts
+
+These shortcuts apply while you are in the music-server browser. Most actions use the selected list rows. Bookmarking uses the currently playing song from the selected account. Change browser shortcuts under **Preferences > Keyboard Shortcuts > Music servers**, separately from the main player's shortcuts.
+
+| Action | Shortcut |
+| --- | --- |
+| Open the browser from the main player | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> |
+| Open a collection or play selected songs | <kbd>Enter</kbd> |
+| Play selected albums, artists or playlists; show details for one song | <kbd>Shift</kbd>+<kbd>Enter</kbd> |
+| Add selected items to Luna's playback list without playing | <kbd>Ctrl</kbd>+<kbd>Enter</kbd> |
+| Set selected songs' rating | <kbd>Ctrl</kbd>+<kbd>R</kbd> |
+| Show one song's lyrics | <kbd>Ctrl</kbd>+<kbd>L</kbd> |
+| Bookmark the current song position | <kbd>Ctrl</kbd>+<kbd>B</kbd> |
+| Create a server playlist | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>N</kbd> |
+| Direct download | <kbd>Ctrl</kbd>+<kbd>D</kbd> |
+| Download options | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> |
+| Add to download queue | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd> |
+| Open the download queue | <kbd>Ctrl</kbd>+<kbd>Q</kbd> |
+| Focus search | <kbd>Ctrl</kbd>+<kbd>F</kbd> |
+| Refresh | <kbd>F5</kbd> |
+| Back | <kbd>Alt</kbd>+<kbd>Left</kbd> |
+| Focus Sort by | <kbd>Alt</kbd>+<kbd>B</kbd> |
+| Focus Sort order | <kbd>Alt</kbd>+<kbd>O</kbd> |
+| Rename or edit a supported selection | <kbd>F2</kbd> |
+| Remove a supported selection | <kbd>Delete</kbd>, followed by confirmation |
+
+Press <kbd>F1</kbd> in a server-playlist editor for help with that window.
+
+## 15. Downloading online media
+
+Luna's download commands work with YouTube, music-server songs and available podcast episodes, and supported direct HTTP or HTTPS file links. For the current online item, use the **File** menu. Luna chooses the appropriate options for its source.
+
+| Command in the main player | Shortcut | Purpose |
+| --- | --- | --- |
+| **File > Download...** | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> | Choose options or a destination for the current item. |
+| **File > Direct download** | <kbd>Ctrl</kbd>+<kbd>D</kbd> | Start with the source's saved download settings. |
+| **File > Add to download queue** | <kbd>Ctrl</kbd>+<kbd>Q</kbd> | Queue the current item with its defaults. |
+| **Tools > Download queue...** | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd> | Open the shared queue to start, monitor or stop work. |
+
+YouTube results and music-server lists also offer downloads for selected items, so a file does not have to be playing before you download it. The music-server browser has its own queue shortcuts, listed in [Browser shortcuts](#browser-shortcuts).
+
+### Options for each source
+
+For **YouTube**, Download opens options for name, destination, video or audio output, format, quality and extra processing. Direct download and queueing use saved YouTube defaults. See [YouTube download options](#youtube-download-options) for the full list.
+
+For **music-server files**, these commands request originals even when playback uses transcoding. Direct download uses the account's destination and artist/album folder settings. Download lets you change the destination and organization for that operation and give a single song an optional filename. Choose **Download** to start, or **Add to download queue** to retain the chosen options in queued jobs. In the browser, you can select several songs, albums or artists to download a collection. The server must permit downloading independently of streaming, and podcast episodes must already have a downloadable copy on the server. Closing the server browser does not stop these jobs.
+
+For **other supported direct file links**, Download opens a native Save dialog for the destination and filename. Direct download and queueing use Luna's default `Downloads\Luna Player` folder. Luna copies the file as supplied; ordinary file links do not have YouTube format-conversion options. These download commands are unavailable for local files, Spotify tracks and live radio. Streaming playlist links such as M3U, M3U8 and MPD are also excluded from direct-file downloads.
+
+An existing destination file is preserved: Luna chooses an unused numbered filename for a repeated download.
+
+### Progress and completion
+
+An immediate download opens a separate progress window. It reports progress, downloaded size, speed and estimated time when the source supplies enough information. YouTube jobs can continue with finishing work such as merging, conversion or embedding metadata after the file bytes have arrived. Wait for the final result before assuming the output is ready.
+
+The progress window leaves the main player usable. **Minimize to queue** closes the individual view and keeps the same job running in the shared queue. On completion, the progress window closes and a success message gives the saved path; an error explains a failure. A download started from a result window does not require closing that window before completion is reported.
+
+### Using the shared download queue
+
+Press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd> in the main player or choose **Tools > Download queue...**. The list can contain YouTube downloads, music-server files and direct online files together, with each item's title and state. An item entered as a YouTube link is listed by that link when no media title is available.
+
+- **Add...** accepts one YouTube video link per line. Add music-server or other direct-file jobs from the relevant browser or File menu instead.
+- **Start** starts queued items and retries failed ones.
+- **Stop** cancels the selected active download and returns it to the queue for a later start.
+- **Stop all** cancels every active download and leaves unfinished items queued.
+- <kbd>Delete</kbd> removes the selected item after confirmation. Removing an active item also cancels it.
+- **Close** hides the queue without stopping active work.
+
+The status box and total progress bar appear while the queue contains items. During a batch they show overall progress, combined speed and estimated time when available. A YouTube item can remain in a finishing state while its output is converted, merged, tagged or moved. The shared queue uses the **Simultaneous downloads** limit under YouTube Preferences, from one through sixteen active jobs.
+
+Completed rows remain available until the queue window is closed, when they are cleared. Luna sends a desktop notification when all visible queue jobs finish successfully. Closing Luna with unfinished work asks whether to cancel it and exit or return to the player. The queue belongs to the current Luna session; unfinished jobs are not restored after a restart.
+
+## 16. Radio browser
 
 Choose **Tools > Radio browser...** or press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> to find internet radio stations through the public [Radio Browser directory](https://www.radio-browser.info/). You do not need an account.
 
@@ -831,7 +1143,7 @@ Choose **Station details** or press <kbd>Shift</kbd>+<kbd>Enter</kbd> to read th
 
 Use **Refresh** to reload the current view. **Clear history…** asks before removing your local Recently played history; it does not remove favorites or change the public directory.
 
-## 15. Recording audio
+## 17. Recording audio
 
 Luna can record microphones and other inputs, everything played through an output device, or the audio of a particular program. Multiple sources can be mixed into one recording with separate volume levels.
 
@@ -890,7 +1202,7 @@ If only some sources can be opened, Luna starts with the available sources and l
 
 Choose **Recording > Open recordings folder** to open the active destination. The default folder is `Documents\Luna Player\Recordings`.
 
-## 16. IPTV
+## 18. IPTV
 
 IPTV sources and channels are under **Tools > IPTV**. Luna supports extended M3U or M3U8 playlists from a file or web address, Xtream Codes accounts, and Stalker portals.
 
@@ -908,7 +1220,7 @@ Open a source from the manager, or choose **Tools > IPTV > Browse channels...** 
 
 Press <kbd>Enter</kbd> on a selected row or activate **Play** to open it. When programme-guide information is available, press <kbd>Ctrl</kbd>+<kbd>I</kbd> to hear what is showing now and what follows. Press <kbd>F1</kbd> in the channel browser for a spoken summary of its controls.
 
-## 17. Media converter
+## 19. Media converter
 
 Choose **Tools > Media converter...** to convert one or more media files to an audio format. Add individual files or add a folder; adding a folder includes supported media in its subfolders. Duplicate paths are ignored.
 
@@ -920,7 +1232,7 @@ Set **Maximum simultaneous conversions** to control how many files run at once. 
 
 The progress window reports the current file, its percentage, the number of remaining files, total percentage, and estimated time. You can cancel the remaining work. When conversion ends, Luna reports complete success or lists the files that failed and why.
 
-## 18. Sleep timer
+## 20. Sleep timer
 
 Choose **Tools > Sleep timer > Set timer...** or press <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>S</kbd>. A timer can fire after a chosen duration or at the end of the current track. Choose whether it pauses playback or stops and unloads the current item.
 
@@ -934,7 +1246,7 @@ Enable **Fade the volume out before firing** to lower the volume during the fina
 
 The last timer choices are remembered, but an active countdown does not survive closing Luna.
 
-## 19. Preferences reference
+## 21. Preferences reference
 
 Open Preferences with **File > Preferences...** or <kbd>Ctrl</kbd>+<kbd>P</kbd>. Select a page in the category tree. Choose OK to save and apply the settings you changed, or Cancel to discard unaccepted changes. Unchanged settings are not reapplied, so saving an unrelated preference does not reset temporary playback adjustments such as headphone spatialization.
 
@@ -1123,6 +1435,8 @@ This page lists every action that can run while Luna's main window has focus. Ea
 
 Immediately after the shortcut list, **Disable secondary shortcuts** turns off every assignment in the Secondary Shortcut column. The keys then keep their normal interface behavior; for example, Tab and Shift+Tab can move focus instead of changing tracks. Primary and global shortcuts are unaffected. Your secondary assignments are kept and become active again when you clear the checkbox and choose OK. Page Up and Page Down are the primary Previous and Next shortcuts.
 
+The **Music servers** child page contains the shortcuts used inside that browser. It has separate assignments for opening collections, playing or adding songs, rating, lyrics, bookmarks, server playlists, downloads and browsing navigation. Changing these does not change the main player's shortcuts. See [Browser shortcuts](#browser-shortcuts) for the defaults.
+
 Luna rejects a combination already assigned to another action in the same shortcut set. Local shortcuts can use printable keys, navigation keys, function keys F1 through F24, and Ctrl, Shift, or Alt modifiers. Use **Reset to Defaults** to restore the complete local shortcut page after confirmation.
 
 ### Global Shortcuts
@@ -1133,7 +1447,7 @@ Select an action, activate **Edit Shortcut**, and press the desired combination.
 
 Global shortcuts are separate from local shortcuts. Changing one does not change the other.
 
-## 20. Application updates
+## 22. Application updates
 
 ### Checking manually
 
@@ -1156,7 +1470,7 @@ The download window shows total size, downloaded size, percentage, and a Cancel 
 
 Do not start another Luna process while the update is being applied.
 
-## 21. Help and release information
+## 23. Help and release information
 
 - **Help > User guide** or <kbd>F1</kbd> opens the installed guide that matches Luna's interface language. If no matching regional or base-language guide is installed, Luna opens the English guide.
 - **Help > About** shows a description, version, copyright information, and a link to the project website.
@@ -1164,7 +1478,7 @@ Do not start another Luna process while the update is being applied.
 
 The user guide is installed as local HTML and does not require an internet connection. Release notes and the project website do require one.
 
-## 22. Settings and user data
+## 24. Settings and user data
 
 Luna stores user data under `%APPDATA%\Luna Player`:
 
@@ -1178,6 +1492,7 @@ Luna stores user data under `%APPDATA%\Luna Player`:
 | `iptv-sources.json` | Saved IPTV sources, with account fields protected for the current Windows user |
 | `recents.json` | Recently opened files, folders, and playlists |
 | `Playlists/` | Named JSON playlists, including descriptions and folder references |
+| `subsonic-servers.json` | Saved music-server connections and last selected account, with account secrets protected for the current Windows user |
 | `radio.json` | Favorite radio stations and local radio listening history |
 | `spotify-preview-searches.txt` | Recent Spotify search queries |
 | `spotify-token.dat` | Spotify browsing authorization, protected for the current Windows user |
@@ -1189,7 +1504,7 @@ Do not edit these files while Luna is running. Use the export and import control
 
 If `settings.json` cannot be read or contains invalid values, Luna starts with defaults, shows the reason, and protects the existing file from being overwritten. Import a valid settings backup or use **Reset settings** to replace it deliberately. Invalid bookmarks, favorites, equalizer presets, IPTV sources, and recents are also reported instead of being silently replaced.
 
-## 23. Complete default shortcut reference
+## 25. Complete default shortcut reference
 
 These are the factory defaults. Your current bindings may differ after customization. The authoritative list for your installation is under **Preferences > Keyboard Shortcuts** and **Global Shortcuts**.
 
@@ -1344,8 +1659,8 @@ These are the factory defaults. Your current bindings may differ after customiza
 
 | Action | Shortcut |
 | --- | --- |
-| Add bookmark | <kbd>Shift</kbd>+<kbd>M</kbd> |
-| Manage bookmarks | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> |
+| Add bookmark for the current local file or server song | <kbd>Ctrl</kbd>+<kbd>B</kbd> |
+| Manage local bookmarks | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>B</kbd> |
 | Jump to bookmark slots 1–9 | <kbd>Alt</kbd>+<kbd>1</kbd> through <kbd>Alt</kbd>+<kbd>9</kbd> |
 | Jump to bookmark slot 10 | <kbd>Alt</kbd>+<kbd>0</kbd> |
 
@@ -1357,15 +1672,16 @@ These are the factory defaults. Your current bindings may differ after customiza
 | Search YouTube | <kbd>Ctrl</kbd>+<kbd>Y</kbd> |
 | Favorite videos | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>F</kbd> |
 | Open the download queue | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Q</kbd> |
-| Add the current YouTube video to the queue | <kbd>Ctrl</kbd>+<kbd>Q</kbd> |
-| Direct-download current YouTube video | <kbd>Ctrl</kbd>+<kbd>D</kbd> |
-| Choose options for current YouTube video download | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> |
+| Add the current downloadable online item to the queue | <kbd>Ctrl</kbd>+<kbd>Q</kbd> |
+| Direct-download the current online item | <kbd>Ctrl</kbd>+<kbd>D</kbd> |
+| Choose download options for the current online item | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>D</kbd> |
 | Show current video description | <kbd>Alt</kbd>+<kbd>D</kbd> |
 | Copy current video link | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>C</kbd> |
 | Open current video in browser | None |
 | Open current video's channel in browser | None |
 | Browse current video's channel in Luna | None |
 | Open radio browser | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>R</kbd> |
+| Open music-server browser | <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>M</kbd> |
 | Open Spotify browser | <kbd>Alt</kbd>+<kbd>S</kbd> |
 | Spotify preferences | None |
 | Open media converter | None |
@@ -1402,7 +1718,7 @@ These commands work while another application has focus, including when Luna is 
 | Pause or resume recording | <kbd>Win</kbd>+<kbd>Alt</kbd>+<kbd>F7</kbd> |
 | Stop recording | <kbd>Win</kbd>+<kbd>Alt</kbd>+<kbd>F8</kbd> |
 
-## 24. Supported formats
+## 26. Supported formats
 
 Luna filters file and folder selection using the following extensions. Playback is handled by mpv, so other formats supported by that engine may also play when opened directly.
 
@@ -1414,7 +1730,7 @@ Luna filters file and folder selection using the following extensions. Playback 
 
 **Discs:** DVD-Video and DVD-Audio through **File > Open DVD...**, DVD AutoPlay, or Explorer's DVD play action. Disc menus, Blu-ray discs and audio CDs are not supported by this disc-opening feature.
 
-## 25. Troubleshooting
+## 27. Troubleshooting
 
 ### A file or folder opens fewer items than expected
 
@@ -1480,6 +1796,18 @@ Global shortcuts are active only while another application has focus. Switch to 
 
 Luna protects an invalid or unreadable `settings.json` rather than overwriting it. Open Preferences and either import a valid settings backup or choose **Backup and restore > Reset settings**. If you need the original for diagnosis, copy it from the user settings folder first.
 
+### A music server connects, but a category or command is missing
+
+Open the saved account's **Browsing** tab and check **Visible browser sections** and any library restriction. Different servers implement different Subsonic features, and account permissions can limit playlists, downloads, podcasts or administration. Refresh the browser after correcting the settings or server permissions. **Server information** shows the version and extensions reported by the server.
+
+### A saved playlist contains an unavailable server song
+
+The Luna JSON playlist needs its original saved server connection. Check that the account still exists in Manage servers, test its address and credentials, and confirm the song still exists on that account. Removing a connection and creating another one does not repair references to the removed account automatically. Refresh the browser after fixing access to retry unavailable songs. Luna requests a fresh stream when it plays a server reference; temporary streaming links are not stored in the playlist.
+
+### A server change replaces songs in the current queue
+
+Check **Synchronize queue and position automatically** in the account's Playback tab. When enabled, changes made by other clients are adopted without another prompt for that account's songs. Turn it off to use **Save queue to server** and **Load queue from server** explicitly. Named server playlists and Luna's local saved playlists are separate from this synchronized queue.
+
 ### Bookmarks or favorites report invalid data
 
 An invalid storage file is preserved rather than silently replaced. Open the user settings folder, make a copy of the affected JSON file, and restore a known-good backup. Bookmarks can be restored through Preferences. Favorites currently require restoring the `favorites.json` file itself while Luna is closed.
@@ -1488,7 +1816,7 @@ An invalid storage file is preserved rather than silently replaced. Open the use
 
 The installed guide should be at `docs\<language-code>\user-guide.html` beside the executable. Re-extract the complete portable archive or repair/reinstall the application if the `docs` folder is missing. Luna falls back from a regional language to its base language and then to English.
 
-## 26. Publisher and licensing
+## 28. Publisher and licensing
 
 Luna Player is published by **Diamond Star**.
 
@@ -1500,7 +1828,7 @@ Luna Player also uses separately licensed third-party components, including mpv,
 
 The license summary in this guide is provided for convenience. `LICENSE.txt`, `NOTICE.txt`, and the files in the `licenses` folder contain the authoritative terms and attributions. In the source repository, the corresponding top-level files are named `LICENSE` and `NOTICE`.
 
-## 27. Contact and support
+## 29. Contact and support
 
 Luna Player is developed and published by Diamond Star. You can use the following channels:
 

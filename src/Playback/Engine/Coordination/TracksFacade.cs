@@ -9,6 +9,7 @@ internal sealed partial class PlaybackCoordinator
     public string CurrentAudioDevice => _tracks.CurrentAudioDevice;
     public bool SetAudioDevice(string name) => _tracks.SetAudioDevice(name);
     public IReadOnlyList<AudioTrack> GetAudioTracks() => _tracks.GetAudioTracks();
+    public StreamFormat? GetStreamFormat() => _tracks.GetStreamFormat();
     public bool SetAudioTrack(int id) => _tracks.SetAudioTrack(id);
     public IReadOnlyList<SubtitleTrack> GetSubtitleTracks() => _tracks.GetSubtitleTracks();
     public bool SetSubtitleTrack(int id) => _tracks.SetSubtitleTrack(id);

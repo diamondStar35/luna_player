@@ -18,6 +18,12 @@ internal static class MediaActions
     {
         var actions = new List<ActionDefinition>
         {
+            // Translators: Shortcut for saving the current online file with its provider's default options.
+            new(ActionId.VideoDirectDownload, Tr("Direct download of the current file"), new("d", ShortcutModifiers.Control)),
+            // Translators: Shortcut for opening download options for the current online file.
+            new(ActionId.VideoDownload, Tr("Download the current file..."), new("d", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
+            // Translators: Shortcut for adding the current online file to the download queue.
+            new(ActionId.AddToDownloadQueue, Tr("Add the current file to the download queue"), new("q", ShortcutModifiers.Control)),
             // Translators: Name of the command that opens one or more media files, in the shortcuts list.
             new(ActionId.OpenFile, Tr("Open files"), new("o", ShortcutModifiers.Control)),
             // Translators: Name of the command that plays a network stream from a link.
@@ -73,9 +79,9 @@ internal static class MediaActions
             // Translators: Name of the command that deletes the marked files from the disk.
             new(ActionId.MarkedDelete, Tr("Delete the marked files from the disk")),
             // Translators: Name of the command that saves the position playing has reached as a bookmark.
-            new(ActionId.AddBookmark, Tr("Add a bookmark at the current position"), new("m", ShortcutModifiers.Shift)),
+            new(ActionId.AddBookmark, Tr("Add a bookmark at the current position"), new("b", ShortcutModifiers.Control)),
             // Translators: Name of the command that opens the window for renaming and deleting bookmarks.
-            new(ActionId.ManageBookmarks, Tr("Manage bookmarks dialog"), new("m", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
+            new(ActionId.ManageBookmarks, Tr("Manage bookmarks dialog"), new("b", ShortcutModifiers.Control | ShortcutModifiers.Shift)),
             // Translators: Name of the command that plays the file before the current one.
             new(ActionId.PreviousTrack, Tr("Play the previous file"), new("page_up"), new("tab", ShortcutModifiers.Shift)),
             // Translators: Name of the command that plays the file after the current one.

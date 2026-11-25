@@ -17,6 +17,12 @@ internal sealed class SourceCollection : IReadOnlyList<PlaylistItem>
         _saved?.Add(SavedEntry.FromPath(item.Path));
     }
     internal void AddRange(IEnumerable<PlaylistItem> items) { foreach (var item in items) Add(item); }
+    internal void Insert(IEnumerable<PlaylistItem> items, Guid? after)
+    {
+        var index = after.HasValue ? _items.FindLastIndex(x => x.SourceId == after.Value) + 1 : _items.Count;
+        _items.InsertRange(index, items);
+    }
+    internal void Replace(IEnumerable<PlaylistItem> items) { _items.Clear(); _items.AddRange(items); }
     internal void Clear() => _items.Clear();
     internal void RemoveAll(Predicate<PlaylistItem> match) => _items.RemoveAll(match);
     internal void Rename(string oldPath, string newPath)

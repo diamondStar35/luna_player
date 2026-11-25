@@ -55,7 +55,8 @@ internal sealed partial class ApplicationController : IDisposable
         SleepTimer sleepTimer,
         ISpeechOutput speech,
         SystemMediaControls mediaControls,
-        LunaPlayer.Spotify.Playback.Sessions spotify)
+        LunaPlayer.Spotify.Playback.Sessions spotify,
+        LunaPlayer.Subsonic.Servers.Metadata serverMetadata)
     {
         _view = view;
         _player = player;
@@ -73,7 +74,7 @@ internal sealed partial class ApplicationController : IDisposable
         _selectionPath = player.CurrentPath;
         _selectionItemId = player.CurrentItemId;
         _selectionPlaylistIndex = player.CurrentIndex;
-        _viewState = new ViewStatePresenter(view, player, speech, sessions, spotify);
+        _viewState = new ViewStatePresenter(view, player, speech, sessions, spotify, serverMetadata);
         _title = new WindowTitlePresenter(view, player, settings, _tags, spotify);
         _overlay = new MediaOverlayPresenter(
             player,
@@ -105,7 +106,7 @@ internal sealed partial class ApplicationController : IDisposable
         _overlay.Sync();
         _title.Update();
         _discord.Sync();
-        _presentationClock.Update(_overlay.RequiresTick || _settings.Discord.Enabled);
+        _presentationClock.Update(_overlay.RequiresTick || _settings.Discord.Enabled || _player.RequiresMediaTick);
     }
 
     internal void OpenPaths(IEnumerable<string> paths)
@@ -207,15 +208,16 @@ internal sealed partial class ApplicationController : IDisposable
         _overlay.Sync();
         _title.Update();
         _discord.Sync();
-        _presentationClock.Update(_overlay.RequiresTick || _settings.Discord.Enabled);
+        _presentationClock.Update(_overlay.RequiresTick || _settings.Discord.Enabled || _player.RequiresMediaTick);
     }
 
     private void OnPresentationTick()
     {
         if (_shutDown) return;
+        _player.SampleMedia();
         if (_overlay.RequiresTick) _overlay.Sync();
         _discord.Sync();
-        _presentationClock.Update(_overlay.RequiresTick || _settings.Discord.Enabled);
+        _presentationClock.Update(_overlay.RequiresTick || _settings.Discord.Enabled || _player.RequiresMediaTick);
     }
 
     /// <summary>Refreshes the window when Spotify navigation selects a track before mpv loads its audio.</summary>
@@ -250,7 +252,7 @@ internal sealed partial class ApplicationController : IDisposable
     {
         if (_shutDown) return;
         _discord.Sync();
-        if (!_player.InRadioSession) return;
+        if (!_player.InRadioSession && _player.CatalogTags is null) return;
         _overlay.Sync();
         _title.Update();
     });

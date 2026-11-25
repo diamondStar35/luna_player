@@ -71,7 +71,8 @@ internal sealed class MediaOverlayPresenter : IDisposable
             Duration: hasMedia ? _player.Duration : null,
             Position: hasMedia ? _player.Elapsed : null,
             CanGoNext: hasMedia && (_player.IsDisc ? _player.CanNavigateDisc(1) : _player.InSession ? _canGoNext() : index >= 0 && index < _player.Count - 1),
-            CanGoPrevious: hasMedia && (_player.IsDisc ? _player.CanNavigateDisc(-1) : _player.InSession ? _canGoPrevious() : index > 0)));
+            CanGoPrevious: hasMedia && (_player.IsDisc ? _player.CanNavigateDisc(-1) : _player.InSession ? _canGoPrevious() : index > 0),
+            Artwork: _player.Artwork));
     }
 
     internal bool RequiresTick => _mediaControls.IsAvailable && _player.IsLoaded;

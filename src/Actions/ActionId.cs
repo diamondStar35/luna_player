@@ -46,4 +46,8 @@ internal enum ActionId
     Donate,
     ToggleHeadphoneSpatialization, RotateSofaLeft, RotateSofaRight, SofaElevationUp, SofaElevationDown,
     OpenDisc,
+    OpenMusicServers,
+    ServerPlay, ServerAppend, ServerDirectDownload, ServerDownload, ServerEnqueue, ServerSearch, ServerRefresh, ServerBack, ServerQueue,
+    ServerRate, ServerDetails, ServerLyrics, ServerBookmark, ServerCreatePlaylist,
+    CurrentServerFavorite, CurrentServerUnfavorite, CurrentServerRate, CurrentServerLyrics, CurrentServerDetails,
 }

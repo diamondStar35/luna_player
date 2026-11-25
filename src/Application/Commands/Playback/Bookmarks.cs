@@ -36,6 +36,11 @@ internal sealed class Bookmarks
 
     private void Add()
     {
+        if (_player.IsLoaded && LunaPlayer.Subsonic.Playback.Reference.Parse(_player.CurrentPath) is { Kind: LunaPlayer.Subsonic.Playback.MediaKind.Song })
+        {
+            _view.Dialogs.ActOnServerSong(_player.CurrentPath!, LunaPlayer.UI.Subsonic.SongAction.Bookmark, _player.SourceElapsed);
+            return;
+        }
         if (!TryGetContext(out var path, out var position))
             return;
         // Translators: The name a new bookmark is given unless the user types another one. {time} is the point in the

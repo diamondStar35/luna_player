@@ -42,7 +42,7 @@ internal sealed class Probe : IDisposable
         return cached.Value;
     }
 
-    internal Result? Read(string path, CancellationToken cancellationToken, Func<bool>? isCurrent = null)
+    internal Result? Read(string path, CancellationToken cancellationToken, Func<bool>? isCurrent = null, IReadOnlyDictionary<string, string>? headers = null)
     {
         if (CachedResult(path) is Result cached)
             return cached;
@@ -78,6 +78,7 @@ internal sealed class Probe : IDisposable
                 }
                 while (_loaded!.CurrentCount > 0)
                     _loaded.Wait(0, CancellationToken.None);
+                _mpv.SetProperty("http-header-fields", headers is null ? Array.Empty<string>() : headers.Select(x => x.Key + ": " + x.Value).ToArray());
                 _mpv.LoadFileAsync(path);
                 if (!_loaded.Wait(2000, cancellationToken))
                     return null;

@@ -108,20 +108,23 @@ internal sealed partial class Player
     {
         if (DiscChapterNavigation) return MoveDiscChapter(1, wrap);
         SavePosition();
-        return _playlist.MoveNext(wrap) && LoadCurrent(fadeTransition: true);
+        _mediaForward = true;
+        return MoveAvailable(true, wrap) && LoadCurrent(fadeTransition: true);
     }
 
     internal bool Previous(bool wrap)
     {
         if (DiscChapterNavigation) return MoveDiscChapter(-1, wrap);
         SavePosition();
-        return _playlist.MovePrevious(wrap) && LoadCurrent(fadeTransition: true);
+        _mediaForward = false;
+        return MoveAvailable(false, wrap) && LoadCurrent(fadeTransition: true);
     }
 
     internal bool First()
     {
         if (DiscChapterNavigation) return CurrentChapters.Count > 1 && GoToChapter(0);
         SavePosition();
+        _mediaForward = true;
         return _playlist.GoToFirst() && LoadCurrent(fadeTransition: true);
     }
 
@@ -129,11 +132,13 @@ internal sealed partial class Player
     {
         if (DiscChapterNavigation) return CurrentChapters.Count > 1 && GoToChapter(CurrentChapters.Count - 1);
         SavePosition();
+        _mediaForward = false;
         return _playlist.GoToLast() && LoadCurrent(fadeTransition: true);
     }
 
     internal bool GoToIndex(int index)
     {
+        _mediaForward = index >= CurrentIndex;
         SavePosition();
         return _playlist.GoToIndex(index) && LoadCurrent(fadeTransition: true);
     }
@@ -143,6 +148,7 @@ internal sealed partial class Player
         var target = Items.FirstOrDefault(candidate => candidate.Id == item.Id)
             ?? Items.FirstOrDefault(candidate => candidate.SourceId == item.SourceId);
         if (target is null) return false;
+        _mediaForward = Array.FindIndex(Items.ToArray(), candidate => candidate.Id == target.Id) >= CurrentIndex;
         SavePosition();
         return _playlist.GoToItem(target.Id) && LoadCurrent(fadeTransition: true);
     }
@@ -184,6 +190,11 @@ internal sealed partial class Player
         var path = _playlist.CurrentPath;
         if (path is null)
             return false;
+        if (IsMediaUnavailable(path))
+        {
+            if (!MoveAvailable(_mediaForward, _wrapPlaylist)) return false;
+            path = _playlist.CurrentPath!; startPosition = null;
+        }
         if (!startPosition.HasValue && _playlist.CurrentItem?.Chapter is Chapter chapter)
             startPosition = chapter.Start;
         if (!startPosition.HasValue && _trackPositions && _positions is not null && File.Exists(path))
@@ -192,6 +203,7 @@ internal sealed partial class Player
             startPosition = _positions.Get(key);
         // A replacement load supplies its own end-behaviour options. Restoring them on the outgoing file
         // can turn a completed selection's artificial EOF into another playlist advance before loadfile.
+        ClearMediaBoundaries();
         _engine.ClearSelectionRange(restoreEndBehavior: false);
         _engine.ClearLoop();
         if (_playlist.CurrentItem?.Chapter is Chapter bounds && startPosition is double requested)
@@ -201,6 +213,9 @@ internal sealed partial class Player
         var item = _playlist.CurrentItem!;
         var stop = _stopAtChapterEnd ? Media.Chapters.At(_playlist.ChaptersFor(path), _requestedSourcePosition)?.End : null;
         _armedChapterEnd = stop;
+        if (_mediaResolver?.Handles(path) == true)
+            return BeginMediaLoad(path, startPosition ?? (_trackPositions ? _positions?.Get(path) : null), paused, fadeTransition);
+        CancelMediaLoad();
         if (!_engine.Load(path, startPosition, paused, _playlist.GetAudioFile(path),
                 _playlist.GetAudioOnly(path), fadeTransition, RangeFor(item), item.Id, stop))
             return false;
@@ -224,7 +239,7 @@ internal sealed partial class Player
             && string.Equals(CurrentSource, stream.CurrentSource, StringComparison.Ordinal)
             && Paths.AreSame(advance.Path, stream.Url))
         {
-            SavePosition(CurrentPath, advance.PreviousPosition);
+            SavePosition(CurrentPath, advance.PreviousPosition + (_currentInput?.Offset ?? 0));
             _queuedSessionStream = null;
             if (!_playlist.OpenFile(stream.Url))
                 return false;
@@ -232,7 +247,7 @@ internal sealed partial class Player
         }
         else
         {
-            SavePosition(CurrentPath, advance.PreviousPosition);
+            SavePosition(CurrentPath, advance.PreviousPosition + (_currentInput?.Offset ?? 0));
             if (_playlist.PeekNext(_wrapPlaylist) is { } next && advance.ItemId == next.Id)
             {
                 if (!_playlist.MoveNext(_wrapPlaylist))
@@ -263,6 +278,9 @@ internal sealed partial class Player
                     return false;
             }
         }
+        if (CurrentPath is { } identity && _preparedInputs.Remove(identity, out var prepared))
+        { _currentInput = prepared; _inputIdentity = identity; }
+        else { _currentInput = null; _inputIdentity = null; }
         _loaded = true;
         PrepareNext();
         CurrentChanged?.Invoke();
@@ -272,9 +290,11 @@ internal sealed partial class Player
 
     private void PrepareNext()
     {
+        _mediaNext?.Cancel();
         _engine.SetRepeatFile(_playlist.IsRepeatFileEnabled);
         if (_radioSession || !_loaded || (!_crossfade && _gaplessPlayback == GaplessPlaybackMode.Disabled) || _holdAutomaticAdvance
-            || _stopAtChapterEnd || _chapterStopHeld || _endBehavior != EndBehavior.Advance || _playlist.IsRepeatFileEnabled)
+            || _stopAtChapterEnd || _chapterStopHeld || !_mediaBoundaries.IsEmpty
+            || _endBehavior != EndBehavior.Advance || _playlist.IsRepeatFileEnabled)
         {
             _engine.ClearQueuedNext();
             return;
@@ -291,11 +311,18 @@ internal sealed partial class Player
             return;
         }
         var path = next.Path;
+        if (IsMediaUnavailable(path))
+        {
+            _engine.ClearQueuedNext();
+            return;
+        }
         double? start = next.Chapter?.Start;
-        if (start is null && _trackPositions && _positions is not null && File.Exists(path))
+        if (start is null && _trackPositions && _positions is not null
+            && (File.Exists(path) || _mediaResolver?.Handles(path) == true))
             start = _positions.Get(path);
         if (start is null && _trackPositions && _positions is not null && DiscPositionKey(path) is string key)
             start = _positions.Get(key);
+        if (_mediaResolver?.Handles(path) == true) { PrepareRemoteNext(next, start); return; }
         _engine.QueueNext(path, start, _playlist.GetAudioFile(path), _playlist.GetAudioOnly(path),
             RangeFor(next), next.Id);
     }

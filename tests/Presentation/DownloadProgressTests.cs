@@ -1,3 +1,4 @@
+using LunaPlayer.UI.Downloads;
 using System.Reflection;
 using System.Runtime.ExceptionServices;
 using LunaPlayer.Application;
@@ -5,7 +6,7 @@ using LunaPlayer.Configuration.Models;
 using LunaPlayer.Tests.Infrastructure;
 using LunaPlayer.UI.YouTube;
 using WxSharp;
-using Downloads = LunaPlayer.YouTube.Download;
+using SharedDownloads = LunaPlayer.Downloads;
 
 namespace LunaPlayer.Tests.Presentation;
 
@@ -21,14 +22,14 @@ public sealed class DownloadProgressTests
         {
             using var frame = new Frame(title: "Download test");
             frame.Enabled = false;
-            var expected = success ? Downloads.Outcome.Saved("video.mp4") : Downloads.Outcome.Failed("Download failed");
-            using var queue = new Downloads.DownloadQueue(new Settings(), (_, _, _) => expected);
-            var id = queue.StartSingle("Video", new Downloads.Request { Url = "https://www.youtube.com/watch?v=abcdefghijk", Folder = "." });
+            var expected = success ? SharedDownloads.Outcome.Saved("video.mp4") : SharedDownloads.Outcome.Failed("Download failed");
+            using var queue = new SharedDownloads.DownloadQueue(new Settings(), (_, _, _) => expected);
+            var id = queue.StartSingle("Video", new LunaPlayer.YouTube.Download.Request { Url = "https://www.youtube.com/watch?v=abcdefghijk", Folder = "." });
             Assert.IsTrue(SpinWait.SpinUntil(() => queue.Snapshot(id)?.Status is
-                Downloads.QueueItemStatus.Completed or Downloads.QueueItemStatus.Failed, TimeSpan.FromSeconds(5)));
+                SharedDownloads.QueueItemStatus.Completed or SharedDownloads.QueueItemStatus.Failed, TimeSpan.FromSeconds(5)));
             using var dialog = new DownloadProgressDialog(new Dispatcher(), queue, id);
             var closed = 0;
-            Downloads.Outcome? actual = null;
+            SharedDownloads.Outcome? actual = null;
             dialog.Closed += (_, outcome) =>
             {
                 closed++;
@@ -54,23 +55,23 @@ public sealed class DownloadProgressTests
             using var frame = new Frame(title: "Download test");
             frame.Enabled = false;
             using var finish = new ManualResetEventSlim();
-            using var queue = new Downloads.DownloadQueue(new Settings(), (_, report, token) =>
+            using var queue = new SharedDownloads.DownloadQueue(new Settings(), (_, report, token) =>
             {
                 report(new("finished", 100, 100, 100, 0, 0, "MoveFiles"));
                 finish.Wait(token);
-                return Downloads.Outcome.Saved("video.mp4");
+                return SharedDownloads.Outcome.Saved("video.mp4");
             });
-            var id = queue.StartSingle("Video", new Downloads.Request { Url = "https://www.youtube.com/watch?v=abcdefghijk", Folder = "." });
+            var id = queue.StartSingle("Video", new LunaPlayer.YouTube.Download.Request { Url = "https://www.youtube.com/watch?v=abcdefghijk", Folder = "." });
             using var dialog = new DownloadProgressDialog(new Dispatcher(), queue, id);
             var closed = 0;
             dialog.Closed += (_, _) => closed++;
             var tick = typeof(DownloadProgressDialog).GetMethod("Tick", BindingFlags.Instance | BindingFlags.NonPublic)!;
-            Assert.IsTrue(SpinWait.SpinUntil(() => queue.Snapshot(id)?.Status == Downloads.QueueItemStatus.Downloaded,
+            Assert.IsTrue(SpinWait.SpinUntil(() => queue.Snapshot(id)?.Status == SharedDownloads.QueueItemStatus.Downloaded,
                 TimeSpan.FromSeconds(5)));
             tick.Invoke(dialog, null);
             Assert.AreEqual(0, closed);
             finish.Set();
-            Assert.IsTrue(SpinWait.SpinUntil(() => queue.Snapshot(id)?.Status == Downloads.QueueItemStatus.Completed,
+            Assert.IsTrue(SpinWait.SpinUntil(() => queue.Snapshot(id)?.Status == SharedDownloads.QueueItemStatus.Completed,
                 TimeSpan.FromSeconds(5)));
             tick.Invoke(dialog, null);
             Assert.AreEqual(1, closed);
@@ -119,9 +120,9 @@ public sealed class DownloadProgressTests
         {
             using var frame = new Frame(title: "Main");
             var dispatcher = new Dispatcher();
-            var first = Downloads.Outcome.Saved("first.mp4");
-            var second = Downloads.Outcome.Failed("Network error");
-            var shown = new List<Downloads.Outcome>();
+            var first = SharedDownloads.Outcome.Saved("first.mp4");
+            var second = SharedDownloads.Outcome.Failed("Network error");
+            var shown = new List<SharedDownloads.Outcome>();
             using var messages = new DownloadOutcomes(dispatcher, () => frame, (result, parent) =>
             {
                 Assert.AreSame(frame, parent);
@@ -148,8 +149,8 @@ public sealed class DownloadProgressTests
             using var frame = new Frame(title: "Main");
             frame.Enabled = false;
             var dispatcher = new Dispatcher();
-            var shown = new List<Downloads.Outcome>();
-            var outcome = Downloads.Outcome.Saved("video.mp4");
+            var shown = new List<SharedDownloads.Outcome>();
+            var outcome = SharedDownloads.Outcome.Saved("video.mp4");
             using var messages = new DownloadOutcomes(dispatcher, () => frame.Enabled ? frame : null,
                 (result, _) => shown.Add(result));
             messages.Add(outcome);
@@ -172,11 +173,11 @@ public sealed class DownloadProgressTests
         {
             using var frame = new Frame(title: "Main");
             var dispatcher = new Dispatcher();
-            var shown = new List<Downloads.Outcome>();
+            var shown = new List<SharedDownloads.Outcome>();
             using var messages = new DownloadOutcomes(dispatcher, () => frame.Enabled ? frame : null,
                 (result, _) => shown.Add(result));
             frame.Enabled = false;
-            messages.Add(Downloads.Outcome.Saved("old.mp4"));
+            messages.Add(SharedDownloads.Outcome.Saved("old.mp4"));
             dispatcher.Pump();
             if (dispose) messages.Dispose(); else messages.Clear();
             frame.Enabled = true;
@@ -185,7 +186,7 @@ public sealed class DownloadProgressTests
             Assert.HasCount(0, shown);
             Assert.AreEqual(0, dispatcher.ActiveTimers);
             messages.Add(null);
-            messages.Add(Downloads.Outcome.Saved("new.mp4"));
+            messages.Add(SharedDownloads.Outcome.Saved("new.mp4"));
             dispatcher.Pump();
             Assert.AreEqual(dispose ? 0 : 1, shown.Count);
         });
